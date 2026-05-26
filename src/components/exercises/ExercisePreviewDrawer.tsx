@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -14,6 +14,8 @@ import DialogActions from '@mui/material/DialogActions';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import CloseIcon from '@mui/icons-material/Close';
 import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
 import MicIcon from '@mui/icons-material/Mic';
@@ -21,6 +23,8 @@ import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import AudioRecordingDialog from './AudioRecordingDialog';
 import { mockPrograms, mockPhysio } from '@/lib/mock-data';
 import { getAudioTracks, saveAudioTrack } from '@/lib/audioStore';
@@ -45,11 +49,44 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [recordingOpen, setRecordingOpen] = useState(false);
   const [tracks, setTracks] = useState<AudioTrack[]>([]);
+  const [listenId, setListenId] = useState('');
+  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Reload tracks whenever the exercise changes
   useEffect(() => {
-    if (exercise) setTracks(getAudioTracks(exercise.id));
+    if (exercise) {
+      const t = getAudioTracks(exercise.id);
+      setTracks(t);
+      setListenId(t[0]?.id ?? '');
+      setPlaying(false);
+      audioRef.current?.pause();
+    }
   }, [exercise]);
+
+  useEffect(() => {
+    audioRef.current = new Audio();
+    audioRef.current.onended = () => setPlaying(false);
+    return () => audioRef.current?.pause();
+  }, []);
+
+  const resolvedListenId = tracks.find((t) => t.id === listenId) ? listenId : (tracks[0]?.id ?? '');
+  const selectedTrack = tracks.find((t) => t.id === resolvedListenId) ?? null;
+
+  const togglePlay = useCallback(() => {
+    if (!selectedTrack?.blobUrl) return;
+    if (playing) {
+      audioRef.current?.pause();
+      setPlaying(false);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.src = selectedTrack.blobUrl;
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
+      }
+      setPlaying(true);
+    }
+  }, [playing, selectedTrack]);
 
   if (!exercise) return null;
 
@@ -165,6 +202,43 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
                 {myTrack ? 'Re-record' : 'Record'}
               </Button>
             </Tooltip>
+          </Box>
+
+          {/* Recordings dropdown */}
+          <Box sx={{ mb: 2.5 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', mb: 1 }}>
+              Recordings
+            </Typography>
+            {tracks.length > 0 ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Select
+                  size="small"
+                  value={resolvedListenId}
+                  onChange={(e) => { setListenId(e.target.value); setPlaying(false); audioRef.current?.pause(); }}
+                  sx={{ flex: 1, fontSize: 13 }}
+                >
+                  {tracks.map((t) => (
+                    <MenuItem key={t.id} value={t.id}>{t.ownerName} · {fmt(t.durationSecs)}</MenuItem>
+                  ))}
+                </Select>
+                <Tooltip title={selectedTrack?.blobUrl ? '' : 'Demo track — record in this session to enable playback'}>
+                  <span>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={playing ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
+                      disabled={!selectedTrack?.blobUrl}
+                      onClick={togglePlay}
+                      disableElevation
+                    >
+                      {playing ? 'Pause' : 'Play'}
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">No recordings yet.</Typography>
+            )}
           </Box>
 
           <Divider sx={{ mb: 2.5 }} />
