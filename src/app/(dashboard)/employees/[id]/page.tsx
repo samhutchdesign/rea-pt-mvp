@@ -1,5 +1,5 @@
 'use client';
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -19,7 +19,6 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
@@ -89,6 +88,109 @@ function TransferDialog({
   );
 }
 
+function ArchiveEmployeeDialog({
+  open,
+  employee,
+  assignedPatients,
+  onClose,
+  onConfirm,
+}: {
+  open: boolean;
+  employee: Employee;
+  assignedPatients: Patient[];
+  onClose: () => void;
+  onConfirm: (reassignments: Record<string, Employee>) => void;
+}) {
+  const [reassignments, setReassignments] = useState<Record<string, Employee | null>>({});
+  const otherEmployees = mockEmployees.filter((e) => e.id !== employee.id && !e.archived);
+
+  useEffect(() => {
+    if (open) {
+      const init: Record<string, Employee | null> = {};
+      assignedPatients.forEach((p) => { init[p.id] = null; });
+      setReassignments(init);
+    }
+  }, [open, assignedPatients]);
+
+  const hasPatients = assignedPatients.length > 0;
+  const allReassigned = assignedPatients.every((p) => reassignments[p.id] != null);
+  const canConfirm = !hasPatients || allReassigned;
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle sx={{ fontWeight: 600 }}>Archive Employee?</DialogTitle>
+      <DialogContent sx={{ pt: '12px !important' }}>
+        {!hasPatients ? (
+          <Typography variant="body2" color="text.secondary">
+            Are you sure you want to archive <strong>{employee.firstName} {employee.lastName}</strong>? They will be moved to the Archived tab and lose clinic access. You can restore them at any time.
+          </Typography>
+        ) : (
+          <>
+            <Alert severity="warning" sx={{ mb: 3 }}>
+              <strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new physiotherapist for each before archiving.
+            </Alert>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {assignedPatients.map((p) => (
+                <Box key={p.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar sx={{ width: 36, height: 36, bgcolor: '#E8E0F0', color: 'primary.main', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                    {p.avatarInitials}
+                  </Avatar>
+                  <Box sx={{ minWidth: 130, flexShrink: 0 }}>
+                    <Typography variant="body2" fontWeight={500}>{p.firstName} {p.lastName}</Typography>
+                    <Typography variant="caption" color="text.secondary">{p.status}</Typography>
+                  </Box>
+                  <Autocomplete
+                    options={otherEmployees}
+                    getOptionLabel={(e) => `${e.firstName} ${e.lastName}`}
+                    renderOption={(props, e) => (
+                      <Box component="li" {...props}>
+                        <Box>
+                          <Typography variant="body2" fontWeight={500}>{e.firstName} {e.lastName}</Typography>
+                          <Typography variant="caption" color="text.secondary">{e.credentials}</Typography>
+                        </Box>
+                      </Box>
+                    )}
+                    value={reassignments[p.id] ?? null}
+                    onChange={(_, val) => setReassignments((r) => ({ ...r, [p.id]: val }))}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        label="Transfer to…"
+                        error={reassignments[p.id] === null && allReassigned === false}
+                      />
+                    )}
+                    size="small"
+                    sx={{ flex: 1 }}
+                  />
+                </Box>
+              ))}
+            </Box>
+          </>
+        )}
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          variant="contained"
+          color="warning"
+          disableElevation
+          disabled={!canConfirm}
+          onClick={() => {
+            const result: Record<string, Employee> = {};
+            assignedPatients.forEach((p) => {
+              if (reassignments[p.id]) result[p.id] = reassignments[p.id]!;
+            });
+            onConfirm(result);
+          }}
+        >
+          Archive Employee
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 export default function EmployeeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -96,6 +198,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
   const [tab, setTab] = useState(0);
   const [archived, setArchived] = useState(emp?.archived ?? false);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [transferPatient, setTransferPatient] = useState<Patient | null>(null);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
@@ -131,9 +234,14 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
     setSnackOpen(true);
   };
 
-  const handleArchive = () => {
+  const handleConfirmArchive = (reassignments: Record<string, Employee>) => {
     setArchived(true);
-    setSnackMsg(`${emp.firstName} ${emp.lastName} has been archived.`);
+    setArchiveDialogOpen(false);
+    const count = Object.keys(reassignments).length;
+    const msg = count > 0
+      ? `${emp.firstName} ${emp.lastName} archived. ${count} patient${count !== 1 ? 's' : ''} transferred.`
+      : `${emp.firstName} ${emp.lastName} has been archived.`;
+    setSnackMsg(msg);
     setSnackSeverity('warning');
     setSnackOpen(true);
   };
@@ -205,23 +313,21 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
             </Box>
           </Box>
           {isOwner && (
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              {archived ? (
-                <Button variant="outlined" startIcon={<UnarchiveOutlinedIcon />} size="small" onClick={handleRestore} color="warning">
-                  Restore Employee
-                </Button>
-              ) : (
-                <Button
-                  variant="outlined"
-                  startIcon={<ArchiveOutlinedIcon />}
-                  size="small"
-                  onClick={handleArchive}
-                  sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: '#F5F5F5' } }}
-                >
-                  Archive Employee
-                </Button>
-              )}
-            </Box>
+            archived ? (
+              <Button variant="outlined" startIcon={<UnarchiveOutlinedIcon />} size="small" onClick={handleRestore} color="warning">
+                Restore Employee
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                startIcon={<ArchiveOutlinedIcon />}
+                size="small"
+                onClick={() => setArchiveDialogOpen(true)}
+                sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: '#F5F5F5' } }}
+              >
+                Archive Employee
+              </Button>
+            )
           )}
         </Box>
 
@@ -366,7 +472,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         {/* Details Tab */}
         {tab === 2 && (
           <Box sx={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Contact Information */}
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -412,7 +517,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </CardContent>
             </Card>
 
-            {/* Professional Details */}
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -449,7 +553,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </CardContent>
             </Card>
 
-            {/* Specialties (read-only) */}
             <Card>
               <CardContent>
                 <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Specialties</Typography>
@@ -470,6 +573,14 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         currentEmployee={emp}
         onClose={() => setTransferPatient(null)}
         onTransfer={handleTransfer}
+      />
+
+      <ArchiveEmployeeDialog
+        open={archiveDialogOpen}
+        employee={emp}
+        assignedPatients={assignedPatients}
+        onClose={() => setArchiveDialogOpen(false)}
+        onConfirm={handleConfirmArchive}
       />
 
       <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>

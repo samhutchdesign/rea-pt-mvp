@@ -10,6 +10,10 @@ import Tab from '@mui/material/Tab';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
@@ -32,6 +36,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const patient = mockPatients.find((p) => p.id === id);
 
   const [archived, setArchived] = useState(patient?.archived ?? false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
   const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
@@ -113,7 +118,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                   variant="outlined"
                   startIcon={<ArchiveOutlinedIcon />}
                   size="small"
-                  onClick={handleArchive}
+                  onClick={() => setConfirmOpen(true)}
                   sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: '#F5F5F5' } }}
                 >
                   Archive Patient
@@ -147,6 +152,26 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           {children}
         </Box>
       </Box>
+
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Archive Patient?</DialogTitle>
+        <DialogContent sx={{ pt: '12px !important' }}>
+          <Typography variant="body2" color="text.secondary">
+            <strong>{patient.firstName} {patient.lastName}</strong> will be moved to the Archived tab and removed from your active patient list. You can restore them at any time.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            color="warning"
+            disableElevation
+            onClick={() => { setConfirmOpen(false); handleArchive(); }}
+          >
+            Archive Patient
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={snackOpen}
