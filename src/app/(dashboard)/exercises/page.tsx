@@ -120,7 +120,7 @@ export default function ExercisesPage() {
                   </Box>
                   <Typography variant="body2" color="text.secondary" mb={0.75}>{ex.description}</Typography>
                   <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                    {[...ex.tags.specialty, ...ex.tags.condition.slice(0, 2), ...ex.tags.muscle.slice(0, 2)].map((t) => (
+                    {[...new Set([...ex.tags.specialty, ...ex.tags.condition.slice(0, 2), ...ex.tags.muscle.slice(0, 2)])].map((t) => (
                       <Chip key={t} label={t} size="small" variant="outlined" sx={{ fontSize: 11, height: 20 }} />
                     ))}
                   </Box>

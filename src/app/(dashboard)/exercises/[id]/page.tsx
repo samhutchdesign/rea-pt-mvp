@@ -169,12 +169,12 @@ function AudioPanel({
           )}
 
           {/* Listen dropdown — all tracks */}
-          {tracks.length > 0 && (
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            Recordings
+          </Typography>
+          {tracks.length > 0 ? (
             <>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Recordings
-              </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1.5 }}>
                 <Select
                   size="small"
@@ -208,6 +208,10 @@ function AudioPanel({
                 </Typography>
               )}
             </>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              No recordings yet. Record a voice-over above to get started.
+            </Typography>
           )}
         </CardContent>
       </Card>
