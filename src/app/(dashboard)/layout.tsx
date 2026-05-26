@@ -11,6 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ml: '72px',
           flexGrow: 1,
           minHeight: '100vh',
+          pt: '56px',
           bgcolor: '#FFFFFF',
         }}
       >

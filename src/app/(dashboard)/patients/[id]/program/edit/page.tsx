@@ -23,6 +23,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
+import FilterMenu from '@/components/exercises/FilterMenu';
 
 const ALL_CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
 const ALL_SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
@@ -102,13 +103,10 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
   const updateRow = (exId: string, field: keyof ProgramRow, value: number | string) =>
     setProgramRows((prev) => prev.map((r) => r.exerciseId === exId ? { ...r, [field]: value } : r));
 
-  const toggleChip = (val: string, arr: string[], setArr: (v: string[]) => void) =>
-    arr.includes(val) ? setArr(arr.filter((x) => x !== val)) : setArr([...arr, val]);
-
   return (
-    <Box sx={{ display: 'flex', gap: 3, height: 'calc(100vh - 56px - 176px)', overflow: 'hidden' }}>
+    <Box sx={{ display: 'flex', gap: 3, height: 'calc(100vh - 290px)', overflow: 'hidden' }}>
       {/* Left: Exercise Library */}
-      <Box sx={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
         <Typography variant="subtitle1" fontWeight={600}>Exercise Library</Typography>
 
         <TextField
@@ -118,7 +116,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
         />
 
         {/* Filters */}
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
           <Chip label="Pelvic Floor" size="small" color="primary" variant="filled" />
           <Chip
             label="Favorites"
@@ -128,12 +126,10 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />}
             onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
           />
-          {ALL_CONDITIONS.map((c) => (
-            <Chip key={c} label={c} size="small" variant={filterConditions.includes(c) ? 'filled' : 'outlined'} color={filterConditions.includes(c) ? 'primary' : 'default'} onClick={() => toggleChip(c, filterConditions, setFilterConditions)} />
-          ))}
-          {ALL_SURGERIES.map((s) => (
-            <Chip key={s} label={s} size="small" variant={filterSurgeries.includes(s) ? 'filled' : 'outlined'} color={filterSurgeries.includes(s) ? 'primary' : 'default'} onClick={() => toggleChip(s, filterSurgeries, setFilterSurgeries)} />
-          ))}
+          <FilterMenu label="Condition" options={ALL_CONDITIONS} selected={filterConditions} onChange={setFilterConditions} />
+          <FilterMenu label="Surgery" options={ALL_SURGERIES} selected={filterSurgeries} onChange={setFilterSurgeries} />
+          <FilterMenu label="Muscle" options={ALL_MUSCLES} selected={filterMuscles} onChange={setFilterMuscles} />
+          <FilterMenu label="Body Part" options={ALL_BODY_PARTS} selected={filterBodyParts} onChange={setFilterBodyParts} />
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -143,9 +139,9 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           </Select>
         </Box>
 
-        <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 1, minHeight: 0 }}>
           {filteredExercises.map((ex) => (
-            <Card key={ex.id} sx={{ '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}>
+            <Card key={ex.id} sx={{ flexShrink: 0, '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
                 <Box sx={{ width: 44, height: 44, borderRadius: 1, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 20 }} />
@@ -183,13 +179,13 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
       <Divider orientation="vertical" flexItem />
 
       {/* Right: Patient's Program */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="subtitle1" fontWeight={600}>{patient?.firstName}&apos;s Program</Typography>
           <Typography variant="caption" color="text.secondary">{programRows.length} exercise{programRows.length !== 1 ? 's' : ''}</Typography>
         </Box>
 
-        <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 1, minHeight: 0 }}>
           {programRows.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 6 }}>
               <Typography variant="body2" color="text.secondary">Add exercises from the library</Typography>
@@ -198,7 +194,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             const ex = mockExercises.find((e) => e.id === row.exerciseId);
             if (!ex) return null;
             return (
-              <Card key={row.exerciseId}>
+              <Card key={row.exerciseId} sx={{ flexShrink: 0 }}>
                 <Box sx={{ p: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                     <Typography variant="body2" fontWeight={600}>{ex.name}</Typography>
@@ -241,7 +237,14 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
         </Box>
       </Box>
 
-      <ExercisePreviewDrawer exercise={previewExercise} open={!!previewExercise} onClose={() => setPreviewExercise(null)} />
+      <ExercisePreviewDrawer
+        exercise={previewExercise}
+        open={!!previewExercise}
+        onClose={() => setPreviewExercise(null)}
+        onAddToCurrentProgram={previewExercise && !programRows.some((r) => r.exerciseId === previewExercise.id)
+          ? () => { if (previewExercise) addExercise(previewExercise); }
+          : undefined}
+      />
     </Box>
   );
 }

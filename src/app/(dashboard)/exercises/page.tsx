@@ -20,6 +20,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
+import FilterMenu from '@/components/exercises/FilterMenu';
 import { mockExercises } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 
@@ -43,8 +44,6 @@ export default function ExercisesPage() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
 
-  const toggleChip = (val: string, arr: string[], setArr: (v: string[]) => void) =>
-    arr.includes(val) ? setArr(arr.filter((x) => x !== val)) : setArr([...arr, val]);
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
 
   const filtered = useMemo(() => {
@@ -71,36 +70,36 @@ export default function ExercisesPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Exercises' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4 }}>
+      <Box sx={{ px: 4, py: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5" fontWeight={600}>Exercises</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => router.push('/exercises/new')} disableElevation>Add New Exercise</Button>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => router.push('/exercises/new')} disableElevation>
+            Create New Exercise
+          </Button>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, mb: 2.5, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 2.5, alignItems: 'center', flexWrap: 'wrap' }}>
           <TextField
-            placeholder="Search exercises…" size="small" sx={{ width: 300 }}
+            placeholder="Search exercises…" size="small" sx={{ width: 280 }}
             value={search} onChange={(e) => setSearch(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 18 }} /></InputAdornment> }}
           />
-          <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 150 }}>
-            {SORT_OPTIONS.map((o) => <MenuItem key={o} value={o} sx={{ fontSize: 13 }}>{o}</MenuItem>)}
-          </Select>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 3 }}>
           <Chip
-            label="Favorites" size="small"
+            label="Favorites"
+            size="small"
             variant={showFavoritesOnly ? 'filled' : 'outlined'}
             color={showFavoritesOnly ? 'primary' : 'default'}
             icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />}
             onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
           />
-          {ALL_SPECIALTIES.map((s) => <Chip key={s} label={s} size="small" variant={filterSpecialties.includes(s) ? 'filled' : 'outlined'} color={filterSpecialties.includes(s) ? 'primary' : 'default'} onClick={() => toggleChip(s, filterSpecialties, setFilterSpecialties)} />)}
-          {ALL_CONDITIONS.map((c) => <Chip key={c} label={c} size="small" variant={filterConditions.includes(c) ? 'filled' : 'outlined'} color={filterConditions.includes(c) ? 'primary' : 'default'} onClick={() => toggleChip(c, filterConditions, setFilterConditions)} />)}
-          {ALL_SURGERIES.map((s) => <Chip key={s} label={s} size="small" variant={filterSurgeries.includes(s) ? 'filled' : 'outlined'} color={filterSurgeries.includes(s) ? 'primary' : 'default'} onClick={() => toggleChip(s, filterSurgeries, setFilterSurgeries)} />)}
-          {ALL_MUSCLES.map((m) => <Chip key={m} label={m} size="small" variant={filterMuscles.includes(m) ? 'filled' : 'outlined'} color={filterMuscles.includes(m) ? 'primary' : 'default'} onClick={() => toggleChip(m, filterMuscles, setFilterMuscles)} />)}
-          {ALL_BODY_PARTS.map((b) => <Chip key={b} label={b} size="small" variant={filterBodyParts.includes(b) ? 'filled' : 'outlined'} color={filterBodyParts.includes(b) ? 'primary' : 'default'} onClick={() => toggleChip(b, filterBodyParts, setFilterBodyParts)} />)}
+          <FilterMenu label="Specialty" options={ALL_SPECIALTIES} selected={filterSpecialties} onChange={setFilterSpecialties} />
+          <FilterMenu label="Condition" options={ALL_CONDITIONS} selected={filterConditions} onChange={setFilterConditions} />
+          <FilterMenu label="Surgery" options={ALL_SURGERIES} selected={filterSurgeries} onChange={setFilterSurgeries} />
+          <FilterMenu label="Muscle" options={ALL_MUSCLES} selected={filterMuscles} onChange={setFilterMuscles} />
+          <FilterMenu label="Body Part" options={ALL_BODY_PARTS} selected={filterBodyParts} onChange={setFilterBodyParts} />
+          <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 150, ml: 'auto' }}>
+            {SORT_OPTIONS.map((o) => <MenuItem key={o} value={o} sx={{ fontSize: 13 }}>{o}</MenuItem>)}
+          </Select>
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -108,7 +107,7 @@ export default function ExercisesPage() {
             <Card
               key={ex.id}
               sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}
-              onClick={() => router.push(`/exercises/${ex.id}`)}
+              onClick={() => setPreviewExercise(ex)}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2 }}>
                 <Box sx={{ width: 52, height: 52, borderRadius: 1.5, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

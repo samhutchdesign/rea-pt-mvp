@@ -22,9 +22,15 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
+import FilterMenu from '@/components/exercises/FilterMenu';
 import { mockExercises } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 
+const ALL_SPECIALTIES = ['Pelvic Floor', 'Orthopedic'];
+const ALL_CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
+const ALL_SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
+const ALL_MUSCLES = ['Levator Ani', 'Coccygeus', 'Transverse Abdominis', 'Glutes', 'Diaphragm', 'Multifidus'];
+const ALL_BODY_PARTS = ['Pelvis', 'Core', 'Hip', 'Spine', 'Knee'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Most Popular', 'Newest Added'];
 
 interface ProgramRow { exerciseId: string; sets: number; reps: number; holdSecs: number; frequency: string; }
@@ -34,6 +40,11 @@ export default function NewProgramPage() {
   const [programName, setProgramName] = useState('');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('A → Z');
+  const [filterSpecialties, setFilterSpecialties] = useState<string[]>([]);
+  const [filterConditions, setFilterConditions] = useState<string[]>([]);
+  const [filterSurgeries, setFilterSurgeries] = useState<string[]>([]);
+  const [filterMuscles, setFilterMuscles] = useState<string[]>([]);
+  const [filterBodyParts, setFilterBodyParts] = useState<string[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
   const [programRows, setProgramRows] = useState<ProgramRow[]>([]);
@@ -43,6 +54,11 @@ export default function NewProgramPage() {
     let exs = mockExercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
       if (search && !ex.name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (filterSpecialties.length && !filterSpecialties.some((s) => ex.tags.specialty.includes(s))) return false;
+      if (filterConditions.length && !filterConditions.some((c) => ex.tags.condition.includes(c))) return false;
+      if (filterSurgeries.length && !filterSurgeries.some((s) => ex.tags.surgery.includes(s))) return false;
+      if (filterMuscles.length && !filterMuscles.some((m) => ex.tags.muscle.includes(m))) return false;
+      if (filterBodyParts.length && !filterBodyParts.some((b) => ex.tags.bodyPart.includes(b))) return false;
       return true;
     });
     exs = exs.sort((a, b) => {
@@ -53,7 +69,7 @@ export default function NewProgramPage() {
       return 0;
     });
     return exs;
-  }, [search, sortBy, showFavoritesOnly, favorites]);
+  }, [search, sortBy, filterSpecialties, filterConditions, filterSurgeries, filterMuscles, filterBodyParts, showFavoritesOnly, favorites]);
 
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const addExercise = (ex: Exercise) => {
@@ -67,34 +83,66 @@ export default function NewProgramPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Programs', href: '/programs' }, { label: 'New Program' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4 }}>
-        <TextField label="Program Name" size="small" value={programName} onChange={(e) => setProgramName(e.target.value)} sx={{ mb: 3, width: 400 }} />
 
-        <Box sx={{ display: 'flex', gap: 3, height: 'calc(100vh - 200px)', overflow: 'hidden' }}>
-          {/* Left */}
-          <Box sx={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {/* Full-height flex column so the builder panels fill remaining space */}
+      <Box sx={{ pt: '56px', px: 4, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Box sx={{ py: 3 }}>
+          <TextField
+            label="Program Name" size="small" value={programName}
+            onChange={(e) => setProgramName(e.target.value)} sx={{ width: 400 }}
+          />
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 3, flex: 1, overflow: 'hidden', pb: 3 }}>
+          {/* Left: Exercise Library */}
+          <Box sx={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
             <Typography variant="subtitle1" fontWeight={600}>Exercise Library</Typography>
-            <TextField placeholder="Search exercises…" size="small" fullWidth value={search} onChange={(e) => setSearch(e.target.value)}
-              InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 18 }} /></InputAdornment> }} />
+
+            <TextField
+              placeholder="Search exercises…" size="small" fullWidth
+              value={search} onChange={(e) => setSearch(e.target.value)}
+              InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 18 }} /></InputAdornment> }}
+            />
+
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+              <Chip
+                label="Favorites" size="small"
+                variant={showFavoritesOnly ? 'filled' : 'outlined'}
+                color={showFavoritesOnly ? 'primary' : 'default'}
+                icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />}
+                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+              />
+              <FilterMenu label="Specialty" options={ALL_SPECIALTIES} selected={filterSpecialties} onChange={setFilterSpecialties} />
+              <FilterMenu label="Condition" options={ALL_CONDITIONS} selected={filterConditions} onChange={setFilterConditions} />
+              <FilterMenu label="Surgery" options={ALL_SURGERIES} selected={filterSurgeries} onChange={setFilterSurgeries} />
+              <FilterMenu label="Muscle" options={ALL_MUSCLES} selected={filterMuscles} onChange={setFilterMuscles} />
+              <FilterMenu label="Body Part" options={ALL_BODY_PARTS} selected={filterBodyParts} onChange={setFilterBodyParts} />
+            </Box>
+
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <Chip label="Favorites" size="small" variant={showFavoritesOnly ? 'filled' : 'outlined'} color={showFavoritesOnly ? 'primary' : 'default'}
-                icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />} onClick={() => setShowFavoritesOnly(!showFavoritesOnly)} />
-              <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 140, ml: 'auto' }}>
+              <Typography variant="caption" color="text.secondary">Sort:</Typography>
+              <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 140 }}>
                 {SORT_OPTIONS.map((o) => <MenuItem key={o} value={o} sx={{ fontSize: 13 }}>{o}</MenuItem>)}
               </Select>
             </Box>
-            <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+            <Box sx={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 1, minHeight: 0 }}>
               {filteredExercises.map((ex) => (
-                <Card key={ex.id}>
+                <Card key={ex.id} sx={{ flexShrink: 0 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
                     <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 18 }} />
                     </Box>
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                       <Typography variant="body2" fontWeight={600} noWrap>{ex.name}</Typography>
+                      <Box sx={{ display: 'flex', gap: 0.5, mt: 0.3, flexWrap: 'wrap' }}>
+                        {ex.tags.specialty.slice(0, 2).map((t) => <Chip key={t} label={t} size="small" variant="outlined" sx={{ fontSize: 10, height: 18 }} />)}
+                      </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', gap: 0.5 }}>
-                      <Tooltip title="Preview"><IconButton size="small" onClick={() => setPreviewExercise(ex)}><VisibilityOutlinedIcon fontSize="small" /></IconButton></Tooltip>
+                    <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
+                      <Tooltip title="Preview">
+                        <IconButton size="small" onClick={() => setPreviewExercise(ex)}><VisibilityOutlinedIcon fontSize="small" /></IconButton>
+                      </Tooltip>
                       <Tooltip title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}>
                         <IconButton size="small" onClick={() => toggleFavorite(ex.id)}>
                           {favorites.has(ex.id) ? <FavoriteIcon fontSize="small" sx={{ color: '#E91E63' }} /> : <FavoriteBorderIcon fontSize="small" />}
@@ -114,20 +162,21 @@ export default function NewProgramPage() {
 
           <Divider orientation="vertical" flexItem />
 
-          {/* Right */}
-          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Right: Program */}
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant="subtitle1" fontWeight={600}>{programName || 'New Program'}</Typography>
               <Typography variant="caption" color="text.secondary">{programRows.length} exercise{programRows.length !== 1 ? 's' : ''}</Typography>
             </Box>
-            <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+            <Box sx={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 1, minHeight: 0 }}>
               {programRows.length === 0
                 ? <Box sx={{ textAlign: 'center', py: 6 }}><Typography variant="body2" color="text.secondary">Add exercises from the library</Typography></Box>
                 : programRows.map((row) => {
                   const ex = mockExercises.find((e) => e.id === row.exerciseId);
                   if (!ex) return null;
                   return (
-                    <Card key={row.exerciseId}>
+                    <Card key={row.exerciseId} sx={{ flexShrink: 0 }}>
                       <Box sx={{ p: 2 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                           <Typography variant="body2" fontWeight={600}>{ex.name}</Typography>
@@ -139,7 +188,9 @@ export default function NewProgramPage() {
                           {[{ label: 'Sets', field: 'sets' as const, value: row.sets }, { label: 'Reps', field: 'reps' as const, value: row.reps }, { label: 'Hold (sec)', field: 'holdSecs' as const, value: row.holdSecs }].map(({ label, field, value }) => (
                             <Box key={field} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                               <Typography variant="caption" color="text.secondary">{label}:</Typography>
-                              <TextField type="number" size="small" value={value} onChange={(e) => updateRow(row.exerciseId, field, parseInt(e.target.value) || 0)} sx={{ width: 64, '& input': { py: 0.5, px: 1, fontSize: 13 } }} inputProps={{ min: 0 }} />
+                              <TextField type="number" size="small" value={value}
+                                onChange={(e) => updateRow(row.exerciseId, field, parseInt(e.target.value) || 0)}
+                                sx={{ width: 64, '& input': { py: 0.5, px: 1, fontSize: 13 } }} inputProps={{ min: 0 }} />
                             </Box>
                           ))}
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -154,14 +205,23 @@ export default function NewProgramPage() {
                   );
                 })}
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 2, borderTop: '1px solid #E0E0E0' }}>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 2, borderTop: '1px solid #E0E0E0', flexShrink: 0 }}>
               <Button onClick={() => router.push('/programs')}>Cancel</Button>
               <Button variant="contained" onClick={() => router.push('/programs')} disableElevation>Save Program</Button>
             </Box>
           </Box>
         </Box>
       </Box>
-      <ExercisePreviewDrawer exercise={previewExercise} open={!!previewExercise} onClose={() => setPreviewExercise(null)} />
+
+      <ExercisePreviewDrawer
+        exercise={previewExercise}
+        open={!!previewExercise}
+        onClose={() => setPreviewExercise(null)}
+        onAddToCurrentProgram={previewExercise && !programRows.some((r) => r.exerciseId === previewExercise.id)
+          ? () => { if (previewExercise) addExercise(previewExercise); }
+          : undefined}
+      />
     </>
   );
 }
