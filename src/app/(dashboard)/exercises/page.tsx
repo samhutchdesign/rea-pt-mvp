@@ -107,7 +107,7 @@ export default function ExercisesPage() {
             <Card
               key={ex.id}
               sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}
-              onClick={() => setPreviewExercise(ex)}
+              onClick={() => router.push(`/exercises/${ex.id}`)}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2 }}>
                 <Box sx={{ width: 52, height: 52, borderRadius: 1.5, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
