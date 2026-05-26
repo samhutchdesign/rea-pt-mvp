@@ -52,6 +52,13 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
   const [listenId, setListenId] = useState('');
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const ytCmd = useCallback((func: string, args: unknown[] = []) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func, args }), '*'
+    );
+  }, []);
 
   // Reload tracks whenever the exercise changes
   useEffect(() => {
@@ -61,14 +68,19 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
       setListenId(t[0]?.id ?? '');
       setPlaying(false);
       audioRef.current?.pause();
+      ytCmd('pauseVideo');
     }
-  }, [exercise]);
+  }, [exercise, ytCmd]);
 
   useEffect(() => {
     audioRef.current = new Audio();
-    audioRef.current.onended = () => setPlaying(false);
+    audioRef.current.onended = () => {
+      setPlaying(false);
+      ytCmd('pauseVideo');
+      ytCmd('unMute');
+    };
     return () => audioRef.current?.pause();
-  }, []);
+  }, [ytCmd]);
 
   const resolvedListenId = tracks.find((t) => t.id === listenId) ? listenId : (tracks[0]?.id ?? '');
   const selectedTrack = tracks.find((t) => t.id === resolvedListenId) ?? null;
@@ -77,6 +89,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
     if (!selectedTrack?.blobUrl) return;
     if (playing) {
       audioRef.current?.pause();
+      ytCmd('pauseVideo');
       setPlaying(false);
     } else {
       if (audioRef.current) {
@@ -84,9 +97,12 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(() => {});
       }
+      ytCmd('seekTo', [0, true]);
+      ytCmd('mute');
+      ytCmd('playVideo');
       setPlaying(true);
     }
-  }, [playing, selectedTrack]);
+  }, [playing, selectedTrack, ytCmd]);
 
   if (!exercise) return null;
 
@@ -131,7 +147,8 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
         <Box sx={{ width: '100%', height: 240, bgcolor: exercise.videoUrl ? '#0f0f0f' : '#F0EDF6', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
           {exercise.videoUrl ? (
             <iframe
-              src={`https://www.youtube.com/embed/${exercise.videoUrl}?rel=0&modestbranding=1`}
+              ref={iframeRef}
+              src={`https://www.youtube.com/embed/${exercise.videoUrl}?enablejsapi=1&rel=0&modestbranding=1`}
               width="100%"
               height="100%"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

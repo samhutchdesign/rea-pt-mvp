@@ -47,11 +47,13 @@ function AudioPanel({
   tracks,
   onAdd,
   onDelete,
+  ytCmd,
 }: {
   exerciseId: string;
   tracks: AudioTrack[];
   onAdd: () => void;
   onDelete: (ownerId: string) => void;
+  ytCmd: (func: string, args?: unknown[]) => void;
 }) {
   const myTrack = tracks.find((t) => t.ownerId === ME.id) ?? null;
 
@@ -69,14 +71,19 @@ function AudioPanel({
 
   useEffect(() => {
     audioRef.current = new Audio();
-    audioRef.current.onended = () => setPlaying(false);
+    audioRef.current.onended = () => {
+      setPlaying(false);
+      ytCmd('pauseVideo');
+      ytCmd('unMute');
+    };
     return () => audioRef.current?.pause();
-  }, []);
+  }, [ytCmd]);
 
   const togglePlay = useCallback(() => {
     if (!selectedTrack?.blobUrl) return;
     if (playing) {
       audioRef.current?.pause();
+      ytCmd('pauseVideo');
       setPlaying(false);
     } else {
       if (audioRef.current) {
@@ -84,9 +91,12 @@ function AudioPanel({
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(() => {});
       }
+      ytCmd('seekTo', [0, true]);
+      ytCmd('mute');
+      ytCmd('playVideo');
       setPlaying(true);
     }
-  }, [playing, selectedTrack]);
+  }, [playing, selectedTrack, ytCmd]);
 
   const handleDelete = () => {
     setConfirmDelete(false);
@@ -238,6 +248,13 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   const { id } = use(params);
   const router = useRouter();
   const ex = mockExercises.find((e) => e.id === id);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const ytCmd = useCallback((func: string, args: unknown[] = []) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func, args }), '*'
+    );
+  }, []);
 
   const [isFavorite, setIsFavorite] = useState(ex?.isFavorite ?? false);
   const [recordingOpen, setRecordingOpen] = useState(false);
@@ -275,7 +292,8 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         {ex.videoUrl ? (
           <Box sx={{ width: '100%', height: 360, borderRadius: 2, overflow: 'hidden', mb: 3, bgcolor: '#0f0f0f' }}>
             <iframe
-              src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`}
+              ref={iframeRef}
+              src={`https://www.youtube.com/embed/${ex.videoUrl}?enablejsapi=1&rel=0&modestbranding=1`}
               width="100%"
               height="100%"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -322,6 +340,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
           tracks={tracks}
           onAdd={() => setRecordingOpen(true)}
           onDelete={handleDeleteAudio}
+          ytCmd={ytCmd}
         />
 
         <Divider sx={{ mb: 3 }} />
