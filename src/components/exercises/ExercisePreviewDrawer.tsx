@@ -55,13 +55,13 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
 
   const myTrack = tracks.find((t) => t.ownerId === ME_ID) ?? null;
 
-  const allTags = [
+  const allTags = [...new Set([
     ...exercise.tags.specialty,
     ...exercise.tags.condition,
     ...exercise.tags.surgery,
     ...exercise.tags.muscle,
     ...exercise.tags.bodyPart,
-  ];
+  ])];
 
   const handleAddToProgram = () => {
     setProgramSelectorOpen(false);

@@ -241,7 +241,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
   if (!ex) return <Box sx={{ p: 4 }}><Typography>Exercise not found.</Typography></Box>;
 
-  const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
+  const allTags = [...new Set([...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart])];
 
   const handleSaveAudio = (blobUrl: string, durationSecs: number) => {
     const track: AudioTrack = {
