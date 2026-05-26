@@ -53,18 +53,19 @@ function AudioPanel({
   onAdd: () => void;
   onDelete: (ownerId: string) => void;
 }) {
-  const isOwner = mockPhysio.role === 'owner';
   const myTrack = tracks.find((t) => t.ownerId === ME.id) ?? null;
-  const otherTracks = tracks.filter((t) => t.ownerId !== ME.id);
 
   const [myEnabled, setMyEnabled] = useState(true);
   const [fallbackOriginal, setFallbackOriginal] = useState(true);
-  const [listenId, setListenId] = useState(otherTracks[0]?.id ?? '');
+  const [listenId, setListenId] = useState(tracks[0]?.id ?? '');
   const [playing, setPlaying] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const selectedTrack = otherTracks.find((t) => t.id === listenId) ?? null;
+  // If the currently selected track was removed or replaced (e.g. after re-record),
+  // fall back to the first available track.
+  const resolvedListenId = tracks.find((t) => t.id === listenId) ? listenId : (tracks[0]?.id ?? '');
+  const selectedTrack = tracks.find((t) => t.id === resolvedListenId) ?? null;
 
   useEffect(() => {
     audioRef.current = new Audio();
@@ -92,82 +93,44 @@ function AudioPanel({
     onDelete(ME.id);
   };
 
-  if (tracks.length === 0) {
-    return (
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <MicIcon sx={{ fontSize: 18, color: '#BDBDBD' }} />
-              </Box>
-              <Box>
-                <Typography variant="body2" fontWeight={600}>Audio Overlay</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  No audio recorded. Record your voice-over to guide patients through this exercise.
-                </Typography>
-              </Box>
-            </Box>
-            <Button variant="outlined" size="small" startIcon={<MicIcon />} onClick={onAdd} sx={{ flexShrink: 0 }}>
-              Add New Audio
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <>
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: myEnabled ? '#E8F5E9' : '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {myEnabled
-                  ? <VolumeUpRoundedIcon sx={{ fontSize: 18, color: '#2E7D32' }} />
-                  : <VolumeOffRoundedIcon sx={{ fontSize: 18, color: '#9E9E9E' }} />}
-              </Box>
-              <Typography variant="body2" fontWeight={600}>Audio Overlay</Typography>
+          {/* Header */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: myTrack && myEnabled ? '#E8F5E9' : '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {myTrack && myEnabled
+                ? <VolumeUpRoundedIcon sx={{ fontSize: 18, color: '#2E7D32' }} />
+                : <VolumeOffRoundedIcon sx={{ fontSize: 18, color: '#9E9E9E' }} />}
             </Box>
-            {!myTrack && (
-              <Button variant="outlined" size="small" startIcon={<MicIcon />} onClick={onAdd}>
-                Add New Audio
-              </Button>
-            )}
+            <Typography variant="body2" fontWeight={600}>Audio Overlay</Typography>
           </Box>
 
-          {/* My track */}
-          {myTrack && (
-            <Box sx={{ p: 2, bgcolor: '#FAFAFA', borderRadius: 1, border: '1px solid #E0E0E0', mb: otherTracks.length > 0 ? 2 : 0 }}>
+          {/* Your recording */}
+          {myTrack ? (
+            <Box sx={{ p: 2, bgcolor: '#FAFAFA', borderRadius: 1, border: '1px solid #E0E0E0' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <CheckCircleRoundedIcon sx={{ fontSize: 18, color: myEnabled ? '#2E7D32' : '#BDBDBD', flexShrink: 0 }} />
                 <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="body2" fontWeight={500}>{myTrack.ownerName}</Typography>
+                  <Typography variant="body2" fontWeight={500}>Your recording</Typography>
                   <Typography variant="caption" color="text.secondary">
                     {fmt(myTrack.durationSecs)} · Recorded {new Date(myTrack.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     {myTrack.blobUrl === null && ' · Demo'}
                   </Typography>
                 </Box>
                 <FormControlLabel
-                  control={
-                    <Switch
-                      checked={myEnabled}
-                      onChange={(e) => setMyEnabled(e.target.checked)}
-                      size="small"
-                    />
-                  }
+                  control={<Switch checked={myEnabled} onChange={(e) => setMyEnabled(e.target.checked)} size="small" />}
                   label={<Typography variant="caption">{myEnabled ? 'On' : 'Off'}</Typography>}
                   sx={{ mr: 0 }}
                 />
-                <Tooltip title="Delete and re-record">
+                <Tooltip title="Delete recording">
                   <IconButton size="small" onClick={() => setConfirmDelete(true)}>
                     <DeleteOutlinedIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
               </Box>
 
-              {/* Fallback when off */}
               {!myEnabled && (
                 <Box sx={{ mt: 1.5, pl: 3.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <Typography variant="caption" color="text.secondary">When Off:</Typography>
@@ -188,30 +151,38 @@ function AudioPanel({
                 </Box>
               )}
 
-              {/* Re-record option */}
               <Box sx={{ mt: 1.5, pl: 3.5 }}>
                 <Button size="small" startIcon={<MicIcon />} onClick={onAdd} sx={{ color: 'text.secondary', fontSize: 12 }}>
-                  Re-record Audio
+                  Re-record
                 </Button>
               </Box>
             </Box>
+          ) : (
+            <Box sx={{ p: 2, bgcolor: '#FAFAFA', borderRadius: 1, border: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                {tracks.length > 0 ? "You haven't recorded a voice-over yet." : 'No audio recorded. Record your voice-over to guide patients through this exercise.'}
+              </Typography>
+              <Button variant="outlined" size="small" startIcon={<MicIcon />} onClick={onAdd} sx={{ flexShrink: 0 }}>
+                Add New Audio
+              </Button>
+            </Box>
           )}
 
-          {/* Owner: listen to team recordings */}
-          {isOwner && otherTracks.length > 0 && (
-            <Box sx={{ pt: myTrack ? 0 : 0 }}>
+          {/* Listen dropdown — all tracks */}
+          {tracks.length > 0 && (
+            <>
               <Divider sx={{ my: 2 }} />
               <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Team Recordings
+                Recordings
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1.5 }}>
                 <Select
                   size="small"
-                  value={listenId}
+                  value={resolvedListenId}
                   onChange={(e) => { setListenId(e.target.value); setPlaying(false); audioRef.current?.pause(); }}
                   sx={{ flex: 1, fontSize: 13 }}
                 >
-                  {otherTracks.map((t) => (
+                  {tracks.map((t) => (
                     <MenuItem key={t.id} value={t.id}>
                       {t.ownerName} · {fmt(t.durationSecs)}
                     </MenuItem>
@@ -236,7 +207,7 @@ function AudioPanel({
                   Demo track — record in this session to enable playback
                 </Typography>
               )}
-            </Box>
+            </>
           )}
         </CardContent>
       </Card>
@@ -246,7 +217,7 @@ function AudioPanel({
         <DialogTitle sx={{ fontWeight: 600 }}>Delete Audio Recording?</DialogTitle>
         <DialogContent sx={{ pt: '12px !important' }}>
           <Typography variant="body2" color="text.secondary">
-            This will remove your audio overlay for <strong>{myTrack?.ownerName}</strong>. You can record a new one at any time.
+            This will remove your audio overlay. You can record a new one at any time.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
