@@ -18,9 +18,9 @@ store.set('ex1', [
     id: 'demo-track-2',
     ownerId: 'emp1',
     ownerName: 'Emily Chen',
-    durationSecs: 103,
+    durationSecs: 49,
     createdAt: '2026-01-20',
-    blobUrl: null,
+    blobUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/80/Birds_singing_in_garden.ogg',
   },
 ]);
 

@@ -148,6 +148,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
 
       recorder.start(500);
       ytCmd('playVideo');
+      ytCmd('mute');
       setPhaseSync('recording');
       elapsedRef.current = 0;
       setElapsed(0);
