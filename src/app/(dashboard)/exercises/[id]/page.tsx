@@ -1,5 +1,5 @@
 'use client';
-import { use, useState } from 'react';
+import { use, useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,36 +9,313 @@ import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import TopBar from '@/components/layout/TopBar';
+import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { mockExercises } from '@/lib/mock-data';
+import MicIcon from '@mui/icons-material/Mic';
+import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import { mockExercises, mockPhysio } from '@/lib/mock-data';
+import { getAudioTracks, saveAudioTrack, deleteAudioTrack } from '@/lib/audioStore';
+import type { AudioTrack } from '@/lib/types';
 
+const ME = { id: mockPhysio.id ?? 'p1', name: `${mockPhysio.firstName} ${mockPhysio.lastName}` };
+
+function fmt(secs: number) {
+  return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+}
+
+// ─── Audio panel ──────────────────────────────────────────────────────────────
+function AudioPanel({
+  exerciseId,
+  tracks,
+  onAdd,
+  onDelete,
+}: {
+  exerciseId: string;
+  tracks: AudioTrack[];
+  onAdd: () => void;
+  onDelete: (ownerId: string) => void;
+}) {
+  const isOwner = mockPhysio.role === 'owner';
+  const myTrack = tracks.find((t) => t.ownerId === ME.id) ?? null;
+  const otherTracks = tracks.filter((t) => t.ownerId !== ME.id);
+
+  const [myEnabled, setMyEnabled] = useState(true);
+  const [fallbackOriginal, setFallbackOriginal] = useState(true);
+  const [listenId, setListenId] = useState(otherTracks[0]?.id ?? '');
+  const [playing, setPlaying] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const selectedTrack = otherTracks.find((t) => t.id === listenId) ?? null;
+
+  useEffect(() => {
+    audioRef.current = new Audio();
+    audioRef.current.onended = () => setPlaying(false);
+    return () => audioRef.current?.pause();
+  }, []);
+
+  const togglePlay = useCallback(() => {
+    if (!selectedTrack?.blobUrl) return;
+    if (playing) {
+      audioRef.current?.pause();
+      setPlaying(false);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.src = selectedTrack.blobUrl;
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
+      }
+      setPlaying(true);
+    }
+  }, [playing, selectedTrack]);
+
+  const handleDelete = () => {
+    setConfirmDelete(false);
+    onDelete(ME.id);
+  };
+
+  if (tracks.length === 0) {
+    return (
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <MicIcon sx={{ fontSize: 18, color: '#BDBDBD' }} />
+              </Box>
+              <Box>
+                <Typography variant="body2" fontWeight={600}>Audio Overlay</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  No audio recorded. Record your voice-over to guide patients through this exercise.
+                </Typography>
+              </Box>
+            </Box>
+            <Button variant="outlined" size="small" startIcon={<MicIcon />} onClick={onAdd} sx={{ flexShrink: 0 }}>
+              Add New Audio
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: myEnabled ? '#E8F5E9' : '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {myEnabled
+                  ? <VolumeUpRoundedIcon sx={{ fontSize: 18, color: '#2E7D32' }} />
+                  : <VolumeOffRoundedIcon sx={{ fontSize: 18, color: '#9E9E9E' }} />}
+              </Box>
+              <Typography variant="body2" fontWeight={600}>Audio Overlay</Typography>
+            </Box>
+            {!myTrack && (
+              <Button variant="outlined" size="small" startIcon={<MicIcon />} onClick={onAdd}>
+                Add New Audio
+              </Button>
+            )}
+          </Box>
+
+          {/* My track */}
+          {myTrack && (
+            <Box sx={{ p: 2, bgcolor: '#FAFAFA', borderRadius: 1, border: '1px solid #E0E0E0', mb: otherTracks.length > 0 ? 2 : 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <CheckCircleRoundedIcon sx={{ fontSize: 18, color: myEnabled ? '#2E7D32' : '#BDBDBD', flexShrink: 0 }} />
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body2" fontWeight={500}>{myTrack.ownerName}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {fmt(myTrack.durationSecs)} · Recorded {new Date(myTrack.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {myTrack.blobUrl === null && ' · Demo'}
+                  </Typography>
+                </Box>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={myEnabled}
+                      onChange={(e) => setMyEnabled(e.target.checked)}
+                      size="small"
+                    />
+                  }
+                  label={<Typography variant="caption">{myEnabled ? 'On' : 'Off'}</Typography>}
+                  sx={{ mr: 0 }}
+                />
+                <Tooltip title="Delete and re-record">
+                  <IconButton size="small" onClick={() => setConfirmDelete(true)}>
+                    <DeleteOutlinedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              {/* Fallback when off */}
+              {!myEnabled && (
+                <Box sx={{ mt: 1.5, pl: 3.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Typography variant="caption" color="text.secondary">When Off:</Typography>
+                  <Chip
+                    label="Original Video Audio"
+                    size="small"
+                    onClick={() => setFallbackOriginal(true)}
+                    variant={fallbackOriginal ? 'filled' : 'outlined'}
+                    sx={{ fontSize: 11, height: 22, cursor: 'pointer', bgcolor: fallbackOriginal ? '#E8E0F0' : undefined, color: fallbackOriginal ? 'primary.main' : undefined }}
+                  />
+                  <Chip
+                    label="Muted"
+                    size="small"
+                    onClick={() => setFallbackOriginal(false)}
+                    variant={!fallbackOriginal ? 'filled' : 'outlined'}
+                    sx={{ fontSize: 11, height: 22, cursor: 'pointer', bgcolor: !fallbackOriginal ? '#E8E0F0' : undefined, color: !fallbackOriginal ? 'primary.main' : undefined }}
+                  />
+                </Box>
+              )}
+
+              {/* Re-record option */}
+              <Box sx={{ mt: 1.5, pl: 3.5 }}>
+                <Button size="small" startIcon={<MicIcon />} onClick={onAdd} sx={{ color: 'text.secondary', fontSize: 12 }}>
+                  Re-record Audio
+                </Button>
+              </Box>
+            </Box>
+          )}
+
+          {/* Owner: listen to team recordings */}
+          {isOwner && otherTracks.length > 0 && (
+            <Box sx={{ pt: myTrack ? 0 : 0 }}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Team Recordings
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1.5 }}>
+                <Select
+                  size="small"
+                  value={listenId}
+                  onChange={(e) => { setListenId(e.target.value); setPlaying(false); audioRef.current?.pause(); }}
+                  sx={{ flex: 1, fontSize: 13 }}
+                >
+                  {otherTracks.map((t) => (
+                    <MenuItem key={t.id} value={t.id}>
+                      {t.ownerName} · {fmt(t.durationSecs)}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Tooltip title={selectedTrack?.blobUrl ? '' : 'Demo track — record in this session to enable playback'}>
+                  <span>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={playing ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
+                      disabled={!selectedTrack?.blobUrl}
+                      onClick={togglePlay}
+                    >
+                      {playing ? 'Pause' : 'Play'}
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Box>
+              {!selectedTrack?.blobUrl && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.75, display: 'block' }}>
+                  Demo track — record in this session to enable playback
+                </Typography>
+              )}
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Confirm delete dialog */}
+      <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Delete Audio Recording?</DialogTitle>
+        <DialogContent sx={{ pt: '12px !important' }}>
+          <Typography variant="body2" color="text.secondary">
+            This will remove your audio overlay for <strong>{myTrack?.ownerName}</strong>. You can record a new one at any time.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setConfirmDelete(false)}>Cancel</Button>
+          <Button variant="contained" color="error" disableElevation onClick={handleDelete}>Delete</Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const ex = mockExercises.find((e) => e.id === id);
+
   const [isFavorite, setIsFavorite] = useState(ex?.isFavorite ?? false);
+  const [recordingOpen, setRecordingOpen] = useState(false);
+  const [tracks, setTracks] = useState<AudioTrack[]>(() => getAudioTracks(id));
 
   if (!ex) return <Box sx={{ p: 4 }}><Typography>Exercise not found.</Typography></Box>;
 
   const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
 
+  const handleSaveAudio = (blobUrl: string, durationSecs: number) => {
+    const track: AudioTrack = {
+      id: `track-${Date.now()}`,
+      ownerId: ME.id,
+      ownerName: ME.name,
+      durationSecs,
+      createdAt: new Date().toISOString().slice(0, 10),
+      blobUrl,
+    };
+    saveAudioTrack(id, track);
+    setTracks(getAudioTracks(id));
+    setRecordingOpen(false);
+  };
+
+  const handleDeleteAudio = (ownerId: string) => {
+    deleteAudioTrack(id, ownerId);
+    setTracks(getAudioTracks(id));
+  };
+
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: ex.name }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4, maxWidth: 800 }}>
+      <Box sx={{ pt: '56px', px: 4, py: 4, maxWidth: 820 }}>
+
         {/* Video */}
-        <Box sx={{ width: '100%', height: 300, borderRadius: 2, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
-          <Box sx={{ textAlign: 'center' }}>
-            <FitnessCenterRoundedIcon sx={{ fontSize: 64, color: '#6750A4', opacity: 0.4, mb: 2 }} />
-            <Button variant="contained" startIcon={<PlayArrowRoundedIcon />} disableElevation>Play Video</Button>
+        {ex.videoUrl ? (
+          <Box sx={{ width: '100%', height: 360, borderRadius: 2, overflow: 'hidden', mb: 3, bgcolor: '#0f0f0f' }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`}
+              width="100%"
+              height="100%"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ border: 'none', display: 'block' }}
+            />
           </Box>
-        </Box>
+        ) : (
+          <Box sx={{ width: '100%', height: 300, borderRadius: 2, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <FitnessCenterRoundedIcon sx={{ fontSize: 64, color: '#6750A4', opacity: 0.4, mb: 2 }} />
+              <Button variant="contained" startIcon={<PlayArrowRoundedIcon />} disableElevation>Play Video</Button>
+            </Box>
+          </Box>
+        )}
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
@@ -64,19 +341,13 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
           {allTags.map((tag) => <Chip key={tag} label={tag} size="small" variant="outlined" sx={{ fontSize: 12 }} />)}
         </Box>
 
-        {/* Audio */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <IconButton sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }}><VolumeUpRoundedIcon /></IconButton>
-              <Box>
-                <Typography variant="body2" fontWeight={600}>Audio Cue</Typography>
-                <Typography variant="caption" color="text.secondary">Click play to hear the audio instruction</Typography>
-              </Box>
-              <Button sx={{ ml: 'auto' }}>Play</Button>
-            </Box>
-          </CardContent>
-        </Card>
+        {/* Audio panel */}
+        <AudioPanel
+          exerciseId={id}
+          tracks={tracks}
+          onAdd={() => setRecordingOpen(true)}
+          onDelete={handleDeleteAudio}
+        />
 
         <Divider sx={{ mb: 3 }} />
 
@@ -100,6 +371,14 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
           ))}
         </Box>
       </Box>
+
+      <AudioRecordingDialog
+        open={recordingOpen}
+        exerciseName={ex.name}
+        videoId={ex.videoUrl}
+        onClose={() => setRecordingOpen(false)}
+        onSave={handleSaveAudio}
+      />
     </>
   );
 }

@@ -219,6 +219,15 @@ export interface Patient {
   documents: PatientDocument[];
 }
 
+export interface AudioTrack {
+  id: string;
+  ownerId: string;
+  ownerName: string;
+  durationSecs: number;
+  createdAt: string;
+  blobUrl: string | null;
+}
+
 export interface Notification {
   id: string;
   message: string;

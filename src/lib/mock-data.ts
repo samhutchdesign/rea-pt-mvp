@@ -133,6 +133,7 @@ export const mockExercises: Exercise[] = [
     ],
     tags: { specialty: ['Pelvic Floor'], condition: ['Pelvic Pain', 'Incontinence', 'Postpartum'], surgery: [], muscle: ['Diaphragm', 'Pelvic Floor'], bodyPart: ['Pelvis', 'Core'] },
     defaultSets: 1, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
+    videoUrl: 'JFJtUtKQCuM',
     isFavorite: true, usageCount: 48, createdAt: '2026-01-10',
   },
   {
@@ -152,6 +153,7 @@ export const mockExercises: Exercise[] = [
     ],
     tags: { specialty: ['Pelvic Floor'], condition: ['Incontinence', 'Urgency'], surgery: [], muscle: ['Levator Ani', 'Coccygeus'], bodyPart: ['Pelvis'] },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 1, defaultFrequency: 'Daily',
+    videoUrl: 'ywMJe0un8bE',
     isFavorite: true, usageCount: 62, createdAt: '2026-01-10',
   },
   {

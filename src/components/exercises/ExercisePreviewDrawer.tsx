@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -13,13 +13,25 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 import CloseIcon from '@mui/icons-material/Close';
 import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import MicIcon from '@mui/icons-material/Mic';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import { mockPrograms } from '@/lib/mock-data';
-import type { Exercise, Program } from '@/lib/types';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import AudioRecordingDialog from './AudioRecordingDialog';
+import { mockPrograms, mockPhysio } from '@/lib/mock-data';
+import { getAudioTracks, saveAudioTrack } from '@/lib/audioStore';
+import type { Exercise, Program, AudioTrack } from '@/lib/types';
+
+const ME_ID = mockPhysio.id ?? 'p1';
+const ME_NAME = `${mockPhysio.firstName} ${mockPhysio.lastName}`;
+
+function fmt(secs: number) {
+  return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+}
 
 interface Props {
   exercise: Exercise | null;
@@ -31,8 +43,17 @@ interface Props {
 export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram }: Props) {
   const [programSelectorOpen, setProgramSelectorOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+  const [recordingOpen, setRecordingOpen] = useState(false);
+  const [tracks, setTracks] = useState<AudioTrack[]>([]);
+
+  // Reload tracks whenever the exercise changes
+  useEffect(() => {
+    if (exercise) setTracks(getAudioTracks(exercise.id));
+  }, [exercise]);
 
   if (!exercise) return null;
+
+  const myTrack = tracks.find((t) => t.ownerId === ME_ID) ?? null;
 
   const allTags = [
     ...exercise.tags.specialty,
@@ -47,6 +68,20 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
     setSelectedProgram(null);
   };
 
+  const handleSaveAudio = (blobUrl: string, durationSecs: number) => {
+    const track: AudioTrack = {
+      id: `track-${Date.now()}`,
+      ownerId: ME_ID,
+      ownerName: ME_NAME,
+      durationSecs,
+      createdAt: new Date().toISOString().slice(0, 10),
+      blobUrl,
+    };
+    saveAudioTrack(exercise.id, track);
+    setTracks(getAudioTracks(exercise.id));
+    setRecordingOpen(false);
+  };
+
   return (
     <>
       <Drawer
@@ -56,14 +91,26 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
         PaperProps={{ sx: { width: 480, p: 0, display: 'flex', flexDirection: 'column' } }}
       >
         {/* Video Area */}
-        <Box sx={{ width: '100%', height: 240, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
-          <Box sx={{ textAlign: 'center' }}>
-            <FitnessCenterRoundedIcon sx={{ fontSize: 52, color: '#6750A4', opacity: 0.5, mb: 1 }} />
-            <Button variant="contained" startIcon={<PlayArrowRoundedIcon />} disableElevation sx={{ bgcolor: 'rgba(103,80,164,0.9)' }}>
-              Play Video
-            </Button>
-          </Box>
-          <IconButton onClick={onClose} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)' }}>
+        <Box sx={{ width: '100%', height: 240, bgcolor: exercise.videoUrl ? '#0f0f0f' : '#F0EDF6', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+          {exercise.videoUrl ? (
+            <iframe
+              src={`https://www.youtube.com/embed/${exercise.videoUrl}?rel=0&modestbranding=1`}
+              width="100%"
+              height="100%"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ border: 'none', display: 'block' }}
+            />
+          ) : (
+            <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FitnessCenterRoundedIcon sx={{ fontSize: 52, color: '#6750A4', opacity: 0.5 }} />
+            </Box>
+          )}
+          <IconButton
+            onClick={onClose}
+            sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: '#fff' } }}
+            size="small"
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -83,12 +130,41 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             <Chip label={exercise.defaultFrequency} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, border: '1px solid #E0E0E0', borderRadius: 1, mb: 2.5 }}>
-            <IconButton size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }}>
-              <VolumeUpRoundedIcon fontSize="small" />
-            </IconButton>
-            <Typography variant="body2" color="text.secondary">Audio cue</Typography>
-            <Button size="small" sx={{ ml: 'auto' }}>Play</Button>
+          {/* Audio overlay compact section */}
+          <Box sx={{
+            display: 'flex', alignItems: 'center', gap: 1.5,
+            p: 1.5, border: '1px solid #E0E0E0', borderRadius: 1, mb: 2.5,
+            bgcolor: myTrack ? '#F8FFF8' : '#FAFAFA',
+          }}>
+            {myTrack
+              ? <CheckCircleRoundedIcon sx={{ fontSize: 18, color: '#2E7D32', flexShrink: 0 }} />
+              : <VolumeOffRoundedIcon sx={{ fontSize: 18, color: '#BDBDBD', flexShrink: 0 }} />
+            }
+            <Box sx={{ flexGrow: 1 }}>
+              {myTrack ? (
+                <>
+                  <Typography variant="body2" fontWeight={500} color="#2E7D32">Audio overlay recorded</Typography>
+                  <Typography variant="caption" color="text.secondary">{ME_NAME} · {fmt(myTrack.durationSecs)}</Typography>
+                </>
+              ) : (
+                <>
+                  <Typography variant="body2" fontWeight={500}>No audio overlay</Typography>
+                  <Typography variant="caption" color="text.secondary">Record your voice-over for this exercise</Typography>
+                </>
+              )}
+            </Box>
+            <Tooltip title={myTrack ? 'Re-record audio overlay' : 'Record audio overlay'}>
+              <Button
+                size="small"
+                variant={myTrack ? 'outlined' : 'contained'}
+                startIcon={<MicIcon />}
+                disableElevation
+                onClick={() => setRecordingOpen(true)}
+                sx={myTrack ? {} : { bgcolor: '#D32F2F', '&:hover': { bgcolor: '#B71C1C' }, color: '#fff' }}
+              >
+                {myTrack ? 'Re-record' : 'Record'}
+              </Button>
+            </Tooltip>
           </Box>
 
           <Divider sx={{ mb: 2.5 }} />
@@ -156,6 +232,15 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Audio Recording Dialog */}
+      <AudioRecordingDialog
+        open={recordingOpen}
+        exerciseName={exercise.name}
+        videoId={exercise.videoUrl}
+        onClose={() => setRecordingOpen(false)}
+        onSave={handleSaveAudio}
+      />
     </>
   );
 }
