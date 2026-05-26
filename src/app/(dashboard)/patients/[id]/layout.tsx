@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Box from '@mui/material/Box';
@@ -6,10 +7,15 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
-import { mockPatients } from '@/lib/mock-data';
+import { mockPatients, mockPhysio } from '@/lib/mock-data';
 
 const patientTabs = [
   { label: 'Overview', path: 'overview' },
@@ -25,6 +31,12 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const patient = mockPatients.find((p) => p.id === id);
 
+  const [archived, setArchived] = useState(patient?.archived ?? false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMsg, setSnackMsg] = useState('');
+  const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
+
+  const isOwner = mockPhysio.role === 'owner';
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
   const currentTab = patientTabs[activeTab] ?? patientTabs[0];
 
@@ -36,6 +48,20 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     );
   }
 
+  const handleArchive = () => {
+    setArchived(true);
+    setSnackMsg(`${patient.firstName} ${patient.lastName} has been archived.`);
+    setSnackSeverity('warning');
+    setSnackOpen(true);
+  };
+
+  const handleRestore = () => {
+    setArchived(false);
+    setSnackMsg(`${patient.firstName} ${patient.lastName} restored to active.`);
+    setSnackSeverity('success');
+    setSnackOpen(true);
+  };
+
   return (
     <>
       <TopBar
@@ -46,13 +72,18 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
         ]}
       />
       <Box sx={{ pt: '56px' }}>
-        {/* Patient Header */}
+        {archived && (
+          <Alert severity="warning" sx={{ borderRadius: 0, px: 4 }}>
+            This patient profile is archived. Restore it to resume active management.
+          </Alert>
+        )}
+
         <Box sx={{ px: 4, pt: 4, pb: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 3 }}>
-            <Avatar sx={{ width: 64, height: 64, bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 700, fontSize: 22 }}>
+            <Avatar sx={{ width: 64, height: 64, bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 700, fontSize: 22, opacity: archived ? 0.6 : 1 }}>
               {patient.avatarInitials}
             </Avatar>
-            <Box>
+            <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h5" fontWeight={700}>{patient.firstName} {patient.lastName}</Typography>
               <Box sx={{ display: 'flex', gap: 2, mt: 0.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -65,6 +96,30 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 </Box>
               </Box>
             </Box>
+
+            {isOwner && (
+              archived ? (
+                <Button
+                  variant="outlined"
+                  startIcon={<UnarchiveOutlinedIcon />}
+                  size="small"
+                  onClick={handleRestore}
+                  color="warning"
+                >
+                  Restore Patient
+                </Button>
+              ) : (
+                <Button
+                  variant="outlined"
+                  startIcon={<ArchiveOutlinedIcon />}
+                  size="small"
+                  onClick={handleArchive}
+                  sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: '#F5F5F5' } }}
+                >
+                  Archive Patient
+                </Button>
+              )
+            )}
           </Box>
 
           <Tabs
@@ -78,17 +133,31 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 label={tab.label}
                 component={Link}
                 href={`/patients/${id}/${tab.path}`}
-                sx={{ color: (activeTab === -1 ? 0 : activeTab) === i ? 'primary.main' : 'text.secondary', minHeight: 48, fontWeight: (activeTab === -1 ? 0 : activeTab) === i ? 600 : 400 }}
+                sx={{
+                  color: (activeTab === -1 ? 0 : activeTab) === i ? 'primary.main' : 'text.secondary',
+                  minHeight: 48,
+                  fontWeight: (activeTab === -1 ? 0 : activeTab) === i ? 600 : 400,
+                }}
               />
             ))}
           </Tabs>
         </Box>
 
-        {/* Tab Content */}
         <Box sx={{ px: 4, py: 4 }}>
           {children}
         </Box>
       </Box>
+
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snackSeverity} onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>
+          {snackMsg}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

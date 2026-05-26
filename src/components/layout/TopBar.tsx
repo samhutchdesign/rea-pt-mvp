@@ -31,8 +31,8 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
       position="fixed"
       elevation={0}
       sx={{
-        left: 72,
-        width: 'calc(100% - 72px)',
+        left: 80,
+        width: 'calc(100% - 80px)',
         bgcolor: '#FFFFFF',
         borderBottom: '1px solid #E0E0E0',
         color: 'text.primary',

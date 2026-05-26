@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Box
         component="main"
         sx={{
-          ml: '72px',
+          ml: '80px',
           flexGrow: 1,
           minHeight: '100vh',
           pt: '56px',

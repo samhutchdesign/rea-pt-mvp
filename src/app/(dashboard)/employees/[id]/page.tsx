@@ -19,12 +19,15 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
 import { mockEmployees, mockPatients, mockPhysio } from '@/lib/mock-data';
 import type { Patient, Employee } from '@/lib/types';
@@ -50,7 +53,7 @@ function TransferDialog({
   onTransfer: (toEmployee: Employee) => void;
 }) {
   const [selected, setSelected] = useState<Employee | null>(null);
-  const otherEmployees = mockEmployees.filter((e) => e.id !== currentEmployee.id);
+  const otherEmployees = mockEmployees.filter((e) => e.id !== currentEmployee.id && !e.archived);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
@@ -90,10 +93,29 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const { id } = use(params);
   const router = useRouter();
   const emp = mockEmployees.find((e) => e.id === id);
+
   const [tab, setTab] = useState(0);
+  const [archived, setArchived] = useState(emp?.archived ?? false);
   const [transferPatient, setTransferPatient] = useState<Patient | null>(null);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
+  const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
+
+  // Details tab edit state
+  const [editingContact, setEditingContact] = useState(false);
+  const [editingProfessional, setEditingProfessional] = useState(false);
+  const [savedContact, setSavedContact] = useState({
+    firstName: emp?.firstName ?? '',
+    lastName: emp?.lastName ?? '',
+    email: emp?.email ?? '',
+    phone: emp?.phone ?? '',
+  });
+  const [savedProfessional, setSavedProfessional] = useState({
+    title: emp?.title ?? '',
+    credentials: emp?.credentials ?? '',
+  });
+  const [contactDraft, setContactDraft] = useState({ ...savedContact });
+  const [professionalDraft, setProfessionalDraft] = useState({ ...savedProfessional });
 
   if (!emp) return <Box sx={{ p: 4 }}><Typography>Employee not found.</Typography></Box>;
 
@@ -102,39 +124,104 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const isOwner = mockPhysio.role === 'owner';
 
   const handleTransfer = (toEmployee: Employee) => {
+    const name = `${transferPatient?.firstName} ${transferPatient?.lastName}`;
     setTransferPatient(null);
-    setSnackMsg(`${transferPatient?.firstName} ${transferPatient?.lastName} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
+    setSnackMsg(`${name} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
+    setSnackSeverity('success');
+    setSnackOpen(true);
+  };
+
+  const handleArchive = () => {
+    setArchived(true);
+    setSnackMsg(`${emp.firstName} ${emp.lastName} has been archived.`);
+    setSnackSeverity('warning');
+    setSnackOpen(true);
+  };
+
+  const handleRestore = () => {
+    setArchived(false);
+    setSnackMsg(`${emp.firstName} ${emp.lastName} restored to active.`);
+    setSnackSeverity('success');
+    setSnackOpen(true);
+  };
+
+  const handleEditContact = () => {
+    setContactDraft({ ...savedContact });
+    setEditingContact(true);
+  };
+
+  const handleSaveContact = () => {
+    setSavedContact({ ...contactDraft });
+    setEditingContact(false);
+    setSnackMsg('Contact information updated.');
+    setSnackSeverity('success');
+    setSnackOpen(true);
+  };
+
+  const handleEditProfessional = () => {
+    setProfessionalDraft({ ...savedProfessional });
+    setEditingProfessional(true);
+  };
+
+  const handleSaveProfessional = () => {
+    setSavedProfessional({ ...professionalDraft });
+    setEditingProfessional(false);
+    setSnackMsg('Professional details updated.');
+    setSnackSeverity('success');
     setSnackOpen(true);
   };
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Employees', href: '/employees' }, { label: `${emp.firstName} ${emp.lastName}` }]} />
+      <TopBar breadcrumbs={[{ label: 'Employees', href: '/employees' }, { label: `${savedContact.firstName} ${savedContact.lastName}` }]} />
       <Box sx={{ px: 4, py: 4 }}>
+
+        {archived && (
+          <Alert severity="warning" sx={{ mb: 3, borderRadius: 1 }}>
+            This employee profile is archived. Restore it to re-activate their access.
+          </Alert>
+        )}
+
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3, mb: 4 }}>
-          <Avatar sx={{ width: 72, height: 72, bgcolor: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 24, flexShrink: 0 }}>
+          <Avatar sx={{ width: 72, height: 72, bgcolor: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 24, flexShrink: 0, opacity: archived ? 0.6 : 1 }}>
             {emp.avatarInitials}
           </Avatar>
           <Box sx={{ flexGrow: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-              <Typography variant="h5" fontWeight={700}>{emp.firstName} {emp.lastName}</Typography>
-              <Chip label={emp.credentials} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600 }} />
+              <Typography variant="h5" fontWeight={700}>{savedContact.firstName} {savedContact.lastName}</Typography>
+              <Chip label={savedProfessional.credentials} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600 }} />
             </Box>
-            <Typography variant="body1" color="text.secondary" mb={1}>{emp.title}</Typography>
+            <Typography variant="body1" color="text.secondary" mb={1}>{savedProfessional.title}</Typography>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <EmailOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">{emp.email}</Typography>
+                <Typography variant="body2" color="text.secondary">{savedContact.email}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <PhoneOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">{emp.phone}</Typography>
+                <Typography variant="body2" color="text.secondary">{savedContact.phone}</Typography>
               </Box>
             </Box>
           </Box>
           {isOwner && (
-            <Button variant="outlined" startIcon={<EditOutlinedIcon />} size="small">Edit Profile</Button>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {archived ? (
+                <Button variant="outlined" startIcon={<UnarchiveOutlinedIcon />} size="small" onClick={handleRestore} color="warning">
+                  Restore Employee
+                </Button>
+              ) : (
+                <Button
+                  variant="outlined"
+                  startIcon={<ArchiveOutlinedIcon />}
+                  size="small"
+                  onClick={handleArchive}
+                  sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: '#F5F5F5' } }}
+                >
+                  Archive Employee
+                </Button>
+              )}
+            </Box>
           )}
         </Box>
 
@@ -154,7 +241,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         {tab === 0 && (
           <Box sx={{ display: 'flex', gap: 3 }}>
             <Box sx={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {/* Stats */}
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Card sx={{ flex: 1 }}>
                   <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -182,7 +268,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 </Card>
               </Box>
 
-              {/* Bio */}
               <Card>
                 <CardContent>
                   <Typography variant="subtitle2" fontWeight={600} mb={1.5}>About</Typography>
@@ -192,7 +277,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
             </Box>
 
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {/* Specialties */}
               <Card>
                 <CardContent>
                   <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Specialties</Typography>
@@ -204,7 +288,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 </CardContent>
               </Card>
 
-              {/* Recent Patients */}
               <Card>
                 <CardContent>
                   <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Assigned Patients</Typography>
@@ -283,30 +366,97 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         {/* Details Tab */}
         {tab === 2 && (
           <Box sx={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {/* Contact Information */}
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Typography variant="subtitle2" fontWeight={600}>Contact Information</Typography>
-                  {isOwner && <IconButton size="small"><EditOutlinedIcon fontSize="small" /></IconButton>}
+                  {isOwner && !editingContact && (
+                    <IconButton size="small" onClick={handleEditContact}><EditOutlinedIcon fontSize="small" /></IconButton>
+                  )}
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <TextField label="First Name" size="small" fullWidth value={emp.firstName} InputProps={{ readOnly: true }} />
-                  <TextField label="Last Name" size="small" fullWidth value={emp.lastName} InputProps={{ readOnly: true }} />
-                  <TextField label="Email" size="small" fullWidth value={emp.email} InputProps={{ readOnly: true }} />
-                  <TextField label="Phone" size="small" fullWidth value={emp.phone} InputProps={{ readOnly: true }} />
+                  <Box sx={{ display: 'flex', gap: 1.5 }}>
+                    <TextField
+                      label="First Name" size="small" fullWidth
+                      value={editingContact ? contactDraft.firstName : savedContact.firstName}
+                      onChange={(e) => setContactDraft((d) => ({ ...d, firstName: e.target.value }))}
+                      InputProps={{ readOnly: !editingContact }}
+                    />
+                    <TextField
+                      label="Last Name" size="small" fullWidth
+                      value={editingContact ? contactDraft.lastName : savedContact.lastName}
+                      onChange={(e) => setContactDraft((d) => ({ ...d, lastName: e.target.value }))}
+                      InputProps={{ readOnly: !editingContact }}
+                    />
+                  </Box>
+                  <TextField
+                    label="Email" size="small" fullWidth
+                    value={editingContact ? contactDraft.email : savedContact.email}
+                    onChange={(e) => setContactDraft((d) => ({ ...d, email: e.target.value }))}
+                    InputProps={{ readOnly: !editingContact }}
+                  />
+                  <TextField
+                    label="Phone" size="small" fullWidth
+                    value={editingContact ? contactDraft.phone : savedContact.phone}
+                    onChange={(e) => setContactDraft((d) => ({ ...d, phone: e.target.value }))}
+                    InputProps={{ readOnly: !editingContact }}
+                  />
                 </Box>
+                {editingContact && (
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                    <Button size="small" onClick={() => setEditingContact(false)}>Cancel</Button>
+                    <Button size="small" variant="contained" disableElevation onClick={handleSaveContact}>Save</Button>
+                  </Box>
+                )}
               </CardContent>
             </Card>
 
+            {/* Professional Details */}
             <Card>
               <CardContent>
-                <Typography variant="subtitle2" fontWeight={600} mb={2}>Professional Details</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2" fontWeight={600}>Professional Details</Typography>
+                  {isOwner && !editingProfessional && (
+                    <IconButton size="small" onClick={handleEditProfessional}><EditOutlinedIcon fontSize="small" /></IconButton>
+                  )}
+                </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <TextField label="Title" size="small" fullWidth value={emp.title} InputProps={{ readOnly: true }} />
-                  <TextField label="Credentials" size="small" fullWidth value={emp.credentials} InputProps={{ readOnly: true }} />
-                  <TextField label="Date Joined" size="small" fullWidth
+                  <TextField
+                    label="Title" size="small" fullWidth
+                    value={editingProfessional ? professionalDraft.title : savedProfessional.title}
+                    onChange={(e) => setProfessionalDraft((d) => ({ ...d, title: e.target.value }))}
+                    InputProps={{ readOnly: !editingProfessional }}
+                  />
+                  <TextField
+                    label="Credentials" size="small" fullWidth
+                    value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials}
+                    onChange={(e) => setProfessionalDraft((d) => ({ ...d, credentials: e.target.value }))}
+                    InputProps={{ readOnly: !editingProfessional }}
+                  />
+                  <TextField
+                    label="Date Joined" size="small" fullWidth
                     value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    InputProps={{ readOnly: true }} />
+                    InputProps={{ readOnly: true }}
+                  />
+                </Box>
+                {editingProfessional && (
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                    <Button size="small" onClick={() => setEditingProfessional(false)}>Cancel</Button>
+                    <Button size="small" variant="contained" disableElevation onClick={handleSaveProfessional}>Save</Button>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Specialties (read-only) */}
+            <Card>
+              <CardContent>
+                <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Specialties</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                  {emp.specialties.map((s) => (
+                    <Chip key={s} label={s} size="small" variant="outlined" sx={{ fontSize: 12 }} />
+                  ))}
                 </Box>
               </CardContent>
             </Card>
@@ -323,7 +473,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
       />
 
       <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
+        <Alert severity={snackSeverity} onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
       </Snackbar>
     </>
   );

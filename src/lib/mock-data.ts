@@ -42,6 +42,7 @@ export const mockEmployees: Employee[] = [
     clinicId: 'clinic1',
     joinedAt: '2024-03-15',
     specialties: ['Postpartum Recovery', 'Incontinence', 'Pelvic Pain'],
+    archived: false,
   },
   {
     id: 'emp2',
@@ -58,6 +59,7 @@ export const mockEmployees: Employee[] = [
     clinicId: 'clinic1',
     joinedAt: '2023-09-01',
     specialties: ['Prolapse', 'Post-Surgical Rehab', 'Pelvic Pain'],
+    archived: false,
   },
   {
     id: 'emp3',
@@ -74,6 +76,7 @@ export const mockEmployees: Employee[] = [
     clinicId: 'clinic1',
     joinedAt: '2025-01-10',
     specialties: ['Menopause', 'Incontinence', 'Hip & Spine'],
+    archived: false,
   },
   {
     id: 'emp4',
@@ -90,6 +93,24 @@ export const mockEmployees: Employee[] = [
     clinicId: 'clinic1',
     joinedAt: '2025-06-20',
     specialties: ['Postpartum Recovery', 'Athletic Rehab', 'Exercise Programming'],
+    archived: false,
+  },
+  {
+    id: 'emp5',
+    firstName: 'Olivia',
+    lastName: 'Park',
+    email: 'olivia.park@reaclinic.com',
+    phone: '(604) 555-0199',
+    credentials: 'PT, MSc',
+    title: 'Physiotherapist',
+    bio: 'Olivia Park worked at Rea Pelvic Health from 2022 to 2024, specializing in post-surgical pelvic floor rehabilitation. She has since relocated to pursue a research fellowship.',
+    role: 'admin',
+    avatarInitials: 'OP',
+    patientIds: [],
+    clinicId: 'clinic1',
+    joinedAt: '2022-05-01',
+    specialties: ['Post-Surgical Rehab', 'Pelvic Pain'],
+    archived: true,
   },
 ];
 
@@ -424,6 +445,7 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-22',
     programId: 'prog1',
     assignedEmployeeIds: ['emp1'],
+    archived: false,
     clinicId: 'clinic1',
     metrics: { age: 34, sexAssignedAtBirth: 'Female', height: "5'5\"", weight: '142 lbs', handDominance: 'Right' },
     injuryHistory: {
@@ -459,6 +481,7 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-20',
     programId: 'prog2',
     assignedEmployeeIds: ['emp1'],
+    archived: false,
     clinicId: 'clinic1',
     metrics: { age: 52, sexAssignedAtBirth: 'Female', height: "5'3\"", weight: '168 lbs', handDominance: 'Right' },
     injuryHistory: {
@@ -493,6 +516,7 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-18',
     programId: 'prog3',
     assignedEmployeeIds: ['emp2'],
+    archived: false,
     clinicId: 'clinic1',
     metrics: { age: 41, sexAssignedAtBirth: 'Female', height: "5'4\"", weight: '135 lbs', handDominance: 'Right' },
     injuryHistory: {
@@ -528,6 +552,7 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-15',
     programId: undefined,
     assignedEmployeeIds: ['emp2'],
+    archived: false,
     clinicId: 'clinic1',
     metrics: { age: 28, sexAssignedAtBirth: 'Female', height: "5'7\"", weight: '155 lbs', handDominance: 'Left' },
     injuryHistory: {
@@ -562,6 +587,7 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-04-30',
     programId: 'prog2',
     assignedEmployeeIds: ['emp3'],
+    archived: false,
     clinicId: 'clinic1',
     metrics: { age: 63, sexAssignedAtBirth: 'Female', height: "5'2\"", weight: '175 lbs', handDominance: 'Right' },
     injuryHistory: {
@@ -596,6 +622,7 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-12',
     programId: 'prog1',
     assignedEmployeeIds: ['emp4'],
+    archived: false,
     clinicId: 'clinic1',
     metrics: { age: 38, sexAssignedAtBirth: 'Female', height: "5'6\"", weight: '148 lbs', handDominance: 'Right' },
     injuryHistory: {
@@ -616,6 +643,30 @@ export const mockPatients: Patient[] = [
     documents: [
       { documentId: 'doc1', submittedAt: '2026-03-01', fieldValues: { f1: '1988-04-22', f2: 'Diastasis recti, scar tissue, urinary urgency', f3: '2 months post-op', f4: 'No', f5: 'Iron supplements', f6: 'Emergency C-section Jan 2026', f7: 'Restore core function, reduce scar sensitivity' } },
     ],
+  },
+  {
+    id: 'pat7',
+    firstName: 'Natalie',
+    lastName: 'Brooks',
+    email: 'natalie.brooks@email.com',
+    phone: '778-555-0712',
+    address: '2345 Oak St, Vancouver, BC V6H 2L2',
+    location: 'Vancouver, BC',
+    avatarInitials: 'NB',
+    status: 'inactive',
+    lastModified: '2025-11-14',
+    programId: undefined,
+    assignedEmployeeIds: [],
+    clinicId: 'clinic1',
+    archived: true,
+    metrics: { age: 45, sexAssignedAtBirth: 'Female', height: "5'5\"", weight: '158 lbs', handDominance: 'Right' },
+    injuryHistory: { mechanism: 'Pelvic girdle pain following second pregnancy', dateOfOnset: 'March 2025', surgeryType: 'N/A', surgeryDate: 'N/A', symptomEvolution: 'Resolved following 8 sessions of physiotherapy. Patient discharged with home program.', functionalMobility: 'Independent, returned to full activity.', management: 'Completed course of pelvic floor PT.', homeEquipment: 'Resistance bands, yoga mat' },
+    pmhx: { previousEpisode: 'Pelvic girdle pain during first pregnancy (2020)', pmhx: 'None significant', previousTreatments: 'Physio during first pregnancy', medicationList: 'None', exams: 'OB clearance March 2025' },
+    sohx: { job: 'Nurse practitioner', hobbies: 'Swimming, hiking', socialEnvironment: 'Married with 2 children', physicalEnvironment: 'House with stairs', clientGoals: 'Return to hiking and swimming pain-free' },
+    lifestyle: { otherConditions: 'None', diet: 'Balanced', exercise: 'Swimming, walking', smoker: 'Non-smoker', alcohol: 'Occasional' },
+    medicalHistory: { otherConditions: 'None', attachments: [] },
+    emergencyContact: { firstName: 'Dan', lastName: 'Brooks', phone: '778-555-0713', email: 'dan.brooks@email.com', address: '2345 Oak St, Vancouver, BC', relationship: 'Spouse' },
+    documents: [],
   },
 ];
 

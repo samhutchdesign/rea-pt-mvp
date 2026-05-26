@@ -30,6 +30,7 @@ export interface Employee {
   clinicId: string;
   joinedAt: string;
   specialties: string[];
+  archived: boolean;
 }
 
 export interface Clinic {
@@ -207,6 +208,7 @@ export interface Patient {
   programId?: string;
   assignedEmployeeIds: string[];
   clinicId: string;
+  archived: boolean;
   metrics?: PatientMetrics;
   injuryHistory?: InjuryHistory;
   pmhx?: PMHx;
