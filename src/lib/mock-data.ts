@@ -1,14 +1,97 @@
-import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio } from './types';
+import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic } from './types';
 
 export const mockPhysio: Physio = {
   id: 'p1',
   firstName: 'Sarah',
   lastName: 'Harper',
   email: 'sarah.harper@reaclinic.com',
+  phone: '(604) 555-0100',
   clinicName: 'Rea Pelvic Health',
   credentials: 'PT, DPT, PRPC',
+  title: 'Clinic Owner & Director',
+  bio: 'Dr. Sarah Harper is a pelvic floor physiotherapist with over 15 years of clinical experience specializing in pelvic health across all life stages. She founded Rea Pelvic Health in 2018 with a mission to make evidence-based pelvic floor care accessible and empowering for every patient.',
   avatarInitials: 'SH',
+  role: 'owner',
+  clinicId: 'clinic1',
 };
+
+export const mockClinic: Clinic = {
+  id: 'clinic1',
+  name: 'Rea Pelvic Health',
+  address: '1420 Health Sciences Drive, Suite 300, Vancouver, BC V6T 1Z3',
+  phone: '(604) 555-0100',
+  email: 'info@reapelvichealth.com',
+  website: 'www.reapelvichealth.com',
+  description: 'Rea Pelvic Health is a specialized physiotherapy clinic focused on pelvic floor rehabilitation for women across all life stages — from postpartum recovery to menopause and beyond. Our multidisciplinary team delivers individualized, evidence-based care in a supportive and discreet environment.',
+  logoInitials: 'RP',
+};
+
+export const mockEmployees: Employee[] = [
+  {
+    id: 'emp1',
+    firstName: 'Emily',
+    lastName: 'Chen',
+    email: 'emily.chen@reaclinic.com',
+    phone: '(604) 555-0121',
+    credentials: 'PT, DPT',
+    title: 'Pelvic Floor Physiotherapist',
+    bio: 'Emily Chen specializes in postpartum pelvic floor rehabilitation and incontinence management. She completed her Doctor of Physical Therapy at UBC and holds advanced certifications in women\'s health physiotherapy. Emily is known for her patient-centred approach and her ability to make patients feel at ease.',
+    role: 'admin',
+    avatarInitials: 'EC',
+    patientIds: ['pat1', 'pat2'],
+    clinicId: 'clinic1',
+    joinedAt: '2024-03-15',
+    specialties: ['Postpartum Recovery', 'Incontinence', 'Pelvic Pain'],
+  },
+  {
+    id: 'emp2',
+    firstName: 'James',
+    lastName: 'Wilson',
+    email: 'james.wilson@reaclinic.com',
+    phone: '(604) 555-0134',
+    credentials: 'MSc PT, CAFCI',
+    title: 'Senior Physiotherapist',
+    bio: 'James Wilson brings over 10 years of experience in pelvic health physiotherapy, with particular expertise in pelvic organ prolapse and post-surgical rehabilitation. He completed his MSc in Physical Therapy at Queen\'s University and has completed advanced training in acupuncture and dry needling for pelvic conditions.',
+    role: 'admin',
+    avatarInitials: 'JW',
+    patientIds: ['pat3', 'pat4'],
+    clinicId: 'clinic1',
+    joinedAt: '2023-09-01',
+    specialties: ['Prolapse', 'Post-Surgical Rehab', 'Pelvic Pain'],
+  },
+  {
+    id: 'emp3',
+    firstName: 'Rachel',
+    lastName: 'Torres',
+    email: 'rachel.torres@reaclinic.com',
+    phone: '(604) 555-0156',
+    credentials: 'PT, CAFCI',
+    title: 'Physiotherapist',
+    bio: 'Rachel Torres is a pelvic floor physiotherapist with a passion for helping women through the menopause transition. She completed her BScPT at McMaster University and has since pursued advanced training in pelvic health, including acupuncture for pelvic conditions. Rachel also has expertise in hip and spine rehabilitation.',
+    role: 'admin',
+    avatarInitials: 'RT',
+    patientIds: ['pat5'],
+    clinicId: 'clinic1',
+    joinedAt: '2025-01-10',
+    specialties: ['Menopause', 'Incontinence', 'Hip & Spine'],
+  },
+  {
+    id: 'emp4',
+    firstName: 'Marcus',
+    lastName: 'Laine',
+    email: 'marcus.laine@reaclinic.com',
+    phone: '(604) 555-0178',
+    credentials: 'BScPT',
+    title: 'Physiotherapist',
+    bio: 'Marcus Laine is an enthusiastic physiotherapist who joined Rea Pelvic Health following his BScPT from the University of Toronto. He has a special interest in postpartum athletic recovery and exercise programming for pelvic health. Marcus takes a collaborative, goal-oriented approach to care.',
+    role: 'admin',
+    avatarInitials: 'ML',
+    patientIds: ['pat6'],
+    clinicId: 'clinic1',
+    joinedAt: '2025-06-20',
+    specialties: ['Postpartum Recovery', 'Athletic Rehab', 'Exercise Programming'],
+  },
+];
 
 export const mockExercises: Exercise[] = [
   {
@@ -340,6 +423,8 @@ export const mockPatients: Patient[] = [
     status: 'active',
     lastModified: '2026-05-22',
     programId: 'prog1',
+    assignedEmployeeIds: ['emp1'],
+    clinicId: 'clinic1',
     metrics: { age: 34, sexAssignedAtBirth: 'Female', height: "5'5\"", weight: '142 lbs', handDominance: 'Right' },
     injuryHistory: {
       mechanism: 'Postpartum – vaginal delivery with 2nd degree tear',
@@ -373,6 +458,8 @@ export const mockPatients: Patient[] = [
     status: 'active',
     lastModified: '2026-05-20',
     programId: 'prog2',
+    assignedEmployeeIds: ['emp1'],
+    clinicId: 'clinic1',
     metrics: { age: 52, sexAssignedAtBirth: 'Female', height: "5'3\"", weight: '168 lbs', handDominance: 'Right' },
     injuryHistory: {
       mechanism: 'Gradual onset stress urinary incontinence, worsened over 2 years',
@@ -405,6 +492,8 @@ export const mockPatients: Patient[] = [
     status: 'active',
     lastModified: '2026-05-18',
     programId: 'prog3',
+    assignedEmployeeIds: ['emp2'],
+    clinicId: 'clinic1',
     metrics: { age: 41, sexAssignedAtBirth: 'Female', height: "5'4\"", weight: '135 lbs', handDominance: 'Right' },
     injuryHistory: {
       mechanism: 'Chronic pelvic pain – onset following hysterectomy',
@@ -438,6 +527,8 @@ export const mockPatients: Patient[] = [
     status: 'new',
     lastModified: '2026-05-15',
     programId: undefined,
+    assignedEmployeeIds: ['emp2'],
+    clinicId: 'clinic1',
     metrics: { age: 28, sexAssignedAtBirth: 'Female', height: "5'7\"", weight: '155 lbs', handDominance: 'Left' },
     injuryHistory: {
       mechanism: 'Stress urinary incontinence onset with return to running',
@@ -470,6 +561,8 @@ export const mockPatients: Patient[] = [
     status: 'inactive',
     lastModified: '2026-04-30',
     programId: 'prog2',
+    assignedEmployeeIds: ['emp3'],
+    clinicId: 'clinic1',
     metrics: { age: 63, sexAssignedAtBirth: 'Female', height: "5'2\"", weight: '175 lbs', handDominance: 'Right' },
     injuryHistory: {
       mechanism: 'Pelvic organ prolapse (cystocele Grade II)',
@@ -502,6 +595,8 @@ export const mockPatients: Patient[] = [
     status: 'active',
     lastModified: '2026-05-12',
     programId: 'prog1',
+    assignedEmployeeIds: ['emp4'],
+    clinicId: 'clinic1',
     metrics: { age: 38, sexAssignedAtBirth: 'Female', height: "5'6\"", weight: '148 lbs', handDominance: 'Right' },
     injuryHistory: {
       mechanism: 'Postpartum – emergency C-section following 18hr labour',

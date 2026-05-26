@@ -5,11 +5,13 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
+import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
 import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
+import { mockPhysio } from '@/lib/mock-data';
 
-const navItems = [
+const baseNavItems = [
   { label: 'Home', href: '/', icon: HomeRoundedIcon },
   { label: 'Patients', href: '/patients', icon: PeopleAltRoundedIcon },
   { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
@@ -17,8 +19,18 @@ const navItems = [
   { label: 'Documents', href: '/documents', icon: FolderRoundedIcon },
 ];
 
+const ownerNavItems = [
+  { label: 'Home', href: '/', icon: HomeRoundedIcon },
+  { label: 'Patients', href: '/patients', icon: PeopleAltRoundedIcon },
+  { label: 'Employees', href: '/employees', icon: GroupsRoundedIcon },
+  { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
+  { label: 'Programs', href: '/programs', icon: ListAltRoundedIcon },
+  { label: 'Documents', href: '/documents', icon: FolderRoundedIcon },
+];
+
 export default function Sidebar() {
   const pathname = usePathname();
+  const navItems = mockPhysio.role === 'owner' ? ownerNavItems : baseNavItems;
 
   return (
     <Box
@@ -62,8 +74,7 @@ export default function Sidebar() {
       </Box>
 
       {navItems.map(({ label, href, icon: Icon }) => {
-        const isActive =
-          href === '/' ? pathname === '/' : pathname.startsWith(href);
+        const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
         return (
           <Tooltip key={href} title={label} placement="right">
             <Link href={href} style={{ textDecoration: 'none', width: '100%' }}>
@@ -84,12 +95,7 @@ export default function Sidebar() {
                   transition: 'background-color 0.15s',
                 }}
               >
-                <Icon
-                  sx={{
-                    fontSize: 22,
-                    color: isActive ? 'primary.main' : '#49454F',
-                  }}
-                />
+                <Icon sx={{ fontSize: 22, color: isActive ? 'primary.main' : '#49454F' }} />
                 <Box
                   component="span"
                   sx={{

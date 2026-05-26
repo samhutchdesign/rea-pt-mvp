@@ -1,11 +1,46 @@
+export type UserRole = 'owner' | 'admin';
+
 export interface Physio {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   clinicName: string;
   credentials: string;
+  title: string;
+  bio: string;
   avatarInitials: string;
+  role: UserRole;
+  clinicId: string;
+}
+
+export interface Employee {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  credentials: string;
+  title: string;
+  bio: string;
+  role: 'admin';
+  avatarInitials: string;
+  patientIds: string[];
+  clinicId: string;
+  joinedAt: string;
+  specialties: string[];
+}
+
+export interface Clinic {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  email: string;
+  website: string;
+  description: string;
+  logoInitials: string;
 }
 
 export interface ExerciseTags {
@@ -170,6 +205,8 @@ export interface Patient {
   status: 'new' | 'active' | 'inactive';
   lastModified: string;
   programId?: string;
+  assignedEmployeeIds: string[];
+  clinicId: string;
   metrics?: PatientMetrics;
   injuryHistory?: InjuryHistory;
   pmhx?: PMHx;

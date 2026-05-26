@@ -7,6 +7,13 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { useState, useEffect } from 'react';
@@ -14,7 +21,10 @@ import AddIcon from '@mui/icons-material/Add';
 import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
-import { mockPatients, mockChartSessions, mockPrograms, mockExercises } from '@/lib/mock-data';
+import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
+import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
+import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockPhysio, mockClinic } from '@/lib/mock-data';
+import type { Employee } from '@/lib/types';
 
 export default function PatientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -26,10 +36,15 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
     if (searchParams.get('welcome') === '1') setSnackOpen(true);
   }, [searchParams]);
 
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+
   const patient = mockPatients.find((p) => p.id === id);
   const sessions = mockChartSessions[id] ?? [];
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
+  const assignedEmployees = patient ? mockEmployees.filter((e) => patient.assignedEmployeeIds.includes(e.id)) : [];
+  const isOwner = mockPhysio.role === 'owner';
 
   const overallAdherence = program
     ? Math.round(program.exercises.reduce((sum, e) => sum + e.adherence, 0) / program.exercises.length)
@@ -138,11 +153,85 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         </Card>
       </Box>
 
+      {/* Care Team */}
+      <Card sx={{ mt: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="subtitle1" fontWeight={600}>Care Team</Typography>
+            {isOwner && (
+              <Button size="small" variant="outlined" startIcon={<SwapHorizRoundedIcon />} onClick={() => setTransferOpen(true)}>
+                Transfer Patient
+              </Button>
+            )}
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+            {assignedEmployees.map((emp) => (
+              <Box
+                key={emp.id}
+                sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, border: '1px solid #E0E0E0', borderRadius: 2, cursor: 'pointer', '&:hover': { borderColor: 'primary.main', bgcolor: '#FAFAFA' }, transition: 'all 0.15s', minWidth: 220 }}
+                onClick={() => router.push(`/employees/${emp.id}`)}
+              >
+                <Avatar sx={{ width: 40, height: 40, bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 700, fontSize: 14 }}>
+                  {emp.avatarInitials}
+                </Avatar>
+                <Box>
+                  <Typography variant="body2" fontWeight={600}>{emp.firstName} {emp.lastName}</Typography>
+                  <Typography variant="caption" color="text.secondary">{emp.credentials} · {emp.title}</Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => router.push('/clinic')}>
+            <BusinessOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Typography variant="body2" color="primary.main" sx={{ textDecoration: 'underline' }}>{mockClinic.name}</Typography>
+          </Box>
+        </CardContent>
+      </Card>
+
       <Snackbar open={snackOpen} autoHideDuration={5000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>
           Success! The patient has received their documents.
         </Alert>
       </Snackbar>
+
+      {/* Transfer Patient Dialog */}
+      <Dialog open={transferOpen} onClose={() => setTransferOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Transfer Patient</DialogTitle>
+        <DialogContent sx={{ pt: '12px !important' }}>
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            Reassign <strong>{patient?.firstName} {patient?.lastName}</strong> to another physiotherapist.
+          </Typography>
+          <Autocomplete
+            options={mockEmployees.filter((e) => !patient?.assignedEmployeeIds.includes(e.id))}
+            getOptionLabel={(e) => `${e.firstName} ${e.lastName} — ${e.credentials}`}
+            renderOption={(props, e) => (
+              <Box component="li" {...props}>
+                <Box>
+                  <Typography variant="body2" fontWeight={500}>{e.firstName} {e.lastName}</Typography>
+                  <Typography variant="caption" color="text.secondary">{e.title} · {e.credentials}</Typography>
+                </Box>
+              </Box>
+            )}
+            value={selectedEmployee}
+            onChange={(_, val) => setSelectedEmployee(val)}
+            renderInput={(params) => <TextField {...params} label="Select physiotherapist" size="small" autoFocus />}
+            size="small"
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => { setTransferOpen(false); setSelectedEmployee(null); }}>Cancel</Button>
+          <Button
+            variant="contained"
+            disableElevation
+            disabled={!selectedEmployee}
+            onClick={() => { setTransferOpen(false); setSelectedEmployee(null); setSnackOpen(true); }}
+          >
+            Transfer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

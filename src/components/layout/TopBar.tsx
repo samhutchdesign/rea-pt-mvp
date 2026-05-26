@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -83,12 +84,20 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           PaperProps={{ sx: { mt: 1, minWidth: 200, border: '1px solid #E0E0E0', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' } }}
         >
           <MenuItem disabled sx={{ opacity: '1 !important' }}>
-            <Typography variant="body2" fontWeight={600}>{mockPhysio.firstName} {mockPhysio.lastName}</Typography>
+            <Box>
+              <Typography variant="body2" fontWeight={600}>{mockPhysio.firstName} {mockPhysio.lastName}</Typography>
+              <Typography variant="caption" color="primary.main" sx={{ fontWeight: 500 }}>
+                {mockPhysio.role === 'owner' ? 'Clinic Owner' : 'Admin'}
+              </Typography>
+            </Box>
           </MenuItem>
           <MenuItem disabled sx={{ opacity: '0.7 !important', mt: -1 }}>
             <Typography variant="caption">{mockPhysio.email}</Typography>
           </MenuItem>
           <Divider />
+          {mockPhysio.role === 'owner' && (
+            <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Clinic Profile</MenuItem>
+          )}
           <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/profile'); }}>Your Profile</MenuItem>
           <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/settings'); }}>Settings</MenuItem>
           <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/email'); }}>Email Change</MenuItem>
