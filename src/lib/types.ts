@@ -255,6 +255,17 @@ export interface AudioTrack {
   blobUrl: string | null;
 }
 
+export interface PatientComment {
+  id: string;
+  patientId: string;
+  authorId: string;
+  authorName: string;
+  authorInitials: string;
+  content: string;
+  createdAt: string;
+  pinned?: boolean;
+}
+
 export interface Notification {
   id: string;
   message: string;
