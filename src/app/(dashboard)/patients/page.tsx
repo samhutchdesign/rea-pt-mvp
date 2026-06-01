@@ -19,6 +19,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
 import RestoreIcon from '@mui/icons-material/Restore';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import EventRoundedIcon from '@mui/icons-material/EventRounded';
+import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { mockPatients, mockChartSessions } from '@/lib/mock-data';
@@ -163,13 +166,16 @@ export default function PatientsPage() {
                       const { lastSeen, count } = sessionInfo(patient);
                       return (
                         <>
-                          <Typography variant="caption" color="text.secondary">{patient.location}</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—'}
-                          </Typography>
+                          {[
+                            { icon: LocationOnOutlinedIcon, text: patient.location },
+                            { icon: EventRoundedIcon, text: lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet' },
+                            { icon: RepeatRoundedIcon, text: count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—' },
+                          ].map(({ icon: Icon, text }) => (
+                            <Box key={text} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                              <Icon sx={{ fontSize: 12, color: 'text.disabled' }} />
+                              <Typography variant="caption" color="text.secondary">{text}</Typography>
+                            </Box>
+                          ))}
                         </>
                       );
                     })()}
