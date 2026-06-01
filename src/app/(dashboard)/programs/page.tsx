@@ -50,7 +50,7 @@ export default function ProgramsPage() {
               onClick={() => router.push(`/programs/${prog.id}`)}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2.5 }}>
-                <Box sx={{ width: 48, height: 48, borderRadius: 1.5, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Box sx={{ width: 48, height: 48, borderRadius: 1.5, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 22 }} />
                 </Box>
                 <Box sx={{ flexGrow: 1 }}>
@@ -63,7 +63,7 @@ export default function ProgramsPage() {
                     {prog.tags.map((t) => <Chip key={t} label={t} size="small" variant="outlined" sx={{ fontSize: 11 }} />)}
                   </Box>
                 </Box>
-                <Chip label={`${prog.exercises.length} exercises`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 500 }} />
+                <Chip label={`${prog.exercises.length} exercises`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 500 }} />
                 <Tooltip title={favorites.has(prog.id) ? 'Unfavorite' : 'Favorite'}>
                   <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFavorite(prog.id); }}>
                     {favorites.has(prog.id) ? <FavoriteIcon fontSize="small" sx={{ color: '#E91E63' }} /> : <FavoriteBorderIcon fontSize="small" />}

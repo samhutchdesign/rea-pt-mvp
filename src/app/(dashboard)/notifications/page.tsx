@@ -52,10 +52,10 @@ export default function NotificationsPage() {
             {notifications.map((notif, i) => (
               <Box key={notif.id}>
                 <Box
-                  sx={{ px: 3, py: 2.5, display: 'flex', gap: 2, alignItems: 'flex-start', cursor: 'pointer', bgcolor: !notif.read ? '#FAFAFA' : 'transparent', '&:hover': { bgcolor: '#F5F5F5' }, transition: 'background 0.1s' }}
+                  sx={{ px: 3, py: 2.5, display: 'flex', gap: 2, alignItems: 'flex-start', cursor: 'pointer', bgcolor: !notif.read ? '#FAFAFA' : 'transparent', '&:hover': { bgcolor: 'action.hover' }, transition: 'background 0.1s' }}
                   onClick={() => notif.patientId && router.push(`/patients/${notif.patientId}/documents`)}
                 >
-                  <Box sx={{ width: 36, height: 36, borderRadius: '50%', bgcolor: '#E8E0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Box sx={{ width: 36, height: 36, borderRadius: '50%', bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <NotificationsOutlinedIcon sx={{ fontSize: 18, color: 'primary.main' }} />
                   </Box>
                   <Box sx={{ flexGrow: 1 }}>

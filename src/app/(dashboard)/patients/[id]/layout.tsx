@@ -130,7 +130,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
         <Box sx={{ px: 4, pt: 4, pb: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2.5, mb: 3 }}>
-            <Avatar sx={{ width: 64, height: 64, bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 700, fontSize: 22, opacity: archived ? 0.6 : 1, mt: 0.5 }}>
+            <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700, fontSize: 22, opacity: archived ? 0.6 : 1, mt: 0.5 }}>
               {patient.avatarInitials}
             </Avatar>
             <Box sx={{ flexGrow: 1 }}>
@@ -149,7 +149,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 <Chip
                   label={chip}
                   size="small"
-                  sx={{ mt: 1, bgcolor: '#EDE7F6', color: '#5B3FA6', fontSize: '0.72rem', height: 22, fontWeight: 500 }}
+                  sx={{ mt: 1, bgcolor: 'primary.light', color: 'primary.main', fontSize: '0.72rem', height: 22, fontWeight: 500 }}
                 />
               )}
             </Box>

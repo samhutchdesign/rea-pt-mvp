@@ -239,7 +239,7 @@ export default function ClinicPage() {
                     return (
                       <Box key={emp.id}>
                         <Box
-                          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.5, cursor: 'pointer', borderRadius: 1, px: 0.5, '&:hover': { bgcolor: '#F5F5F5' } }}
+                          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.5, cursor: 'pointer', borderRadius: 1, px: 0.5, '&:hover': { bgcolor: 'action.hover' } }}
                           onClick={() => router.push(`/employees/${emp.id}`)}
                         >
                           <Avatar sx={{ width: 40, height: 40, bgcolor: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
@@ -249,7 +249,7 @@ export default function ClinicPage() {
                             <Typography variant="body2" fontWeight={600} noWrap>{emp.firstName} {emp.lastName}</Typography>
                             <Typography variant="caption" color="text.secondary" noWrap>{emp.credentials} · {emp.title}</Typography>
                           </Box>
-                          <Chip label={`${patientCount}p`} size="small" sx={{ bgcolor: '#F0EDF6', color: 'primary.main', fontSize: 11, height: 20, fontWeight: 600 }} />
+                          <Chip label={`${patientCount}p`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontSize: 11, height: 20, fontWeight: 600 }} />
                         </Box>
                         {i < mockEmployees.length - 1 && <Divider />}
                       </Box>

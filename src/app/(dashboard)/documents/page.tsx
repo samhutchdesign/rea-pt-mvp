@@ -54,7 +54,7 @@ export default function DocumentsPage() {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
                     <Typography variant="body1" fontWeight={600}>{doc.name}</Typography>
                     {favorites.has(doc.id) && <FavoriteIcon sx={{ fontSize: 14, color: '#E91E63' }} />}
-                    {doc.isDefault && <Chip label="Default" size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontSize: 10, height: 18 }} />}
+                    {doc.isDefault && <Chip label="Default" size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontSize: 10, height: 18 }} />}
                   </Box>
                   <Typography variant="caption" color="text.secondary">
                     Updated {new Date(doc.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {doc.fields.length} fields

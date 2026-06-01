@@ -30,7 +30,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
               <Typography variant="h5" fontWeight={700}>{doc.name}</Typography>
-              {doc.isDefault && <Chip label="Default" size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />}
+              {doc.isDefault && <Chip label="Default" size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />}
               <IconButton onClick={() => setIsFavorite(!isFavorite)}>
                 {isFavorite ? <FavoriteIcon sx={{ color: '#E91E63' }} /> : <FavoriteBorderIcon />}
               </IconButton>
@@ -49,11 +49,11 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
             <Box key={field.id}>
               <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>{field.label}</Typography>
               {field.type === 'dropdown' ? (
-                <Box sx={{ border: '1px solid #E0E0E0', borderRadius: 1, px: 1.5, py: 1, bgcolor: '#FAFAFA' }}>
+                <Box sx={{ border: '1px solid #E0E0E0', borderRadius: 1, px: 1.5, py: 1, bgcolor: 'action.hover' }}>
                   <Typography variant="body2" color="text.secondary">Options: {field.options?.join(', ')}</Typography>
                 </Box>
               ) : field.type === 'checkbox' ? (
-                <Box sx={{ border: '1px solid #E0E0E0', borderRadius: 1, px: 1.5, py: 1, bgcolor: '#FAFAFA', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ border: '1px solid #E0E0E0', borderRadius: 1, px: 1.5, py: 1, bgcolor: 'action.hover', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 16, height: 16, border: '1.5px solid #9E9E9E', borderRadius: 0.5 }} />
                   <Typography variant="body2" color="text.secondary">{field.label}</Typography>
                 </Box>
@@ -62,7 +62,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
                   size="small" fullWidth
                   multiline={field.type === 'textarea'} rows={field.type === 'textarea' ? 3 : 1}
                   placeholder={field.type === 'date' ? 'MM/DD/YYYY' : `Enter ${field.label.toLowerCase()}…`}
-                  InputProps={{ readOnly: true, sx: { bgcolor: '#FAFAFA', color: 'text.secondary' } }}
+                  InputProps={{ readOnly: true, sx: { bgcolor: 'action.hover', color: 'text.secondary' } }}
                 />
               )}
             </Box>

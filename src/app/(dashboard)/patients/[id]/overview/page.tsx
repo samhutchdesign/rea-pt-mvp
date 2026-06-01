@@ -195,10 +195,10 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
             {assignedEmployees.map((emp) => (
               <Box
                 key={emp.id}
-                sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, border: '1px solid #E0E0E0', borderRadius: 2, cursor: 'pointer', '&:hover': { borderColor: 'primary.main', bgcolor: '#FAFAFA' }, transition: 'all 0.15s', minWidth: 220 }}
+                sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, border: '1px solid #E0E0E0', borderRadius: 2, cursor: 'pointer', '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' }, transition: 'all 0.15s', minWidth: 220 }}
                 onClick={() => router.push(`/employees/${emp.id}`)}
               >
-                <Avatar sx={{ width: 40, height: 40, bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 700, fontSize: 14 }}>
+                <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700, fontSize: 14 }}>
                   {emp.avatarInitials}
                 </Avatar>
                 <Box>

@@ -90,7 +90,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingContact ? contactDraft.firstName : savedContact.firstName}
                     size="small" fullWidth
                     onChange={(e) => setContactDraft((d) => ({ ...d, firstName: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
@@ -99,7 +99,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingContact ? contactDraft.lastName : savedContact.lastName}
                     size="small" fullWidth
                     onChange={(e) => setContactDraft((d) => ({ ...d, lastName: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
               </Box>
@@ -110,7 +110,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingContact ? contactDraft.phone : savedContact.phone}
                     size="small" fullWidth
                     onChange={(e) => setContactDraft((d) => ({ ...d, phone: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
@@ -119,7 +119,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingContact ? contactDraft.email : savedContact.email}
                     size="small" fullWidth
                     onChange={(e) => setContactDraft((d) => ({ ...d, email: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
               </Box>
@@ -129,7 +129,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                   value={editingContact ? contactDraft.address : savedContact.address}
                   size="small" fullWidth
                   onChange={(e) => setContactDraft((d) => ({ ...d, address: e.target.value }))}
-                  InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: '#FAFAFA' } }}
+                  InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
                 />
               </Box>
             </Box>
@@ -159,7 +159,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingEmergency ? emergencyDraft.firstName : savedEmergency.firstName}
                     size="small" fullWidth
                     onChange={(e) => setEmergencyDraft((d) => ({ ...d, firstName: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
@@ -168,7 +168,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingEmergency ? emergencyDraft.lastName : savedEmergency.lastName}
                     size="small" fullWidth
                     onChange={(e) => setEmergencyDraft((d) => ({ ...d, lastName: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
               </Box>
@@ -179,7 +179,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingEmergency ? emergencyDraft.phone : savedEmergency.phone}
                     size="small" fullWidth
                     onChange={(e) => setEmergencyDraft((d) => ({ ...d, phone: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
@@ -188,7 +188,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                     value={editingEmergency ? emergencyDraft.email : savedEmergency.email}
                     size="small" fullWidth
                     onChange={(e) => setEmergencyDraft((d) => ({ ...d, email: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: '#FAFAFA' } }}
+                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
                   />
                 </Box>
               </Box>
@@ -198,7 +198,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                   value={editingEmergency ? emergencyDraft.address : savedEmergency.address}
                   size="small" fullWidth
                   onChange={(e) => setEmergencyDraft((d) => ({ ...d, address: e.target.value }))}
-                  InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: '#FAFAFA' } }}
+                  InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
                 />
               </Box>
               <Box>
@@ -207,7 +207,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
                   value={editingEmergency ? emergencyDraft.relationship : savedEmergency.relationship}
                   size="small" fullWidth
                   onChange={(e) => setEmergencyDraft((d) => ({ ...d, relationship: e.target.value }))}
-                  InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: '#FAFAFA' } }}
+                  InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
                 />
               </Box>
             </Box>

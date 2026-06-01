@@ -131,7 +131,7 @@ export default function EmployeesPage() {
                       <Chip
                         label={`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
                         size="small"
-                        sx={{ bgcolor: '#F0EDF6', color: 'primary.main', fontWeight: 500 }}
+                        sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 500 }}
                       />
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <EmailOutlinedIcon sx={{ fontSize: 13, color: 'text.secondary' }} />

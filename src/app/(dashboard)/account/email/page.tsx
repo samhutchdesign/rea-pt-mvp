@@ -18,7 +18,7 @@ export default function EmailChangePage() {
         <Typography variant="h5" fontWeight={600} mb={3}>Change Email</Typography>
         <Card>
           <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <TextField label="Current Email" size="small" fullWidth defaultValue={mockPhysio.email} InputProps={{ readOnly: true, sx: { bgcolor: '#FAFAFA' } }} />
+            <TextField label="Current Email" size="small" fullWidth defaultValue={mockPhysio.email} InputProps={{ readOnly: true, sx: { bgcolor: 'action.hover' } }} />
             <TextField label="New Email" size="small" fullWidth type="email" />
             <TextField label="Confirm New Email" size="small" fullWidth type="email" />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>

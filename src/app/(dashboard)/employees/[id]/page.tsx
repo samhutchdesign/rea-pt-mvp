@@ -133,7 +133,7 @@ function ArchiveEmployeeDialog({
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {assignedPatients.map((p) => (
                 <Box key={p.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Avatar sx={{ width: 36, height: 36, bgcolor: '#E8E0F0', color: 'primary.main', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                  <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.light', color: 'primary.main', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
                     {p.avatarInitials}
                   </Avatar>
                   <Box sx={{ minWidth: 130, flexShrink: 0 }}>
@@ -299,7 +299,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
           <Box sx={{ flexGrow: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
               <Typography variant="h5" fontWeight={700}>{savedContact.firstName} {savedContact.lastName}</Typography>
-              <Chip label={savedProfessional.credentials} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600 }} />
+              <Chip label={savedProfessional.credentials} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600 }} />
             </Box>
             <Typography variant="body1" color="text.secondary" mb={1}>{savedProfessional.title}</Typography>
             <Box sx={{ display: 'flex', gap: 2 }}>
@@ -324,7 +324,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 startIcon={<ArchiveOutlinedIcon />}
                 size="small"
                 onClick={() => setArchiveDialogOpen(true)}
-                sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: '#F5F5F5' } }}
+                sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: 'action.hover' } }}
               >
                 Archive Employee
               </Button>
@@ -405,10 +405,10 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                       {assignedPatients.map((p) => (
                         <Box
                           key={p.id}
-                          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', p: 1, borderRadius: 1, '&:hover': { bgcolor: '#F5F5F5' } }}
+                          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', p: 1, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' } }}
                           onClick={() => router.push(`/patients/${p.id}/overview`)}
                         >
-                          <Avatar sx={{ width: 32, height: 32, bgcolor: '#E8E0F0', color: 'primary.main', fontSize: 12, fontWeight: 600 }}>{p.avatarInitials}</Avatar>
+                          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', color: 'primary.main', fontSize: 12, fontWeight: 600 }}>{p.avatarInitials}</Avatar>
                           <Box>
                             <Typography variant="body2" fontWeight={500}>{p.firstName} {p.lastName}</Typography>
                             <Typography variant="caption" color="text.secondary">{p.status}</Typography>
@@ -434,7 +434,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               assignedPatients.map((p) => (
                 <Card key={p.id} sx={{ '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2 }}>
-                    <Avatar sx={{ width: 48, height: 48, bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
+                    <Avatar sx={{ width: 48, height: 48, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
                       {p.avatarInitials}
                     </Avatar>
                     <Box sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => router.push(`/patients/${p.id}/overview`)}>

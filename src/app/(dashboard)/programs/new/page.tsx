@@ -130,7 +130,7 @@ export default function NewProgramPage() {
               {filteredExercises.map((ex) => (
                 <Card key={ex.id} sx={{ flexShrink: 0 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
-                    <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 18 }} />
                     </Box>
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>

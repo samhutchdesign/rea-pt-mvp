@@ -143,7 +143,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           {filteredExercises.map((ex) => (
             <Card key={ex.id} sx={{ flexShrink: 0, '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
-                <Box sx={{ width: 44, height: 44, borderRadius: 1, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Box sx={{ width: 44, height: 44, borderRadius: 1, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 20 }} />
                 </Box>
                 <Box sx={{ flexGrow: 1, minWidth: 0 }}>

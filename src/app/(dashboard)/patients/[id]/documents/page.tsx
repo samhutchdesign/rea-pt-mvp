@@ -307,7 +307,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
               </Typography>
               <Box
                 onClick={handleBrowseClick}
-                sx={{ border: '2px dashed #E0E0E0', borderRadius: 2, p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, cursor: 'pointer', transition: 'border-color 0.15s', '&:hover': { borderColor: 'primary.main', bgcolor: '#FAFAFA' } }}
+                sx={{ border: '2px dashed #E0E0E0', borderRadius: 2, p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, cursor: 'pointer', transition: 'border-color 0.15s', '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' } }}
               >
                 <UploadFileRoundedIcon sx={{ fontSize: 40, color: '#BDBDBD' }} />
                 <Typography variant="body2" fontWeight={500}>Drag & drop a PDF here</Typography>

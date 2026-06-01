@@ -153,7 +153,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                       value={form.name}
                       onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                       InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: '#FAFAFA' } } : {}}
+                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
                     />
                   </Box>
                   <Box sx={{ display: 'flex', gap: 2 }}>
@@ -162,14 +162,14 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                       value={form.city}
                       onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
                       InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: '#FAFAFA' } } : {}}
+                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
                     />
                     <TextField
                       label="Region / Country" size="small" fullWidth
                       value={form.regionCountry}
                       onChange={(e) => setForm((f) => ({ ...f, regionCountry: e.target.value }))}
                       InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: '#FAFAFA' } } : {}}
+                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
                     />
                   </Box>
                   <TextField
@@ -177,7 +177,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                     value={form.description}
                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                     InputProps={{ readOnly }}
-                    sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: '#FAFAFA' } } : {}}
+                    sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
                   />
                 </Box>
               </CardContent>
@@ -192,7 +192,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                     value={form.address}
                     onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
                     InputProps={{ readOnly }}
-                    sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: '#FAFAFA' } } : {}}
+                    sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
                   />
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <TextField
@@ -200,14 +200,14 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                       value={form.phone}
                       onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                       InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: '#FAFAFA' } } : {}}
+                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
                     />
                     <TextField
                       label="Email" size="small" fullWidth
                       value={form.email}
                       onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                       InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: '#FAFAFA' } } : {}}
+                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
                     />
                   </Box>
                 </Box>
@@ -257,7 +257,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                       return (
                         <Box key={emp.id}>
                           <Box
-                            sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.5, cursor: 'pointer', borderRadius: 1, px: 0.5, '&:hover': { bgcolor: '#F5F5F5' } }}
+                            sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.5, cursor: 'pointer', borderRadius: 1, px: 0.5, '&:hover': { bgcolor: 'action.hover' } }}
                             onClick={() => router.push(`/employees/${emp.id}`)}
                           >
                             <Avatar sx={{ width: 40, height: 40, bgcolor: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
@@ -267,7 +267,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                               <Typography variant="body2" fontWeight={600} noWrap>{emp.firstName} {emp.lastName}</Typography>
                               <Typography variant="caption" color="text.secondary" noWrap>{emp.credentials} · {emp.title}</Typography>
                             </Box>
-                            <Chip label={`${patientCount}p`} size="small" sx={{ bgcolor: '#F0EDF6', color: 'primary.main', fontSize: 11, height: 20, fontWeight: 600 }} />
+                            <Chip label={`${patientCount}p`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontSize: 11, height: 20, fontWeight: 600 }} />
                           </Box>
                           {i < teamMembers.length - 1 && <Divider />}
                         </Box>

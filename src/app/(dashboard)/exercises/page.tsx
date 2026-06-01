@@ -114,7 +114,7 @@ export default function ExercisesPage() {
               onClick={() => router.push(`/exercises/${ex.id}`)}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2 }}>
-                <Box sx={{ width: 52, height: 52, borderRadius: 1.5, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Box sx={{ width: 52, height: 52, borderRadius: 1.5, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 24 }} />
                 </Box>
                 <Box sx={{ flexGrow: 1 }}>

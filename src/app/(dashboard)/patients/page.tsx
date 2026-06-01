@@ -173,7 +173,7 @@ export default function PatientsPage() {
                 onClick={() => router.push(`/patients/${patient.id}/overview`)}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2.5 }}>
-                  <Avatar sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600, width: 44, height: 44 }}>
+                  <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600, width: 44, height: 44 }}>
                     {patient.avatarInitials}
                   </Avatar>
                   <Box sx={{ flexGrow: 1, minWidth: 0 }}>
@@ -183,7 +183,7 @@ export default function PatientsPage() {
                       <Chip
                         label={conditionChip(patient)}
                         size="small"
-                        sx={{ mt: 0.75, bgcolor: '#EDE7F6', color: '#5B3FA6', fontSize: '0.72rem', height: 22, fontWeight: 500 }}
+                        sx={{ mt: 0.75, bgcolor: 'primary.light', color: 'primary.main', fontSize: '0.72rem', height: 22, fontWeight: 500 }}
                       />
                     )}
                   </Box>

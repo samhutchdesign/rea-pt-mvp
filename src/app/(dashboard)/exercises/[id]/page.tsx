@@ -302,7 +302,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             />
           </Box>
         ) : (
-          <Box sx={{ width: '100%', height: 300, borderRadius: 2, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
+          <Box sx={{ width: '100%', height: 300, borderRadius: 2, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
             <Box sx={{ textAlign: 'center' }}>
               <FitnessCenterRoundedIcon sx={{ fontSize: 64, color: '#6750A4', opacity: 0.4, mb: 2 }} />
               <Button variant="contained" startIcon={<PlayArrowRoundedIcon />} disableElevation>Play Video</Button>
@@ -324,10 +324,10 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, mb: 2.5, flexWrap: 'wrap' }}>
-          <Chip label={`${ex.defaultSets} Sets`} sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600 }} />
-          <Chip label={`${ex.defaultReps} Reps`} sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600 }} />
-          {ex.defaultHoldSecs > 0 && <Chip label={`${ex.defaultHoldSecs}s Hold`} sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600 }} />}
-          <Chip label={ex.defaultFrequency} sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600 }} />
+          <Chip label={`${ex.defaultSets} Sets`} sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600 }} />
+          <Chip label={`${ex.defaultReps} Reps`} sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600 }} />
+          {ex.defaultHoldSecs > 0 && <Chip label={`${ex.defaultHoldSecs}s Hold`} sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600 }} />}
+          <Chip label={ex.defaultFrequency} sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600 }} />
         </Box>
 
         <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 3 }}>
@@ -359,7 +359,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                     label={prog.name}
                     clickable
                     onClick={() => router.push(`/programs/${prog.id}`)}
-                    sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 500 }}
+                    sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 500 }}
                   />
                 ))}
               </Box>

@@ -31,7 +31,12 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: { root: { textTransform: 'none', fontWeight: 500 } },
       },
       MuiChip: {
-        styleOverrides: { root: { borderRadius: 4 } },
+        styleOverrides: {
+          root: {
+            borderRadius: 4,
+            ...(isDark ? { borderColor: 'rgba(255,255,255,0.15)' } : {}),
+          },
+        },
       },
       MuiTab: {
         styleOverrides: { root: { textTransform: 'none', fontWeight: 500 } },
@@ -46,6 +51,15 @@ export function createAppTheme(mode: PaletteMode) {
       },
       MuiPaper: {
         styleOverrides: { root: { backgroundImage: 'none' } },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: isDark ? {
+            backgroundColor: 'rgba(255,255,255,0.05)',
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.2)' },
+            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.4)' },
+          } : {},
+        },
       },
     },
   });

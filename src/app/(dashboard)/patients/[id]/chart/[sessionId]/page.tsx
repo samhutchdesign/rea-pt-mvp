@@ -83,7 +83,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   return (
     <Box sx={{ maxWidth: 820 }}>
       {/* Session header bar */}
-      <Box sx={{ bgcolor: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 1, px: 2.5, py: 1.5, mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+      <Box sx={{ bgcolor: 'action.hover', border: '1px solid #E0E0E0', borderRadius: 1, px: 2.5, py: 1.5, mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
         <Typography variant="body2" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
         {ageLabel && <Typography variant="body2" color="text.secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</Typography>}
         <Typography variant="body2" color="text.secondary">{sessionDate}</Typography>

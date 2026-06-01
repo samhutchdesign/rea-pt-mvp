@@ -187,15 +187,15 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           </Box>
 
           {patientPrescription ? (
-            <Box sx={{ mb: 2.5, p: 1.5, bgcolor: '#F8F5FF', border: '1px solid #D4C5F9', borderRadius: 1 }}>
+            <Box sx={{ mb: 2.5, p: 1.5, bgcolor: 'primary.light', border: '1px solid', borderColor: 'primary.main', borderRadius: 1 }}>
               <Typography variant="caption" sx={{ fontWeight: 600, color: 'primary.main', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', mb: 1 }}>
                 Patient Prescription
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-                <Chip label={`${patientPrescription.sets} Sets`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
-                <Chip label={`${patientPrescription.reps} Reps`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
-                {patientPrescription.holdSecs > 0 && <Chip label={`${patientPrescription.holdSecs}s Hold`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />}
-                <Chip label={patientPrescription.frequency} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+                <Chip label={`${patientPrescription.sets} Sets`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />
+                <Chip label={`${patientPrescription.reps} Reps`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />
+                {patientPrescription.holdSecs > 0 && <Chip label={`${patientPrescription.holdSecs}s Hold`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />}
+                <Chip label={patientPrescription.frequency} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />
               </Box>
               <Typography variant="caption" color="text.secondary">
                 Adherence: <strong>{patientPrescription.adherence}%</strong>
@@ -203,10 +203,10 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             </Box>
           ) : (
             <Box sx={{ display: 'flex', gap: 1, mb: 2.5 }}>
-              <Chip label={`${exercise.defaultSets} Sets`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
-              <Chip label={`${exercise.defaultReps} Reps`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
-              {exercise.defaultHoldSecs > 0 && <Chip label={`${exercise.defaultHoldSecs}s Hold`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />}
-              <Chip label={exercise.defaultFrequency} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+              <Chip label={`${exercise.defaultSets} Sets`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />
+              <Chip label={`${exercise.defaultReps} Reps`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />
+              {exercise.defaultHoldSecs > 0 && <Chip label={`${exercise.defaultHoldSecs}s Hold`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />}
+              <Chip label={exercise.defaultFrequency} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />
             </Box>
           )}
 

@@ -243,7 +243,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
                     {prog.tags.map((t) => <Chip key={t} label={t} size="small" variant="outlined" />)}
                   </Box>
                 </Box>
-                <Chip label={`${prog.exercises.length} exercises`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+                <Chip label={`${prog.exercises.length} exercises`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main' }} />
               </Box>
             </Card>
           ))}
@@ -278,7 +278,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           return (
             <Card key={pe.exerciseId}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, p: 2 }}>
-                <Box sx={{ width: 80, height: 64, borderRadius: 1, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Box sx={{ width: 80, height: 64, borderRadius: 1, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 28 }} />
                 </Box>
                 <Box sx={{ flexGrow: 1 }}>

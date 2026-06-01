@@ -125,14 +125,14 @@ function PaymentMethodTab() {
       <Card sx={{ mb: 2 }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Box sx={{ width: 48, height: 48, borderRadius: 1.5, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{ width: 48, height: 48, borderRadius: 1.5, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CreditCardRoundedIcon sx={{ color: '#6750A4', fontSize: 24 }} />
             </Box>
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="body2" fontWeight={600}>Visa ending in 4242</Typography>
               <Typography variant="caption" color="text.secondary">Expires 08 / 2028</Typography>
             </Box>
-            <Chip label="Default" size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontSize: 11 }} />
+            <Chip label="Default" size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontSize: 11 }} />
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button variant="outlined" size="small">Update Card</Button>

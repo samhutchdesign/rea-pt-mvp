@@ -296,7 +296,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
                 <LinearProgress
                   variant="determinate"
                   value={(elapsed / MAX_SECS) * 100}
-                  sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: '#F5F5F5', '& .MuiLinearProgress-bar': { bgcolor: '#F44336', borderRadius: 3 } }}
+                  sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: '#F44336', borderRadius: 3 } }}
                 />
                 <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace', minWidth: 90, textAlign: 'right' }}>
                   {fmt(elapsed)} / {fmt(MAX_SECS)}

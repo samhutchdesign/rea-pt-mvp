@@ -27,7 +27,7 @@ function InfoField({ label, value, hideEmpty }: { label: string; value?: string;
   return (
     <Box>
       <Typography variant="caption" color="text.secondary" display="block" mb={0.3}>{label}</Typography>
-      <Box sx={{ border: '1px solid #E0E0E0', borderRadius: 1, px: 1.5, py: 1, bgcolor: '#FAFAFA' }}>
+      <Box sx={{ border: '1px solid #E0E0E0', borderRadius: 1, px: 1.5, py: 1, bgcolor: 'action.hover' }}>
         <Typography variant="body2">{value || 'N/A'}</Typography>
       </Box>
     </Box>

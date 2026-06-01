@@ -108,10 +108,10 @@ export default function DashboardPage() {
             {recentPatients.map((patient, i) => (
               <Box key={patient.id}>
                 <Box
-                  sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2, cursor: 'pointer', '&:hover': { bgcolor: '#F9F9FB' }, transition: 'background 0.1s' }}
+                  sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' }, transition: 'background 0.1s' }}
                   onClick={() => router.push(`/patients/${patient.id}/overview`)}
                 >
-                  <Avatar sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600, fontSize: 14, width: 40, height: 40 }}>
+                  <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600, fontSize: 14, width: 40, height: 40 }}>
                     {patient.avatarInitials}
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>

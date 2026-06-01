@@ -77,7 +77,7 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
             return (
               <Card key={pe.exerciseId}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2 }}>
-                  <Box sx={{ width: 48, height: 48, borderRadius: 1, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Box sx={{ width: 48, height: 48, borderRadius: 1, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 22 }} />
                   </Box>
                   <Box sx={{ flexGrow: 1 }}>

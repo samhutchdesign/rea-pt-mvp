@@ -30,7 +30,7 @@ export default function ProfilePage() {
         <Card sx={{ mb: 2 }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 3 }}>
-              <Avatar sx={{ width: 64, height: 64, bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 700, fontSize: 22 }}>
+              <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700, fontSize: 22 }}>
                 {mockPhysio.avatarInitials}
               </Avatar>
               <Box sx={{ flexGrow: 1 }}>
@@ -74,7 +74,7 @@ export default function ProfilePage() {
               <Typography variant="subtitle2" fontWeight={600} mb={2}>Organization</Typography>
               <Divider sx={{ mb: 2 }} />
               <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer', p: 1.5, border: '1px solid #E0E0E0', borderRadius: 2, '&:hover': { borderColor: 'primary.main', bgcolor: '#FAFAFA' }, transition: 'all 0.15s' }}
+                sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer', p: 1.5, border: '1px solid #E0E0E0', borderRadius: 2, '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' }, transition: 'all 0.15s' }}
                 onClick={() => router.push('/clinic')}
               >
                 <Avatar sx={{ width: 44, height: 44, bgcolor: 'primary.main', color: '#fff', fontWeight: 700, fontSize: 16 }}>

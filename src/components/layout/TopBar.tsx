@@ -97,7 +97,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
 
         <Avatar
           onClick={(e) => setAnchorEl(e.currentTarget)}
-          sx={{ width: 36, height: 36, bgcolor: '#E8E0F0', color: 'primary.main', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+          sx={{ width: 36, height: 36, bgcolor: 'primary.light', color: 'primary.main', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
         >
           {mockPhysio.avatarInitials}
         </Avatar>

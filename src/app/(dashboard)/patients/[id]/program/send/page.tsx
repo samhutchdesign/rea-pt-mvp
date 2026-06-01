@@ -57,7 +57,7 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
               return (
                 <Box key={pe.exerciseId}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: '#F0EDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 18 }} />
                     </Box>
                     <Box sx={{ flexGrow: 1 }}>
