@@ -14,7 +14,6 @@ export default function SettingsPage() {
   const mode = useThemeMode();
   const [emailComments, setEmailComments] = useState(true);
   const [weeklySummary, setWeeklySummary] = useState(true);
-  const [compactView, setCompactView] = useState(false);
 
   return (
     <>
@@ -50,13 +49,6 @@ export default function SettingsPage() {
                   />
                 }
                 label={<Typography variant="body2">Dark mode</Typography>}
-                sx={{ mb: 1 }}
-              />
-            </Box>
-            <Box>
-              <FormControlLabel
-                control={<Switch checked={compactView} onChange={(e) => setCompactView(e.target.checked)} size="small" />}
-                label={<Typography variant="body2">Compact view</Typography>}
                 sx={{ mb: 1 }}
               />
             </Box>
