@@ -1,13 +1,34 @@
 export interface UploadedPatientData {
-  // Clinical
+  // Basic
   firstName: string;
   lastName: string;
   dateOfBirth: string;
+  occupation: string;
+  // Chief complaint & symptoms
   chiefComplaint: string;
   symptomDuration: string;
+  symptomEvolution: string;
+  painLevel: string;
+  functionalMobility: string;
+  // Medical & obstetric history
   medicalHistory: string;
+  previousPhysio: string;
+  obstetricsHistory: string;
+  bladderBowelSymptoms: string;
+  // Medications & allergies
   medications: string;
+  allergies: string;
+  // Treatment & referral
   treatmentGoals: string;
+  additionalNotes: string;
+  referringPhysician: string;
+  referralReason: string;
+  // Lifestyle
+  diet: string;
+  exercise: string;
+  smoker: string;
+  alcohol: string;
+  socialEnvironment: string;
   // Contact
   phone: string;
   address: string;

@@ -163,6 +163,12 @@ export interface InjuryHistory {
   functionalMobility: string;
   management: string;
   homeEquipment: string;
+  painLevel?: string;
+}
+
+export interface ObstetricPelvicHealth {
+  obstetricsHistory: string;
+  bladderBowelSymptoms: string;
 }
 
 export interface PMHx {
@@ -171,6 +177,9 @@ export interface PMHx {
   previousTreatments: string;
   medicationList: string;
   exams: string;
+  allergies?: string;
+  referringPhysician?: string;
+  referralReason?: string;
 }
 
 export interface SOHx {
@@ -213,6 +222,7 @@ export interface Patient {
   totalSessions: number;
   metrics?: PatientMetrics;
   injuryHistory?: InjuryHistory;
+  obstetricPelvicHealth?: ObstetricPelvicHealth;
   pmhx?: PMHx;
   sohx?: SOHx;
   lifestyle?: LifestyleHabits;

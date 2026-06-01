@@ -20,7 +20,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
-import type { PatientMetrics, InjuryHistory, PMHx, SOHx, LifestyleHabits, MedicalHistory } from '@/lib/types';
+import type { PatientMetrics, InjuryHistory, ObstetricPelvicHealth, PMHx, SOHx, LifestyleHabits, MedicalHistory } from '@/lib/types';
 
 function InfoField({ label, value, hideEmpty }: { label: string; value?: string; hideEmpty: boolean }) {
   if (hideEmpty && (!value || value === 'N/A')) return null;
@@ -51,6 +51,7 @@ function SectionCard({ title, children, onEdit }: { title: string; children: Rea
 const SECTION_TITLES: Record<string, string> = {
   metrics: 'Patient Metrics',
   injury: 'Injury or Condition History',
+  obstetric: 'Obstetric & Pelvic Health',
   pmhx: 'PMHx (Past Medical / Hospitalization History)',
   sohx: 'SOHx (Social History)',
   lifestyle: 'Lifestyle & Habits',
@@ -72,28 +73,39 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         dateOfOnset: uploaded.symptomDuration,
         surgeryType: 'Emergency C-section',
         surgeryDate: 'January 14, 2026',
-        symptomEvolution: 'Progressive improvement since surgery; intermittent leakage during physical activity',
-        functionalMobility: 'Ambulatory, able to perform daily tasks; avoids high-impact activities',
+        symptomEvolution: uploaded.symptomEvolution,
+        functionalMobility: uploaded.functionalMobility,
         management: 'Pelvic floor exercises at home, rest; no formal physiotherapy to date',
         homeEquipment: 'None',
+        painLevel: uploaded.painLevel,
       }
     : patient?.injuryHistory;
+
+  const initialObstetric: ObstetricPelvicHealth | undefined = uploaded
+    ? {
+        obstetricsHistory: uploaded.obstetricsHistory,
+        bladderBowelSymptoms: uploaded.bladderBowelSymptoms,
+      }
+    : patient?.obstetricPelvicHealth;
 
   const initialPmhx: PMHx | undefined = uploaded
     ? {
         previousEpisode: 'None',
         pmhx: uploaded.medicalHistory,
-        previousTreatments: 'Prenatal yoga, standard postnatal check-ups',
+        previousTreatments: uploaded.previousPhysio,
         medicationList: uploaded.medications,
-        exams: 'Postpartum follow-up at 6 weeks; pelvic exam unremarkable',
+        exams: 'OB clearance for physiotherapy — March 2026. No imaging ordered.',
+        allergies: uploaded.allergies,
+        referringPhysician: uploaded.referringPhysician,
+        referralReason: uploaded.referralReason,
       }
     : patient?.pmhx;
 
   const initialSohx: SOHx | undefined = uploaded
     ? {
-        job: 'Graphic designer (remote)',
+        job: uploaded.occupation,
         hobbies: '',
-        socialEnvironment: 'Lives with partner and newborn; strong support system',
+        socialEnvironment: uploaded.socialEnvironment,
         physicalEnvironment: '',
         clientGoals: uploaded.treatmentGoals,
       }
@@ -101,11 +113,11 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
 
   const initialLifestyle: LifestyleHabits | undefined = uploaded
     ? {
-        otherConditions: 'Mild diastasis recti (2 cm gap at navel)',
-        diet: 'Balanced; breastfeeding diet',
-        exercise: 'Light walking; avoiding high-impact',
-        smoker: 'No',
-        alcohol: 'No (breastfeeding)',
+        otherConditions: '',
+        diet: uploaded.diet,
+        exercise: uploaded.exercise,
+        smoker: uploaded.smoker,
+        alcohol: uploaded.alcohol,
       }
     : patient?.lifestyle;
 
@@ -116,6 +128,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
 
   const [localMetrics, setLocalMetrics] = useState<PatientMetrics | undefined>(initialMetrics);
   const [localInjury, setLocalInjury] = useState<InjuryHistory | undefined>(initialInjury);
+  const [localObstetric, setLocalObstetric] = useState<ObstetricPelvicHealth | undefined>(initialObstetric);
   const [localPmhx, setLocalPmhx] = useState<PMHx | undefined>(initialPmhx);
   const [localSohx, setLocalSohx] = useState<SOHx | undefined>(initialSohx);
   const [localLifestyle, setLocalLifestyle] = useState<LifestyleHabits | undefined>(initialLifestyle);
@@ -141,14 +154,23 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         dateOfOnset: localInjury?.dateOfOnset ?? '',
         surgeryType: localInjury?.surgeryType ?? '',
         surgeryDate: localInjury?.surgeryDate ?? '',
+        painLevel: localInjury?.painLevel ?? '',
         symptomEvolution: localInjury?.symptomEvolution ?? '',
         functionalMobility: localInjury?.functionalMobility ?? '',
         management: localInjury?.management ?? '',
         homeEquipment: localInjury?.homeEquipment ?? '',
       };
+    } else if (section === 'obstetric') {
+      values = {
+        obstetricsHistory: localObstetric?.obstetricsHistory ?? '',
+        bladderBowelSymptoms: localObstetric?.bladderBowelSymptoms ?? '',
+      };
     } else if (section === 'pmhx') {
       values = {
+        referringPhysician: localPmhx?.referringPhysician ?? '',
+        referralReason: localPmhx?.referralReason ?? '',
         previousEpisode: localPmhx?.previousEpisode ?? '',
+        allergies: localPmhx?.allergies ?? '',
         pmhx: localPmhx?.pmhx ?? '',
         previousTreatments: localPmhx?.previousTreatments ?? '',
         medicationList: localPmhx?.medicationList ?? '',
@@ -171,9 +193,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         alcohol: localLifestyle?.alcohol ?? '',
       };
     } else if (section === 'medical') {
-      values = {
-        otherConditions: localMedical?.otherConditions ?? '',
-      };
+      values = { otherConditions: localMedical?.otherConditions ?? '' };
     }
     setDraftValues(values);
     setEditSection(section);
@@ -194,10 +214,16 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         dateOfOnset: draftValues.dateOfOnset,
         surgeryType: draftValues.surgeryType,
         surgeryDate: draftValues.surgeryDate,
+        painLevel: draftValues.painLevel,
         symptomEvolution: draftValues.symptomEvolution,
         functionalMobility: draftValues.functionalMobility,
         management: draftValues.management,
         homeEquipment: draftValues.homeEquipment,
+      });
+    } else if (editSection === 'obstetric') {
+      setLocalObstetric({
+        obstetricsHistory: draftValues.obstetricsHistory,
+        bladderBowelSymptoms: draftValues.bladderBowelSymptoms,
       });
     } else if (editSection === 'pmhx') {
       setLocalPmhx({
@@ -206,6 +232,9 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         previousTreatments: draftValues.previousTreatments,
         medicationList: draftValues.medicationList,
         exams: draftValues.exams,
+        allergies: draftValues.allergies,
+        referringPhysician: draftValues.referringPhysician,
+        referralReason: draftValues.referralReason,
       });
     } else if (editSection === 'sohx') {
       setLocalSohx({
@@ -255,6 +284,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
           <TextField label="Type of Surgery / Procedure" size="small" fullWidth value={draftValues.surgeryType ?? ''} onChange={(e) => setDraft('surgeryType', e.target.value)} />
           <TextField label="Date of Surgery" size="small" fullWidth value={draftValues.surgeryDate ?? ''} onChange={(e) => setDraft('surgeryDate', e.target.value)} />
         </Box>
+        <TextField label="Pain Level" size="small" fullWidth value={draftValues.painLevel ?? ''} onChange={(e) => setDraft('painLevel', e.target.value)} />
         <TextField label="Evolution of Symptoms" size="small" fullWidth multiline rows={2} value={draftValues.symptomEvolution ?? ''} onChange={(e) => setDraft('symptomEvolution', e.target.value)} />
         <TextField label="Functional Mobility" size="small" fullWidth multiline rows={2} value={draftValues.functionalMobility ?? ''} onChange={(e) => setDraft('functionalMobility', e.target.value)} />
         <TextField label="Management of Problem to Date" size="small" fullWidth multiline rows={2} value={draftValues.management ?? ''} onChange={(e) => setDraft('management', e.target.value)} />
@@ -262,12 +292,24 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
       </Box>
     );
 
+    if (editSection === 'obstetric') return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField label="Obstetric History" size="small" fullWidth multiline rows={3} value={draftValues.obstetricsHistory ?? ''} onChange={(e) => setDraft('obstetricsHistory', e.target.value)} />
+        <TextField label="Bladder & Bowel Symptoms" size="small" fullWidth multiline rows={3} value={draftValues.bladderBowelSymptoms ?? ''} onChange={(e) => setDraft('bladderBowelSymptoms', e.target.value)} />
+      </Box>
+    );
+
     if (editSection === 'pmhx') return (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextField label="Previous Episode" size="small" fullWidth value={draftValues.previousEpisode ?? ''} onChange={(e) => setDraft('previousEpisode', e.target.value)} />
-          <TextField label="PMHx" size="small" fullWidth value={draftValues.pmhx ?? ''} onChange={(e) => setDraft('pmhx', e.target.value)} />
+          <TextField label="Referring Physician" size="small" fullWidth value={draftValues.referringPhysician ?? ''} onChange={(e) => setDraft('referringPhysician', e.target.value)} />
+          <TextField label="Referral Reason" size="small" fullWidth value={draftValues.referralReason ?? ''} onChange={(e) => setDraft('referralReason', e.target.value)} />
         </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <TextField label="Previous Episode" size="small" fullWidth value={draftValues.previousEpisode ?? ''} onChange={(e) => setDraft('previousEpisode', e.target.value)} />
+          <TextField label="Known Allergies" size="small" fullWidth value={draftValues.allergies ?? ''} onChange={(e) => setDraft('allergies', e.target.value)} />
+        </Box>
+        <TextField label="PMHx" size="small" fullWidth value={draftValues.pmhx ?? ''} onChange={(e) => setDraft('pmhx', e.target.value)} />
         <TextField label="Previous Treatments" size="small" fullWidth multiline rows={2} value={draftValues.previousTreatments ?? ''} onChange={(e) => setDraft('previousTreatments', e.target.value)} />
         <TextField label="Medication List" size="small" fullWidth multiline rows={2} value={draftValues.medicationList ?? ''} onChange={(e) => setDraft('medicationList', e.target.value)} />
         <TextField label="Exams, Diagnostics, Tests" size="small" fullWidth multiline rows={2} value={draftValues.exams ?? ''} onChange={(e) => setDraft('exams', e.target.value)} />
@@ -347,6 +389,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
           <InfoField label="Date of Onset" value={localInjury?.dateOfOnset} hideEmpty={hideEmpty} />
           <InfoField label="Type of Surgery / Procedure" value={localInjury?.surgeryType} hideEmpty={hideEmpty} />
           <InfoField label="Date of Surgery" value={localInjury?.surgeryDate} hideEmpty={hideEmpty} />
+          <InfoField label="Pain Level" value={localInjury?.painLevel} hideEmpty={hideEmpty} />
         </Box>
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2, mt: 2 }}>
           <InfoField label="Evolution of Symptoms" value={localInjury?.symptomEvolution} hideEmpty={hideEmpty} />
@@ -356,12 +399,22 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         </Box>
       </SectionCard>
 
+      <SectionCard title="Obstetric & Pelvic Health" onEdit={() => openEdit('obstetric')}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
+          <InfoField label="Obstetric History" value={localObstetric?.obstetricsHistory} hideEmpty={hideEmpty} />
+          <InfoField label="Bladder & Bowel Symptoms" value={localObstetric?.bladderBowelSymptoms} hideEmpty={hideEmpty} />
+        </Box>
+      </SectionCard>
+
       <SectionCard title="PMHx (Past Medical / Hospitalization History)" onEdit={() => openEdit('pmhx')}>
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+          <InfoField label="Referring Physician" value={localPmhx?.referringPhysician} hideEmpty={hideEmpty} />
+          <InfoField label="Referral Reason" value={localPmhx?.referralReason} hideEmpty={hideEmpty} />
           <InfoField label="Previous Episode" value={localPmhx?.previousEpisode} hideEmpty={hideEmpty} />
-          <InfoField label="PMHx" value={localPmhx?.pmhx} hideEmpty={hideEmpty} />
+          <InfoField label="Known Allergies" value={localPmhx?.allergies} hideEmpty={hideEmpty} />
         </Box>
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2, mt: 2 }}>
+          <InfoField label="PMHx" value={localPmhx?.pmhx} hideEmpty={hideEmpty} />
           <InfoField label="Previous Treatments" value={localPmhx?.previousTreatments} hideEmpty={hideEmpty} />
           <InfoField label="Medication List" value={localPmhx?.medicationList} hideEmpty={hideEmpty} />
           <InfoField label="Exams, Diagnostics, Tests" value={localPmhx?.exams} hideEmpty={hideEmpty} />
@@ -403,7 +456,6 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         )}
       </SectionCard>
 
-      {/* Edit Dialog */}
       <Dialog open={!!editSection} onClose={() => setEditSection(null)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 600 }}>
           Edit {editSection ? SECTION_TITLES[editSection] : ''}
