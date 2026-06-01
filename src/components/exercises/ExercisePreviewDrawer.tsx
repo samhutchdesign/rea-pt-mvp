@@ -213,8 +213,8 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           {/* Audio overlay compact section */}
           <Box sx={{
             display: 'flex', alignItems: 'center', gap: 1.5,
-            p: 1.5, border: '1px solid #E0E0E0', borderRadius: 1, mb: 2.5,
-            bgcolor: myTrack ? '#F8FFF8' : '#FAFAFA',
+            p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 2.5,
+            bgcolor: myTrack ? '#F8FFF8' : 'action.hover',
           }}>
             {myTrack
               ? <CheckCircleRoundedIcon sx={{ fontSize: 18, color: '#2E7D32', flexShrink: 0 }} />

@@ -109,7 +109,7 @@ function AudioPanel({
         <CardContent>
           {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-            <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: myTrack && myEnabled ? '#E8F5E9' : '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: myTrack && myEnabled ? '#E8F5E9' : 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {myTrack && myEnabled
                 ? <VolumeUpRoundedIcon sx={{ fontSize: 18, color: '#2E7D32' }} />
                 : <VolumeOffRoundedIcon sx={{ fontSize: 18, color: '#9E9E9E' }} />}
@@ -119,7 +119,7 @@ function AudioPanel({
 
           {/* Your recording */}
           {myTrack ? (
-            <Box sx={{ p: 2, bgcolor: '#FAFAFA', borderRadius: 1, border: '1px solid #E0E0E0' }}>
+            <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <CheckCircleRoundedIcon sx={{ fontSize: 18, color: myEnabled ? '#2E7D32' : '#BDBDBD', flexShrink: 0 }} />
                 <Box sx={{ flexGrow: 1 }}>
@@ -168,7 +168,7 @@ function AudioPanel({
               </Box>
             </Box>
           ) : (
-            <Box sx={{ p: 2, bgcolor: '#FAFAFA', borderRadius: 1, border: '1px solid #E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+            <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 1, border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
               <Typography variant="body2" color="text.secondary">
                 {tracks.length > 0 ? "You haven't recorded a voice-over yet." : 'No audio recorded. Record your voice-over to guide patients through this exercise.'}
               </Typography>
