@@ -16,6 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
@@ -23,8 +24,9 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
-import { mockPatients } from '@/lib/mock-data';
+import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
+import { useYourEmpId } from '@/lib/locationScope';
 import { clearUploadedData } from '@/lib/uploadStore';
 
 const patientTabs = [
@@ -62,6 +64,9 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
 
   const can = usePermissions();
+  const yourEmpId = useYourEmpId();
+  const isYourPatient = yourEmpId !== null && (patient?.assignedEmployeeIds ?? []).includes(yourEmpId);
+  const canEdit = can.canArchivePatient || isYourPatient;
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
   const currentTab = patientTabs[activeTab] ?? patientTabs[0];
 
@@ -149,40 +154,39 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
               )}
             </Box>
 
-            {can.canArchivePatient && (
-              archived ? (
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<UnarchiveOutlinedIcon />}
-                    size="small"
-                    onClick={handleRestore}
-                    color="warning"
-                  >
-                    Restore Patient
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="error"
-                    onClick={() => setConfirmDeleteOpen(true)}
-                  >
-                    Delete Patient
-                  </Button>
-                </Box>
-              ) : (
+            {can.canArchivePatient && archived && (
+              <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
                   variant="outlined"
-                  startIcon={<EditOutlinedIcon />}
+                  startIcon={<UnarchiveOutlinedIcon />}
                   size="small"
-                  onClick={() => {
-                    setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, location: patient.location });
-                    setEditOpen(true);
-                  }}
+                  onClick={handleRestore}
+                  color="warning"
                 >
-                  Edit Profile
+                  Restore Patient
                 </Button>
-              )
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="error"
+                  onClick={() => setConfirmDeleteOpen(true)}
+                >
+                  Delete Patient
+                </Button>
+              </Box>
+            )}
+            {canEdit && !archived && (
+              <Button
+                variant="outlined"
+                startIcon={<EditOutlinedIcon />}
+                size="small"
+                onClick={() => {
+                  setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, location: patient.location });
+                  setEditOpen(true);
+                }}
+              >
+                Edit Profile
+              </Button>
             )}
           </Box>
 
@@ -240,29 +244,39 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
           />
           <TextField
+            select
             label="Location"
             size="small"
             fullWidth
             value={editForm.location}
             onChange={(e) => setEditForm((f) => ({ ...f, location: e.target.value }))}
-          />
+          >
+            {mockClinicLocations.map((loc) => (
+              <MenuItem key={loc.id} value={`${loc.city}, ${loc.regionCountry}`}>
+                {loc.name} — {loc.city}, {loc.regionCountry}
+              </MenuItem>
+            ))}
+          </TextField>
 
-          <Divider sx={{ my: 1 }} />
-
-          <Box>
-            <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ textTransform: 'uppercase', fontWeight: 600, letterSpacing: 0.5 }}>
-              Danger Zone
-            </Typography>
-            <Button
-              variant="outlined"
-              color="warning"
-              size="small"
-              startIcon={<ArchiveOutlinedIcon />}
-              onClick={() => setConfirmArchiveOpen(true)}
-            >
-              Archive Patient
-            </Button>
-          </Box>
+          {can.canArchivePatient && (
+            <>
+              <Divider sx={{ my: 1 }} />
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ textTransform: 'uppercase', fontWeight: 600, letterSpacing: 0.5 }}>
+                  Danger Zone
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  size="small"
+                  startIcon={<ArchiveOutlinedIcon />}
+                  onClick={() => setConfirmArchiveOpen(true)}
+                >
+                  Archive Patient
+                </Button>
+              </Box>
+            </>
+          )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setEditOpen(false)}>Cancel</Button>
