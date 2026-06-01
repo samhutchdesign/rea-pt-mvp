@@ -19,8 +19,22 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
 import RestoreIcon from '@mui/icons-material/Restore';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
-import { mockPatients } from '@/lib/mock-data';
+import { mockPatients, mockChartSessions } from '@/lib/mock-data';
 import type { Patient } from '@/lib/types';
+
+function conditionChip(patient: Patient): string | null {
+  const text = patient.injuryHistory?.mechanism;
+  if (!text) return null;
+  return text.length > 32 ? text.slice(0, 32).replace(/\s\S*$/, '') + '…' : text;
+}
+
+function lastSeenLabel(patient: Patient): string {
+  const sessions = mockChartSessions[patient.id] ?? [];
+  if (!sessions.length) return 'No sessions yet';
+  const latest = sessions.slice().sort((a, b) => b.date.localeCompare(a.date))[0];
+  const date = new Date(latest.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `Last seen ${date} · ${sessions.length} session${sessions.length !== 1 ? 's' : ''}`;
+}
 
 const statusColors: Record<string, { bg: string; color: string }> = {
   active: { bg: '#E8F5E9', color: '#2E7D32' },
@@ -111,15 +125,22 @@ export default function PatientsPage() {
                   <Avatar sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600, width: 44, height: 44 }}>
                     {patient.avatarInitials}
                   </Avatar>
-                  <Box sx={{ flexGrow: 1 }}>
+                  <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                     <Typography variant="body1" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
                     <Typography variant="body2" color="text.secondary">{patient.email}</Typography>
+                    {conditionChip(patient) && (
+                      <Chip
+                        label={conditionChip(patient)}
+                        size="small"
+                        sx={{ mt: 0.75, bgcolor: '#EDE7F6', color: '#5B3FA6', fontSize: '0.72rem', height: 22, fontWeight: 500 }}
+                      />
+                    )}
                   </Box>
-                  <Typography variant="body2" color="text.secondary">{patient.location}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>{patient.location}</Typography>
                   <Chip
                     label={patient.status.charAt(0).toUpperCase() + patient.status.slice(1)}
                     size="small"
-                    sx={{ ...statusColors[patient.status], fontWeight: 500, fontSize: 12 }}
+                    sx={{ ...statusColors[patient.status], fontWeight: 500, fontSize: 12, flexShrink: 0 }}
                   />
                   {tab === 1 ? (
                     <Button
@@ -132,8 +153,8 @@ export default function PatientsPage() {
                       Restore
                     </Button>
                   ) : (
-                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 80, textAlign: 'right' }}>
-                      Modified {new Date(patient.lastModified).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 140, textAlign: 'right', flexShrink: 0 }}>
+                      {lastSeenLabel(patient)}
                     </Typography>
                   )}
                 </Box>
