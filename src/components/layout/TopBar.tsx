@@ -54,8 +54,9 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
       sx={{
         left: 80,
         width: 'calc(100% - 80px)',
-        bgcolor: '#FFFFFF',
-        borderBottom: '1px solid #E0E0E0',
+        bgcolor: 'background.paper',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
         color: 'text.primary',
         zIndex: 99,
       }}
@@ -162,10 +163,10 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           return (
             <Box key={note.id}>
               <Box
-                sx={{ px: 2.5, py: 1.75, cursor: 'pointer', '&:hover': { bgcolor: '#F9F9FB' }, transition: 'background 0.1s' }}
+                sx={{ px: 2.5, py: 1.75, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' }, transition: 'background 0.1s' }}
                 onClick={() => { setBellAnchorEl(null); router.push(`/patients/${patientId}/program`); }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, '&:hover': { bgcolor: 'action.hover' } }}>
                   <ChatBubbleOutlineRoundedIcon sx={{ fontSize: 13, color: 'primary.main' }} />
                   <Typography variant="caption" fontWeight={600} color="primary.main">
                     {patient ? `${patient.firstName} ${patient.lastName}` : patientId}

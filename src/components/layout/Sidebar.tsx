@@ -36,8 +36,9 @@ export default function Sidebar() {
       sx={{
         width: 80,
         flexShrink: 0,
-        bgcolor: '#FFFFFF',
-        borderRight: '1px solid #E0E0E0',
+        bgcolor: 'background.paper',
+        borderRight: '1px solid',
+        borderColor: 'divider',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -89,17 +90,17 @@ export default function Sidebar() {
                   cursor: 'pointer',
                   mb: 0.5,
                   bgcolor: isActive ? 'primary.light' : 'transparent',
-                  '&:hover': { bgcolor: isActive ? 'primary.light' : '#F5F5F5' },
+                  '&:hover': { bgcolor: isActive ? 'primary.light' : 'action.hover' },
                   transition: 'background-color 0.15s',
                 }}
               >
-                <Icon sx={{ fontSize: 22, color: isActive ? 'primary.main' : '#49454F' }} />
+                <Icon sx={{ fontSize: 22, color: isActive ? 'primary.main' : 'text.secondary' }} />
                 <Box
                   component="span"
                   sx={{
                     fontSize: 10,
                     mt: 0.4,
-                    color: isActive ? 'primary.main' : '#49454F',
+                    color: isActive ? 'primary.main' : 'text.secondary',
                     fontWeight: isActive ? 600 : 400,
                     lineHeight: 1,
                     textAlign: 'center',
