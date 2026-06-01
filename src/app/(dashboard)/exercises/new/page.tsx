@@ -37,6 +37,7 @@ export default function NewExercisePage() {
   const [selectedSurgeries, setSelectedSurgeries] = useState<string[]>([]);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
   const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>([]);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
 
   return (
     <>
@@ -101,8 +102,16 @@ export default function NewExercisePage() {
         </Card>
 
         <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Media</Typography>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            <Typography variant="subtitle2" fontWeight={600}>Media</Typography>
+            <TextField
+              label="YouTube URL"
+              fullWidth
+              size="small"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+            />
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button variant="outlined" size="small">Upload Video / Image</Button>
               <Button variant="outlined" size="small">Upload Audio Cue</Button>
