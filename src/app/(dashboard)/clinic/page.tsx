@@ -12,7 +12,6 @@ import Chip from '@mui/material/Chip';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -24,7 +23,6 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TopBar from '@/components/layout/TopBar';
 import { mockClinic, mockClinicLocations, mockEmployees, mockPatients } from '@/lib/mock-data';
@@ -57,7 +55,6 @@ export default function ClinicPage() {
   const [locations, setLocations] = useState<ClinicLocation[]>(INITIAL_LOCATIONS);
   const [addLocationOpen, setAddLocationOpen] = useState(false);
   const [newLocation, setNewLocation] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<ClinicLocation | null>(null);
 
   const handleSave = () => {
     setEditing(false);
@@ -88,14 +85,6 @@ export default function ClinicPage() {
     setNewLocation('');
     setAddLocationOpen(false);
     setSnackMsg('Location added.');
-    setSnackOpen(true);
-  };
-
-  const handleDeleteLocation = () => {
-    if (!deleteTarget) return;
-    setLocations((prev) => prev.filter((l) => l.id !== deleteTarget.id));
-    setDeleteTarget(null);
-    setSnackMsg('Location removed.');
     setSnackOpen(true);
   };
 
@@ -203,16 +192,9 @@ export default function ClinicPage() {
                             )}
                           </Box>
                           <ChevronRightIcon
-                            sx={{ fontSize: 18, color: 'text.secondary', cursor: 'pointer', mr: 0.5 }}
+                            sx={{ fontSize: 18, color: 'text.secondary', cursor: 'pointer' }}
                             onClick={() => router.push(`/clinic/${loc.id}`)}
                           />
-                          <IconButton
-                            size="small"
-                            onClick={() => setDeleteTarget(loc)}
-                            sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
-                          >
-                            <DeleteOutlineIcon fontSize="small" />
-                          </IconButton>
                         </Box>
                         {i < locations.length - 1 && <Divider />}
                       </Box>
@@ -299,22 +281,6 @@ export default function ClinicPage() {
           <Button onClick={() => { setAddLocationOpen(false); setNewLocation(''); }}>Cancel</Button>
           <Button variant="contained" disableElevation disabled={!newLocation.trim()} onClick={handleAddLocation}>
             Add Location
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Delete Location Confirmation */}
-      <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Remove Location?</DialogTitle>
-        <DialogContent sx={{ pt: '12px !important' }}>
-          <Typography variant="body2" color="text.secondary">
-            Remove <strong>{deleteTarget?.name}</strong> ({deleteTarget?.city}) from this organization?
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
-          <Button variant="contained" color="error" disableElevation onClick={handleDeleteLocation}>
-            Remove
           </Button>
         </DialogActions>
       </Dialog>
