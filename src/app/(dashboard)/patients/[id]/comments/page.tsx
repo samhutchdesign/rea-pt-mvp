@@ -22,6 +22,10 @@ const AUTHOR_COLORS: Record<string, string> = {
   emp_van3: '#2E7D32',
   emp3: '#F57C00',
   emp4: '#C62828',
+  emp_nyc3: '#00838F',
+  emp_uth1: '#558B2F',
+  emp_uth2: '#4527A0',
+  emp_uth3: '#AD1457',
 };
 
 function formatTimestamp(ts: string): string {

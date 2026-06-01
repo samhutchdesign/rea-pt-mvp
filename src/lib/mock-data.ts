@@ -821,7 +821,7 @@ export const mockPatients: Patient[] = [
   {
     id: 'pat_van5',
     firstName: 'Amy',
-    lastName: 'Park (comments)',
+    lastName: 'Park',
     email: 'amy.park@email.com',
     phone: '604-555-0501',
     address: '1200 Granville St, Vancouver, BC V6Z 1M3',
@@ -1603,76 +1603,97 @@ export const mockNotifications: Notification[] = [
 import type { PatientComment } from './types';
 
 export const mockPatientComments: Record<string, PatientComment[]> = {
+  pat1: [
+    { id: 'p1c1', patientId: 'pat1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Progress letter sent to GP Dr. Patel. Margaret is on track for discharge at session 6 — anticipate no extension needed.', createdAt: '2026-05-22T09:15:00', pinned: true },
+    { id: 'p1c2', patientId: 'pat1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Margaret called to ask about swimming. Advised to wait until 8-week check-in — will reassess pelvic floor load at that point.', createdAt: '2026-05-12T14:30:00', pinned: false },
+    { id: 'p1c3', patientId: 'pat1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Discussed birth debrief — patient expressed lingering anxiety about vaginal delivery. Referred to social work for brief counselling.', createdAt: '2026-04-30T11:00:00', pinned: false },
+  ],
+  pat2: [
+    { id: 'p2c1', patientId: 'pat2', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Karen mentioned increased hip flexor tightness since returning to her desk job. Added hip flexor stretches to HEP at session 4.', createdAt: '2026-05-05T10:00:00', pinned: false },
+    { id: 'p2c2', patientId: 'pat2', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Patient requested a French copy of the home exercise handout. Printed and given at last session — confirm she received it.', createdAt: '2026-05-15T15:20:00', pinned: false },
+  ],
+  pat3: [
+    { id: 'p3c1', patientId: 'pat3', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: "Priya's father messaged asking about her progress — reminded him communication goes through the patient only. Informed Priya at next session, she was fine with how it was handled.", createdAt: '2026-05-03T09:30:00', pinned: false },
+    { id: 'p3c2', patientId: 'pat3', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Patient completed 6/7 days of HEP this week — best adherence so far. Acknowledged in session, visible confidence boost.', createdAt: '2026-05-10T16:00:00', pinned: false },
+  ],
+  pat5: [
+    { id: 'p5c1', patientId: 'pat5', authorId: 'emp3', authorName: 'Rachel Torres', authorInitials: 'RT', content: 'Discharge planning underway — expecting 2 more sessions. Will coordinate with GP re: home maintenance program before closing the file.', createdAt: '2026-05-20T13:00:00', pinned: true },
+    { id: 'p5c2', patientId: 'pat5', authorId: 'emp3', authorName: 'Rachel Torres', authorInitials: 'RT', content: 'Diane asked about joining our group pelvic health class starting in June. Shared registration info — would be a good fit.', createdAt: '2026-05-08T10:45:00', pinned: false },
+    { id: 'p5c3', patientId: 'pat5', authorId: 'emp3', authorName: 'Rachel Torres', authorInitials: 'RT', content: "Son Tom called asking when she can return to gardening. Redirected him to have Diane call us directly — noted for awareness.", createdAt: '2026-05-14T09:00:00', pinned: false },
+  ],
+  pat6: [
+    { id: 'p6c1', patientId: 'pat6', authorId: 'emp3', authorName: 'Rachel Torres', authorInitials: 'RT', content: 'Laura rescheduled twice in May. Discussed attendance expectations at last call — she committed to the remaining sessions.', createdAt: '2026-05-17T11:30:00', pinned: false },
+    { id: 'p6c2', patientId: 'pat6', authorId: 'emp3', authorName: 'Rachel Torres', authorInitials: 'RT', content: 'Patient disclosed a new stressor at home — noted for context. Keeping sessions focused on physical rehab as she prefers.', createdAt: '2026-05-21T14:00:00', pinned: false },
+  ],
   pat_van5: [
-    {
-      id: 'c1',
-      patientId: 'pat_van5',
-      authorId: 'emp1',
-      authorName: 'Emily Chen',
-      authorInitials: 'EC',
-      content: 'Amy mentioned she\'s returning to work next month and is worried about leakage during her commute. Flag for next session — discuss pelvic floor strategies for prolonged sitting and public transit.',
-      createdAt: '2026-04-28T14:30:00',
-      pinned: true,
-    },
-    {
-      id: 'c2',
-      patientId: 'pat_van5',
-      authorId: 'emp1',
-      authorName: 'Emily Chen',
-      authorInitials: 'EC',
-      content: 'GP (Dr. Patel) called requesting a progress summary at session 6. Will prepare a brief letter. James — can you pull together session notes by May 20?',
-      createdAt: '2026-05-10T09:00:00',
-      pinned: true,
-    },
-    {
-      id: 'c3',
-      patientId: 'pat_van5',
-      authorId: 'emp2',
-      authorName: 'James Wilson',
-      authorInitials: 'JW',
-      content: 'Patient called on April 22 to reschedule Thursday appointment — moved to Friday at 11am. Updated in booking system.',
-      createdAt: '2026-04-22T09:15:00',
-      pinned: false,
-    },
-    {
-      id: 'c4',
-      patientId: 'pat_van5',
-      authorId: 'emp2',
-      authorName: 'James Wilson',
-      authorInitials: 'JW',
-      content: 'Sent home exercise reminder email — Amy forgot her Kegel log sheet today. Good energy and motivation during session though.',
-      createdAt: '2026-05-02T10:00:00',
-      pinned: false,
-    },
-    {
-      id: 'c5',
-      patientId: 'pat_van5',
-      authorId: 'emp_van3',
-      authorName: 'Sophie Kim',
-      authorInitials: 'SK',
-      content: 'Covered Amy\'s May 1st session while James was away. She reported mild perineal discomfort 2/10 at start of session, resolved fully by the end. No changes to the HEP — continued with James\'s plan.',
-      createdAt: '2026-05-01T11:45:00',
-      pinned: false,
-    },
-    {
-      id: 'c6',
-      patientId: 'pat_van5',
-      authorId: 'emp2',
-      authorName: 'James Wilson',
-      authorInitials: 'JW',
-      content: 'Discussed return-to-running timeline. Recommended holding off on jogging for 2 more weeks — will reassess at next session. Patient agreed and seemed relieved to have a clear plan.',
-      createdAt: '2026-05-08T15:20:00',
-      pinned: false,
-    },
-    {
-      id: 'c7',
-      patientId: 'pat_van5',
-      authorId: 'emp2',
-      authorName: 'James Wilson',
-      authorInitials: 'JW',
-      content: 'Insurance pre-auth approved for 8 sessions total. Currently at session 5. Will submit extension request after session 8 if discharge criteria not met.',
-      createdAt: '2026-05-14T13:30:00',
-      pinned: false,
-    },
+    { id: 'v5c1', patientId: 'pat_van5', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Amy returning to work next month and worried about leakage during her commute. Flag for next session — discuss pelvic floor strategies for prolonged sitting and transit.', createdAt: '2026-04-28T14:30:00', pinned: true },
+    { id: 'v5c2', patientId: 'pat_van5', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'GP (Dr. Patel) called requesting a progress summary at session 6. James — can you pull together session notes by May 20?', createdAt: '2026-05-10T09:00:00', pinned: true },
+    { id: 'v5c3', patientId: 'pat_van5', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Patient called April 22 to reschedule Thursday — moved to Friday at 11am. Updated in booking system.', createdAt: '2026-04-22T09:15:00', pinned: false },
+    { id: 'v5c4', patientId: 'pat_van5', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Sent HEP reminder email — Amy forgot her Kegel log sheet today. Good energy and motivation during session though.', createdAt: '2026-05-02T10:00:00', pinned: false },
+    { id: 'v5c5', patientId: 'pat_van5', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: "Covered Amy's May 1st session while James was away. She reported mild perineal discomfort 2/10 at start, resolved by end. No changes to HEP — continued James's plan.", createdAt: '2026-05-01T11:45:00', pinned: false },
+    { id: 'v5c6', patientId: 'pat_van5', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Discussed return-to-running timeline — recommended holding off on jogging 2 more weeks. Patient agreed and seemed relieved to have a clear plan.', createdAt: '2026-05-08T15:20:00', pinned: false },
+    { id: 'v5c7', patientId: 'pat_van5', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Insurance pre-auth approved for 8 sessions total. Currently at session 5 — will submit extension request if discharge criteria not met by session 8.', createdAt: '2026-05-14T13:30:00', pinned: false },
+  ],
+  pat_van6: [
+    { id: 'v6c1', patientId: 'pat_van6', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Rachel starting a new job next week — renegotiated session time to 7am Thursdays. Updated recurring booking.', createdAt: '2026-05-16T08:30:00', pinned: false },
+    { id: 'v6c2', patientId: 'pat_van6', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Rachel finally completing 10-sec holds pain-free. Encouraged her to keep tracking and celebrate the milestone.', createdAt: '2026-05-09T11:00:00', pinned: false },
+  ],
+  pat_van8: [
+    { id: 'v8c1', patientId: 'pat_van8', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Chloe asked about doing Pilates alongside PT. Approved — recommended she share the HEP with her Pilates instructor to avoid conflicting cues.', createdAt: '2026-05-12T13:15:00', pinned: false },
+  ],
+  pat_van9: [
+    { id: 'v9c1', patientId: 'pat_van9', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: 'Mei was a no-show on May 6 — called to reschedule. No charge as it was a first occurrence. Booked for May 13.', createdAt: '2026-05-06T12:00:00', pinned: false },
+    { id: 'v9c2', patientId: 'pat_van9', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: 'Patient travelling to Shanghai for 3 weeks. Provided written HEP summary and booked return session for June 10.', createdAt: '2026-05-18T10:30:00', pinned: false },
+  ],
+  pat_nyc3: [
+    { id: 'n3c1', patientId: 'pat_nyc3', authorId: 'emp3', authorName: 'Rachel Torres', authorInitials: 'RT', content: 'Sophie requesting billing receipts for insurance reimbursement. Sent PDF invoices via email — use clinic@rea-nyc format going forward.', createdAt: '2026-05-07T14:00:00', pinned: false },
+    { id: 'n3c2', patientId: 'pat_nyc3', authorId: 'emp3', authorName: 'Rachel Torres', authorInitials: 'RT', content: 'Progressing very well — on track for early discharge if session 7 assessment holds. Will confirm with Sophie at next visit.', createdAt: '2026-05-19T09:45:00', pinned: false },
+  ],
+  pat_nyc4: [
+    { id: 'n4c1', patientId: 'pat_nyc4', authorId: 'emp4', authorName: 'Marcus Laine', authorInitials: 'ML', content: "Keisha's OB referred her back to us after her 6-week check — coordinated intake records with the OBGYN office. Smooth handoff.", createdAt: '2026-05-11T11:00:00', pinned: false },
+  ],
+  pat_nyc5: [
+    { id: 'n5c1', patientId: 'pat_nyc5', authorId: 'emp4', authorName: 'Marcus Laine', authorInitials: 'ML', content: 'Jennifer flagged persistent bloating unrelated to our PT goals — encouraged her to follow up with her GP.', createdAt: '2026-05-09T13:30:00', pinned: false },
+    { id: 'n5c2', patientId: 'pat_nyc5', authorId: 'emp4', authorName: 'Marcus Laine', authorInitials: 'ML', content: 'Patient completed all sessions for the month. Preparing a progress report for her specialist appointment on May 28.', createdAt: '2026-05-20T10:00:00', pinned: false },
+  ],
+  pat_nyc7: [
+    { id: 'n7c1', patientId: 'pat_nyc7', authorId: 'emp_nyc3', authorName: 'Carlos Rivera', authorInitials: 'CR', content: 'Maria prefers Spanish for all written materials — providing bilingual handouts. Will source a Spanish HEP template from the library.', createdAt: '2026-05-05T09:00:00', pinned: true },
+    { id: 'n7c2', patientId: 'pat_nyc7', authorId: 'emp_nyc3', authorName: 'Carlos Rivera', authorInitials: 'CR', content: 'Great session — Maria progressing to single-leg exercises, pain-free throughout. Strong engagement with the program.', createdAt: '2026-05-14T15:00:00', pinned: false },
+  ],
+  pat_nyc8: [
+    { id: 'n8c1', patientId: 'pat_nyc8', authorId: 'emp_nyc3', authorName: 'Carlos Rivera', authorInitials: 'CR', content: 'Tanya expressed interest in becoming a PT — shared info about volunteer shadowing at the clinic. Personal note, not clinical.', createdAt: '2026-05-10T12:00:00', pinned: false },
+  ],
+  pat_nyc9: [
+    { id: 'n9c1', patientId: 'pat_nyc9', authorId: 'emp_nyc3', authorName: 'Carlos Rivera', authorInitials: 'CR', content: 'Claire moved apartments — updated address in system. Same borough, no travel issue for sessions.', createdAt: '2026-05-04T10:30:00', pinned: false },
+    { id: 'n9c2', patientId: 'pat_nyc9', authorId: 'emp_nyc3', authorName: 'Carlos Rivera', authorInitials: 'CR', content: 'Insurance pre-auth renewed for 6 more sessions. Confirmed via portal — good through August.', createdAt: '2026-05-16T14:30:00', pinned: false },
+  ],
+  pat_uth1: [
+    { id: 'u1c1', patientId: 'pat_uth1', authorId: 'emp_uth1', authorName: 'Lena Fischer', authorInitials: 'LF', content: 'Anna joining a hydrotherapy group at the local pool — complementary to our pelvic floor program. Endorsed, and shared relevant precautions.', createdAt: '2026-05-08T10:00:00', pinned: false },
+    { id: 'u1c2', patientId: 'pat_uth1', authorId: 'emp_uth1', authorName: 'Lena Fischer', authorInitials: 'LF', content: "Coordinated with Anna's midwife — shared session summary and recommended 4 more sessions before reassessment.", createdAt: '2026-05-15T13:00:00', pinned: false },
+  ],
+  pat_uth2: [
+    { id: 'u2c1', patientId: 'pat_uth2', authorId: 'emp_uth1', authorName: 'Lena Fischer', authorInitials: 'LF', content: 'Marta requested an invoice for her zorgverzekering claim — sent PDF invoice #INV-2026-047. Confirm receipt at next session.', createdAt: '2026-05-12T11:30:00', pinned: false },
+  ],
+  pat_uth3: [
+    { id: 'u3c1', patientId: 'pat_uth3', authorId: 'emp_uth2', authorName: 'Pieter van Dijk', authorInitials: 'PD', content: 'Emma mentioned ongoing work stress — recommended a mindfulness resource for pelvic tension management alongside PT.', createdAt: '2026-05-06T09:30:00', pinned: false },
+    { id: 'u3c2', patientId: 'pat_uth3', authorId: 'emp_uth2', authorName: 'Pieter van Dijk', authorInitials: 'PD', content: 'Session moved to Thursdays at her request — updated recurring booking in the system.', createdAt: '2026-05-13T08:00:00', pinned: false },
+  ],
+  pat_uth4: [
+    { id: 'u4c1', patientId: 'pat_uth4', authorId: 'emp_uth2', authorName: 'Pieter van Dijk', authorInitials: 'PD', content: "Sarah's partner attended the session as a support person — helpful dynamic and Sarah was comfortable with it. Will continue as requested.", createdAt: '2026-05-09T14:00:00', pinned: false },
+  ],
+  pat_uth5: [
+    { id: 'u5c1', patientId: 'pat_uth5', authorId: 'emp_uth2', authorName: 'Pieter van Dijk', authorInitials: 'PD', content: "Lisa finishing her master's thesis — high-stress period. Adjusted session intensity slightly and added diaphragmatic breathing component.", createdAt: '2026-05-14T11:00:00', pinned: false },
+    { id: 'u5c2', patientId: 'pat_uth5', authorId: 'emp_uth2', authorName: 'Pieter van Dijk', authorInitials: 'PD', content: 'Patient asked about referral to a pelvic health nutritionist — sent contact details for colleague at UMC Utrecht.', createdAt: '2026-05-20T09:00:00', pinned: false },
+  ],
+  pat_uth7: [
+    { id: 'u7c1', patientId: 'pat_uth7', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: 'Petra travelling to Germany for 2 weeks. Printed HEP summary provided — resume sessions June 2.', createdAt: '2026-05-16T10:00:00', pinned: false },
+  ],
+  pat_uth8: [
+    { id: 'u8c1', patientId: 'pat_uth8', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: "Inge's GP changed — new GP is Dr. Wouters at Gezondheidscentrum Overvecht. Updated referral info in system.", createdAt: '2026-05-10T13:00:00', pinned: false },
+    { id: 'u8c2', patientId: 'pat_uth8', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: 'Strong motivation from Inge — completed HEP 100% for the second week running. Acknowledged in session.', createdAt: '2026-05-17T11:30:00', pinned: false },
+  ],
+  pat_uth10: [
+    { id: 'u10c1', patientId: 'pat_uth10', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: 'Hanna prefers Dutch for all written communications despite speaking English. Noted for future correspondence and handouts.', createdAt: '2026-05-08T09:00:00', pinned: true },
+    { id: 'u10c2', patientId: 'pat_uth10', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: 'Referred by physiotherapist in Heidelberg — obtained intake notes from previous therapist for treatment continuity.', createdAt: '2026-05-14T14:00:00', pinned: false },
   ],
 };
