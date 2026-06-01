@@ -18,21 +18,43 @@ import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { mockPatients, mockNotifications, mockPhysio, mockChartSessions } from '@/lib/mock-data';
 
-function getNextAppointmentDate(patientId: string, sessionsPerWeek: number): number {
+function computeEstimatedNext(patientId: string): { timestamp: number; daysOverdue: number; avgGapDays: number } {
   const sessions = mockChartSessions[patientId] ?? [];
-  const nonIntake = sessions.filter((s) => !s.isIntakeSession);
-  const lastSession = nonIntake.length > 0
-    ? nonIntake.reduce((latest, s) => s.date > latest.date ? s : latest)
-    : sessions[0];
-  if (!lastSession) return Infinity;
-  const daysBetween = 7 / sessionsPerWeek;
-  return new Date(lastSession.date).getTime() + daysBetween * 86400000;
+  if (sessions.length === 0) return { timestamp: Infinity, daysOverdue: 0, avgGapDays: 14 };
+
+  const sorted = [...sessions].sort((a, b) => a.date.localeCompare(b.date));
+  const lastTs = new Date(sorted[sorted.length - 1].date + 'T12:00:00').getTime();
+
+  let avgGapDays: number;
+  if (sorted.length === 1) {
+    avgGapDays = 14;
+  } else {
+    let total = 0;
+    for (let i = 1; i < sorted.length; i++) {
+      total += (new Date(sorted[i].date + 'T12:00:00').getTime() - new Date(sorted[i - 1].date + 'T12:00:00').getTime()) / 86400000;
+    }
+    avgGapDays = total / (sorted.length - 1);
+  }
+
+  const timestamp = lastTs + avgGapDays * 86400000;
+  const daysOverdue = Math.floor((Date.now() - timestamp) / 86400000);
+  return { timestamp, daysOverdue, avgGapDays };
+}
+
+function overdueLabel(days: number): string {
+  if (days < 1) return '';
+  if (days < 7) return `${days}d overdue`;
+  if (days < 14) return '1 wk overdue';
+  if (days < 21) return '2 wks overdue';
+  if (days < 28) return '3 wks overdue';
+  const months = Math.floor(days / 30);
+  return `${months}mo overdue`;
 }
 
 const recentPatients = [...mockPatients]
   .filter((p) => !p.archived)
-  .sort((a, b) => getNextAppointmentDate(a.id, a.sessionsPerWeek) - getNextAppointmentDate(b.id, b.sessionsPerWeek))
-  .slice(0, 5);
+  .sort((a, b) => computeEstimatedNext(a.id).timestamp - computeEstimatedNext(b.id).timestamp)
+  .slice(0, 6);
 
 const recentActivity = mockNotifications.slice(0, 5);
 
@@ -91,7 +113,7 @@ export default function DashboardPage() {
           {/* Recent Patients */}
           <Box sx={{ flex: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Typography variant="h6" fontWeight={600}>Recent Patients</Typography>
+              <Typography variant="h6" fontWeight={600}>Upcoming Patients</Typography>
               <Button
                 variant="contained"
                 size="small"
@@ -103,41 +125,60 @@ export default function DashboardPage() {
               </Button>
             </Box>
             <Card>
-              {recentPatients.map((patient, i) => (
-                <Box key={patient.id}>
-                  <Box
-                    sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2, cursor: 'pointer', '&:hover': { bgcolor: '#F9F9FB' }, transition: 'background 0.1s' }}
-                    onClick={() => router.push(`/patients/${patient.id}/overview`)}
-                  >
-                    <Avatar sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600, fontSize: 14, width: 40, height: 40 }}>
-                      {patient.avatarInitials}
-                    </Avatar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="body2" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
-                      <Typography variant="caption" color="text.secondary">{patient.location}</Typography>
+              {recentPatients.map((patient, i) => {
+                const { timestamp, daysOverdue } = computeEstimatedNext(patient.id);
+                const hasSession = timestamp !== Infinity;
+                const isOverdue = daysOverdue > 0;
+                const isUrgent = daysOverdue >= 14;
+                return (
+                  <Box key={patient.id}>
+                    <Box
+                      sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2, cursor: 'pointer', '&:hover': { bgcolor: '#F9F9FB' }, transition: 'background 0.1s' }}
+                      onClick={() => router.push(`/patients/${patient.id}/overview`)}
+                    >
+                      <Avatar sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600, fontSize: 14, width: 40, height: 40 }}>
+                        {patient.avatarInitials}
+                      </Avatar>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography variant="body2" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
+                        <Typography variant="caption" color="text.secondary">{patient.location}</Typography>
+                      </Box>
+                      <Chip
+                        label={patient.status}
+                        size="small"
+                        sx={{
+                          bgcolor: patient.status === 'active' ? '#E8F5E9' : patient.status === 'new' ? '#E3F2FD' : '#F5F5F5',
+                          color: patient.status === 'active' ? '#2E7D32' : patient.status === 'new' ? '#0277BD' : '#757575',
+                          fontWeight: 500, fontSize: 11,
+                        }}
+                      />
+                      <Box sx={{ textAlign: 'right', minWidth: 90 }}>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.3 }}>Est. next</Typography>
+                        {!hasSession ? (
+                          <Typography variant="caption" color="text.disabled">No sessions</Typography>
+                        ) : (
+                          <>
+                            <Typography variant="caption" sx={{ color: isUrgent ? '#C62828' : isOverdue ? '#E65100' : 'text.secondary', fontWeight: isOverdue ? 500 : 400 }}>
+                              {new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </Typography>
+                            {isOverdue && (
+                              <Typography variant="caption" display="block" sx={{ fontSize: 10, color: isUrgent ? '#C62828' : '#E65100' }}>
+                                {overdueLabel(daysOverdue)}
+                              </Typography>
+                            )}
+                            {!isOverdue && (
+                              <Typography variant="caption" display="block" sx={{ fontSize: 10, color: 'text.disabled' }}>
+                                {daysOverdue === 0 ? 'today' : `in ${Math.abs(daysOverdue)}d`}
+                              </Typography>
+                            )}
+                          </>
+                        )}
+                      </Box>
                     </Box>
-                    <Chip
-                      label={patient.status}
-                      size="small"
-                      sx={{
-                        bgcolor: patient.status === 'active' ? '#E8F5E9' : patient.status === 'new' ? '#E3F2FD' : '#F5F5F5',
-                        color: patient.status === 'active' ? '#2E7D32' : patient.status === 'new' ? '#0277BD' : '#757575',
-                        fontWeight: 500, fontSize: 11,
-                      }}
-                    />
-                    <Box sx={{ textAlign: 'right', minWidth: 70 }}>
-                      <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.3 }}>Next appt</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {(() => {
-                          const ts = getNextAppointmentDate(patient.id, patient.sessionsPerWeek);
-                          return ts === Infinity ? '—' : new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        })()}
-                      </Typography>
-                    </Box>
+                    {i < recentPatients.length - 1 && <Divider />}
                   </Box>
-                  {i < recentPatients.length - 1 && <Divider />}
-                </Box>
-              ))}
+                );
+              })}
             </Card>
           </Box>
 
