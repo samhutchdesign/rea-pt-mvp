@@ -2,7 +2,18 @@ import { useRole } from './roleStore';
 import { mockPatients, mockEmployees, mockPhysio, mockClinicLocations } from './mock-data';
 import type { Patient, Employee } from './types';
 
-// The employee ID that represents "your" direct caseload in the demo
+// Role-dependent "your" employee ID for demo caseload
+// owner → null (no personal caseload, "Yours" tab hidden)
+// admin → emp1 (Emily Chen, 2 patients)
+// staff → emp2 (James Wilson, 4 patients)
+export function useYourEmpId(): string | null {
+  const role = useRole();
+  if (role === 'admin') return 'emp1';
+  if (role === 'staff') return 'emp2';
+  return null;
+}
+
+// Kept for backward compat in employees page (which doesn't need role-dependent ID)
 export const YOUR_EMP_ID = 'emp1';
 
 function getScopedData(role: string): { patients: Patient[]; employees: Employee[] } {

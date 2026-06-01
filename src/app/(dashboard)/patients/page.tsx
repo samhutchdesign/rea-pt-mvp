@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -25,7 +25,7 @@ import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { mockChartSessions } from '@/lib/mock-data';
-import { useLocationScope, YOUR_EMP_ID } from '@/lib/locationScope';
+import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
 import type { Patient } from '@/lib/types';
 
 function conditionChip(patient: Patient): string | null {
@@ -53,17 +53,24 @@ export default function PatientsPage() {
   const [snackOpen, setSnackOpen] = useState(false);
 
   const { patients: scopedPatients } = useLocationScope();
+  const yourEmpId = useYourEmpId();
 
   // Apply local archived overrides
   const patients = scopedPatients.map((p) =>
     p.id in localPatients ? { ...p, archived: localPatients[p.id] } : p
   );
 
-  const yourPatients = patients.filter((p) => !p.archived && p.assignedEmployeeIds.includes(YOUR_EMP_ID));
+  const yourPatients = yourEmpId
+    ? patients.filter((p) => !p.archived && p.assignedEmployeeIds.includes(yourEmpId))
+    : [];
   const allActive = patients.filter((p) => !p.archived);
   const archived = patients.filter((p) => p.archived);
 
-  const tabList = [yourPatients, allActive, archived];
+  const showYoursTab = yourEmpId !== null;
+  const tabList = showYoursTab ? [yourPatients, allActive, archived] : [allActive, archived];
+
+  // Reset to tab 0 when role changes and tab count changes to avoid out-of-range index
+  useEffect(() => { setTab(0); }, [showYoursTab]);
   const currentList = tabList[tab] ?? allActive;
 
   const applySearch = (list: Patient[]) => {
@@ -95,9 +102,13 @@ export default function PatientsPage() {
     setSnackOpen(true);
   };
 
-  const searchPlaceholders = ['Search your patients…', 'Search all patients…', 'Search archived patients…'];
+  const searchPlaceholders = showYoursTab
+    ? ['Search your patients…', 'Search all patients…', 'Search archived patients…']
+    : ['Search all patients…', 'Search archived patients…'];
   const empty = displayed.length === 0;
-  const emptyMessages = ['No patients assigned to you yet', 'No active patients found', 'No archived patients found'];
+  const emptyMessages = showYoursTab
+    ? ['No patients assigned to you yet', 'No active patients found', 'No archived patients found']
+    : ['No active patients found', 'No archived patients found'];
 
   return (
     <>
@@ -116,7 +127,7 @@ export default function PatientsPage() {
           sx={{ borderBottom: '1px solid #E0E0E0', mb: 3 }}
           TabIndicatorProps={{ style: { backgroundColor: '#6750A4', height: 2 } }}
         >
-          <Tab label={`Your Patients (${yourPatients.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
+          {showYoursTab && <Tab label={`Your Patients (${yourPatients.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />}
           <Tab label={`All (${allActive.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
           <Tab label={`Archived (${archived.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
         </Tabs>
@@ -132,7 +143,7 @@ export default function PatientsPage() {
               startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 20 }} /></InputAdornment>,
             }}
           />
-          {tab !== 2 && (
+          {tab !== (showYoursTab ? 2 : 1) && (
             <Select
               size="small"
               value={sort}
@@ -194,7 +205,7 @@ export default function PatientsPage() {
                         </>
                       );
                     })()}
-                    {tab === 2 && (
+                    {tab === (showYoursTab ? 2 : 1) && (
                       <Button
                         size="small"
                         variant="outlined"
