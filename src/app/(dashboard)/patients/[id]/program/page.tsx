@@ -25,7 +25,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { mockPatients, mockPrograms, mockExercises, mockPhysio } from '@/lib/mock-data';
 import { getNotes, addNote, updateNote, deleteNote } from '@/lib/noteStore';
-import type { Exercise } from '@/lib/types';
+import type { Exercise, ProgramExercise } from '@/lib/types';
 import type { ExerciseNote } from '@/lib/noteStore';
 
 const ME_ID = mockPhysio.id ?? 'p1';
@@ -204,6 +204,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
   const { id } = use(params);
   const router = useRouter();
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
+  const [previewPE, setPreviewPE] = useState<ProgramExercise | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
   const patient = mockPatients.find((p) => p.id === id);
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
@@ -300,7 +301,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'center' }}>
                   <Tooltip title="Preview exercise">
-                    <IconButton size="small" onClick={() => setPreviewExercise(ex)}>
+                    <IconButton size="small" onClick={() => { setPreviewExercise(ex); setPreviewPE(pe); }}>
                       <VisibilityOutlinedIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
@@ -336,7 +337,12 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
         })}
       </Box>
 
-      <ExercisePreviewDrawer exercise={previewExercise} open={!!previewExercise} onClose={() => setPreviewExercise(null)} />
+      <ExercisePreviewDrawer
+        exercise={previewExercise}
+        open={!!previewExercise}
+        onClose={() => { setPreviewExercise(null); setPreviewPE(null); }}
+        patientPrescription={previewPE ? { sets: previewPE.sets, reps: previewPE.reps, holdSecs: previewPE.holdSecs, frequency: previewPE.frequency, adherence: previewPE.adherence } : undefined}
+      />
     </Box>
   );
 }

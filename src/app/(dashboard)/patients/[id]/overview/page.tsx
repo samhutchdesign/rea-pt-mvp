@@ -117,7 +117,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="subtitle1" fontWeight={600}>Latest Session</Typography>
-              <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={() => router.push(`/patients/${id}/chart/new`)}>
+              <Button size="small" variant="contained" disableElevation startIcon={<AddIcon />} onClick={() => router.push(`/patients/${id}/chart/new`)}>
                 Add to Chart
               </Button>
             </Box>
@@ -127,11 +127,14 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                   {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </Typography>
                 <Typography variant="body2" mb={2}>{latestSession.summary}</Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                   {latestSession.painLevel && <Chip label={latestSession.painLevel} size="small" variant="outlined" />}
                   {latestSession.adherenceLevel && <Chip label={latestSession.adherenceLevel} size="small" variant="outlined" />}
                   {latestSession.improvementLevel && <Chip label={latestSession.improvementLevel} size="small" variant="outlined" />}
                 </Box>
+                <Button size="small" sx={{ p: 0, fontSize: '0.75rem' }} onClick={() => router.push(`/patients/${id}/chart`)}>
+                  See all sessions →
+                </Button>
               </>
             ) : (
               <Typography variant="body2" color="text.secondary">No sessions recorded yet.</Typography>
@@ -150,16 +153,18 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
               <>
                 <Typography variant="body2" fontWeight={600} mb={0.5}>{program.name}</Typography>
                 <Typography variant="body2" color="text.secondary" mb={2}>{program.exercises.length} exercises</Typography>
-                {program.exercises.slice(0, 3).map((pe) => {
-                  const ex = mockExercises.find((e) => e.id === pe.exerciseId);
-                  if (!ex) return null;
-                  return (
-                    <Box key={pe.exerciseId} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 0.75, borderBottom: '1px solid #F0F0F0' }}>
-                      <Typography variant="caption">{ex.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">{pe.adherence}% adherence</Typography>
-                    </Box>
-                  );
-                })}
+                <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+                  {program.exercises.map((pe) => {
+                    const ex = mockExercises.find((e) => e.id === pe.exerciseId);
+                    if (!ex) return null;
+                    return (
+                      <Box key={pe.exerciseId} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 0.75, borderBottom: '1px solid #F0F0F0' }}>
+                        <Typography variant="caption">{ex.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">{pe.adherence}% adherence</Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
               </>
             ) : (
               <>

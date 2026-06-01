@@ -37,14 +37,23 @@ function fmt(secs: number) {
   return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
 }
 
+interface PatientPrescription {
+  sets: number;
+  reps: number;
+  holdSecs: number;
+  frequency: string;
+  adherence: number;
+}
+
 interface Props {
   exercise: Exercise | null;
   open: boolean;
   onClose: () => void;
   onAddToCurrentProgram?: () => void;
+  patientPrescription?: PatientPrescription;
 }
 
-export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram }: Props) {
+export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram, patientPrescription }: Props) {
   const [programSelectorOpen, setProgramSelectorOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [recordingOpen, setRecordingOpen] = useState(false);
@@ -177,12 +186,29 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             {allTags.map((tag) => <Chip key={tag} label={tag} size="small" variant="outlined" sx={{ fontSize: 11 }} />)}
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 1, mb: 2.5 }}>
-            <Chip label={`${exercise.defaultSets} Sets`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
-            <Chip label={`${exercise.defaultReps} Reps`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
-            {exercise.defaultHoldSecs > 0 && <Chip label={`${exercise.defaultHoldSecs}s Hold`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />}
-            <Chip label={exercise.defaultFrequency} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
-          </Box>
+          {patientPrescription ? (
+            <Box sx={{ mb: 2.5, p: 1.5, bgcolor: '#F8F5FF', border: '1px solid #D4C5F9', borderRadius: 1 }}>
+              <Typography variant="caption" sx={{ fontWeight: 600, color: 'primary.main', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', mb: 1 }}>
+                Patient Prescription
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+                <Chip label={`${patientPrescription.sets} Sets`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+                <Chip label={`${patientPrescription.reps} Reps`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+                {patientPrescription.holdSecs > 0 && <Chip label={`${patientPrescription.holdSecs}s Hold`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />}
+                <Chip label={patientPrescription.frequency} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+              </Box>
+              <Typography variant="caption" color="text.secondary">
+                Adherence: <strong>{patientPrescription.adherence}%</strong>
+              </Typography>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 1, mb: 2.5 }}>
+              <Chip label={`${exercise.defaultSets} Sets`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+              <Chip label={`${exercise.defaultReps} Reps`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+              {exercise.defaultHoldSecs > 0 && <Chip label={`${exercise.defaultHoldSecs}s Hold`} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />}
+              <Chip label={exercise.defaultFrequency} size="small" sx={{ bgcolor: '#E8E0F0', color: 'primary.main' }} />
+            </Box>
+          )}
 
           {/* Audio overlay compact section */}
           <Box sx={{

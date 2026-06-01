@@ -370,7 +370,6 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
           label={<Typography variant="body2">Remove N/A or Empty States</Typography>}
           sx={{ mr: 2 }}
         />
-        <Button variant="outlined" size="small" disabled>Reorder Sections</Button>
       </Box>
 
       <SectionCard title="Patient Metrics" onEdit={() => openEdit('metrics')}>
