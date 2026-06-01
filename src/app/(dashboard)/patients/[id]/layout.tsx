@@ -57,7 +57,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     firstName: patient?.firstName ?? '',
     lastName: patient?.lastName ?? '',
     email: patient?.email ?? '',
-    location: patient?.location ?? '',
+    locationId: mockClinicLocations.find((l) => patient?.location.includes(l.city))?.id ?? '',
   });
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
@@ -181,7 +181,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 startIcon={<EditOutlinedIcon />}
                 size="small"
                 onClick={() => {
-                  setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, location: patient.location });
+                  setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, locationId: mockClinicLocations.find((l) => patient.location.includes(l.city))?.id ?? '' });
                   setEditOpen(true);
                 }}
               >
@@ -248,11 +248,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             label="Location"
             size="small"
             fullWidth
-            value={editForm.location}
-            onChange={(e) => setEditForm((f) => ({ ...f, location: e.target.value }))}
+            value={editForm.locationId}
+            onChange={(e) => setEditForm((f) => ({ ...f, locationId: e.target.value }))}
           >
             {mockClinicLocations.map((loc) => (
-              <MenuItem key={loc.id} value={`${loc.city}, ${loc.regionCountry}`}>
+              <MenuItem key={loc.id} value={loc.id}>
                 {loc.name} — {loc.city}, {loc.regionCountry}
               </MenuItem>
             ))}
