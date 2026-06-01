@@ -15,8 +15,8 @@ export default function SettingsPage() {
         <Typography variant="h5" fontWeight={600} mb={3}>Settings</Typography>
         <Card>
           <CardContent>
-            <Typography variant="subtitle2" fontWeight={600} mb={2}>Notifications</Typography>
-            {['Email notifications for new patient documents', 'Weekly summary digest', 'Session reminders'].map((label) => (
+            <Typography variant="subtitle2" fontWeight={600} mb={2}>Email Notifications</Typography>
+            {['Email notifications for new exercise comments', 'Weekly summary digest', 'Session reminders'].map((label) => (
               <Box key={label}>
                 <FormControlLabel control={<Switch defaultChecked size="small" />} label={<Typography variant="body2">{label}</Typography>} sx={{ mb: 1 }} />
               </Box>
