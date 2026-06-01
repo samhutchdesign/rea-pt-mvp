@@ -124,6 +124,9 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           {can.canManageClinic && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Organization Profile</MenuItem>
           )}
+          {can.canManageLocation && (
+            <MenuItem onClick={() => { setAnchorEl(null); router.push(`/clinic/${mockPhysio.locationId}`); }}>Clinic Profile</MenuItem>
+          )}
           {can.canManageBilling && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/billing'); }}>Billing</MenuItem>
           )}

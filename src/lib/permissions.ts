@@ -6,6 +6,7 @@ export interface Permissions {
   canManageStaff: boolean;
   canManageBilling: boolean;
   canManageClinic: boolean;
+  canManageLocation: boolean;
 }
 
 const PERMISSIONS: Record<string, Permissions> = {
@@ -17,6 +18,7 @@ const PERMISSIONS: Record<string, Permissions> = {
     canManageStaff: true,
     canManageBilling: true,
     canManageClinic: true,
+    canManageLocation: false,
   },
   admin: {
     canEditPatientProfile: true,
@@ -25,7 +27,8 @@ const PERMISSIONS: Record<string, Permissions> = {
     canEditContactInfo: true,
     canManageStaff: true,
     canManageBilling: false,
-    canManageClinic: true,
+    canManageClinic: false,
+    canManageLocation: true,
   },
   staff: {
     canEditPatientProfile: true,
@@ -35,6 +38,7 @@ const PERMISSIONS: Record<string, Permissions> = {
     canManageStaff: false,
     canManageBilling: false,
     canManageClinic: false,
+    canManageLocation: false,
   },
 };
 
