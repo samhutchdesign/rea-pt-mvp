@@ -18,9 +18,9 @@ import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { mockPatients, mockNotifications, mockPhysio, mockChartSessions } from '@/lib/mock-data';
 
-function computeEstimatedNext(patientId: string): { timestamp: number; daysOverdue: number; avgGapDays: number } {
+function computeEstimatedNext(patientId: string): number {
   const sessions = mockChartSessions[patientId] ?? [];
-  if (sessions.length === 0) return { timestamp: Infinity, daysOverdue: 0, avgGapDays: 14 };
+  if (sessions.length === 0) return Infinity;
 
   const sorted = [...sessions].sort((a, b) => a.date.localeCompare(b.date));
   const lastTs = new Date(sorted[sorted.length - 1].date + 'T12:00:00').getTime();
@@ -36,24 +36,13 @@ function computeEstimatedNext(patientId: string): { timestamp: number; daysOverd
     avgGapDays = total / (sorted.length - 1);
   }
 
-  const timestamp = lastTs + avgGapDays * 86400000;
-  const daysOverdue = Math.floor((Date.now() - timestamp) / 86400000);
-  return { timestamp, daysOverdue, avgGapDays };
+  return lastTs + avgGapDays * 86400000;
 }
 
-function overdueLabel(days: number): string {
-  if (days < 1) return '';
-  if (days < 7) return `${days}d overdue`;
-  if (days < 14) return '1 wk overdue';
-  if (days < 21) return '2 wks overdue';
-  if (days < 28) return '3 wks overdue';
-  const months = Math.floor(days / 30);
-  return `${months}mo overdue`;
-}
 
 const recentPatients = [...mockPatients]
   .filter((p) => !p.archived)
-  .sort((a, b) => computeEstimatedNext(a.id).timestamp - computeEstimatedNext(b.id).timestamp)
+  .sort((a, b) => computeEstimatedNext(a.id) - computeEstimatedNext(b.id))
   .slice(0, 6);
 
 const recentActivity = mockNotifications.slice(0, 5);
@@ -126,10 +115,8 @@ export default function DashboardPage() {
             </Box>
             <Card>
               {recentPatients.map((patient, i) => {
-                const { timestamp, daysOverdue } = computeEstimatedNext(patient.id);
+                const timestamp = computeEstimatedNext(patient.id);
                 const hasSession = timestamp !== Infinity;
-                const isOverdue = daysOverdue > 0;
-                const isUrgent = daysOverdue >= 14;
                 return (
                   <Box key={patient.id}>
                     <Box
@@ -157,21 +144,9 @@ export default function DashboardPage() {
                         {!hasSession ? (
                           <Typography variant="caption" color="text.disabled">No sessions</Typography>
                         ) : (
-                          <>
-                            <Typography variant="caption" sx={{ color: isUrgent ? '#C62828' : isOverdue ? '#E65100' : 'text.secondary', fontWeight: isOverdue ? 500 : 400 }}>
-                              {new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                            </Typography>
-                            {isOverdue && (
-                              <Typography variant="caption" display="block" sx={{ fontSize: 10, color: isUrgent ? '#C62828' : '#E65100' }}>
-                                {overdueLabel(daysOverdue)}
-                              </Typography>
-                            )}
-                            {!isOverdue && (
-                              <Typography variant="caption" display="block" sx={{ fontSize: 10, color: 'text.disabled' }}>
-                                {daysOverdue === 0 ? 'today' : `in ${Math.abs(daysOverdue)}d`}
-                              </Typography>
-                            )}
-                          </>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </Typography>
                         )}
                       </Box>
                     </Box>
