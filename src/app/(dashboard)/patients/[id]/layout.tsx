@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { usePathname, useParams } from 'next/navigation';
+import { usePathname, useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -43,10 +43,12 @@ function conditionLabel(mechanism: string | undefined): string | null {
 export default function PatientLayout({ children }: { children: React.ReactNode }) {
   const { id } = useParams<{ id: string }>();
   const pathname = usePathname();
+  const router = useRouter();
   const patient = mockPatients.find((p) => p.id === id);
 
   const [archived, setArchived] = useState(patient?.archived ?? false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: patient?.firstName ?? '',
@@ -90,6 +92,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     setSnackMsg(`${patient.firstName} ${patient.lastName} restored to active.`);
     setSnackSeverity('success');
     setSnackOpen(true);
+  };
+
+  const handleDelete = () => {
+    setConfirmDeleteOpen(false);
+    router.push('/patients');
   };
 
   const handleSaveProfile = () => {
@@ -143,15 +150,25 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
             {isOwner && (
               archived ? (
-                <Button
-                  variant="outlined"
-                  startIcon={<UnarchiveOutlinedIcon />}
-                  size="small"
-                  onClick={handleRestore}
-                  color="warning"
-                >
-                  Restore Patient
-                </Button>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<UnarchiveOutlinedIcon />}
+                    size="small"
+                    onClick={handleRestore}
+                    color="warning"
+                  >
+                    Restore Patient
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="error"
+                    onClick={() => setConfirmDeleteOpen(true)}
+                  >
+                    Delete Patient
+                  </Button>
+                </Box>
               ) : (
                 <Button
                   variant="outlined"
@@ -266,6 +283,22 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           <Button onClick={() => setConfirmArchiveOpen(false)}>Cancel</Button>
           <Button variant="contained" color="warning" disableElevation onClick={handleArchive}>
             Archive Patient
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Permanently Delete Patient?</DialogTitle>
+        <DialogContent sx={{ pt: '12px !important' }}>
+          <Typography variant="body2" color="text.secondary">
+            This will permanently delete <strong>{patient.firstName} {patient.lastName}</strong> and all associated records. This cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setConfirmDeleteOpen(false)}>Cancel</Button>
+          <Button variant="contained" color="error" disableElevation onClick={handleDelete}>
+            Delete Patient
           </Button>
         </DialogActions>
       </Dialog>

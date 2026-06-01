@@ -41,7 +41,7 @@ function computeEstimatedNext(patientId: string): number {
 
 
 const recentPatients = [...mockPatients]
-  .filter((p) => !p.archived)
+  .filter((p) => !p.archived && (p.status === 'active' || p.status === 'new'))
   .sort((a, b) => computeEstimatedNext(a.id) - computeEstimatedNext(b.id))
   .slice(0, 6);
 
@@ -114,46 +114,30 @@ export default function DashboardPage() {
               </Button>
             </Box>
             <Card>
-              {recentPatients.map((patient, i) => {
-                const timestamp = computeEstimatedNext(patient.id);
-                const hasSession = timestamp !== Infinity;
-                return (
-                  <Box key={patient.id}>
-                    <Box
-                      sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2, cursor: 'pointer', '&:hover': { bgcolor: '#F9F9FB' }, transition: 'background 0.1s' }}
-                      onClick={() => router.push(`/patients/${patient.id}/overview`)}
-                    >
-                      <Avatar sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600, fontSize: 14, width: 40, height: 40 }}>
-                        {patient.avatarInitials}
-                      </Avatar>
-                      <Box sx={{ flexGrow: 1 }}>
-                        <Typography variant="body2" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
-                        <Typography variant="caption" color="text.secondary">{patient.location}</Typography>
-                      </Box>
-                      <Chip
-                        label={patient.status}
-                        size="small"
-                        sx={{
-                          bgcolor: patient.status === 'active' ? '#E8F5E9' : patient.status === 'new' ? '#E3F2FD' : '#F5F5F5',
-                          color: patient.status === 'active' ? '#2E7D32' : patient.status === 'new' ? '#0277BD' : '#757575',
-                          fontWeight: 500, fontSize: 11,
-                        }}
-                      />
-                      <Box sx={{ textAlign: 'right', minWidth: 90 }}>
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.3 }}>Est. next</Typography>
-                        {!hasSession ? (
-                          <Typography variant="caption" color="text.disabled">No sessions</Typography>
-                        ) : (
-                          <Typography variant="caption" color="text.secondary">
-                            {new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                          </Typography>
-                        )}
-                      </Box>
+              {recentPatients.map((patient, i) => (
+                <Box key={patient.id}>
+                  <Box
+                    sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2, cursor: 'pointer', '&:hover': { bgcolor: '#F9F9FB' }, transition: 'background 0.1s' }}
+                    onClick={() => router.push(`/patients/${patient.id}/overview`)}
+                  >
+                    <Avatar sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 600, fontSize: 14, width: 40, height: 40 }}>
+                      {patient.avatarInitials}
+                    </Avatar>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="body2" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
+                      <Typography variant="caption" color="text.secondary">{patient.location}</Typography>
                     </Box>
-                    {i < recentPatients.length - 1 && <Divider />}
+                    {patient.status === 'new' && (
+                      <Chip
+                        label="new"
+                        size="small"
+                        sx={{ bgcolor: '#E3F2FD', color: '#0277BD', fontWeight: 500, fontSize: 11 }}
+                      />
+                    )}
                   </Box>
-                );
-              })}
+                  {i < recentPatients.length - 1 && <Divider />}
+                </Box>
+              ))}
             </Card>
           </Box>
 
