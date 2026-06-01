@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Box from '@mui/material/Box';
@@ -13,12 +13,16 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Popover from '@mui/material/Popover';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { mockNotifications, mockPhysio } from '@/lib/mock-data';
+import { mockPatients, mockPhysio } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
+import { useYourEmpId } from '@/lib/locationScope';
+import { getAllPatientNotes } from '@/lib/noteStore';
 
 interface TopBarProps {
   breadcrumbs: { label: string; href?: string }[];
@@ -26,12 +30,24 @@ interface TopBarProps {
 
 export default function TopBar({ breadcrumbs }: TopBarProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [bellAnchorEl, setBellAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const can = usePermissions();
   const role = useRole();
-  const unreadCount = mockNotifications.filter((n) => !n.read).length;
+  const yourEmpId = useYourEmpId();
+
+  const commentNotifications = useMemo(() => {
+    if (!yourEmpId) return [];
+    const yourPatientIds = new Set(
+      mockPatients
+        .filter((p) => !p.archived && p.assignedEmployeeIds.includes(yourEmpId))
+        .map((p) => p.id)
+    );
+    return getAllPatientNotes().filter((n) => yourPatientIds.has(n.patientId));
+  }, [yourEmpId]);
 
   return (
+    <>
     <AppBar
       position="fixed"
       elevation={0}
@@ -66,6 +82,17 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
             )
           )}
         </Breadcrumbs>
+
+        {yourEmpId && (
+          <IconButton
+            onClick={(e) => setBellAnchorEl(e.currentTarget)}
+            sx={{ mr: 1 }}
+          >
+            <Badge badgeContent={commentNotifications.length} color="primary" max={99}>
+              <NotificationsOutlinedIcon sx={{ fontSize: 22, color: 'text.secondary' }} />
+            </Badge>
+          </IconButton>
+        )}
 
         <Avatar
           onClick={(e) => setAnchorEl(e.currentTarget)}
@@ -109,5 +136,51 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
         </Menu>
       </Toolbar>
     </AppBar>
+
+    {/* Patient comment notifications popover */}
+    <Popover
+      open={Boolean(bellAnchorEl)}
+      anchorEl={bellAnchorEl}
+      onClose={() => setBellAnchorEl(null)}
+      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      PaperProps={{ sx: { mt: 1, width: 340, border: '1px solid #E0E0E0', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' } }}
+    >
+      <Box sx={{ px: 2.5, py: 1.5, borderBottom: '1px solid #F0F0F0' }}>
+        <Typography variant="body2" fontWeight={600}>Patient Comments</Typography>
+      </Box>
+      {commentNotifications.length === 0 ? (
+        <Box sx={{ px: 2.5, py: 2.5 }}>
+          <Typography variant="caption" color="text.secondary">No comments from your patients yet.</Typography>
+        </Box>
+      ) : (
+        commentNotifications.map(({ patientId, note }, i) => {
+          const patient = mockPatients.find((p) => p.id === patientId);
+          return (
+            <Box key={note.id}>
+              <Box
+                sx={{ px: 2.5, py: 1.75, cursor: 'pointer', '&:hover': { bgcolor: '#F9F9FB' }, transition: 'background 0.1s' }}
+                onClick={() => { setBellAnchorEl(null); router.push(`/patients/${patientId}/program`); }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                  <ChatBubbleOutlineRoundedIcon sx={{ fontSize: 13, color: 'primary.main' }} />
+                  <Typography variant="caption" fontWeight={600} color="primary.main">
+                    {patient ? `${patient.firstName} ${patient.lastName}` : patientId}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
+                    {note.createdAt}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1.4, pl: 2.75 }}>
+                  {note.content.length > 80 ? note.content.slice(0, 80) + '…' : note.content}
+                </Typography>
+              </Box>
+              {i < commentNotifications.length - 1 && <Divider />}
+            </Box>
+          );
+        })
+      )}
+    </Popover>
+    </>
   );
 }

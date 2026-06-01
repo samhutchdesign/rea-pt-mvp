@@ -198,6 +198,25 @@ notesMap.set('pat_uth8:ex9', [
   { id: 'n-uth8-ex9-p', authorId: 'patient-pat_uth8', authorName: 'Inge Visser', authorRole: 'patient', content: "My lower back is so much less stiff since I started doing cat-cow every morning. Really noticeable difference.", createdAt: '2026-05-15' },
 ]);
 
+export interface PatientNoteNotification {
+  patientId: string;
+  exerciseId: string;
+  note: ExerciseNote;
+}
+
+export function getAllPatientNotes(): PatientNoteNotification[] {
+  const results: PatientNoteNotification[] = [];
+  for (const [key, notes] of notesMap.entries()) {
+    const [patientId, exerciseId] = key.split(':');
+    for (const note of notes) {
+      if (note.authorRole === 'patient') {
+        results.push({ patientId, exerciseId, note });
+      }
+    }
+  }
+  return results.sort((a, b) => b.note.createdAt.localeCompare(a.note.createdAt));
+}
+
 export function getNotes(patientId: string, exerciseId: string): ExerciseNote[] {
   return notesMap.get(`${patientId}:${exerciseId}`) ?? [];
 }
