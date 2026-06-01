@@ -284,7 +284,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
           <TextField label="Type of Surgery / Procedure" size="small" fullWidth value={draftValues.surgeryType ?? ''} onChange={(e) => setDraft('surgeryType', e.target.value)} />
           <TextField label="Date of Surgery" size="small" fullWidth value={draftValues.surgeryDate ?? ''} onChange={(e) => setDraft('surgeryDate', e.target.value)} />
         </Box>
-        <TextField label="Pain Level" size="small" fullWidth value={draftValues.painLevel ?? ''} onChange={(e) => setDraft('painLevel', e.target.value)} />
+        <TextField label="Starting Pain Level" size="small" fullWidth value={draftValues.painLevel ?? ''} onChange={(e) => setDraft('painLevel', e.target.value)} />
         <TextField label="Evolution of Symptoms" size="small" fullWidth multiline rows={2} value={draftValues.symptomEvolution ?? ''} onChange={(e) => setDraft('symptomEvolution', e.target.value)} />
         <TextField label="Functional Mobility" size="small" fullWidth multiline rows={2} value={draftValues.functionalMobility ?? ''} onChange={(e) => setDraft('functionalMobility', e.target.value)} />
         <TextField label="Management of Problem to Date" size="small" fullWidth multiline rows={2} value={draftValues.management ?? ''} onChange={(e) => setDraft('management', e.target.value)} />
@@ -389,7 +389,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
           <InfoField label="Date of Onset" value={localInjury?.dateOfOnset} hideEmpty={hideEmpty} />
           <InfoField label="Type of Surgery / Procedure" value={localInjury?.surgeryType} hideEmpty={hideEmpty} />
           <InfoField label="Date of Surgery" value={localInjury?.surgeryDate} hideEmpty={hideEmpty} />
-          <InfoField label="Pain Level" value={localInjury?.painLevel} hideEmpty={hideEmpty} />
+          <InfoField label="Starting Pain Level" value={localInjury?.painLevel} hideEmpty={hideEmpty} />
         </Box>
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2, mt: 2 }}>
           <InfoField label="Evolution of Symptoms" value={localInjury?.symptomEvolution} hideEmpty={hideEmpty} />
