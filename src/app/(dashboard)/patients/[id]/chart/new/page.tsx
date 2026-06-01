@@ -51,17 +51,17 @@ const SOAPIER_SECTIONS = [
 ];
 
 const MARGARET_STUB = {
-  subjective: 'Patient (Margaret Chen, 34 y.o. F, postpartum 6 wks) reports urinary leakage has further improved — now 0–1 episodes/day (down from daily at intake). Reports completing pelvic floor exercises daily since last session. Mild perineal discomfort 1/10 at rest. No urgency. Resuming yoga this week.',
-  objective: 'PFMT assessment: pelvic floor contraction 4/5 bilaterally (↑ from 2/5 at intake). AROM: hip flexion 120° B/L, hip abduction WNL. Transverse abdominis activation — moderate. Scar healing N/A. Diastasis recti: not assessed this session.',
-  assessment: 'ICF Problem List:\n  · Body function: mild residual pelvic floor hypotonicity — improving\n  · Activity & participation: return to yoga in progress, SUI with high-impact activity resolving\n  · Environment: supportive home environment, spouse involved\n\nPT Diagnosis: 34 y.o. postpartum F presenting with resolving SUI and pelvic floor hypotonicity affecting return to exercise.\n\nSTG: 0 leakage episodes with sneezing/coughing by session 5.\nLTG: Full return to yoga and high-impact activity by 8 weeks.',
-  plan: '1. Progress PFMT to eccentric loading phase.\n2. Introduce impact training protocol (walk-jog progression).\n\nExpected Rx: 2 more sessions × 1×/wk.\nReassessment at session 5.\nDischarge criteria: 0 SUI episodes, full yoga return.\nClient consent: Yes.',
-  intervention: 'PFMT with biofeedback — 3×10 reps, 5 sec hold, 10 sec rest.\nHip bridge with load — 3×12.\nTransverse abdominis coordination drill.\n\nHEP updated: added eccentric holds.\nPatient education: impact loading progression, intra-abdominal pressure management.',
-  evaluation: "Patient tolerated all exercises well. No increase in symptoms post-session. Reported feeling 'much stronger.' NPRS: 0/10 post-session (↓ from 1/10 pre). Ready to progress to home yoga practice.",
-  recommendations: 'To patient: continue daily HEP, progress yoga per provided handout. Avoid high-impact running for 2 more weeks.\n\nTo GP (Dr. Patel): patient progressing well, anticipate discharge in 2 sessions. No referrals required at this time.',
+  subjective: 'Pt (Margaret Chen, 34 y.o. F, ~6/52 p/o SVD) c/o ↓ SUI — 0–1 episode/day (↓ from daily at intake 6/52 ago). HEP adherence: 7/7 days × past 2/52. Perineal discomfort: NPRS 1/10 at rest, 0/10 c/ activity. No urgency. ↑ confidence c/ PF activation. Querying RTS running — returning to yoga this week.',
+  objective: 'PFMT: levator ani 4/5 B/L (↑ from 2/5 at intake). Endurance hold: 8 sec × 10 reps (↑ from 3 sec). Quick flicks: 10/10 B/L. TA activation: moderate (4/5). AROM: hip flex 120° B/L, hip abd WNL. Diastasis recti: N/T this session.',
+  assessment: 'ICF Problem List:\n  · Body function: ↓ PF hypotonicity — levator ani 4/5 B/L (↑ from 2/5)\n  · Activity & participation: SUI resolving ↓; return to yoga initiated; ↑ impact loading (running) still restricted\n  · Environment: supportive home environment; spouse involvement → ↑ HEP adherence\n\nPT Dx: 34 y.o. postpartum F s/p SVD c/ resolving SUI + residual PF hypotonicity → ↓ RTS ↑ impact activity.\nSTG (session 5): 0 SUI episodes c/ cough/sneeze challenge.\nLTG (8/52): full RTS — yoga + low-impact running; NPRS 0/10.',
+  plan: '1. ↑ PFMT → eccentric loading phase (↑ load, ↓ reps).\n2. Initiate impact training protocol: walk → jog progression.\n3. ↑ HEP → 3×/day.\n\nExpected Rx: 2 sessions × 1×/wk → D/C.\nReassessment: session 5.\nD/C criteria: 0 SUI episodes; full RTS yoga + running.\nPt consent: ✓ verbal.',
+  intervention: 'PFMT c/ biofeedback: 3×10 reps, 5 sec hold, 10 sec rest (↑ from 3 sec).\nHip bridge c/ load: 3×12 reps.\nTA coordination drill: 3×10 B/L.\n\nHEP ↑: added eccentric Kegel holds (5 sec concentric + 5 sec eccentric).\nPt ed: ↑ IAP management; impact loading progression (walk → jog → run). Handout provided.',
+  evaluation: "Pt tolerated ↑ load well — no ↑ Sx post-session. NPRS: 1/10 pre → 0/10 post. Pt reports ↑ confidence c/ PF activation. Technique ✓ all new exercises. Pt verbalized understanding of impact progression protocol. Target: RTS yoga next week.",
+  recommendations: 'To pt: ↑ HEP → 3×/day; progress yoga per handout; avoid running × 2/52.\nTo GP (Dr. Patel): pt progressing well — anticipate D/C in 2 sessions; no further referral required at this time.',
 };
 
 const GENERIC_STUB = {
-  subjective: 'Patient reports [describe symptoms, NPRS rating, functional impact].',
+  subjective: 'Pt c/o [describe Sx, location, NPRS __/10, ↑ aggravating factors, ↓ relieving factors].',
   objective: '',
   assessment: '',
   plan: '',
@@ -88,8 +88,8 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
     if (dictating) {
       setDictating(false);
       setNotes((prev) => prev + (prev ? ' ' : '') + (id === 'pat1'
-        ? 'Patient says leakage is almost gone, only happened once this week. She\'s been doing her exercises every day. Perineal area feels much better. Wants to know when she can start running again.'
-        : 'Patient reports improvement since last visit. Adherence good. Pain level lower. Wants to discuss return to activity.'));
+        ? 'Pt c/o ↓ SUI — 0–1 episode today, ↓ from daily at intake. HEP adherence 7/7 this week. NPRS 1/10 at rest, ↓ from 2/10 last visit. No urgency. Querying RTS running — discussed ↑ impact loading protocol.'
+        : 'Pt reports ↓ Sx since last visit. HEP adherence ↑ — completing most days. NPRS ↓ from [x] → [x]/10. Functional mobility ↑. No adverse reactions to HEP.'));
     } else {
       setDictating(true);
     }
