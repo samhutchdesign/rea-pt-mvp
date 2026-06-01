@@ -24,6 +24,7 @@ import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients, mockPhysio } from '@/lib/mock-data';
+import { getPermissions } from '@/lib/permissions';
 import { clearUploadedData } from '@/lib/uploadStore';
 
 const patientTabs = [
@@ -60,7 +61,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [snackMsg, setSnackMsg] = useState('');
   const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
 
-  const isOwner = mockPhysio.role === 'owner';
+  const can = getPermissions(mockPhysio.role);
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
   const currentTab = patientTabs[activeTab] ?? patientTabs[0];
 
@@ -148,7 +149,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
               )}
             </Box>
 
-            {isOwner && (
+            {can.canArchivePatient && (
               archived ? (
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <Button

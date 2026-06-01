@@ -29,6 +29,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
 import { mockEmployees, mockPatients, mockPhysio } from '@/lib/mock-data';
+import { getPermissions } from '@/lib/permissions';
 import type { Patient, Employee } from '@/lib/types';
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -224,7 +225,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
   const assignedPatients = mockPatients.filter((p) => emp.patientIds.includes(p.id));
   const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
-  const isOwner = mockPhysio.role === 'owner';
+  const can = getPermissions(mockPhysio.role);
 
   const handleTransfer = (toEmployee: Employee) => {
     const name = `${transferPatient?.firstName} ${transferPatient?.lastName}`;
@@ -312,7 +313,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </Box>
             </Box>
           </Box>
-          {isOwner && (
+          {can.canManageStaff && (
             archived ? (
               <Button variant="outlined" startIcon={<UnarchiveOutlinedIcon />} size="small" onClick={handleRestore} color="warning">
                 Restore Employee
@@ -451,7 +452,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                       </Box>
                       <Typography variant="body2" color="text.secondary">{p.email}</Typography>
                     </Box>
-                    {isOwner && (
+                    {can.canManageStaff && (
                       <Button
                         size="small"
                         variant="outlined"
@@ -476,7 +477,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Typography variant="subtitle2" fontWeight={600}>Contact Information</Typography>
-                  {isOwner && !editingContact && (
+                  {can.canManageStaff && !editingContact && (
                     <IconButton size="small" onClick={handleEditContact}><EditOutlinedIcon fontSize="small" /></IconButton>
                   )}
                 </Box>
@@ -521,7 +522,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Typography variant="subtitle2" fontWeight={600}>Professional Details</Typography>
-                  {isOwner && !editingProfessional && (
+                  {can.canManageStaff && !editingProfessional && (
                     <IconButton size="small" onClick={handleEditProfessional}><EditOutlinedIcon fontSize="small" /></IconButton>
                   )}
                 </Box>

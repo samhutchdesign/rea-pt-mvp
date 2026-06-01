@@ -10,6 +10,7 @@ import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
 import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import { mockPhysio } from '@/lib/mock-data';
+import { getPermissions } from '@/lib/permissions';
 
 const baseNavItems = [
   { label: 'Home', href: '/', icon: HomeRoundedIcon },
@@ -30,7 +31,8 @@ const ownerNavItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const navItems = mockPhysio.role === 'owner' ? ownerNavItems : baseNavItems;
+  const can = getPermissions(mockPhysio.role);
+  const navItems = can.canManageStaff ? ownerNavItems : baseNavItems;
 
   return (
     <Box

@@ -25,6 +25,7 @@ import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockPhysio, mockClinic } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
+import { getPermissions } from '@/lib/permissions';
 import type { Employee } from '@/lib/types';
 
 export default function PatientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -48,7 +49,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
   const assignedEmployees = patient ? mockEmployees.filter((e) => patient.assignedEmployeeIds.includes(e.id)) : [];
-  const isOwner = mockPhysio.role === 'owner';
+  const can = getPermissions(mockPhysio.role);
 
   const overallAdherence = program
     ? Math.round(program.exercises.reduce((sum, e) => sum + e.adherence, 0) / program.exercises.length)
@@ -183,7 +184,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         <CardContent>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="subtitle1" fontWeight={600}>Care Team</Typography>
-            {isOwner && (
+            {can.canTransferPatient && (
               <Button size="small" variant="outlined" startIcon={<SwapHorizRoundedIcon />} onClick={() => setTransferOpen(true)}>
                 Transfer Patient
               </Button>

@@ -16,6 +16,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { mockNotifications, mockPhysio } from '@/lib/mock-data';
+import { getPermissions, roleLabel } from '@/lib/permissions';
 
 interface TopBarProps {
   breadcrumbs: { label: string; href?: string }[];
@@ -81,7 +82,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
             <Box>
               <Typography variant="body2" fontWeight={600}>{mockPhysio.firstName} {mockPhysio.lastName}</Typography>
               <Typography variant="caption" color="primary.main" sx={{ fontWeight: 500 }}>
-                {mockPhysio.role === 'owner' ? 'Clinic Owner' : 'Admin'}
+                {roleLabel(mockPhysio.role)}
               </Typography>
             </Box>
           </MenuItem>
@@ -89,10 +90,10 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
             <Typography variant="caption">{mockPhysio.email}</Typography>
           </MenuItem>
           <Divider />
-          {mockPhysio.role === 'owner' && (
+          {getPermissions(mockPhysio.role).canManageClinic && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Clinic Profile</MenuItem>
           )}
-          {mockPhysio.role === 'owner' && (
+          {getPermissions(mockPhysio.role).canManageBilling && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/billing'); }}>Billing</MenuItem>
           )}
           <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/profile'); }}>Your Profile</MenuItem>

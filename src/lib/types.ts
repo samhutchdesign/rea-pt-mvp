@@ -1,4 +1,4 @@
-export type UserRole = 'owner' | 'admin';
+export type UserRole = 'owner' | 'admin' | 'staff';
 
 export interface Physio {
   id: string;
@@ -24,7 +24,7 @@ export interface Employee {
   credentials: string;
   title: string;
   bio: string;
-  role: 'admin';
+  role: UserRole;
   avatarInitials: string;
   patientIds: string[];
   clinicId: string;

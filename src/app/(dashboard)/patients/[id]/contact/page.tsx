@@ -12,6 +12,7 @@ import Alert from '@mui/material/Alert';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { mockPatients, mockPhysio } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
+import { getPermissions } from '@/lib/permissions';
 
 export default function PatientContactPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -41,7 +42,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [emergencyDraft, setEmergencyDraft] = useState({ ...savedEmergency });
 
-  const isOwner = mockPhysio.role === 'owner';
+  const can = getPermissions(mockPhysio.role);
 
   if (!patient) return null;
 
@@ -77,7 +78,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
           <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
               <Typography variant="subtitle1" fontWeight={600}>Contact Information</Typography>
-              {isOwner && !editingContact && (
+              {can.canEditContactInfo && !editingContact && (
                 <IconButton size="small" onClick={handleEditContact}><EditOutlinedIcon fontSize="small" /></IconButton>
               )}
             </Box>
@@ -146,7 +147,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
           <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
               <Typography variant="subtitle1" fontWeight={600}>Emergency Contact</Typography>
-              {isOwner && !editingEmergency && (
+              {can.canEditContactInfo && !editingEmergency && (
                 <IconButton size="small" onClick={handleEditEmergency}><EditOutlinedIcon fontSize="small" /></IconButton>
               )}
             </Box>
