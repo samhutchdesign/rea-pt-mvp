@@ -16,7 +16,8 @@ import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
-import { mockPatients, mockNotifications, mockPhysio, mockChartSessions } from '@/lib/mock-data';
+import { mockNotifications, mockPhysio, mockChartSessions } from '@/lib/mock-data';
+import { useLocationScope } from '@/lib/locationScope';
 
 function computeEstimatedNext(patientId: string): number {
   const sessions = mockChartSessions[patientId] ?? [];
@@ -40,11 +41,6 @@ function computeEstimatedNext(patientId: string): number {
 }
 
 
-const recentPatients = [...mockPatients]
-  .filter((p) => !p.archived && (p.status === 'active' || p.status === 'new'))
-  .sort((a, b) => computeEstimatedNext(a.id) - computeEstimatedNext(b.id))
-  .slice(0, 6);
-
 const recentActivity = mockNotifications.slice(0, 5);
 
 function formatRelativeTime(ts: string) {
@@ -59,9 +55,15 @@ function formatRelativeTime(ts: string) {
 export default function DashboardPage() {
   const router = useRouter();
   const [addPatientOpen, setAddPatientOpen] = useState(false);
+  const { patients: scopedPatients } = useLocationScope();
 
-  const activeCount = mockPatients.filter((p) => p.status === 'active').length;
-  const newCount = mockPatients.filter((p) => p.status === 'new').length;
+  const recentPatients = [...scopedPatients]
+    .filter((p) => !p.archived && (p.status === 'active' || p.status === 'new'))
+    .sort((a, b) => computeEstimatedNext(a.id) - computeEstimatedNext(b.id))
+    .slice(0, 6);
+
+  const activeCount = scopedPatients.filter((p) => p.status === 'active').length;
+  const newCount = scopedPatients.filter((p) => p.status === 'new').length;
   const pendingDocs = mockNotifications.filter((n) => !n.read).length;
 
   const stats = [

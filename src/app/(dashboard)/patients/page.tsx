@@ -24,7 +24,8 @@ import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
-import { mockPatients, mockChartSessions } from '@/lib/mock-data';
+import { mockChartSessions } from '@/lib/mock-data';
+import { useLocationScope, YOUR_EMP_ID } from '@/lib/locationScope';
 import type { Patient } from '@/lib/types';
 
 function conditionChip(patient: Patient): string | null {
@@ -41,22 +42,33 @@ function sessionInfo(patient: Patient): { lastSeen: string | null; count: number
   return { lastSeen, count: sessions.length };
 }
 
-
 export default function PatientsPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
   const [sort, setSort] = useState('newest');
   const [addOpen, setAddOpen] = useState(false);
-  const [patients, setPatients] = useState<Patient[]>(mockPatients);
+  const [localPatients, setLocalPatients] = useState<Record<string, boolean>>({});
   const [snackMsg, setSnackMsg] = useState('');
   const [snackOpen, setSnackOpen] = useState(false);
 
-  const activePatients = patients.filter((p) => !p.archived);
-  const archivedPatients = patients.filter((p) => p.archived);
+  const { patients: scopedPatients } = useLocationScope();
+
+  // Apply local archived overrides
+  const patients = scopedPatients.map((p) =>
+    p.id in localPatients ? { ...p, archived: localPatients[p.id] } : p
+  );
+
+  const yourPatients = patients.filter((p) => !p.archived && p.assignedEmployeeIds.includes(YOUR_EMP_ID));
+  const allActive = patients.filter((p) => !p.archived);
+  const archived = patients.filter((p) => p.archived);
+
+  const tabList = [yourPatients, allActive, archived];
+  const currentList = tabList[tab] ?? allActive;
 
   const applySearch = (list: Patient[]) => {
     const q = search.toLowerCase();
+    if (!q) return list;
     return list.filter((p) =>
       p.firstName.toLowerCase().includes(q) ||
       p.lastName.toLowerCase().includes(q) ||
@@ -71,19 +83,21 @@ export default function PatientsPage() {
     else if (sort === 'z-a') sorted.sort((a, b) => b.firstName.localeCompare(a.firstName) || b.lastName.localeCompare(a.lastName));
     else if (sort === 'location') sorted.sort((a, b) => a.location.localeCompare(b.location));
     else if (sort === 'oldest') sorted.sort((a, b) => a.id.localeCompare(b.id));
-    else sorted.sort((a, b) => b.id.localeCompare(a.id)); // newest
+    else sorted.sort((a, b) => b.id.localeCompare(a.id));
     return sorted;
   };
 
-  const displayed = applySort(applySearch(tab === 0 ? activePatients : archivedPatients));
+  const displayed = applySort(applySearch(currentList));
 
   const restore = (patient: Patient) => {
-    setPatients((prev) => prev.map((p) => p.id === patient.id ? { ...p, archived: false } : p));
+    setLocalPatients((prev) => ({ ...prev, [patient.id]: false }));
     setSnackMsg(`${patient.firstName} ${patient.lastName} restored to active.`);
     setSnackOpen(true);
   };
 
+  const searchPlaceholders = ['Search your patients…', 'Search all patients…', 'Search archived patients…'];
   const empty = displayed.length === 0;
+  const emptyMessages = ['No patients assigned to you yet', 'No active patients found', 'No archived patients found'];
 
   return (
     <>
@@ -98,17 +112,18 @@ export default function PatientsPage() {
 
         <Tabs
           value={tab}
-          onChange={(_, v) => setTab(v)}
+          onChange={(_, v) => { setTab(v); setSearch(''); }}
           sx={{ borderBottom: '1px solid #E0E0E0', mb: 3 }}
           TabIndicatorProps={{ style: { backgroundColor: '#6750A4', height: 2 } }}
         >
-          <Tab label={`Active (${activePatients.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
-          <Tab label={`Archived (${archivedPatients.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
+          <Tab label={`Your Patients (${yourPatients.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
+          <Tab label={`All (${allActive.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
+          <Tab label={`Archived (${archived.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
         </Tabs>
 
         <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
           <TextField
-            placeholder={tab === 0 ? 'Search active patients…' : 'Search archived patients…'}
+            placeholder={searchPlaceholders[tab]}
             size="small"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -117,26 +132,26 @@ export default function PatientsPage() {
               startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 20 }} /></InputAdornment>,
             }}
           />
-          <Select
-            size="small"
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            sx={{ minWidth: 140, fontSize: 14 }}
-          >
-            <MenuItem value="newest">Newest</MenuItem>
-            <MenuItem value="oldest">Oldest</MenuItem>
-            <MenuItem value="a-z">A → Z</MenuItem>
-            <MenuItem value="z-a">Z → A</MenuItem>
-            <MenuItem value="location">Location</MenuItem>
-          </Select>
+          {tab !== 2 && (
+            <Select
+              size="small"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              sx={{ minWidth: 140, fontSize: 14 }}
+            >
+              <MenuItem value="newest">Newest</MenuItem>
+              <MenuItem value="oldest">Oldest</MenuItem>
+              <MenuItem value="a-z">A → Z</MenuItem>
+              <MenuItem value="z-a">Z → A</MenuItem>
+              <MenuItem value="location">Location</MenuItem>
+            </Select>
+          )}
         </Box>
 
         {empty ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <PersonOutlineIcon sx={{ fontSize: 48, color: '#BDBDBD', mb: 1 }} />
-            <Typography color="text.secondary">
-              {tab === 0 ? 'No active patients found' : 'No archived patients found'}
-            </Typography>
+            <Typography color="text.secondary">{emptyMessages[tab]}</Typography>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -179,7 +194,7 @@ export default function PatientsPage() {
                         </>
                       );
                     })()}
-                    {tab === 1 && (
+                    {tab === 2 && (
                       <Button
                         size="small"
                         variant="outlined"

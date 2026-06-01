@@ -13,6 +13,7 @@ export const mockPhysio: Physio = {
   avatarInitials: 'SH',
   role: 'owner',
   clinicId: 'clinic1',
+  locationId: 'loc1',
 };
 
 export const mockClinic: Clinic = {

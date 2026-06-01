@@ -19,7 +19,8 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import TopBar from '@/components/layout/TopBar';
-import { mockEmployees, mockPatients } from '@/lib/mock-data';
+import { mockPatients } from '@/lib/mock-data';
+import { useLocationScope } from '@/lib/locationScope';
 import type { Employee } from '@/lib/types';
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -33,7 +34,10 @@ export default function EmployeesPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const { employees: scopedEmployees } = useLocationScope();
+  const [overrides, setOverrides] = useState<Record<string, Partial<Employee>>>({});
+
+  const employees = scopedEmployees.map((e) => overrides[e.id] ? { ...e, ...overrides[e.id] } : e);
   const [snackMsg, setSnackMsg] = useState('');
   const [snackOpen, setSnackOpen] = useState(false);
 
@@ -52,7 +56,7 @@ export default function EmployeesPage() {
   const displayed = applySearch(tab === 0 ? activeEmployees : archivedEmployees);
 
   const restore = (emp: Employee) => {
-    setEmployees((prev) => prev.map((e) => e.id === emp.id ? { ...e, archived: false } : e));
+    setOverrides((prev) => ({ ...prev, [emp.id]: { archived: false } }));
     setSnackMsg(`${emp.firstName} ${emp.lastName} restored to active.`);
     setSnackOpen(true);
   };

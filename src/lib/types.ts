@@ -13,6 +13,7 @@ export interface Physio {
   avatarInitials: string;
   role: UserRole;
   clinicId: string;
+  locationId: string;
 }
 
 export interface Employee {
