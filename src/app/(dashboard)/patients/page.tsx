@@ -64,8 +64,8 @@ export default function PatientsPage() {
 
   const applySort = (list: Patient[]) => {
     const sorted = [...list];
-    if (sort === 'a-z') sorted.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
-    else if (sort === 'z-a') sorted.sort((a, b) => b.lastName.localeCompare(a.lastName) || b.firstName.localeCompare(a.firstName));
+    if (sort === 'a-z') sorted.sort((a, b) => a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName));
+    else if (sort === 'z-a') sorted.sort((a, b) => b.firstName.localeCompare(a.firstName) || b.lastName.localeCompare(a.lastName));
     else if (sort === 'location') sorted.sort((a, b) => a.location.localeCompare(b.location));
     else if (sort === 'oldest') sorted.sort((a, b) => a.id.localeCompare(b.id));
     else sorted.sort((a, b) => b.id.localeCompare(a.id)); // newest
