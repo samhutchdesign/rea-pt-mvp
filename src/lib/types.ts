@@ -111,6 +111,7 @@ export interface ChartSession {
     plan: string;
     intervention: string;
     evaluation: string;
+    recommendations: string;
   };
 }
 

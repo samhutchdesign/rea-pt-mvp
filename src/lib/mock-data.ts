@@ -709,6 +709,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Initiate pelvic floor strengthening program (3 exercises). Education on bladder habits and hydration.',
         intervention: 'Manual therapy: gentle connective tissue mobilization. Exercise prescription: diaphragmatic breathing, TA activation, sustained Kegel.',
         evaluation: 'Patient demonstrated correct exercise technique by end of session. Good understanding of anatomy.',
+        recommendations: 'Continue daily HEP. Avoid high-impact activity for 6 weeks postpartum. Follow up with OB/GYN at 6-week appointment. Monitor hydration and bladder habits.',
       },
     },
     {
@@ -728,6 +729,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Progress to 4 exercises. Problem-solve adherence strategy.',
         intervention: 'Added hip bridge. Habit stacking discussion — linking exercises to feeding schedule.',
         evaluation: 'Patient engaged with habit planning. Confident with new exercise.',
+        recommendations: 'Link HEP to infant feeding schedule (morning and evening feeds). Track leakage episodes in journal. Return in 2 weeks.',
       },
     },
     {
@@ -747,6 +749,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Introduce functional movements (squat). Discuss yoga return timeline.',
         intervention: 'Added bodyweight squat with PF cue. Education on impact loading progression.',
         evaluation: 'Excellent session. Patient very motivated. Target return to yoga in 4 weeks.',
+        recommendations: 'Begin low-impact yoga next week per provided handout. Avoid running and jumping for 4 more weeks. To GP (Dr. Patel): patient progressing well, anticipate discharge in 2 sessions.',
       },
     },
   ],
@@ -766,6 +769,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Begin with motor control and coordination before strength. Bladder retraining.',
         intervention: 'Pelvic floor awareness, diaphragmatic breathing, quick flick Kegels.',
         evaluation: 'Difficulty isolating pelvic floor initially. Good understanding by end of session.',
+        recommendations: 'Begin bladder diary (provided template). Limit caffeine and carbonated beverages. HEP 3x daily. Avoid urgency suppression strategies.',
       },
     },
     {
@@ -785,6 +789,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Simplify program, reduce exercises. Phone reminder system.',
         intervention: 'Reduced to 3 key exercises. Set phone reminders during session.',
         evaluation: 'More confident with simplified plan. Will reassess in 2 weeks.',
+        recommendations: 'Continue simplified HEP with phone reminders set. Limit fluid intake after 7 PM. Reassess in 2 weeks — escalate to urogynecology if no improvement in 4 sessions.',
       },
     },
     {
@@ -804,6 +809,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Progress to sustained holds and functional movement.',
         intervention: 'Added sustained Kegel 10s holds, introduced squat with PF cue.',
         evaluation: 'Strong session. Patient very motivated. Target tennis return in 6 weeks.',
+        recommendations: 'Progress to sustained holds and functional squat at home. Monitor for return to tennis readiness at next session. Continue bladder diary.',
       },
     },
   ],
@@ -823,6 +829,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Prioritize relaxation and pain education. Avoid strengthening until hypertonicity resolves.',
         intervention: 'Pain neuroscience education, diaphragmatic breathing, cat-cow.',
         evaluation: 'Patient responded well to pain education. Visible tension reduction during breathing exercises.',
+        recommendations: 'Avoid prolonged sitting > 30 min. Apply moist heat to pelvis PRN for pain relief. Continue relaxation exercises 2x daily. To GP: patient initiated pelvic floor PT for post-hysterectomy pelvic pain.',
       },
     },
     {
@@ -842,6 +849,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Continue relaxation program, introduce scar massage.',
         intervention: 'Scar tissue mobilization (patient educated on self-massage). Added pelvic tilt.',
         evaluation: 'Patient comfortable with scar massage technique. Optimistic.',
+        recommendations: 'Continue scar self-massage 2x/day as instructed. HEP as prescribed. Follow up with GP if pelvic pain increases or returns to baseline.',
       },
     },
   ],
@@ -861,6 +869,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Prescribe foundational program. Focus on PF coordination with activity.',
         intervention: 'Education on the knack maneuver. Breathing and TA activation.',
         evaluation: 'Patient engaged and motivated. Quick learner.',
+        recommendations: 'Begin HEP daily. Practice knack maneuver before running and box jumps. Log leakage episodes. Return in 2 weeks with completed exercise log.',
       },
     },
   ],
@@ -880,6 +889,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Strengthening program with prolapse precautions.',
         intervention: 'Education on prolapse mechanics and lifting technique. Initiate gentle PF strengthening.',
         evaluation: 'Patient understands conservative management approach. Motivated to avoid surgery.',
+        recommendations: 'Insert pessary per urogynecologist instructions daily. Avoid Valsalva and heavy lifting > 5 lbs. HEP as prescribed. Follow up with urogynecologist as scheduled (Dr. Nguyen).',
       },
     },
     {
@@ -899,6 +909,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Progress program. Add supine exercises for evening.',
         intervention: 'Added hip bridge and clamshell. Evening exercise routine in lying.',
         evaluation: 'Good technique with all exercises. Progressing well.',
+        recommendations: 'Continue prolapse precautions (no heavy lifting, avoid prolonged standing). Add supine exercise routine in evenings. Follow up with urogynecologist as scheduled.',
       },
     },
   ],
@@ -918,6 +929,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Scar education and early mobility. Diastasis rehab. PF program.',
         intervention: 'Scar desensitization, diaphragmatic breathing, TA activation.',
         evaluation: 'Patient responded well. Good understanding of diastasis precautions.',
+        recommendations: 'Continue scar desensitization 2x/day. Avoid sit-ups, crunches, and loaded flexion. Begin short gentle walks (10–15 min) this week. Follow up with OB/GYN at 6-week check.',
       },
     },
     {
@@ -937,6 +949,7 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         plan: 'Progress to functional movements. Begin return-to-hiking discussion.',
         intervention: 'Added dead bug, progressed TA activation to standing.',
         evaluation: 'Very strong session. Target return to short hikes in 4 weeks.',
+        recommendations: 'Begin return-to-hiking progression next week: 15 min flat trail, then increase by 5 min each week. Continue HEP. To GP: diastasis resolved to 1.5 cm, scar mobile, patient cleared for low-impact activity.',
       },
     },
   ],
