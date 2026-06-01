@@ -1,4 +1,4 @@
-import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic } from './types';
+import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic, ClinicLocation } from './types';
 
 export const mockPhysio: Physio = {
   id: 'p1',
@@ -25,6 +25,45 @@ export const mockClinic: Clinic = {
   description: 'Rea Pelvic Health is a specialized physiotherapy clinic focused on pelvic floor rehabilitation for women across all life stages — from postpartum recovery to menopause and beyond. Our multidisciplinary team delivers individualized, evidence-based care in a supportive and discreet environment.',
   logoInitials: 'RP',
 };
+
+export const mockClinicLocations: ClinicLocation[] = [
+  {
+    id: 'loc1',
+    orgId: 'clinic1',
+    name: 'Vancouver Clinic',
+    city: 'Vancouver',
+    regionCountry: 'BC, Canada',
+    address: '1420 Health Sciences Drive, Suite 300, Vancouver, BC V6T 1Z3',
+    phone: '(604) 555-0100',
+    email: 'vancouver@reapelvichealth.com',
+    description: "Rea Pelvic Health's founding clinic, established in 2018 in Vancouver, BC. Located in one of Canada's most health-forward cities, the Vancouver clinic brings together a multidisciplinary team of pelvic floor physiotherapists serving the Lower Mainland and beyond. Vancouver's deep commitment to active living, wellness, and progressive healthcare made it the natural home for Rea's mission — delivering evidence-based, patient-centred pelvic floor care in a supportive and discreet environment.",
+    employeeIds: ['emp1', 'emp2'],
+  },
+  {
+    id: 'loc2',
+    orgId: 'clinic1',
+    name: 'New York City Clinic',
+    city: 'New York City',
+    regionCountry: 'NY, USA',
+    address: '245 W 17th St, Suite 800, New York, NY 10011',
+    phone: '(212) 555-0188',
+    email: 'nyc@reapelvichealth.com',
+    description: "Rea Pelvic Health's first American location, bringing our evidence-based pelvic floor care to New York City. In one of the world's most fast-paced and demanding cities, our NYC clinic provides a calm, expert, and discreet environment for pelvic health treatment. New York's extraordinary diversity and high demand for specialized, integrative healthcare made it the ideal setting to extend Rea's mission — offering individualized care to patients across the boroughs and the broader tri-state area.",
+    employeeIds: ['emp3', 'emp4'],
+  },
+  {
+    id: 'loc3',
+    orgId: 'clinic1',
+    name: 'Utrecht Clinic',
+    city: 'Utrecht',
+    regionCountry: 'Netherlands',
+    address: 'Catharijnesingel 48, 3511 GC Utrecht, Netherlands',
+    phone: '+31 30 555 0122',
+    email: 'utrecht@reapelvichealth.com',
+    description: "Rea Pelvic Health's European hub, located in the heart of Utrecht, Netherlands. Utrecht's exceptional academic and medical culture — home to one of Europe's leading university medical centres — made it a natural choice for Rea's international expansion. The clinic serves patients from across the Netherlands and neighbouring European countries, combining Rea's Canadian clinical expertise with the progressive, research-driven approach to pelvic health that the Netherlands is internationally recognized for.",
+    employeeIds: [],
+  },
+];
 
 export const mockEmployees: Employee[] = [
   {

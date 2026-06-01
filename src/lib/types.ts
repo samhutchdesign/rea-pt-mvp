@@ -44,6 +44,19 @@ export interface Clinic {
   logoInitials: string;
 }
 
+export interface ClinicLocation {
+  id: string;
+  orgId: string;
+  name: string;
+  city: string;
+  regionCountry: string;
+  address: string;
+  phone: string;
+  email: string;
+  description: string;
+  employeeIds: string[];
+}
+
 export interface ExerciseTags {
   specialty: string[];
   condition: string[];

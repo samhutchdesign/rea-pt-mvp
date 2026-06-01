@@ -25,8 +25,10 @@ import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TopBar from '@/components/layout/TopBar';
-import { mockClinic, mockEmployees, mockPatients } from '@/lib/mock-data';
+import { mockClinic, mockClinicLocations, mockEmployees, mockPatients } from '@/lib/mock-data';
+import type { ClinicLocation } from '@/lib/types';
 
 const AVATAR_COLORS: Record<string, string> = {
   emp1: '#6750A4',
@@ -35,11 +37,7 @@ const AVATAR_COLORS: Record<string, string> = {
   emp4: '#F57C00',
 };
 
-const INITIAL_LOCATIONS = [
-  { id: 'loc1', name: 'Vancouver, BC, Canada' },
-  { id: 'loc2', name: 'New York City, NY, USA' },
-  { id: 'loc3', name: 'Utrecht, Netherlands' },
-];
+const INITIAL_LOCATIONS: ClinicLocation[] = mockClinicLocations;
 
 export default function ClinicPage() {
   const router = useRouter();
@@ -56,10 +54,10 @@ export default function ClinicPage() {
     description: mockClinic.description,
   });
 
-  const [locations, setLocations] = useState(INITIAL_LOCATIONS);
+  const [locations, setLocations] = useState<ClinicLocation[]>(INITIAL_LOCATIONS);
   const [addLocationOpen, setAddLocationOpen] = useState(false);
   const [newLocation, setNewLocation] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ClinicLocation | null>(null);
 
   const handleSave = () => {
     setEditing(false);
@@ -69,7 +67,24 @@ export default function ClinicPage() {
 
   const handleAddLocation = () => {
     if (!newLocation.trim()) return;
-    setLocations((prev) => [...prev, { id: `loc-${Date.now()}`, name: newLocation.trim() }]);
+    const parts = newLocation.trim().split(',').map((s) => s.trim());
+    const city = parts[0] ?? newLocation.trim();
+    const regionCountry = parts.slice(1).join(', ') || '';
+    setLocations((prev) => [
+      ...prev,
+      {
+        id: `loc-${Date.now()}`,
+        orgId: 'clinic1',
+        name: `${city} Clinic`,
+        city,
+        regionCountry,
+        address: '',
+        phone: '',
+        email: '',
+        description: '',
+        employeeIds: [],
+      },
+    ]);
     setNewLocation('');
     setAddLocationOpen(false);
     setSnackMsg('Location added.');
@@ -176,7 +191,21 @@ export default function ClinicPage() {
                       <Box key={loc.id}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.25 }}>
                           <LocationOnOutlinedIcon sx={{ fontSize: 18, color: 'text.secondary', flexShrink: 0 }} />
-                          <Typography variant="body2" sx={{ flexGrow: 1 }}>{loc.name}</Typography>
+                          <Box
+                            sx={{ flexGrow: 1, cursor: 'pointer', '&:hover': { '& .loc-name': { color: 'primary.main' } } }}
+                            onClick={() => router.push(`/clinic/${loc.id}`)}
+                          >
+                            <Typography className="loc-name" variant="body2" fontWeight={500} sx={{ transition: 'color 0.15s' }}>
+                              {loc.name}
+                            </Typography>
+                            {loc.regionCountry && (
+                              <Typography variant="caption" color="text.secondary">{loc.city}, {loc.regionCountry}</Typography>
+                            )}
+                          </Box>
+                          <ChevronRightIcon
+                            sx={{ fontSize: 18, color: 'text.secondary', cursor: 'pointer', mr: 0.5 }}
+                            onClick={() => router.push(`/clinic/${loc.id}`)}
+                          />
                           <IconButton
                             size="small"
                             onClick={() => setDeleteTarget(loc)}
@@ -279,7 +308,7 @@ export default function ClinicPage() {
         <DialogTitle sx={{ fontWeight: 600 }}>Remove Location?</DialogTitle>
         <DialogContent sx={{ pt: '12px !important' }}>
           <Typography variant="body2" color="text.secondary">
-            Remove <strong>{deleteTarget?.name}</strong> from this organization?
+            Remove <strong>{deleteTarget?.name}</strong> ({deleteTarget?.city}) from this organization?
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
