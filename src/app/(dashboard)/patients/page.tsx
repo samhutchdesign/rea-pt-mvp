@@ -10,6 +10,8 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import InputAdornment from '@mui/material/InputAdornment';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -41,6 +43,7 @@ export default function PatientsPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
+  const [sort, setSort] = useState('newest');
   const [addOpen, setAddOpen] = useState(false);
   const [patients, setPatients] = useState<Patient[]>(mockPatients);
   const [snackMsg, setSnackMsg] = useState('');
@@ -59,7 +62,17 @@ export default function PatientsPage() {
     );
   };
 
-  const displayed = applySearch(tab === 0 ? activePatients : archivedPatients);
+  const applySort = (list: Patient[]) => {
+    const sorted = [...list];
+    if (sort === 'a-z') sorted.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
+    else if (sort === 'z-a') sorted.sort((a, b) => b.lastName.localeCompare(a.lastName) || b.firstName.localeCompare(a.firstName));
+    else if (sort === 'location') sorted.sort((a, b) => a.location.localeCompare(b.location));
+    else if (sort === 'oldest') sorted.sort((a, b) => a.id.localeCompare(b.id));
+    else sorted.sort((a, b) => b.id.localeCompare(a.id)); // newest
+    return sorted;
+  };
+
+  const displayed = applySort(applySearch(tab === 0 ? activePatients : archivedPatients));
 
   const restore = (patient: Patient) => {
     setPatients((prev) => prev.map((p) => p.id === patient.id ? { ...p, archived: false } : p));
@@ -90,16 +103,30 @@ export default function PatientsPage() {
           <Tab label={`Archived (${archivedPatients.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
         </Tabs>
 
-        <TextField
-          placeholder={tab === 0 ? 'Search active patients…' : 'Search archived patients…'}
-          size="small"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{ mb: 3, width: 340 }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 20 }} /></InputAdornment>,
-          }}
-        />
+        <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
+          <TextField
+            placeholder={tab === 0 ? 'Search active patients…' : 'Search archived patients…'}
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ width: 340 }}
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 20 }} /></InputAdornment>,
+            }}
+          />
+          <Select
+            size="small"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            sx={{ minWidth: 140, fontSize: 14 }}
+          >
+            <MenuItem value="newest">Newest</MenuItem>
+            <MenuItem value="oldest">Oldest</MenuItem>
+            <MenuItem value="a-z">A → Z</MenuItem>
+            <MenuItem value="z-a">Z → A</MenuItem>
+            <MenuItem value="location">Location</MenuItem>
+          </Select>
+        </Box>
 
         {empty ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
