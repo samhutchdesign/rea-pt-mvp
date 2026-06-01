@@ -11,10 +11,12 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { mockPatients, mockPhysio } from '@/lib/mock-data';
+import { getUploadedData } from '@/lib/uploadStore';
 
 export default function PatientContactPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const patient = mockPatients.find((p) => p.id === id);
+  const uploaded = getUploadedData(id);
 
   const [editingContact, setEditingContact] = useState(false);
   const [editingEmergency, setEditingEmergency] = useState(false);
@@ -24,17 +26,17 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const [savedContact, setSavedContact] = useState({
     firstName: patient?.firstName ?? '',
     lastName: patient?.lastName ?? '',
-    phone: patient?.phone ?? '',
+    phone: uploaded?.phone || patient?.phone || '',
     email: patient?.email ?? '',
-    address: patient?.address ?? '',
+    address: uploaded?.address || patient?.address || '',
   });
   const [savedEmergency, setSavedEmergency] = useState({
-    firstName: patient?.emergencyContact?.firstName ?? '',
-    lastName: patient?.emergencyContact?.lastName ?? '',
-    phone: patient?.emergencyContact?.phone ?? '',
+    firstName: uploaded?.emergencyFirstName || patient?.emergencyContact?.firstName || '',
+    lastName: uploaded?.emergencyLastName || patient?.emergencyContact?.lastName || '',
+    phone: uploaded?.emergencyPhone || patient?.emergencyContact?.phone || '',
     email: patient?.emergencyContact?.email ?? '',
     address: patient?.emergencyContact?.address ?? '',
-    relationship: patient?.emergencyContact?.relationship ?? '',
+    relationship: uploaded?.emergencyRelationship || patient?.emergencyContact?.relationship || '',
   });
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [emergencyDraft, setEmergencyDraft] = useState({ ...savedEmergency });

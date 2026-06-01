@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Box from '@mui/material/Box';
@@ -20,6 +20,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients, mockPhysio } from '@/lib/mock-data';
+import { clearUploadedData } from '@/lib/uploadStore';
 
 const patientTabs = [
   { label: 'Overview', path: 'overview' },
@@ -44,6 +45,10 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const isOwner = mockPhysio.role === 'owner';
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
   const currentTab = patientTabs[activeTab] ?? patientTabs[0];
+
+  useEffect(() => {
+    return () => { clearUploadedData(id); };
+  }, [id]);
 
   if (!patient) {
     return (

@@ -209,6 +209,8 @@ export interface Patient {
   assignedEmployeeIds: string[];
   clinicId: string;
   archived: boolean;
+  sessionsPerWeek: number;
+  totalSessions: number;
   metrics?: PatientMetrics;
   injuryHistory?: InjuryHistory;
   pmhx?: PMHx;

@@ -31,7 +31,7 @@ import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import { mockExercises, mockPhysio } from '@/lib/mock-data';
+import { mockExercises, mockPhysio, mockPrograms } from '@/lib/mock-data';
 import { getAudioTracks, saveAudioTrack, deleteAudioTrack } from '@/lib/audioStore';
 import type { AudioTrack } from '@/lib/types';
 
@@ -344,6 +344,29 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         />
 
         <Divider sx={{ mb: 3 }} />
+
+        {/* Programs using this exercise */}
+        {(() => {
+          const usedInPrograms = mockPrograms.filter((prog) => prog.exercises.some((pe) => pe.exerciseId === id));
+          if (usedInPrograms.length === 0) return null;
+          return (
+            <>
+              <Typography variant="h6" fontWeight={600} mb={1.5}>Used in Programs</Typography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
+                {usedInPrograms.map((prog) => (
+                  <Chip
+                    key={prog.id}
+                    label={prog.name}
+                    clickable
+                    onClick={() => router.push(`/programs/${prog.id}`)}
+                    sx={{ bgcolor: '#E8E0F0', color: 'primary.main', fontWeight: 500 }}
+                  />
+                ))}
+              </Box>
+              <Divider sx={{ mb: 3 }} />
+            </>
+          );
+        })()}
 
         <Typography variant="h6" fontWeight={600} mb={2}>Instructions</Typography>
         <Box component="ol" sx={{ pl: 3, mb: 3 }}>

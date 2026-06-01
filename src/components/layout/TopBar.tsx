@@ -62,12 +62,6 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           )}
         </Breadcrumbs>
 
-        <IconButton onClick={() => router.push('/notifications')} sx={{ mr: 1 }}>
-          <Badge badgeContent={unreadCount} color="error">
-            <NotificationsOutlinedIcon />
-          </Badge>
-        </IconButton>
-
         <Avatar
           onClick={(e) => setAnchorEl(e.currentTarget)}
           sx={{ width: 36, height: 36, bgcolor: '#E8E0F0', color: 'primary.main', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
@@ -97,6 +91,9 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           <Divider />
           {mockPhysio.role === 'owner' && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Clinic Profile</MenuItem>
+          )}
+          {mockPhysio.role === 'owner' && (
+            <MenuItem onClick={() => { setAnchorEl(null); router.push('/billing'); }}>Billing</MenuItem>
           )}
           <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/profile'); }}>Your Profile</MenuItem>
           <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/settings'); }}>Settings</MenuItem>

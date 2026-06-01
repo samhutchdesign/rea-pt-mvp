@@ -49,7 +49,11 @@ export default function ExercisesPage() {
   const filtered = useMemo(() => {
     let exs = mockExercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
-      if (search && !ex.name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
+        if (!ex.name.toLowerCase().includes(q) && !allTags.some((t) => t.toLowerCase().includes(q))) return false;
+      }
       if (filterSpecialties.length && !filterSpecialties.some((s) => ex.tags.specialty.includes(s))) return false;
       if (filterConditions.length && !filterConditions.some((c) => ex.tags.condition.includes(c))) return false;
       if (filterSurgeries.length && !filterSurgeries.some((s) => ex.tags.surgery.includes(s))) return false;

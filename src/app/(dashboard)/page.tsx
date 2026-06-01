@@ -16,10 +16,22 @@ import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
-import { mockPatients, mockNotifications, mockPhysio } from '@/lib/mock-data';
+import { mockPatients, mockNotifications, mockPhysio, mockChartSessions } from '@/lib/mock-data';
+
+function getNextAppointmentDate(patientId: string, sessionsPerWeek: number): number {
+  const sessions = mockChartSessions[patientId] ?? [];
+  const nonIntake = sessions.filter((s) => !s.isIntakeSession);
+  const lastSession = nonIntake.length > 0
+    ? nonIntake.reduce((latest, s) => s.date > latest.date ? s : latest)
+    : sessions[0];
+  if (!lastSession) return Infinity;
+  const daysBetween = 7 / sessionsPerWeek;
+  return new Date(lastSession.date).getTime() + daysBetween * 86400000;
+}
 
 const recentPatients = [...mockPatients]
-  .sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime())
+  .filter((p) => !p.archived)
+  .sort((a, b) => getNextAppointmentDate(a.id, a.sessionsPerWeek) - getNextAppointmentDate(b.id, b.sessionsPerWeek))
   .slice(0, 5);
 
 const recentActivity = mockNotifications.slice(0, 5);
@@ -113,9 +125,15 @@ export default function DashboardPage() {
                         fontWeight: 500, fontSize: 11,
                       }}
                     />
-                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 70, textAlign: 'right' }}>
-                      {new Date(patient.lastModified).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </Typography>
+                    <Box sx={{ textAlign: 'right', minWidth: 70 }}>
+                      <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.3 }}>Next appt</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {(() => {
+                          const ts = getNextAppointmentDate(patient.id, patient.sessionsPerWeek);
+                          return ts === Infinity ? '—' : new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        })()}
+                      </Typography>
+                    </Box>
                   </Box>
                   {i < recentPatients.length - 1 && <Divider />}
                 </Box>

@@ -24,6 +24,7 @@ import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockPhysio, mockClinic } from '@/lib/mock-data';
+import { getUploadedData } from '@/lib/uploadStore';
 import type { Employee } from '@/lib/types';
 
 export default function PatientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -31,6 +32,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const router = useRouter();
   const searchParams = useSearchParams();
   const [snackOpen, setSnackOpen] = useState(false);
+  const [uploadBannerDismissed, setUploadBannerDismissed] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('welcome') === '1') setSnackOpen(true);
@@ -40,6 +42,8 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
   const patient = mockPatients.find((p) => p.id === id);
+  const showUploadBanner = searchParams.get('uploaded') === 'true' && !uploadBannerDismissed;
+  const uploadedData = getUploadedData(id);
   const sessions = mockChartSessions[id] ?? [];
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
@@ -75,6 +79,22 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
 
   return (
     <>
+      {showUploadBanner && (
+        <Alert
+          severity="success"
+          icon={false}
+          onClose={() => setUploadBannerDismissed(true)}
+          sx={{ mb: 3, alignItems: 'center' }}
+        >
+          <Typography variant="body2" fontWeight={600}>Profile updated from PDF</Typography>
+          <Typography variant="caption" color="text.secondary">
+            {uploadedData
+              ? `${Object.keys(uploadedData).length} fields confirmed — ${uploadedData.firstName} ${uploadedData.lastName}'s profile has been updated. Review the details in the Details tab.`
+              : '7 fields pre-filled from uploaded document. Review the updated information in the Details tab.'}
+          </Typography>
+        </Alert>
+      )}
+
       <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
         {stats.map(({ label, value, icon: Icon, color }) => (
           <Card key={label} sx={{ flex: 1 }}>

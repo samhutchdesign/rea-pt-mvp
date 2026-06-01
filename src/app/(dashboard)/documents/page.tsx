@@ -3,16 +3,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import AddIcon from '@mui/icons-material/Add';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
-import StarRoundedIcon from '@mui/icons-material/StarRounded';
 import TopBar from '@/components/layout/TopBar';
 import { mockDocuments } from '@/lib/mock-data';
 
@@ -30,7 +27,6 @@ export default function DocumentsPage() {
       <Box sx={{ pt: '56px', px: 4, py: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5" fontWeight={600}>Documents</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => router.push('/documents/new')} disableElevation>Create New Form</Button>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>

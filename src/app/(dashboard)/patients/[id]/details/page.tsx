@@ -15,8 +15,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Chip from '@mui/material/Chip';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import { mockPatients } from '@/lib/mock-data';
+import { getUploadedData } from '@/lib/uploadStore';
 import type { PatientMetrics, InjuryHistory, PMHx, SOHx, LifestyleHabits, MedicalHistory } from '@/lib/types';
 
 function InfoField({ label, value, hideEmpty }: { label: string; value?: string; hideEmpty: boolean }) {
@@ -57,17 +60,65 @@ const SECTION_TITLES: Record<string, string> = {
 export default function PatientDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const patient = mockPatients.find((p) => p.id === id);
+  const uploaded = getUploadedData(id);
+
+  const initialMetrics: PatientMetrics | undefined = uploaded
+    ? { age: 36, sexAssignedAtBirth: 'Female', height: '', weight: '', handDominance: '' }
+    : patient?.metrics;
+
+  const initialInjury: InjuryHistory | undefined = uploaded
+    ? {
+        mechanism: uploaded.chiefComplaint,
+        dateOfOnset: uploaded.symptomDuration,
+        surgeryType: 'Emergency C-section',
+        surgeryDate: 'January 14, 2026',
+        symptomEvolution: 'Progressive improvement since surgery; intermittent leakage during physical activity',
+        functionalMobility: 'Ambulatory, able to perform daily tasks; avoids high-impact activities',
+        management: 'Pelvic floor exercises at home, rest; no formal physiotherapy to date',
+        homeEquipment: 'None',
+      }
+    : patient?.injuryHistory;
+
+  const initialPmhx: PMHx | undefined = uploaded
+    ? {
+        previousEpisode: 'None',
+        pmhx: uploaded.medicalHistory,
+        previousTreatments: 'Prenatal yoga, standard postnatal check-ups',
+        medicationList: uploaded.medications,
+        exams: 'Postpartum follow-up at 6 weeks; pelvic exam unremarkable',
+      }
+    : patient?.pmhx;
+
+  const initialSohx: SOHx | undefined = uploaded
+    ? {
+        job: 'Graphic designer (remote)',
+        hobbies: '',
+        socialEnvironment: 'Lives with partner and newborn; strong support system',
+        physicalEnvironment: '',
+        clientGoals: uploaded.treatmentGoals,
+      }
+    : patient?.sohx;
+
+  const initialLifestyle: LifestyleHabits | undefined = uploaded
+    ? {
+        otherConditions: 'Mild diastasis recti (2 cm gap at navel)',
+        diet: 'Balanced; breastfeeding diet',
+        exercise: 'Light walking; avoiding high-impact',
+        smoker: 'No',
+        alcohol: 'No (breastfeeding)',
+      }
+    : patient?.lifestyle;
 
   const [hideEmpty, setHideEmpty] = useState(false);
   const [editSection, setEditSection] = useState<string | null>(null);
   const [draftValues, setDraftValues] = useState<Record<string, string>>({});
   const [snackOpen, setSnackOpen] = useState(false);
 
-  const [localMetrics, setLocalMetrics] = useState<PatientMetrics | undefined>(patient?.metrics);
-  const [localInjury, setLocalInjury] = useState<InjuryHistory | undefined>(patient?.injuryHistory);
-  const [localPmhx, setLocalPmhx] = useState<PMHx | undefined>(patient?.pmhx);
-  const [localSohx, setLocalSohx] = useState<SOHx | undefined>(patient?.sohx);
-  const [localLifestyle, setLocalLifestyle] = useState<LifestyleHabits | undefined>(patient?.lifestyle);
+  const [localMetrics, setLocalMetrics] = useState<PatientMetrics | undefined>(initialMetrics);
+  const [localInjury, setLocalInjury] = useState<InjuryHistory | undefined>(initialInjury);
+  const [localPmhx, setLocalPmhx] = useState<PMHx | undefined>(initialPmhx);
+  const [localSohx, setLocalSohx] = useState<SOHx | undefined>(initialSohx);
+  const [localLifestyle, setLocalLifestyle] = useState<LifestyleHabits | undefined>(initialLifestyle);
   const [localMedical, setLocalMedical] = useState<MedicalHistory | undefined>(patient?.medicalHistory);
 
   if (!patient) return null;
@@ -260,6 +311,17 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
+      {uploaded && (
+        <Alert
+          icon={<AutoAwesomeRoundedIcon fontSize="small" />}
+          severity="info"
+          sx={{ mb: 3, alignItems: 'center' }}
+          action={<Chip label="From PDF Upload" size="small" sx={{ bgcolor: '#E3F2FD', color: '#1565C0', fontWeight: 500 }} />}
+        >
+          This profile was pre-filled from the uploaded intake form. Review and edit any fields as needed.
+        </Alert>
+      )}
+
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 3 }}>
         <FormControlLabel
           control={<Switch checked={hideEmpty} onChange={(e) => setHideEmpty(e.target.checked)} size="small" />}
