@@ -132,13 +132,6 @@ export default function PatientsPage() {
                     )}
                   </Box>
                   <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>{patient.location}</Typography>
-                  {patient.status === 'new' && (
-                    <Chip
-                      label="new"
-                      size="small"
-                      sx={{ bgcolor: '#E3F2FD', color: '#0277BD', fontWeight: 500, fontSize: 12, flexShrink: 0 }}
-                    />
-                  )}
                   {tab === 1 ? (
                     <Button
                       size="small"
