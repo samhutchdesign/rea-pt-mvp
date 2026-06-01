@@ -95,7 +95,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           </MenuItem>
           <Divider />
           {can.canManageClinic && (
-            <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Clinic Profile</MenuItem>
+            <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Organization Profile</MenuItem>
           )}
           {can.canManageBilling && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/billing'); }}>Billing</MenuItem>

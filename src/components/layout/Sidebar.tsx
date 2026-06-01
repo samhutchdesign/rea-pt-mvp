@@ -8,7 +8,6 @@ import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
 import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
-import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import { usePermissions } from '@/lib/permissionsHook';
 
 const baseNavItems = [
@@ -16,7 +15,6 @@ const baseNavItems = [
   { label: 'Patients', href: '/patients', icon: PeopleAltRoundedIcon },
   { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
   { label: 'Programs', href: '/programs', icon: ListAltRoundedIcon },
-  { label: 'Documents', href: '/documents', icon: FolderRoundedIcon },
 ];
 
 const ownerNavItems = [
@@ -25,7 +23,6 @@ const ownerNavItems = [
   { label: 'Employees', href: '/employees', icon: GroupsRoundedIcon },
   { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
   { label: 'Programs', href: '/programs', icon: ListAltRoundedIcon },
-  { label: 'Documents', href: '/documents', icon: FolderRoundedIcon },
 ];
 
 export default function Sidebar() {

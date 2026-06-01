@@ -12,12 +12,19 @@ import Chip from '@mui/material/Chip';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import TopBar from '@/components/layout/TopBar';
 import { mockClinic, mockEmployees, mockPatients } from '@/lib/mock-data';
 
@@ -28,10 +35,17 @@ const AVATAR_COLORS: Record<string, string> = {
   emp4: '#F57C00',
 };
 
+const INITIAL_LOCATIONS = [
+  { id: 'loc1', name: 'Vancouver, BC, Canada' },
+  { id: 'loc2', name: 'New York City, NY, USA' },
+  { id: 'loc3', name: 'Utrecht, Netherlands' },
+];
+
 export default function ClinicPage() {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMsg, setSnackMsg] = useState('Organization profile updated successfully!');
 
   const [form, setForm] = useState({
     name: mockClinic.name,
@@ -42,16 +56,39 @@ export default function ClinicPage() {
     description: mockClinic.description,
   });
 
+  const [locations, setLocations] = useState(INITIAL_LOCATIONS);
+  const [addLocationOpen, setAddLocationOpen] = useState(false);
+  const [newLocation, setNewLocation] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
   const handleSave = () => {
     setEditing(false);
+    setSnackMsg('Organization profile updated successfully!');
+    setSnackOpen(true);
+  };
+
+  const handleAddLocation = () => {
+    if (!newLocation.trim()) return;
+    setLocations((prev) => [...prev, { id: `loc-${Date.now()}`, name: newLocation.trim() }]);
+    setNewLocation('');
+    setAddLocationOpen(false);
+    setSnackMsg('Location added.');
+    setSnackOpen(true);
+  };
+
+  const handleDeleteLocation = () => {
+    if (!deleteTarget) return;
+    setLocations((prev) => prev.filter((l) => l.id !== deleteTarget.id));
+    setDeleteTarget(null);
+    setSnackMsg('Location removed.');
     setSnackOpen(true);
   };
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Clinic Profile' }]} />
+      <TopBar breadcrumbs={[{ label: 'Organization Profile' }]} />
       <Box sx={{ px: 4, py: 4, maxWidth: 900 }}>
-        {/* Clinic Header */}
+        {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
           <Avatar sx={{ width: 72, height: 72, bgcolor: 'primary.main', color: '#fff', fontWeight: 700, fontSize: 24, flexShrink: 0 }}>
             {mockClinic.logoInitials}
@@ -61,7 +98,7 @@ export default function ClinicPage() {
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <LocationOnOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">Vancouver, BC</Typography>
+                <Typography variant="body2" color="text.secondary">{locations.length} location{locations.length !== 1 ? 's' : ''}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <BusinessOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
@@ -70,7 +107,7 @@ export default function ClinicPage() {
             </Box>
           </Box>
           {!editing ? (
-            <Button variant="outlined" startIcon={<EditOutlinedIcon />} onClick={() => setEditing(true)}>Edit Clinic</Button>
+            <Button variant="outlined" startIcon={<EditOutlinedIcon />} onClick={() => setEditing(true)}>Edit Organization</Button>
           ) : (
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button onClick={() => setEditing(false)}>Cancel</Button>
@@ -80,19 +117,19 @@ export default function ClinicPage() {
         </Box>
 
         <Box sx={{ display: 'flex', gap: 3 }}>
-          {/* Left: Clinic Info */}
+          {/* Left column */}
           <Box sx={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Card>
               <CardContent>
-                <Typography variant="subtitle2" fontWeight={600} mb={2}>Clinic Information</Typography>
+                <Typography variant="subtitle2" fontWeight={600} mb={2}>Organization Information</Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <TextField
-                    label="Clinic Name" size="small" fullWidth value={form.name}
+                    label="Organization Name" size="small" fullWidth value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     InputProps={{ readOnly: !editing }}
                   />
                   <TextField
-                    label="Address" size="small" fullWidth value={form.address}
+                    label="Primary Address" size="small" fullWidth value={form.address}
                     onChange={(e) => setForm({ ...form, address: e.target.value })}
                     InputProps={{ readOnly: !editing }}
                   />
@@ -114,7 +151,7 @@ export default function ClinicPage() {
                     InputProps={{ readOnly: !editing }}
                   />
                   <TextField
-                    label="About the Clinic" size="small" fullWidth multiline rows={4} value={form.description}
+                    label="About the Organization" size="small" fullWidth multiline rows={4} value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     InputProps={{ readOnly: !editing }}
                   />
@@ -122,7 +159,41 @@ export default function ClinicPage() {
               </CardContent>
             </Card>
 
-            {/* Contact Summary */}
+            {/* Locations */}
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2" fontWeight={600}>Locations</Typography>
+                  <Button size="small" startIcon={<AddIcon />} onClick={() => setAddLocationOpen(true)}>
+                    Add Location
+                  </Button>
+                </Box>
+                {locations.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">No locations added yet.</Typography>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    {locations.map((loc, i) => (
+                      <Box key={loc.id}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.25 }}>
+                          <LocationOnOutlinedIcon sx={{ fontSize: 18, color: 'text.secondary', flexShrink: 0 }} />
+                          <Typography variant="body2" sx={{ flexGrow: 1 }}>{loc.name}</Typography>
+                          <IconButton
+                            size="small"
+                            onClick={() => setDeleteTarget(loc)}
+                            sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
+                          >
+                            <DeleteOutlineIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                        {i < locations.length - 1 && <Divider />}
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Contact summary */}
             {!editing && (
               <Card>
                 <CardContent>
@@ -180,8 +251,47 @@ export default function ClinicPage() {
         </Box>
       </Box>
 
+      {/* Add Location Dialog */}
+      <Dialog open={addLocationOpen} onClose={() => { setAddLocationOpen(false); setNewLocation(''); }} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Add Location</DialogTitle>
+        <DialogContent sx={{ pt: '12px !important' }}>
+          <TextField
+            label="Location"
+            placeholder="e.g. Toronto, ON, Canada"
+            size="small"
+            fullWidth
+            autoFocus
+            value={newLocation}
+            onChange={(e) => setNewLocation(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleAddLocation(); }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => { setAddLocationOpen(false); setNewLocation(''); }}>Cancel</Button>
+          <Button variant="contained" disableElevation disabled={!newLocation.trim()} onClick={handleAddLocation}>
+            Add Location
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Location Confirmation */}
+      <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Remove Location?</DialogTitle>
+        <DialogContent sx={{ pt: '12px !important' }}>
+          <Typography variant="body2" color="text.secondary">
+            Remove <strong>{deleteTarget?.name}</strong> from this organization?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <Button variant="contained" color="error" disableElevation onClick={handleDeleteLocation}>
+            Remove
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>Clinic profile updated successfully!</Alert>
+        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
       </Snackbar>
     </>
   );

@@ -71,7 +71,7 @@ export default function ProfilePage() {
         {can.canManageClinic && (
           <Card>
             <CardContent>
-              <Typography variant="subtitle2" fontWeight={600} mb={2}>Clinic</Typography>
+              <Typography variant="subtitle2" fontWeight={600} mb={2}>Organization</Typography>
               <Divider sx={{ mb: 2 }} />
               <Box
                 sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer', p: 1.5, border: '1px solid #E0E0E0', borderRadius: 2, '&:hover': { borderColor: 'primary.main', bgcolor: '#FAFAFA' }, transition: 'all 0.15s' }}
