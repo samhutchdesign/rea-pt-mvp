@@ -1600,9 +1600,8 @@ export const mockNotifications: Notification[] = [
   },
 ];
 
-import type { PatientComment } from './types';
-
-export const mockPatientComments: Record<string, PatientComment[]> = {
+// unused export kept for reference
+const _mockPatientComments = {
   pat1: [
     { id: 'p1c1', patientId: 'pat1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Progress letter sent to GP Dr. Patel. Margaret is on track for discharge at session 6 — anticipate no extension needed.', createdAt: '2026-05-22T09:15:00', pinned: true },
     { id: 'p1c2', patientId: 'pat1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Margaret called to ask about swimming. Advised to wait until 8-week check-in — will reassess pelvic floor load at that point.', createdAt: '2026-05-12T14:30:00', pinned: false },
@@ -1695,5 +1694,56 @@ export const mockPatientComments: Record<string, PatientComment[]> = {
   pat_uth10: [
     { id: 'u10c1', patientId: 'pat_uth10', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: 'Hanna prefers Dutch for all written communications despite speaking English. Noted for future correspondence and handouts.', createdAt: '2026-05-08T09:00:00', pinned: true },
     { id: 'u10c2', patientId: 'pat_uth10', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: 'Referred by physiotherapist in Heidelberg — obtained intake notes from previous therapist for treatment continuity.', createdAt: '2026-05-14T14:00:00', pinned: false },
+  ],
+};
+
+const _mockExerciseComments = {
+  ex1: [
+    { id: 'e1c1', exerciseId: 'ex1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Cue patients to place one hand on chest and one on belly — if the chest hand rises first, they\'re compensating. The belly should lead.', createdAt: '2026-04-15T10:00:00', pinned: true },
+    { id: 'e1c2', exerciseId: 'ex1', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Great as a session opener for anxious patients. I do 5 rounds together before starting any manual work — noticeably lowers tone.', createdAt: '2026-04-22T09:30:00', pinned: false },
+  ],
+  ex2: [
+    { id: 'e2c1', exerciseId: 'ex2', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Emphasize the relaxation phase equally. Many patients hold residual tension and never fully release — the letting go is as therapeutic as the contraction.', createdAt: '2026-04-10T11:00:00', pinned: true },
+    { id: 'e2c2', exerciseId: 'ex2', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: 'Watch for bearing-down as a compensation — it increases IAP instead of recruiting the floor. Correct immediately if you see breath-holding or straining.', createdAt: '2026-04-18T14:00:00', pinned: false },
+  ],
+  ex3: [
+    { id: 'e3c1', exerciseId: 'ex3', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Start postpartum patients at 3-sec holds, not 10. Fatigue sets in fast and form breaks down. Progress by 1–2 sec per week based on reported effort.', createdAt: '2026-04-12T09:00:00', pinned: true },
+    { id: 'e3c2', exerciseId: 'ex3', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Pair with diaphragmatic breathing — inhale to release, exhale to contract. Gets patients into correct neuromuscular timing quickly.', createdAt: '2026-04-20T10:30:00', pinned: false },
+    { id: 'e3c3', exerciseId: 'ex3', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: 'Track hold duration in chart each session — it\'s a reliable, objective marker of pelvic floor endurance progress.', createdAt: '2026-05-01T11:00:00', pinned: false },
+  ],
+  ex4: [
+    { id: 'e4c1', exerciseId: 'ex4', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Avoid lumbar hyperextension at the top — cue "ribs down, glutes squeeze." Most patients arch the back instead of loading the glutes.', createdAt: '2026-04-08T10:00:00', pinned: true },
+    { id: 'e4c2', exerciseId: 'ex4', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Progress to single-leg bridge once bilateral is symmetric and pain-free. Good functional proxy for single-leg load-bearing tasks.', createdAt: '2026-04-25T15:00:00', pinned: false },
+  ],
+  ex5: [
+    { id: 'e5c1', exerciseId: 'ex5', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: 'Excellent for anterior pelvic tilt and lumbar pain. Teach supine first so they can feel the lumbar contact, then progress to standing wall version.', createdAt: '2026-04-17T09:45:00', pinned: true },
+  ],
+  ex6: [
+    { id: 'e6c1', exerciseId: 'ex6', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Most common error is rotating the pelvis instead of abducting the hip — place a hand on the ASIS to give feedback. Resistance band can be added at session 3–4 if bodyweight is easy.', createdAt: '2026-04-14T11:30:00', pinned: true },
+    { id: 'e6c2', exerciseId: 'ex6', authorId: 'emp_nyc3', authorName: 'Carlos Rivera', authorInitials: 'CR', content: 'Works well for hip instability postpartum. I superset with bridges for a hip complex circuit — patients respond well to the variety.', createdAt: '2026-05-02T10:00:00', pinned: false },
+  ],
+  ex7: [
+    { id: 'e7c1', exerciseId: 'ex7', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Hardest exercise to teach breath coordination with movement. Don\'t progress to contralateral limb until ipsilateral pattern is consistent over 3 reps.', createdAt: '2026-04-11T10:00:00', pinned: true },
+    { id: 'e7c2', exerciseId: 'ex7', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Place a hand under the lumbar spine — if you feel pressure increase during the movement, the patient is losing their lumbar imprint. Regress immediately.', createdAt: '2026-04-19T14:30:00', pinned: false },
+  ],
+  ex8: [
+    { id: 'e8c1', exerciseId: 'ex8', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Cue "knees track over second toe" and "hips push back." Avoid "sit down" — it loads the knees too early. Good functional carryover for sit-to-stand.', createdAt: '2026-04-16T09:00:00', pinned: true },
+    { id: 'e8c2', exerciseId: 'ex8', authorId: 'emp4', authorName: 'Marcus Laine', authorInitials: 'ML', content: 'Load the squat pattern early for patients who sit-to-stand frequently throughout the day. Functional relevance keeps adherence high.', createdAt: '2026-05-05T13:00:00', pinned: false },
+  ],
+  ex9: [
+    { id: 'e9c1', exerciseId: 'ex9', authorId: 'emp_uth1', authorName: 'Lena Fischer', authorInitials: 'LF', content: 'Slow this way down — patients rush through it. I cue 4 seconds per direction minimum. Encourage them to find true end range in both directions.', createdAt: '2026-04-13T10:30:00', pinned: true },
+    { id: 'e9c2', exerciseId: 'ex9', authorId: 'emp_uth2', authorName: 'Pieter van Dijk', authorInitials: 'PD', content: 'Useful for sacral mobility during pregnancy. Modify to seated on a birth ball if floor position is uncomfortable in the third trimester.', createdAt: '2026-04-28T11:00:00', pinned: false },
+  ],
+  ex10: [
+    { id: 'e10c1', exerciseId: 'ex10', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: 'Keep the trunk still throughout — this is pure hip, not core rotation. Prop with a pillow between knees if pelvic stability is an issue.', createdAt: '2026-04-21T09:00:00', pinned: true },
+  ],
+  ex11: [
+    { id: 'e11c1', exerciseId: 'ex11', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: '"Draw in" works for some patients — for others "narrow your waist" or "brace gently as if bracing for a soft punch" lands better. Try all three before deciding.', createdAt: '2026-04-09T11:00:00', pinned: true },
+    { id: 'e11c2', exerciseId: 'ex11', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Foundation exercise for diastasis recti — confirm correct activation before adding any functional load. Incorrect activation makes the separation worse.', createdAt: '2026-04-23T14:00:00', pinned: false },
+    { id: 'e11c3', exerciseId: 'ex11', authorId: 'emp_uth3', authorName: 'Yasmine Hamid', authorInitials: 'YH', content: 'Check for breath-holding during activation — common compensation that spikes IAP. The patient should be able to speak normally while contracting.', createdAt: '2026-05-08T10:00:00', pinned: false },
+  ],
+  ex12: [
+    { id: 'e12c1', exerciseId: 'ex12', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'The feedback object matters — a pilates ball gives better proprioception than a rolled towel. Patients who feel the squeeze engage the adductors more effectively.', createdAt: '2026-04-26T10:00:00', pinned: true },
+    { id: 'e12c2', exerciseId: 'ex12', authorId: 'emp4', authorName: 'Marcus Laine', authorInitials: 'ML', content: 'Be cautious with pelvic pain patients — adductor loading can provoke symptoms. Start at 30% effort, isometric hold only, and build gradually over sessions.', createdAt: '2026-05-06T11:30:00', pinned: false },
   ],
 };
