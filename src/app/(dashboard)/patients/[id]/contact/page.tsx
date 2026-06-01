@@ -10,9 +10,9 @@ import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { mockPatients, mockPhysio } from '@/lib/mock-data';
+import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
-import { getPermissions } from '@/lib/permissions';
+import { usePermissions } from '@/lib/permissionsHook';
 
 export default function PatientContactPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -42,7 +42,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [emergencyDraft, setEmergencyDraft] = useState({ ...savedEmergency });
 
-  const can = getPermissions(mockPhysio.role);
+  const can = usePermissions();
 
   if (!patient) return null;
 

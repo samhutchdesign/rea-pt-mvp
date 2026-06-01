@@ -23,8 +23,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
-import { mockPatients, mockPhysio } from '@/lib/mock-data';
-import { getPermissions } from '@/lib/permissions';
+import { mockPatients } from '@/lib/mock-data';
+import { usePermissions } from '@/lib/permissionsHook';
 import { clearUploadedData } from '@/lib/uploadStore';
 
 const patientTabs = [
@@ -61,7 +61,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [snackMsg, setSnackMsg] = useState('');
   const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
 
-  const can = getPermissions(mockPhysio.role);
+  const can = usePermissions();
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
   const currentTab = patientTabs[activeTab] ?? patientTabs[0];
 

@@ -47,3 +47,4 @@ export function roleLabel(role: string): string {
   if (role === 'admin') return 'Admin';
   return 'Staff';
 }
+

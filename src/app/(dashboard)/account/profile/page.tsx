@@ -12,10 +12,14 @@ import Divider from '@mui/material/Divider';
 import TopBar from '@/components/layout/TopBar';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import { mockPhysio, mockClinic } from '@/lib/mock-data';
-import { getPermissions, roleLabel } from '@/lib/permissions';
+import { roleLabel } from '@/lib/permissions';
+import { usePermissions } from '@/lib/permissionsHook';
+import { useRole } from '@/lib/roleStore';
 
 export default function ProfilePage() {
   const router = useRouter();
+  const can = usePermissions();
+  const role = useRole();
 
   return (
     <>
@@ -33,7 +37,7 @@ export default function ProfilePage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
                   <Typography variant="subtitle1" fontWeight={600}>{mockPhysio.firstName} {mockPhysio.lastName}</Typography>
                   <Chip
-                    label={roleLabel(mockPhysio.role)}
+                    label={roleLabel(role)}
                     size="small"
                     color="primary"
                     sx={{ height: 20, fontSize: 11, fontWeight: 600 }}
@@ -64,7 +68,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {getPermissions(mockPhysio.role).canManageClinic && (
+        {can.canManageClinic && (
           <Card>
             <CardContent>
               <Typography variant="subtitle2" fontWeight={600} mb={2}>Clinic</Typography>

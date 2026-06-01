@@ -1,4 +1,5 @@
 import Sidebar from '@/components/layout/Sidebar';
+import DemoRoleBar from '@/components/layout/DemoRoleBar';
 import Box from '@mui/material/Box';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           bgcolor: '#FFFFFF',
         }}
       >
+        <DemoRoleBar />
         {children}
       </Box>
     </Box>

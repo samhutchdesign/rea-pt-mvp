@@ -16,7 +16,9 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { mockNotifications, mockPhysio } from '@/lib/mock-data';
-import { getPermissions, roleLabel } from '@/lib/permissions';
+import { roleLabel } from '@/lib/permissions';
+import { usePermissions } from '@/lib/permissionsHook';
+import { useRole } from '@/lib/roleStore';
 
 interface TopBarProps {
   breadcrumbs: { label: string; href?: string }[];
@@ -25,6 +27,8 @@ interface TopBarProps {
 export default function TopBar({ breadcrumbs }: TopBarProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
+  const can = usePermissions();
+  const role = useRole();
   const unreadCount = mockNotifications.filter((n) => !n.read).length;
 
   return (
@@ -82,7 +86,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
             <Box>
               <Typography variant="body2" fontWeight={600}>{mockPhysio.firstName} {mockPhysio.lastName}</Typography>
               <Typography variant="caption" color="primary.main" sx={{ fontWeight: 500 }}>
-                {roleLabel(mockPhysio.role)}
+                {roleLabel(role)}
               </Typography>
             </Box>
           </MenuItem>
@@ -90,10 +94,10 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
             <Typography variant="caption">{mockPhysio.email}</Typography>
           </MenuItem>
           <Divider />
-          {getPermissions(mockPhysio.role).canManageClinic && (
+          {can.canManageClinic && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Clinic Profile</MenuItem>
           )}
-          {getPermissions(mockPhysio.role).canManageBilling && (
+          {can.canManageBilling && (
             <MenuItem onClick={() => { setAnchorEl(null); router.push('/billing'); }}>Billing</MenuItem>
           )}
           <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/profile'); }}>Your Profile</MenuItem>

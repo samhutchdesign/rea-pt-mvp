@@ -23,9 +23,9 @@ import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
-import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockPhysio, mockClinic } from '@/lib/mock-data';
+import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
-import { getPermissions } from '@/lib/permissions';
+import { usePermissions } from '@/lib/permissionsHook';
 import type { Employee } from '@/lib/types';
 
 export default function PatientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -49,7 +49,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
   const assignedEmployees = patient ? mockEmployees.filter((e) => patient.assignedEmployeeIds.includes(e.id)) : [];
-  const can = getPermissions(mockPhysio.role);
+  const can = usePermissions();
 
   const overallAdherence = program
     ? Math.round(program.exercises.reduce((sum, e) => sum + e.adherence, 0) / program.exercises.length)

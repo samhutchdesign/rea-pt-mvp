@@ -28,8 +28,8 @@ import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import TopBar from '@/components/layout/TopBar';
-import { mockEmployees, mockPatients, mockPhysio } from '@/lib/mock-data';
-import { getPermissions } from '@/lib/permissions';
+import { mockEmployees, mockPatients } from '@/lib/mock-data';
+import { usePermissions } from '@/lib/permissionsHook';
 import type { Patient, Employee } from '@/lib/types';
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -220,12 +220,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   });
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [professionalDraft, setProfessionalDraft] = useState({ ...savedProfessional });
+  const can = usePermissions();
 
   if (!emp) return <Box sx={{ p: 4 }}><Typography>Employee not found.</Typography></Box>;
 
   const assignedPatients = mockPatients.filter((p) => emp.patientIds.includes(p.id));
   const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
-  const can = getPermissions(mockPhysio.role);
 
   const handleTransfer = (toEmployee: Employee) => {
     const name = `${transferPatient?.firstName} ${transferPatient?.lastName}`;
