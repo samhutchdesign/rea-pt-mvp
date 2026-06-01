@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           flexGrow: 1,
           minHeight: '100vh',
           pt: '56px',
-          bgcolor: '#FFFFFF',
+          bgcolor: 'background.default',
         }}
       >
         <DemoRoleBar />
