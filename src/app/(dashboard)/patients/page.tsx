@@ -36,11 +36,6 @@ function lastSeenLabel(patient: Patient): string {
   return `Last seen ${date} · ${sessions.length} session${sessions.length !== 1 ? 's' : ''}`;
 }
 
-const statusColors: Record<string, { bg: string; color: string }> = {
-  active: { bg: '#E8F5E9', color: '#2E7D32' },
-  new: { bg: '#E3F2FD', color: '#0277BD' },
-  inactive: { bg: '#F5F5F5', color: '#757575' },
-};
 
 export default function PatientsPage() {
   const router = useRouter();
@@ -137,11 +132,13 @@ export default function PatientsPage() {
                     )}
                   </Box>
                   <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>{patient.location}</Typography>
-                  <Chip
-                    label={patient.status.charAt(0).toUpperCase() + patient.status.slice(1)}
-                    size="small"
-                    sx={{ ...statusColors[patient.status], fontWeight: 500, fontSize: 12, flexShrink: 0 }}
-                  />
+                  {patient.status === 'new' && (
+                    <Chip
+                      label="new"
+                      size="small"
+                      sx={{ bgcolor: '#E3F2FD', color: '#0277BD', fontWeight: 500, fontSize: 12, flexShrink: 0 }}
+                    />
+                  )}
                   {tab === 1 ? (
                     <Button
                       size="small"
