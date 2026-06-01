@@ -30,12 +30,12 @@ function conditionChip(patient: Patient): string | null {
   return text.length > 32 ? text.slice(0, 32).replace(/\s\S*$/, '') + '…' : text;
 }
 
-function lastSeenLabel(patient: Patient): string {
+function sessionInfo(patient: Patient): { lastSeen: string | null; count: number } {
   const sessions = mockChartSessions[patient.id] ?? [];
-  if (!sessions.length) return 'No sessions yet';
+  if (!sessions.length) return { lastSeen: null, count: 0 };
   const latest = sessions.slice().sort((a, b) => b.date.localeCompare(a.date))[0];
-  const date = new Date(latest.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  return `Last seen ${date} · ${sessions.length} session${sessions.length !== 1 ? 's' : ''}`;
+  const lastSeen = new Date(latest.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return { lastSeen, count: sessions.length };
 }
 
 
@@ -158,22 +158,33 @@ export default function PatientsPage() {
                       />
                     )}
                   </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>{patient.location}</Typography>
-                  {tab === 1 ? (
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      startIcon={<RestoreIcon />}
-                      onClick={(e) => { e.stopPropagation(); restore(patient); }}
-                      sx={{ flexShrink: 0 }}
-                    >
-                      Restore
-                    </Button>
-                  ) : (
-                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 140, textAlign: 'right', flexShrink: 0 }}>
-                      {lastSeenLabel(patient)}
-                    </Typography>
-                  )}
+                  <Box sx={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.25 }}>
+                    {(() => {
+                      const { lastSeen, count } = sessionInfo(patient);
+                      return (
+                        <>
+                          <Typography variant="caption" color="text.secondary">{patient.location}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—'}
+                          </Typography>
+                        </>
+                      );
+                    })()}
+                    {tab === 1 && (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<RestoreIcon />}
+                        onClick={(e) => { e.stopPropagation(); restore(patient); }}
+                        sx={{ mt: 0.5 }}
+                      >
+                        Restore
+                      </Button>
+                    )}
+                  </Box>
                 </Box>
               </Card>
             ))}
