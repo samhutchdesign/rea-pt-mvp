@@ -551,7 +551,7 @@ export const mockPatients: Patient[] = [
   {
     id: 'pat1',
     firstName: 'Margaret',
-    lastName: 'Chen',
+    lastName: 'Chen (charting)',
     email: 'margaret.chen@email.com',
     phone: '212-555-0101',
     address: '84 Riverside Dr, New York, NY 10024',
@@ -1543,6 +1543,288 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
         evaluation: '↑ Strong session. Technique ✓ all exercises. NPRS 1/10. Target RTS short hikes in 4/52.',
         recommendations: 'RTS hiking: begin 15 min flat trail next week; ↑ by 5 min/wk. Continue HEP. To GP: diastasis ↓ to 1.5 cm; scar mobile; cleared for ↑ low-impact activity.',
       },
+    },
+  ],
+
+  // ─── prog2 (Incontinence Recovery) ──────────────────────────────────────────
+
+  pat_van5: [
+    {
+      id: 'cs-van5-1', patientId: 'pat_van5', date: '2026-02-12', isIntakeSession: true,
+      summary: 'Intake for postpartum SUI, 10 weeks post vaginal delivery. Baseline PFMT assessment. HEP initiated with breathing and quick flicks.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ cough/sneeze × 10/52 p/o SVD. NPRS 0/10. 4–5 leakage episodes/day. ↓ confidence c/ physical activity.', objective: 'Internal: levator ani 2/5 B/L; motor control deficit; no guarding.', assessment: 'Postpartum SUI: ↓ PF strength + motor control. Good rehab potential.', plan: 'PFMT programme. Rx: 6 sessions × 1×/wk.', intervention: 'PF awareness, diaphragmatic breathing, quick flicks × 10. PF anatomy ed. Handout provided.', evaluation: 'Correct technique demonstrated ✓. NPRS 0/10.', recommendations: 'HEP 2×/day. Avoid high-impact activity. ↑ hydration, ↓ caffeine.' },
+    },
+    {
+      id: 'cs-van5-2', patientId: 'pat_van5', date: '2026-02-26', isIntakeSession: false,
+      summary: 'Good HEP compliance. Leakage reduced to 2–3 episodes daily. Sustained Kegels introduced.',
+      painLevel: 'No Pain', adherenceLevel: 'Moderate Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 5/7 days. SUI ↓ → 2–3 episodes/day (↓ from 4–5). NPRS 0/10. Pt motivated.', objective: 'Levator ani 2–3/5 B/L (↑). Endurance hold: 4 sec × 10.', assessment: '↑ progress. Adherence: good. Primary goal: ↑ hold duration.', plan: 'Add sustained Kegels. Reassess 2/52.', intervention: 'Added sustained Kegel 5 sec × 10. Habit stacking discussed.', evaluation: 'Technique ✓. Pt confident. NPRS 0/10.', recommendations: 'Link HEP to morning routine. Return 2/52.' },
+    },
+  ],
+
+  pat_van8: [
+    {
+      id: 'cs-van8-1', patientId: 'pat_van8', date: '2026-03-05', isIntakeSession: true,
+      summary: 'Intake for urge incontinence and mild SUI. Bladder diary reviewed. Urgency management strategies introduced.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o UUI: urgency 5–6×/day, 2 nocturnal. SUI c/ cough. NPRS 0/10. ↓ QoL — avoids social events.', objective: 'Internal: levator ani 2/5 B/L; ↓ coordination; urgency noted on verbal cue.', assessment: 'MUI with urge-dominant component. Bladder retraining priority.', plan: 'Bladder retraining + PFMT. Rx: 8 sessions × 1×/wk.', intervention: 'Bladder retraining ed: delay techniques. Diaphragmatic breathing. Quick flicks × 10.', evaluation: 'Good comprehension ✓. Pt receptive to strategies. NPRS 0/10.', recommendations: 'Bladder diary × 2/52. ↓ caffeine, ↓ fluids after 7 PM. HEP 3×/day.' },
+    },
+    {
+      id: 'cs-van8-2', patientId: 'pat_van8', date: '2026-03-19', isIntakeSession: false,
+      summary: 'Urgency frequency improving. Bladder diary shows reduction to 4 voids/day. PFMT progressed.',
+      painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 7/7 days. Urgency ↓ → 4/day (↓ from 5–6). Nocturia: 1 episode (↓ from 2). NPRS 0/10.', objective: 'Levator ani 2–3/5 (↑). Motor control ↑.', assessment: '↑ urgency component. SUI remains. Good prognosis.', plan: '↑ sustained Kegels. Continue bladder retraining.', intervention: 'Added sustained Kegel 8 sec × 10. Pelvic tilt 3×10.', evaluation: 'Technique ✓. Pt very engaged. NPRS 0/10.', recommendations: 'Continue bladder diary. Return 2/52.' },
+    },
+  ],
+
+  pat_nyc4: [
+    {
+      id: 'cs-nyc4-1', patientId: 'pat_nyc4', date: '2026-02-19', isIntakeSession: true,
+      summary: 'Postpartum intake at 6-week OB clearance. SUI with lifting and exercise. Initial assessment and HEP initiated.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ lifting + exercise × 6/52 p/o SVD. NPRS 0/10. 2–3 leakage episodes/day. Motivated to RTS exercise.', objective: 'Internal: levator ani 2/5 B/L; mild hypotonicity; endurance hold 2 sec.', assessment: 'Postpartum SUI: ↓ PF strength. ↑ rehab potential.', plan: 'PFMT foundation. Rx: 6 sessions × 1×/wk.', intervention: 'PF awareness, diaphragmatic breathing, quick flicks × 10. Anatomy ed. Handout provided.', evaluation: 'Technique ✓ by EOSession. Good engagement.', recommendations: 'HEP 2×/day. Avoid high-impact RTS × 6/52 p/o. ↑ hydration.' },
+    },
+    {
+      id: 'cs-nyc4-2', patientId: 'pat_nyc4', date: '2026-03-05', isIntakeSession: false,
+      summary: 'Adherence with phone alarm reminders. Leakage reducing. Program progressed to sustained holds.',
+      painLevel: 'No Pain', adherenceLevel: 'Moderate Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 5/7 days (↑ c/ phone alarm). SUI ↓ → 1–2 episodes/day. NPRS 0/10.', objective: 'Levator ani 2–3/5 (↑). Endurance hold: 5 sec × 10.', assessment: 'Good progress. ↑ motor control noted.', plan: 'Progress sustained holds + functional activity.', intervention: 'Added sustained Kegel 5 sec × 10. Hip bridge 3×10.', evaluation: 'Technique ✓. NPRS 0/10. Pt confident.', recommendations: 'Continue HEP c/ reminders. Return 2/52.' },
+    },
+  ],
+
+  pat_nyc7: [
+    {
+      id: 'cs-nyc7-1', patientId: 'pat_nyc7', date: '2026-03-12', isIntakeSession: true,
+      summary: 'Intake for stress incontinence. Spanish-language education provided. Baseline assessment completed.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ cough/sneeze/laughing. NPRS 0/10. 3–4 leakage episodes/day. ↓ confidence socially.', objective: 'Internal: levator ani 2/5 B/L; motor control deficit; no guarding.', assessment: 'SUI: ↓ PF motor control. ↑ rehab potential.', plan: 'PFMT foundation. Rx: 6 sessions × 1×/wk. Spanish-language materials provided.', intervention: 'Diaphragmatic breathing, quick flick Kegels × 10. PF anatomy ed (Spanish handout).', evaluation: 'Technique ✓ ✓. Good comprehension.', recommendations: 'HEP 2×/day. ↑ agua, ↓ cafeína. Return 2/52.' },
+    },
+    {
+      id: 'cs-nyc7-2', patientId: 'pat_nyc7', date: '2026-03-26', isIntakeSession: false,
+      summary: 'Strong adherence. Leakage frequency down by 50%. Sustained Kegels and functional squat added.',
+      painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 7/7 days. SUI ↓ → 1–2 episodes/day (↓ from 3–4). NPRS 0/10. Very motivated.', objective: 'Levator ani 3/5 B/L (↑↑). Endurance hold: 6 sec × 10.', assessment: '↑↑ progress. Excellent motor control ↑. Functional progression ready.', plan: '↑ → sustained holds 8 sec + BW squat.', intervention: 'Added sustained Kegel 8 sec × 10. BW squat c/ PF cue 3×10.', evaluation: 'Excellent technique ✓. NPRS 0/10. Pt very engaged.', recommendations: 'Continue HEP. Return 2/52 for functional progression.' },
+    },
+  ],
+
+  pat_uth1: [
+    {
+      id: 'cs-uth1-1', patientId: 'pat_uth1', date: '2026-02-05', isIntakeSession: true,
+      summary: 'Intake for postpartum mixed incontinence. 8-week postpartum. Bladder diary initiated and HEP commenced.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o MUI: SUI c/ sneezing + UUI 3×/day × 8/52 p/o SVD. NPRS 0/10. ↓ QoL. Motivated.', objective: 'Internal: levator ani 2/5 B/L; moderate motor control deficit.', assessment: 'MUI postpartum: stress + urge components. ↑ rehab potential.', plan: 'PFMT + bladder retraining. Rx: 8 sessions × 1×/wk.', intervention: 'PF awareness, breathing, quick flick Kegels × 10. Bladder retraining ed.', evaluation: 'Technique ✓. Good comprehension. NPRS 0/10.', recommendations: 'HEP 2×/day. Bladder diary × 2/52. ↓ caffeine.' },
+    },
+    {
+      id: 'cs-uth1-2', patientId: 'pat_uth1', date: '2026-02-19', isIntakeSession: false,
+      summary: 'Good HEP adherence. Urgency improving. Sustained holds introduced. Hydrotherapy group approved.',
+      painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 7/7 days. UUI ↓ → 1–2/day (↓ from 3). SUI: unchanged. NPRS 0/10.', objective: 'Levator ani 2–3/5 (↑). Motor control ↑.', assessment: '↑ urge component. SUI: primary remaining goal. Prognosis ↑.', plan: '↑ → sustained holds. Continue bladder retraining.', intervention: 'Added sustained Kegel 5 sec × 10. Pelvic tilt 3×10.', evaluation: 'Technique ✓. NPRS 0/10. Pt optimistic.', recommendations: 'Continue HEP. Hydrotherapy group approved — share PF precautions. Return 2/52.' },
+    },
+  ],
+
+  pat_uth4: [
+    {
+      id: 'cs-uth4-1', patientId: 'pat_uth4', date: '2026-03-19', isIntakeSession: true,
+      summary: 'Intake for stress incontinence, 3 months postpartum. Mild hypotonicity on assessment. PFMT programme initiated.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ cough/sneeze × 3 mos p/o SVD. NPRS 0/10. 2–3 episodes/day. Partner attending for support.', objective: 'Internal: levator ani 2/5 B/L; mild hypotonicity; endurance hold 2 sec.', assessment: 'Postpartum SUI: ↓ PF strength. Partner involvement → ↑ adherence potential.', plan: 'PFMT foundation. Rx: 6 sessions × 1×/wk.', intervention: 'PF awareness, diaphragmatic breathing, quick flicks × 10. Anatomy ed — partner included.', evaluation: 'Technique ✓. Good comprehension.', recommendations: 'HEP 2×/day. ↑ hydration. Partner can help with HEP reminders.' },
+    },
+    {
+      id: 'cs-uth4-2', patientId: 'pat_uth4', date: '2026-04-02', isIntakeSession: false,
+      summary: 'Adherence strong with partner support. Leakage reduced. Program progressed to sustained holds and hip bridge.',
+      painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 6/7 days (↑ c/ partner reminders). SUI ↓ → 1 episode/day. NPRS 0/10.', objective: 'Levator ani 2–3/5 (↑). Endurance hold: 5 sec × 10.', assessment: '↑ progress. Partner involvement ↑ adherence significantly.', plan: '↑ → sustained holds 8 sec + hip bridge.', intervention: 'Added sustained Kegel 8 sec × 10. Hip bridge 3×10.', evaluation: 'Technique ✓. Glutes activating ✓. NPRS 0/10.', recommendations: 'Continue HEP. Return 2/52.' },
+    },
+  ],
+
+  pat_uth7: [
+    {
+      id: 'cs-uth7-1', patientId: 'pat_uth7', date: '2026-04-02', isIntakeSession: true,
+      summary: 'Intake for stress incontinence. Active lifestyle affected — patient avoids running and jumping. HEP initiated.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ running + jumping. NPRS 0/10. 3–4 episodes/day. ↓ QoL — stopped running 6 mos ago.', objective: 'Internal: levator ani 2/5 B/L; motor control ↓; no guarding.', assessment: 'SUI: ↓ PF strength + motor control. Impact RTS: primary LTG.', plan: 'PFMT foundation → functional progression. Rx: 6 sessions × 1×/wk.', intervention: 'PF awareness, breathing, quick flick Kegels × 10. Anatomy ed. Running RTS timeline discussed.', evaluation: 'Technique ✓. NPRS 0/10. Patient highly motivated.', recommendations: 'HEP 2×/day. No running yet. Return 2/52.' },
+    },
+    {
+      id: 'cs-uth7-2', patientId: 'pat_uth7', date: '2026-04-16', isIntakeSession: false,
+      summary: 'Good adherence. Leakage reducing. Progressed to sustained holds. Running RTS timeline reviewed.',
+      painLevel: 'No Pain', adherenceLevel: 'Moderate Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 5/7 days. SUI ↓ → 1–2 episodes/day. NPRS 0/10. Excited about running goal.', objective: 'Levator ani 2–3/5 (↑). Endurance hold: 5 sec × 10.', assessment: '↑ progress. Running RTS in 4–6/52 if progression continues.', plan: '↑ sustained holds + BW squat. Running RTS protocol introduced.', intervention: 'Added sustained Kegel 6 sec × 10. BW squat c/ PF cue 3×10.', evaluation: 'Technique ✓. NPRS 0/10.', recommendations: 'Continue HEP. No running yet — return 2/52. Travel note: HEP summary provided.' },
+    },
+  ],
+
+  // ─── prog3 (Pelvic Pain Relief) ─────────────────────────────────────────────
+
+  pat_van6: [
+    {
+      id: 'cs-van6-1', patientId: 'pat_van6', date: '2026-02-18', isIntakeSession: true,
+      summary: 'Intake for chronic pelvic pain and hypertonic pelvic floor. Relaxation-focused programme initiated. Pain education provided.',
+      painLevel: 'High Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o chronic pelvic aching NPRS 5/10. ↑ c/ sitting > 20 min + sexual activity. ↓ c/ walking. Hx: endometriosis (confirmed lap 2024).', objective: 'Internal: significant hypertonicity B/L; levator ani 3/5 c/ guarding; ↑ tenderness palpation.', assessment: 'Pelvic pain: hypertonic PF + central sensitization. NO strengthening. Relaxation priority.', plan: 'Diaphragmatic breathing + PF relaxation. Pain ed. Rx: 8 sessions × 1×/wk.', intervention: 'Pain neuroscience ed. Diaphragmatic breathing 3×10. Cat-cow 3×10. CT stretch.', evaluation: 'NPRS 5/10 pre → 4/10 post. Visible tension ↓ c/ breathing ✓.', recommendations: 'Avoid sitting > 20 min. Moist heat PRN. HEP 2×/day. F/U c/ gynaecologist re: endo management.' },
+    },
+    {
+      id: 'cs-van6-2', patientId: 'pat_van6', date: '2026-03-04', isIntakeSession: false,
+      summary: 'Pain reducing. Cat-cow and breathing well tolerated. Pelvic tilt added. Sitting tolerance improved to 35 minutes.',
+      painLevel: 'Moderate Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'NPRS ↓ 3/10. ↑ sitting tolerance → 35 min (↑ from 20). HEP adherence 7/7 days. Sexual activity still avoided.', objective: 'PF hypertonicity ↓ on assessment. Tone improving B/L.', assessment: '↑ progress with relaxation focus. Continue pain ed + ↑ mobility.', plan: 'Add pelvic tilt. Continue relaxation. Reassess 2/52.', intervention: 'Added pelvic tilt 3×10. Continued CT stretching. Diaphragmatic breathing.', evaluation: 'NPRS 3/10. Pt optimistic re: progress.', recommendations: 'Add pelvic tilt to HEP. Continue heat PRN. Return 2/52.' },
+    },
+  ],
+
+  pat_nyc3: [
+    {
+      id: 'cs-nyc3-1', patientId: 'pat_nyc3', date: '2026-01-22', isIntakeSession: true,
+      summary: 'Intake for pelvic pain and dyspareunia. Hypertonic floor identified. Pain education and relaxation programme initiated.',
+      painLevel: 'High Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o dyspareunia + deep pelvic aching NPRS 6/10. ↑ c/ prolonged sitting + intercourse. Hx: vulvodynia × 2 yrs.', objective: 'Internal: levator ani 3/5 c/ guarding; significant hypertonicity; ↑ sensitivity at vestibule.', assessment: 'Pelvic pain: hypertonic PF + vulvodynia. NO strengthening. Desensitisation + relaxation priority.', plan: 'Relaxation-focused Rx. Pain ed. Rx: 8–10 sessions × 1×/wk.', intervention: 'Pain neuroscience ed. Diaphragmatic breathing 3×10. Cat-cow 3×10.', evaluation: 'NPRS 6/10 pre → 5/10 post. Pt responded ✓ to pain ed.', recommendations: 'Avoid aggravating postures. HEP 2×/day. F/U c/ vulvodynia specialist.' },
+    },
+    {
+      id: 'cs-nyc3-2', patientId: 'pat_nyc3', date: '2026-02-05', isIntakeSession: false,
+      summary: 'Significant pain reduction after 2 sessions. Sitting tolerance doubled. Pelvic tilt and gentle mobilisation added.',
+      painLevel: 'Moderate Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Significant Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'NPRS ↓ 3/10 (↓ from 6/10). ↑ sitting tolerance → 45 min. HEP 7/7 days. Mood ↑ significantly.', objective: 'PF hypertonicity ↓↓. Guarding ↓. Vestibular sensitivity: ↓ slightly.', assessment: '↑↑ Excellent early response. Desensitisation progressing well.', plan: 'Add pelvic tilt + gentle scar/CT work. Continue relaxation.', intervention: 'Added pelvic tilt 3×10. Gentle perineal desensitisation protocol introduced.', evaluation: 'NPRS 3/10. Pt very engaged. Excellent adherence.', recommendations: 'Continue HEP. Begin desensitisation protocol at home. Return 2/52.' },
+    },
+    {
+      id: 'cs-nyc3-3', patientId: 'pat_nyc3', date: '2026-02-19', isIntakeSession: false,
+      summary: 'Minimal pain at rest. Functional activities resumed. Early discharge planning initiated.',
+      painLevel: 'Low Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Significant Improvement', exercisesPerDay: 4,
+      soapie: { subjective: 'NPRS 1/10 at rest. Mild dyspareunia (↓ from severe). ↑ confidence. HEP 7/7 days.', objective: 'PF tone: near WNL. Guarding: minimal. Vestibular sensitivity: ↓↓.', assessment: 'Near resolution. Functional goals: intercourse without pain; full sitting tolerance.', plan: 'Progress desensitisation. Begin gentle PFMT. D/C planning: 2 sessions.', intervention: 'Added gentle Kegel 3 sec × 5 reps (first strengthening). Progression protocol.', evaluation: 'Technique ✓. NPRS 1/10. Pt reports ↑ QoL significantly.', recommendations: 'Advance desensitisation. HEP updated. Target D/C in 2 sessions. Insurance receipts sent.' },
+    },
+  ],
+
+  pat_nyc5: [
+    {
+      id: 'cs-nyc5-1', patientId: 'pat_nyc5', date: '2026-02-26', isIntakeSession: true,
+      summary: 'Intake for postpartum pelvic pain and diastasis recti. Hypertonic floor noted. Relaxation and TA activation initiated.',
+      painLevel: 'Moderate Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o pelvic aching NPRS 4/10 + diastasis s/p CS (3 mos). ↑ c/ lifting + core activity. ↓ c/ rest.', objective: 'Diastasis: 2.5 cm at umbilicus. PF: mild hypertonicity. Scar: tender, restricted mobility.', assessment: 'Post-CS pelvic pain: diastasis + hypertonic PF + scar restriction. No strengthening yet.', plan: 'Relaxation + TA activation + scar ed. Rx: 8 sessions × 1×/wk.', intervention: 'Pain ed. Diaphragmatic breathing. Cat-cow 3×10. Scar massage technique taught.', evaluation: 'NPRS 4/10 → 3/10 post. Good comprehension of scar massage.', recommendations: 'Scar massage 2×/day. Avoid sit-ups + crunches. Return 2/52.' },
+    },
+    {
+      id: 'cs-nyc5-2', patientId: 'pat_nyc5', date: '2026-03-12', isIntakeSession: false,
+      summary: 'Scar mobility improving. Pain reducing. TA activation introduced. Diastasis narrowing.',
+      painLevel: 'Low Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'NPRS ↓ 2/10. Scar: no longer tender to touch. HEP 7/7 days. ↑ confidence.', objective: 'Diastasis: 2 cm (↓ from 2.5). Scar: ↑ mobile. PF: tone ↓ slightly.', assessment: '↑ progress. TA activation: ready to introduce.', plan: 'Add TA activation + pelvic tilt.', intervention: 'Added TA activation 3×10. Pelvic tilt 3×10.', evaluation: 'Technique ✓. NPRS 2/10.', recommendations: 'Continue scar massage + new HEP. Return 2/52.' },
+    },
+  ],
+
+  pat_nyc8: [
+    {
+      id: 'cs-nyc8-1', patientId: 'pat_nyc8', date: '2026-03-05', isIntakeSession: true,
+      summary: 'Intake for pelvic pain and vaginismus. Hypertonic floor on assessment. Relaxation-focused programme and pain education provided.',
+      painLevel: 'High Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o vaginismus + pelvic aching NPRS 6/10. ↑ c/ attempted intercourse + gynaecological exams. Hx: vaginismus × 3 yrs.', objective: 'Significant PF hypertonicity; involuntary guarding on internal assessment; no penetration tolerated.', assessment: 'Primary vaginismus: hypertonic PF. Desensitisation + relaxation primary focus.', plan: 'Relaxation + desensitisation programme. Rx: 8–10 sessions × 1×/wk.', intervention: 'Pain neuroscience ed. Diaphragmatic breathing 3×10. Graded dilator ed (not initiated today).', evaluation: 'NPRS 6/10 → 5/10 post. Pt engaged c/ pain ed. Building therapeutic alliance.', recommendations: 'HEP: breathing 2×/day. Consider psychology referral. Return 2/52.' },
+    },
+    {
+      id: 'cs-nyc8-2', patientId: 'pat_nyc8', date: '2026-03-19', isIntakeSession: false,
+      summary: 'Pain reducing. Breathing exercises well tolerated. Graded dilator programme introduced. Patient reporting reduced anxiety.',
+      painLevel: 'Moderate Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 2,
+      soapie: { subjective: 'NPRS ↓ 4/10. Anxiety re: PF ↓. HEP adherence 7/7 days. Ready to begin dilator programme.', objective: 'PF hypertonicity ↓. Guarding: less pronounced. Pt more relaxed during assessment.', assessment: '↑ therapeutic progress. Desensitisation: ready for grade 1 dilator.', plan: 'Begin grade 1 dilator at home. Continue breathing.', intervention: 'Dilator grade 1 introduced in-session ✓. Cat-cow added. Breathing continued.', evaluation: 'NPRS 4/10. Pt tolerated grade 1 ✓. Positive response.', recommendations: 'Dilator grade 1 at home 2×/wk. Continue breathing. Return 2/52.' },
+    },
+  ],
+
+  pat_nyc9: [
+    {
+      id: 'cs-nyc9-1', patientId: 'pat_nyc9', date: '2026-02-12', isIntakeSession: true,
+      summary: 'Intake for persistent pelvic pain post-hysterectomy. Hypertonic floor. Pain education and relaxation programme initiated.',
+      painLevel: 'High Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o pelvic aching NPRS 5/10 s/p TAH (4 mos). ↑ c/ sitting > 30 min + vaginal exam. ↓ c/ standing.', objective: 'PF hypertonicity B/L; levator ani 3/5 c/ guarding; scar: restricted mobility.', assessment: 'Post-TAH pelvic pain: hypertonic PF + scar restriction. Relaxation priority.', plan: 'Pain ed + relaxation + scar massage. Rx: 8 sessions × 1×/wk.', intervention: 'Pain neuroscience ed. Diaphragmatic breathing. Cat-cow 3×10. Scar massage taught.', evaluation: 'NPRS 5/10 → 4/10 post. Good response to breathing.', recommendations: 'Scar massage 2×/day. Sit < 30 min. HEP 2×/day.' },
+    },
+    {
+      id: 'cs-nyc9-2', patientId: 'pat_nyc9', date: '2026-02-26', isIntakeSession: false,
+      summary: 'Good HEP adherence. Pain reduced significantly. Scar mobility improving. Cat-cow a daily habit.',
+      painLevel: 'Low Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Significant Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'NPRS ↓ 2/10 (↓ from 5/10). ↑ sitting tolerance → 50 min. HEP 7/7 days × 2/52. Doing cat-cow before bed nightly.', objective: 'PF hypertonicity ↓↓. Scar: ↑ mobile. Guarding: ↓.', assessment: '↑↑ Excellent early response. On track for functional progressions.', plan: 'Add pelvic tilt. Discuss RTS activities. Continue relaxation.', intervention: 'Added pelvic tilt 3×10. Scar massage ↑ depth. Relaxation continued.', evaluation: 'NPRS 2/10. Pt very pleased. Insurance pre-auth renewed.', recommendations: 'Continue all HEP. Begin longer walks. Return 2/52.' },
+    },
+  ],
+
+  pat_uth3: [
+    {
+      id: 'cs-uth3-1', patientId: 'pat_uth3', date: '2026-03-26', isIntakeSession: true,
+      summary: 'Intake for pelvic pain and dyspareunia. High stress and desk-based work contributing to hypertonicity. Relaxation programme started.',
+      painLevel: 'Moderate Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o pelvic aching + dyspareunia NPRS 4/10. ↑ c/ sitting + stress + intercourse. High work-related stress identified.', objective: 'PF: moderate hypertonicity B/L; guarding on internal assessment.', assessment: 'Pelvic pain: hypertonic PF + stress contribution. Relaxation + psychosocial factors addressed.', plan: 'Relaxation-focused Rx + stress management ed. Rx: 8 sessions × 1×/wk.', intervention: 'Pain ed. Diaphragmatic breathing 3×10. Cat-cow 3×10. Mindfulness resource provided.', evaluation: 'NPRS 4/10 → 3/10 post. Visible relaxation ✓.', recommendations: 'HEP 2×/day. Use standing desk. Mindfulness resource shared. Return 2/52.' },
+    },
+    {
+      id: 'cs-uth3-2', patientId: 'pat_uth3', date: '2026-04-09', isIntakeSession: false,
+      summary: 'Pain reducing. Sitting tolerance improved. Now standing at work desk. Pelvic tilt added to programme.',
+      painLevel: 'Low Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'NPRS ↓ 2/10. ↑ sitting tolerance → 40 min. Using standing desk. HEP 7/7 days.', objective: 'PF hypertonicity ↓. Guarding: ↓ on assessment.', assessment: '↑ Good progress. Stress management improving. Continue relaxation.', plan: 'Add pelvic tilt. Discuss gentle strengthening when tone normalises.', intervention: 'Added pelvic tilt 3×10. Continued breathing + cat-cow.', evaluation: 'NPRS 2/10. Technique ✓.', recommendations: 'Continue HEP. Session moved to Thursdays per request. Return 2/52.' },
+    },
+  ],
+
+  pat_uth8: [
+    {
+      id: 'cs-uth8-1', patientId: 'pat_uth8', date: '2026-03-12', isIntakeSession: true,
+      summary: 'Intake for pelvic pain and bladder urgency. Hypertonic floor with urgency component. Relaxation and bladder retraining initiated.',
+      painLevel: 'Moderate Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o pelvic aching NPRS 4/10 + urgency 5×/day. ↑ c/ stress + prolonged sitting. Hx: chronic pelvic pain × 1 yr.', objective: 'Internal: hypertonicity B/L; levator ani 3/5 c/ guarding; urgency on assessment.', assessment: 'Pelvic pain: hypertonic PF + urgency. Relaxation + bladder retraining priority.', plan: 'Relaxation Rx + bladder retraining. Rx: 8 sessions × 1×/wk.', intervention: 'Pain ed. Diaphragmatic breathing. Bladder retraining: delay techniques. Cat-cow 3×10.', evaluation: 'NPRS 4/10 → 3/10 post. Good response to breathing.', recommendations: 'HEP 2×/day. ↓ caffeine. Urgency diary × 2/52.' },
+    },
+    {
+      id: 'cs-uth8-2', patientId: 'pat_uth8', date: '2026-03-26', isIntakeSession: false,
+      summary: 'Urgency and pain both reducing. Morning stiffness resolved with cat-cow. 100% HEP adherence 2 weeks running.',
+      painLevel: 'Low Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Significant Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'NPRS ↓ 2/10. Urgency ↓ → 2–3/day (↓ from 5). ↑ sitting tolerance. HEP 7/7 days × 2/52.', objective: 'PF hypertonicity ↓↓. Guarding: minimal. Urgency ↓ on verbal cue.', assessment: '↑↑ Excellent. Bladder retraining working well. Stress component ↓.', plan: 'Add pelvic tilt. Consider gentle PFMT if tone normalises next session.', intervention: 'Added pelvic tilt 3×10. Urgency delay technique reinforced.', evaluation: 'NPRS 2/10. Technique ✓. GP updated — new GP recorded.', recommendations: 'Continue HEP. Urgency diary shows ↑ improvement. Return 2/52.' },
+    },
+  ],
+
+  // ─── prog1 (Postpartum Foundation) ──────────────────────────────────────────
+
+  pat_van9: [
+    {
+      id: 'cs-van9-1', patientId: 'pat_van9', date: '2026-03-19', isIntakeSession: true,
+      summary: 'Intake for postpartum SUI, 8 weeks post vaginal delivery. Mild hypotonicity on assessment. PFMT and breathing initiated.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ cough/sneeze × 8/52 p/o SVD. NPRS 0/10. 2–3 leakage episodes/day. ↓ confidence.', objective: 'Internal: levator ani 2/5 B/L; mild hypotonicity; endurance hold 2 sec.', assessment: 'Postpartum SUI: ↓ PF strength. ↑ rehab potential.', plan: 'PFMT programme. Rx: 6 sessions × 1×/wk.', intervention: 'PF awareness, diaphragmatic breathing, quick flicks × 10. Anatomy ed. Handout provided.', evaluation: 'Technique ✓. NPRS 0/10.', recommendations: 'HEP 2×/day. Avoid high-impact. ↑ hydration, ↓ caffeine.' },
+    },
+    {
+      id: 'cs-van9-2', patientId: 'pat_van9', date: '2026-04-02', isIntakeSession: false,
+      summary: 'Breathing app helping with adherence. Leakage reducing. Sustained holds introduced. Note: patient travelling shortly.',
+      painLevel: 'No Pain', adherenceLevel: 'Moderate Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP adherence 5/7 days (↑ c/ timing app). SUI ↓ → 1–2 episodes/day. NPRS 0/10.', objective: 'Levator ani 2–3/5 (↑). Endurance hold: 4 sec × 10.', assessment: '↑ progress. Hold duration: primary goal.', plan: '↑ → sustained Kegels 5 sec + pelvic tilt.', intervention: 'Added sustained Kegel 5 sec × 10. Pelvic tilt 3×10.', evaluation: 'Technique ✓. NPRS 0/10. Travel HEP summary provided.', recommendations: 'HEP during travel. Return June 10 after Shanghai trip.' },
+    },
+  ],
+
+  pat_uth2: [
+    {
+      id: 'cs-uth2-1', patientId: 'pat_uth2', date: '2026-02-19', isIntakeSession: true,
+      summary: 'Intake for postpartum SUI and mild urgency. 12 weeks postpartum. Baseline assessment and PFMT initiated.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ cough/sneeze + mild UUI × 12/52 p/o SVD. NPRS 0/10. 2–4 leakage episodes/day.', objective: 'Internal: levator ani 2/5 B/L; endurance hold 2 sec; motor control deficit.', assessment: 'Postpartum MUI (stress-dominant). ↑ rehab potential.', plan: 'PFMT foundation. Rx: 6 sessions × 1×/wk.', intervention: 'PF awareness, diaphragmatic breathing, quick flicks × 10. Bladder ed. Handout provided.', evaluation: 'Technique ✓. NPRS 0/10.', recommendations: 'HEP 2×/day. Bladder diary × 2/52. ↓ caffeine.' },
+    },
+    {
+      id: 'cs-uth2-2', patientId: 'pat_uth2', date: '2026-03-05', isIntakeSession: false,
+      summary: 'Excellent adherence. Leakage reduced by half. Filmed herself doing exercises to check form. Sustained holds added.',
+      painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP 7/7 days × 2/52. SUI ↓ → 1–2 episodes/day. UUI: resolved. NPRS 0/10.', objective: 'Levator ani 2–3/5 (↑). Endurance hold: 5 sec × 10. Technique ✓ (self-filmed).', assessment: '↑↑ Excellent adherence and progress. Technique independently verified ✓.', plan: '↑ sustained holds 8 sec + pelvic tilt.', intervention: 'Added sustained Kegel 8 sec × 10. Pelvic tilt 3×10.', evaluation: 'Technique ✓. NPRS 0/10. Invoice sent for zorgverzekering.', recommendations: 'Continue HEP. ↑ → sustained holds at home. Return 2/52.' },
+    },
+  ],
+
+  pat_uth5: [
+    {
+      id: 'cs-uth5-1', patientId: 'pat_uth5', date: '2026-03-05', isIntakeSession: true,
+      summary: 'Intake for SUI and pelvic floor tension during high-stress thesis period. Gentle PFMT and breathing started.',
+      painLevel: 'Low Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ cough + mild pelvic tension NPRS 2/10. Completing master\'s thesis — high stress. ↑ symptoms during exam periods.', objective: 'Internal: levator ani 2/5 B/L; mild hypertonicity secondary to stress; endurance hold 2 sec.', assessment: 'SUI + stress-related PF tension. Stress management integral to Rx.', plan: 'PFMT + relaxation. Adjusted intensity for high-stress period. Rx: 6 sessions × 1×/wk.', intervention: 'Diaphragmatic breathing, PF relaxation, quick flicks × 10. Stress link education.', evaluation: 'NPRS 2/10. Technique ✓. Good comprehension of stress-PF link.', recommendations: 'HEP 2×/day (timed to commute). Breathing on train. Return 2/52.' },
+    },
+    {
+      id: 'cs-uth5-2', patientId: 'pat_uth5', date: '2026-03-19', isIntakeSession: false,
+      summary: 'Tension reducing with breathing exercises. SUI improving. Stress acknowledged but managed. Program progressed.',
+      painLevel: 'Low Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'NPRS ↓ 1/10. SUI ↓ → 1 episode/day. HEP 7/7 days. Stress: ↑ but manageable. Referred to pelvic nutritionist.', objective: 'Levator ani 2–3/5 (↑). Hypertonicity ↓. Endurance hold: 5 sec × 10.', assessment: '↑ Both tone and symptoms improving. Continue stress management alongside PFMT.', plan: '↑ sustained holds + TA activation.', intervention: 'Added sustained Kegel 5 sec × 10. TA activation 3×10. Breathing reinforced.', evaluation: 'NPRS 1/10. Technique ✓.', recommendations: 'Continue HEP. Nutritionist referral sent. Return 2/52.' },
+    },
+  ],
+
+  pat_uth10: [
+    {
+      id: 'cs-uth10-1', patientId: 'pat_uth10', date: '2026-04-09', isIntakeSession: true,
+      summary: 'Intake for postpartum SUI. Referred from Heidelberg physiotherapist. Dutch-language materials preferred. PFMT initiated.',
+      painLevel: 'No Pain', exercisesPerDay: 2,
+      soapie: { subjective: 'Pt c/o SUI c/ cough/sneeze × 6/52 p/o SVD. NPRS 0/10. 3–4 episodes/day. Referred by PT in Heidelberg (records obtained).', objective: 'Internal: levator ani 2/5 B/L; hypotonicity; endurance hold 2 sec. Records consistent c/ Heidelberg assessment.', assessment: 'Postpartum SUI: ↓ PF strength. Continuity maintained from Heidelberg Rx.', plan: 'PFMT programme (continuing from Heidelberg protocol). Rx: 6 sessions × 1×/wk.', intervention: 'Diaphragmatic breathing, PF relaxation, quick flicks × 10. Dutch-language handout provided.', evaluation: 'Technique ✓. NPRS 0/10. Good continuity from prior Rx.', recommendations: 'HEP 2×/day. Dutch handout provided. ↑ hydration, ↓ caffeine.' },
+    },
+    {
+      id: 'cs-uth10-2', patientId: 'pat_uth10', date: '2026-04-23', isIntakeSession: false,
+      summary: 'Excellent adherence. Leakage reducing. Waiting room warm-up noted and approved. Sustained holds introduced.',
+      painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Some Improvement', exercisesPerDay: 3,
+      soapie: { subjective: 'HEP 7/7 days × 2/52 (8 sec holds — ahead of programme!). SUI ↓ → 1–2 episodes/day. NPRS 0/10.', objective: 'Levator ani 2–3/5 (↑). Endurance hold: 8 sec (↑ self-progressed — technique verified ✓).', assessment: '↑↑ Excellent self-motivation. Self-progression with good technique.', plan: '↑ → add TA activation + pelvic tilt.', intervention: 'Added TA activation 3×10. Pelvic tilt 3×10. Sustained Kegel confirmed ✓.', evaluation: 'Technique ✓ all exercises. NPRS 0/10.', recommendations: 'Continue HEP. Return 2/52.' },
     },
   ],
 };
