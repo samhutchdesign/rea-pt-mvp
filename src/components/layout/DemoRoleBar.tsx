@@ -17,9 +17,11 @@ export default function DemoRoleBar() {
   return (
     <Box
       sx={{
-        position: 'sticky',
-        top: 56,
-        zIndex: 1100,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1400,
         display: 'flex',
         alignItems: 'center',
         gap: 1.5,

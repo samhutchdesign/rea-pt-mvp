@@ -11,14 +11,12 @@ import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
 import { usePermissions } from '@/lib/permissionsHook';
 
 const baseNavItems = [
-  { label: 'Home', href: '/', icon: HomeRoundedIcon },
   { label: 'Patients', href: '/patients', icon: PeopleAltRoundedIcon },
   { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
   { label: 'Programs', href: '/programs', icon: ListAltRoundedIcon },
 ];
 
 const ownerNavItems = [
-  { label: 'Home', href: '/', icon: HomeRoundedIcon },
   { label: 'Patients', href: '/patients', icon: PeopleAltRoundedIcon },
   { label: 'Employees', href: '/employees', icon: GroupsRoundedIcon },
   { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
@@ -45,9 +43,9 @@ export default function Sidebar() {
         pt: 2,
         pb: 2,
         position: 'fixed',
-        top: 0,
+        top: '40px',
         left: 0,
-        height: '100vh',
+        height: 'calc(100vh - 40px)',
         zIndex: 100,
       }}
     >

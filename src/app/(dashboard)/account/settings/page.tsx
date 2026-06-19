@@ -13,7 +13,6 @@ import { useThemeMode, setThemeMode } from '@/lib/themeStore';
 export default function SettingsPage() {
   const mode = useThemeMode();
   const [emailComments, setEmailComments] = useState(true);
-  const [weeklySummary, setWeeklySummary] = useState(true);
 
   return (
     <>
@@ -27,13 +26,6 @@ export default function SettingsPage() {
               <FormControlLabel
                 control={<Switch checked={emailComments} onChange={(e) => setEmailComments(e.target.checked)} size="small" />}
                 label={<Typography variant="body2">Email notifications for new exercise comments</Typography>}
-                sx={{ mb: 1 }}
-              />
-            </Box>
-            <Box>
-              <FormControlLabel
-                control={<Switch checked={weeklySummary} onChange={(e) => setWeeklySummary(e.target.checked)} size="small" />}
-                label={<Typography variant="body2">Weekly summary digest</Typography>}
                 sx={{ mb: 1 }}
               />
             </Box>
