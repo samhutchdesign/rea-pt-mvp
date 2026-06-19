@@ -114,7 +114,6 @@ export default function NewExercisePage() {
             />
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button variant="outlined" size="small">Upload Video / Image</Button>
-              <Button variant="outlined" size="small">Upload Audio Cue</Button>
             </Box>
           </CardContent>
         </Card>

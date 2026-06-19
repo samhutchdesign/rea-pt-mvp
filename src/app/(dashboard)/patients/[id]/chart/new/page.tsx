@@ -12,8 +12,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
-import MicRoundedIcon from '@mui/icons-material/MicRounded';
-import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
@@ -77,23 +75,11 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const sessions = mockChartSessions[id] ?? [];
   const sessionNumber = sessions.length + 1;
 
-  const [dictating, setDictating] = useState(false);
   const [notes, setNotes] = useState('');
   const [soapie, setSoapie] = useState<Record<string, string>>({});
   const [populated, setPopulated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
-
-  const handleDictate = () => {
-    if (dictating) {
-      setDictating(false);
-      setNotes((prev) => prev + (prev ? ' ' : '') + (id === 'pat1'
-        ? 'Pt c/o ↓ SUI — 0–1 episode today, ↓ from daily at intake. HEP adherence 7/7 this week. NPRS 1/10 at rest, ↓ from 2/10 last visit. No urgency. Querying RTS running — discussed ↑ impact loading protocol.'
-        : 'Pt reports ↓ Sx since last visit. HEP adherence ↑ — completing most days. NPRS ↓ from [x] → [x]/10. Functional mobility ↑. No adverse reactions to HEP.'));
-    } else {
-      setDictating(true);
-    }
-  };
 
   const handlePopulate = () => {
     setLoading(true);
@@ -130,28 +116,10 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
       {/* Dictation + notes */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="subtitle2" fontWeight={600}>Session Notes</Typography>
-            <Button
-              variant={dictating ? 'contained' : 'outlined'}
-              color={dictating ? 'error' : 'primary'}
-              startIcon={dictating ? <StopRoundedIcon /> : <MicRoundedIcon />}
-              onClick={handleDictate}
-              size="small"
-              disableElevation
-            >
-              {dictating ? 'Stop Dictating' : 'Dictate'}
-            </Button>
-          </Box>
-          {dictating && (
-            <Box sx={{ bgcolor: '#FFF3E0', border: '1px solid #FFB300', borderRadius: 1, px: 2, py: 1, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#F44336', animation: 'pulse 1s infinite' }} />
-              <Typography variant="caption" color="#E65100">Listening…</Typography>
-            </Box>
-          )}
+          <Typography variant="subtitle2" fontWeight={600} mb={2}>Session Notes</Typography>
           <TextField
             multiline rows={4} fullWidth size="small"
-            placeholder="Type session notes or use Dictate above…"
+            placeholder="Type session notes…"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />

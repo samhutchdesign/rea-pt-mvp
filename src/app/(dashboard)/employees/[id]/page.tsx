@@ -138,7 +138,6 @@ function ArchiveEmployeeDialog({
                   </Avatar>
                   <Box sx={{ minWidth: 130, flexShrink: 0 }}>
                     <Typography variant="body2" fontWeight={500}>{p.firstName} {p.lastName}</Typography>
-                    <Typography variant="caption" color="text.secondary">{p.status}</Typography>
                   </Box>
                   <Autocomplete
                     options={otherEmployees}
@@ -411,7 +410,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                           <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', color: 'primary.main', fontSize: 12, fontWeight: 600 }}>{p.avatarInitials}</Avatar>
                           <Box>
                             <Typography variant="body2" fontWeight={500}>{p.firstName} {p.lastName}</Typography>
-                            <Typography variant="caption" color="text.secondary">{p.status}</Typography>
                           </Box>
                         </Box>
                       ))}
@@ -438,17 +436,8 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                       {p.avatarInitials}
                     </Avatar>
                     <Box sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => router.push(`/patients/${p.id}/overview`)}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.3 }}>
+                      <Box sx={{ mb: 0.3 }}>
                         <Typography variant="body1" fontWeight={600}>{p.firstName} {p.lastName}</Typography>
-                        <Chip
-                          label={p.status}
-                          size="small"
-                          sx={{
-                            height: 20, fontSize: 11,
-                            bgcolor: p.status === 'active' ? '#E8F5E9' : p.status === 'new' ? '#E3F2FD' : '#F5F5F5',
-                            color: p.status === 'active' ? '#2E7D32' : p.status === 'new' ? '#0277BD' : '#757575',
-                          }}
-                        />
                       </Box>
                       <Typography variant="body2" color="text.secondary">{p.email}</Typography>
                     </Box>

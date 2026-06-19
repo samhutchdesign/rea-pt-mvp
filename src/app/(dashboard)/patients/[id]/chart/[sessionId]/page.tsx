@@ -16,8 +16,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Tooltip from '@mui/material/Tooltip';
-import MicRoundedIcon from '@mui/icons-material/MicRounded';
-import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
@@ -42,7 +40,6 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const sessionIndex = sessions.findIndex((s) => s.id === sessionId);
 
   const [editing, setEditing] = useState(false);
-  const [dictating, setDictating] = useState(false);
   const [soapie, setSoapie] = useState<Record<string, string>>(session?.soapie ?? {});
   const [copySuccess, setCopySuccess] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -109,27 +106,9 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         <CardContent>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: editing ? 2 : 1 }}>
             <Typography variant="subtitle2" fontWeight={600}>Session Notes</Typography>
-            {editing && (
-              <Button
-                variant={dictating ? 'contained' : 'outlined'}
-                color={dictating ? 'error' : 'primary'}
-                startIcon={dictating ? <StopRoundedIcon /> : <MicRoundedIcon />}
-                onClick={() => setDictating(!dictating)}
-                size="small"
-                disableElevation
-              >
-                {dictating ? 'Stop Dictating' : 'Dictate'}
-              </Button>
-            )}
           </Box>
           {editing ? (
             <>
-              {dictating && (
-                <Box sx={{ bgcolor: '#FFF3E0', border: '1px solid #FFB300', borderRadius: 1, px: 2, py: 1, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#F44336', animation: 'pulse 1s infinite' }} />
-                  <Typography variant="caption" color="#E65100">Listening…</Typography>
-                </Box>
-              )}
               <TextField multiline rows={3} fullWidth defaultValue={session.summary} size="small" />
             </>
           ) : (

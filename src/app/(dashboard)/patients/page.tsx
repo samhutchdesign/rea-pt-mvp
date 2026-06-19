@@ -28,6 +28,24 @@ import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
 import type { Patient } from '@/lib/types';
 
+function computeEstimatedNext(patientId: string): number {
+  const sessions = mockChartSessions[patientId] ?? [];
+  if (sessions.length === 0) return Infinity;
+  const sorted = [...sessions].sort((a, b) => a.date.localeCompare(b.date));
+  const lastTs = new Date(sorted[sorted.length - 1].date + 'T12:00:00').getTime();
+  let avgGapDays: number;
+  if (sorted.length === 1) {
+    avgGapDays = 14;
+  } else {
+    let total = 0;
+    for (let i = 1; i < sorted.length; i++) {
+      total += (new Date(sorted[i].date + 'T12:00:00').getTime() - new Date(sorted[i - 1].date + 'T12:00:00').getTime()) / 86400000;
+    }
+    avgGapDays = total / (sorted.length - 1);
+  }
+  return lastTs + avgGapDays * 86400000;
+}
+
 function conditionChip(patient: Patient): string | null {
   const text = patient.injuryHistory?.mechanism;
   if (!text) return null;
@@ -86,7 +104,8 @@ export default function PatientsPage() {
 
   const applySort = (list: Patient[]) => {
     const sorted = [...list];
-    if (sort === 'a-z') sorted.sort((a, b) => a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName));
+    if (sort === 'upcoming') sorted.sort((a, b) => computeEstimatedNext(a.id) - computeEstimatedNext(b.id));
+    else if (sort === 'a-z') sorted.sort((a, b) => a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName));
     else if (sort === 'z-a') sorted.sort((a, b) => b.firstName.localeCompare(a.firstName) || b.lastName.localeCompare(a.lastName));
     else if (sort === 'location') sorted.sort((a, b) => a.location.localeCompare(b.location));
     else if (sort === 'oldest') sorted.sort((a, b) => a.id.localeCompare(b.id));
@@ -150,6 +169,7 @@ export default function PatientsPage() {
               onChange={(e) => setSort(e.target.value)}
               sx={{ minWidth: 140, fontSize: 14 }}
             >
+              <MenuItem value="upcoming">Upcoming</MenuItem>
               <MenuItem value="newest">Newest</MenuItem>
               <MenuItem value="oldest">Oldest</MenuItem>
               <MenuItem value="a-z">A → Z</MenuItem>

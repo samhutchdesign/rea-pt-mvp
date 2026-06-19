@@ -34,7 +34,6 @@ const patientTabs = [
   { label: 'Details', path: 'details' },
   { label: 'Program', path: 'program' },
   { label: 'Chart', path: 'chart' },
-  { label: 'Documents', path: 'documents' },
   { label: 'Contact', path: 'contact' },
 ];
 

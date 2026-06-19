@@ -19,7 +19,6 @@ import Alert from '@mui/material/Alert';
 import { useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
-import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
@@ -51,17 +50,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const assignedEmployees = patient ? mockEmployees.filter((e) => patient.assignedEmployeeIds.includes(e.id)) : [];
   const can = usePermissions();
 
-  const overallAdherence = program
-    ? Math.round(program.exercises.reduce((sum, e) => sum + e.adherence, 0) / program.exercises.length)
-    : null;
-
   const stats = [
-    {
-      label: 'Program Adherence',
-      value: overallAdherence != null ? `${overallAdherence}%` : '—',
-      icon: TrendingUpRoundedIcon,
-      color: '#6750A4',
-    },
     {
       label: 'Total Sessions',
       value: sessions.length,
@@ -127,10 +116,8 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                 <Typography variant="body2" color="text.secondary" mb={1}>
                   {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </Typography>
-                <Typography variant="body2" mb={2}>{latestSession.summary}</Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                   {latestSession.painLevel && <Chip label={latestSession.painLevel} size="small" variant="outlined" />}
-                  {latestSession.adherenceLevel && <Chip label={latestSession.adherenceLevel} size="small" variant="outlined" />}
                   {latestSession.improvementLevel && <Chip label={latestSession.improvementLevel} size="small" variant="outlined" />}
                 </Box>
                 <Button size="small" sx={{ p: 0, fontSize: '0.75rem' }} onClick={() => router.push(`/patients/${id}/chart`)}>
@@ -161,7 +148,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                     return (
                       <Box key={pe.exerciseId} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 0.75, borderBottom: '1px solid #F0F0F0' }}>
                         <Typography variant="caption">{ex.name}</Typography>
-                        <Typography variant="caption" color="text.secondary">{pe.adherence}% adherence</Typography>
+                        <Typography variant="caption" color="text.secondary">{pe.reps} reps · {pe.sets} sets</Typography>
                       </Box>
                     );
                   })}
