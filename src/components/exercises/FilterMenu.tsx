@@ -1,11 +1,6 @@
 'use client';
-import { useState } from 'react';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
-import ListItemText from '@mui/material/ListItemText';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { Button, Dropdown, Checkbox } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 
 interface FilterMenuProps {
   label: string;
@@ -15,43 +10,41 @@ interface FilterMenuProps {
 }
 
 export default function FilterMenu({ label, options, selected, onChange }: FilterMenuProps) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const toggle = (val: string) =>
     onChange(selected.includes(val) ? selected.filter((v) => v !== val) : [...selected, val]);
 
+  const items = options.map((opt) => ({
+    key: opt,
+    label: (
+      <div
+        onClick={(e) => {
+          e.preventDefault();
+          toggle(opt);
+        }}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}
+      >
+        <Checkbox checked={selected.includes(opt)} />
+        <span>{opt}</span>
+      </div>
+    ),
+  }));
+
   return (
-    <>
+    <Dropdown
+      menu={{ items }}
+      trigger={['click']}
+      placement="bottomLeft"
+      overlayStyle={{ maxHeight: 280, width: 230, overflowY: 'auto' }}
+    >
       <Button
         size="small"
-        endIcon={<ArrowDropDownIcon />}
-        onClick={(e) => setAnchorEl(e.currentTarget)}
-        variant={selected.length > 0 ? 'contained' : 'outlined'}
-        color={selected.length > 0 ? 'primary' : 'inherit'}
-        disableElevation
-        sx={{
-          textTransform: 'none',
-          fontSize: 13,
-          borderColor: '#E0E0E0',
-          color: selected.length > 0 ? undefined : 'text.primary',
-          whiteSpace: 'nowrap',
-        }}
+        type={selected.length > 0 ? 'primary' : 'default'}
+        style={{ fontSize: 13, whiteSpace: 'nowrap' }}
       >
-        {label}{selected.length > 0 ? ` (${selected.length})` : ''}
+        {label}
+        {selected.length > 0 ? ` (${selected.length})` : ''}
+        <DownOutlined />
       </Button>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-        PaperProps={{ sx: { maxHeight: 280, width: 230 } }}
-      >
-        {options.map((opt) => (
-          <MenuItem key={opt} onClick={() => toggle(opt)} dense sx={{ px: 1.5 }}>
-            <Checkbox checked={selected.includes(opt)} size="small" sx={{ p: 0.5, mr: 0.5 }} />
-            <ListItemText primary={opt} primaryTypographyProps={{ fontSize: 13 }} />
-          </MenuItem>
-        ))}
-      </Menu>
-    </>
+    </Dropdown>
   );
 }

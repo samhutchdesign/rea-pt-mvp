@@ -2,32 +2,20 @@
 import { useState, useEffect } from 'react';
 import { usePathname, useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import Divider from '@mui/material/Divider';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import { Avatar, Typography, Tabs, Button, Tag, Alert, Modal, Input, Select, Divider, App } from 'antd';
+import {
+  MailOutlined,
+  EnvironmentOutlined,
+  EditOutlined,
+  InboxOutlined,
+} from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useYourEmpId } from '@/lib/locationScope';
 import { clearUploadedData } from '@/lib/uploadStore';
+
+const { Title, Text } = Typography;
 
 const patientTabs = [
   { label: 'Overview', path: 'overview' },
@@ -46,6 +34,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const { id } = useParams<{ id: string }>();
   const pathname = usePathname();
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const patient = mockPatients.find((p) => p.id === id);
 
   const [archived, setArchived] = useState(patient?.archived ?? false);
@@ -58,9 +47,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     email: patient?.email ?? '',
     locationId: mockClinicLocations.find((l) => patient?.location.includes(l.city))?.id ?? '',
   });
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [snackMsg, setSnackMsg] = useState('');
-  const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
 
   const can = usePermissions();
   const yourEmpId = useYourEmpId();
@@ -75,9 +61,9 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
   if (!patient) {
     return (
-      <Box sx={{ pt: '56px', px: 4, py: 4 }}>
-        <Typography>Patient not found.</Typography>
-      </Box>
+      <div style={{ paddingTop: 56, padding: 32 }}>
+        <Text>Patient not found.</Text>
+      </div>
     );
   }
 
@@ -87,16 +73,12 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     setArchived(true);
     setEditOpen(false);
     setConfirmArchiveOpen(false);
-    setSnackMsg(`${patient.firstName} ${patient.lastName} has been archived.`);
-    setSnackSeverity('warning');
-    setSnackOpen(true);
+    messageApi.warning(`${patient.firstName} ${patient.lastName} has been archived.`);
   };
 
   const handleRestore = () => {
     setArchived(false);
-    setSnackMsg(`${patient.firstName} ${patient.lastName} restored to active.`);
-    setSnackSeverity('success');
-    setSnackOpen(true);
+    messageApi.success(`${patient.firstName} ${patient.lastName} restored to active.`);
   };
 
   const handleDelete = () => {
@@ -106,10 +88,10 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
   const handleSaveProfile = () => {
     setEditOpen(false);
-    setSnackMsg('Profile updated successfully.');
-    setSnackSeverity('success');
-    setSnackOpen(true);
+    messageApi.success('Profile updated successfully.');
   };
+
+  const selectedIndex = activeTab === -1 ? 0 : activeTab;
 
   return (
     <>
@@ -120,64 +102,64 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           { label: currentTab.label },
         ]}
       />
-      <Box sx={{ pt: '56px' }}>
+      <div style={{ paddingTop: 56 }}>
         {archived && (
-          <Alert severity="warning" sx={{ borderRadius: 0, px: 4 }}>
-            This patient profile is archived. Restore it to resume active management.
-          </Alert>
+          <Alert
+            type="warning"
+            showIcon
+            style={{ borderRadius: 0, padding: '8px 32px' }}
+            message="This patient profile is archived. Restore it to resume active management."
+          />
         )}
 
-        <Box sx={{ px: 4, pt: 4, pb: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2.5, mb: 3 }}>
-            <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700, fontSize: 22, opacity: archived ? 0.6 : 1, mt: 0.5 }}>
+        <div style={{ padding: '32px 32px 0' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, marginBottom: 24 }}>
+            <Avatar style={{ width: 64, height: 64, background: '#EDE7F6', color: '#6750A4', fontWeight: 700, fontSize: 22, opacity: archived ? 0.6 : 1, marginTop: 4 }}>
               {patient.avatarInitials}
             </Avatar>
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant="h5" fontWeight={700}>{patient.firstName} {patient.lastName}</Typography>
-              <Box sx={{ display: 'flex', gap: 2, mt: 0.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <EmailOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                  <Typography variant="body2" color="text.secondary">{patient.email}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <LocationOnOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                  <Typography variant="body2" color="text.secondary">{patient.location}</Typography>
-                </Box>
-              </Box>
+            <div style={{ flexGrow: 1 }}>
+              <Title level={2} style={{ margin: 0 }}>{patient.firstName} {patient.lastName}</Title>
+              <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <MailOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                  <Text type="secondary">{patient.email}</Text>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <EnvironmentOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                  <Text type="secondary">{patient.location}</Text>
+                </div>
+              </div>
               {chip && (
-                <Chip
-                  label={chip}
-                  size="small"
-                  sx={{ mt: 1, bgcolor: 'primary.light', color: 'primary.main', fontSize: '0.72rem', height: 22, fontWeight: 500 }}
-                />
+                <div style={{ marginTop: 8 }}>
+                  <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontSize: '0.72rem', fontWeight: 500 }}>
+                    {chip}
+                  </Tag>
+                </div>
               )}
-            </Box>
+            </div>
 
             {can.canArchivePatient && archived && (
-              <Box sx={{ display: 'flex', gap: 1 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
                 <Button
-                  variant="outlined"
-                  startIcon={<UnarchiveOutlinedIcon />}
+                  icon={<InboxOutlined />}
                   size="small"
                   onClick={handleRestore}
-                  color="warning"
+                  style={{ borderColor: '#FB8C00', color: '#FB8C00' }}
                 >
                   Restore Patient
                 </Button>
                 <Button
-                  variant="outlined"
                   size="small"
-                  color="error"
+                  danger
                   onClick={() => setConfirmDeleteOpen(true)}
                 >
                   Delete Patient
                 </Button>
-              </Box>
+              </div>
             )}
             {canEdit && !archived && (
               <Button
-                variant="outlined"
-                startIcon={<EditOutlinedIcon />}
+                icon={<EditOutlined />}
                 size="small"
                 onClick={() => {
                   setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, locationId: mockClinicLocations.find((l) => patient.location.includes(l.city))?.id ?? '' });
@@ -187,146 +169,108 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 Edit Profile
               </Button>
             )}
-          </Box>
+          </div>
 
           <Tabs
-            value={activeTab === -1 ? 0 : activeTab}
-            sx={{ borderBottom: '1px solid #E0E0E0' }}
-            TabIndicatorProps={{ style: { backgroundColor: '#6750A4', height: 2 } }}
-          >
-            {patientTabs.map((tab, i) => (
-              <Tab
-                key={tab.path}
-                label={tab.label}
-                component={Link}
-                href={`/patients/${id}/${tab.path}`}
-                sx={{
-                  color: (activeTab === -1 ? 0 : activeTab) === i ? 'primary.main' : 'text.secondary',
-                  minHeight: 48,
-                  fontWeight: (activeTab === -1 ? 0 : activeTab) === i ? 600 : 400,
-                }}
-              />
-            ))}
-          </Tabs>
-        </Box>
+            activeKey={String(selectedIndex)}
+            style={{ marginBottom: 0 }}
+            items={patientTabs.map((tab, i) => ({
+              key: String(i),
+              label: <Link href={`/patients/${id}/${tab.path}`} style={{ color: 'inherit' }}>{tab.label}</Link>,
+            }))}
+          />
+        </div>
 
-        <Box sx={{ px: 4, py: 4 }}>
+        <div style={{ padding: '32px' }}>
           {children}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Edit Profile Modal */}
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Edit Profile</DialogTitle>
-        <DialogContent sx={{ pt: '12px !important', display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <TextField
-              label="First Name"
-              size="small"
-              fullWidth
-              value={editForm.firstName}
-              onChange={(e) => setEditForm((f) => ({ ...f, firstName: e.target.value }))}
+      <Modal
+        open={editOpen}
+        onCancel={() => setEditOpen(false)}
+        title="Edit Profile"
+        footer={[
+          <Button key="cancel" onClick={() => setEditOpen(false)}>Cancel</Button>,
+          <Button key="save" type="primary" onClick={handleSaveProfile}>Save Changes</Button>,
+        ]}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ marginBottom: 4, fontSize: 13 }}>First Name</div>
+              <Input value={editForm.firstName} onChange={(e) => setEditForm((f) => ({ ...f, firstName: e.target.value }))} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ marginBottom: 4, fontSize: 13 }}>Last Name</div>
+              <Input value={editForm.lastName} onChange={(e) => setEditForm((f) => ({ ...f, lastName: e.target.value }))} />
+            </div>
+          </div>
+          <div>
+            <div style={{ marginBottom: 4, fontSize: 13 }}>Email</div>
+            <Input value={editForm.email} onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))} />
+          </div>
+          <div>
+            <div style={{ marginBottom: 4, fontSize: 13 }}>Location</div>
+            <Select
+              style={{ width: '100%' }}
+              value={editForm.locationId || undefined}
+              onChange={(val) => setEditForm((f) => ({ ...f, locationId: val }))}
+              options={mockClinicLocations.map((loc) => ({ value: loc.id, label: `${loc.name} — ${loc.city}, ${loc.regionCountry}` }))}
             />
-            <TextField
-              label="Last Name"
-              size="small"
-              fullWidth
-              value={editForm.lastName}
-              onChange={(e) => setEditForm((f) => ({ ...f, lastName: e.target.value }))}
-            />
-          </Box>
-          <TextField
-            label="Email"
-            size="small"
-            fullWidth
-            value={editForm.email}
-            onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
-          />
-          <TextField
-            select
-            label="Location"
-            size="small"
-            fullWidth
-            value={editForm.locationId}
-            onChange={(e) => setEditForm((f) => ({ ...f, locationId: e.target.value }))}
-          >
-            {mockClinicLocations.map((loc) => (
-              <MenuItem key={loc.id} value={loc.id}>
-                {loc.name} — {loc.city}, {loc.regionCountry}
-              </MenuItem>
-            ))}
-          </TextField>
+          </div>
 
           {can.canArchivePatient && (
             <>
-              <Divider sx={{ my: 1 }} />
-              <Box>
-                <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ textTransform: 'uppercase', fontWeight: 600, letterSpacing: 0.5 }}>
+              <Divider style={{ margin: '4px 0' }} />
+              <div>
+                <Text type="secondary" style={{ display: 'block', marginBottom: 8, textTransform: 'uppercase', fontWeight: 600, letterSpacing: 0.5, fontSize: 12 }}>
                   Danger Zone
-                </Typography>
+                </Text>
                 <Button
-                  variant="outlined"
-                  color="warning"
                   size="small"
-                  startIcon={<ArchiveOutlinedIcon />}
+                  icon={<InboxOutlined />}
                   onClick={() => setConfirmArchiveOpen(true)}
+                  style={{ borderColor: '#FB8C00', color: '#FB8C00' }}
                 >
                   Archive Patient
                 </Button>
-              </Box>
+              </div>
             </>
           )}
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button variant="contained" disableElevation onClick={handleSaveProfile}>
-            Save Changes
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      </Modal>
 
       {/* Archive Confirmation */}
-      <Dialog open={confirmArchiveOpen} onClose={() => setConfirmArchiveOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Archive Patient?</DialogTitle>
-        <DialogContent sx={{ pt: '12px !important' }}>
-          <Typography variant="body2" color="text.secondary">
-            <strong>{patient.firstName} {patient.lastName}</strong> will be moved to the Archived tab and removed from your active patient list. You can restore them at any time.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setConfirmArchiveOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="warning" disableElevation onClick={handleArchive}>
-            Archive Patient
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Modal
+        open={confirmArchiveOpen}
+        onCancel={() => setConfirmArchiveOpen(false)}
+        title="Archive Patient?"
+        footer={[
+          <Button key="cancel" onClick={() => setConfirmArchiveOpen(false)}>Cancel</Button>,
+          <Button key="archive" type="primary" onClick={handleArchive} style={{ background: '#FB8C00', borderColor: '#FB8C00' }}>Archive Patient</Button>,
+        ]}
+      >
+        <Text type="secondary">
+          <strong>{patient.firstName} {patient.lastName}</strong> will be moved to the Archived tab and removed from your active patient list. You can restore them at any time.
+        </Text>
+      </Modal>
 
       {/* Delete Confirmation */}
-      <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Permanently Delete Patient?</DialogTitle>
-        <DialogContent sx={{ pt: '12px !important' }}>
-          <Typography variant="body2" color="text.secondary">
-            This will permanently delete <strong>{patient.firstName} {patient.lastName}</strong> and all associated records. This cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setConfirmDeleteOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="error" disableElevation onClick={handleDelete}>
-            Delete Patient
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        open={snackOpen}
-        autoHideDuration={4000}
-        onClose={() => setSnackOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      <Modal
+        open={confirmDeleteOpen}
+        onCancel={() => setConfirmDeleteOpen(false)}
+        title="Permanently Delete Patient?"
+        footer={[
+          <Button key="cancel" onClick={() => setConfirmDeleteOpen(false)}>Cancel</Button>,
+          <Button key="delete" type="primary" danger onClick={handleDelete}>Delete Patient</Button>,
+        ]}
       >
-        <Alert severity={snackSeverity} onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>
-          {snackMsg}
-        </Alert>
-      </Snackbar>
+        <Text type="secondary">
+          This will permanently delete <strong>{patient.firstName} {patient.lastName}</strong> and all associated records. This cannot be undone.
+        </Text>
+      </Modal>
     </>
   );
 }

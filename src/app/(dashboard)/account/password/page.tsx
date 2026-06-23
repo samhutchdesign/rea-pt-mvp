@@ -1,32 +1,38 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import { Typography, Input, Button, Card } from 'antd';
 import TopBar from '@/components/layout/TopBar';
+
+const { Title } = Typography;
 
 export default function PasswordResetPage() {
   const router = useRouter();
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Account' }, { label: 'Password Reset' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4, maxWidth: 500 }}>
-        <Typography variant="h5" fontWeight={600} mb={3}>Reset Password</Typography>
+      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 500 }}>
+        <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>Reset Password</Title>
         <Card>
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <TextField label="Current Password" size="small" fullWidth type="password" />
-            <TextField label="New Password" size="small" fullWidth type="password" />
-            <TextField label="Confirm New Password" size="small" fullWidth type="password" />
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div>
+              <div style={{ marginBottom: 4, fontSize: 13 }}>Current Password</div>
+              <Input.Password />
+            </div>
+            <div>
+              <div style={{ marginBottom: 4, fontSize: 13 }}>New Password</div>
+              <Input.Password />
+            </div>
+            <div>
+              <div style={{ marginBottom: 4, fontSize: 13 }}>Confirm New Password</div>
+              <Input.Password />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
               <Button onClick={() => router.back()}>Cancel</Button>
-              <Button variant="contained" disableElevation>Save</Button>
-            </Box>
-          </CardContent>
+              <Button type="primary">Save</Button>
+            </div>
+          </div>
         </Card>
-      </Box>
+      </div>
     </>
   );
 }

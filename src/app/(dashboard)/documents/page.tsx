@@ -1,17 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
+import { Typography, Card, Tag, Button, Tooltip } from 'antd';
+import { HeartFilled, HeartOutlined, FolderOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockDocuments } from '@/lib/mock-data';
+
+const { Title, Text } = Typography;
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -24,52 +19,56 @@ export default function DocumentsPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Documents' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" fontWeight={600}>Documents</Typography>
-        </Box>
+      <div style={{ paddingTop: 56, padding: '32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <Title level={2} style={{ margin: 0 }}>Documents</Title>
+        </div>
 
-        <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-          <Chip
-            label="Favorites" size="small"
-            variant={showFavoritesOnly ? 'filled' : 'outlined'}
-            color={showFavoritesOnly ? 'primary' : 'default'}
-            icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />}
-            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-          />
-        </Box>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+          <Tag.CheckableTag
+            checked={showFavoritesOnly}
+            onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            style={{ border: '1px solid #E0E0E0', padding: '2px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+          >
+            <HeartFilled style={{ fontSize: 14 }} /> Favorites
+          </Tag.CheckableTag>
+        </div>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {filtered.map((doc) => (
             <Card
               key={doc.id}
-              sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}
+              hoverable
+              styles={{ body: { padding: 0 } }}
               onClick={() => router.push(`/documents/${doc.id}`)}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2.5 }}>
-                <Box sx={{ width: 48, height: 48, borderRadius: 1.5, bgcolor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FolderRoundedIcon sx={{ color: '#F57C00', fontSize: 22 }} />
-                </Box>
-                <Box sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
-                    <Typography variant="body1" fontWeight={600}>{doc.name}</Typography>
-                    {favorites.has(doc.id) && <FavoriteIcon sx={{ fontSize: 14, color: '#E91E63' }} />}
-                    {doc.isDefault && <Chip label="Default" size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontSize: 10, height: 18 }} />}
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px' }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FolderOutlined style={{ color: '#F57C00', fontSize: 22 }} />
+                </div>
+                <div style={{ flexGrow: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                    <Text strong>{doc.name}</Text>
+                    {favorites.has(doc.id) && <HeartFilled style={{ fontSize: 14, color: '#E91E63' }} />}
+                    {doc.isDefault && <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontSize: 10 }}>Default</Tag>}
+                  </div>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
                     Updated {new Date(doc.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {doc.fields.length} fields
-                  </Typography>
-                </Box>
+                  </Text>
+                </div>
                 <Tooltip title={favorites.has(doc.id) ? 'Unfavorite' : 'Favorite'}>
-                  <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFavorite(doc.id); }}>
-                    {favorites.has(doc.id) ? <FavoriteIcon fontSize="small" sx={{ color: '#E91E63' }} /> : <FavoriteBorderIcon fontSize="small" />}
-                  </IconButton>
+                  <Button
+                    type="text"
+                    size="small"
+                    onClick={(e) => { e.stopPropagation(); toggleFavorite(doc.id); }}
+                    icon={favorites.has(doc.id) ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />}
+                  />
                 </Tooltip>
-              </Box>
+              </div>
             </Card>
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   );
 }

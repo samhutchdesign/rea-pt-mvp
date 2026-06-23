@@ -1,32 +1,24 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import Avatar from '@mui/material/Avatar';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputAdornment from '@mui/material/InputAdornment';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
-import RestoreIcon from '@mui/icons-material/Restore';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import EventRoundedIcon from '@mui/icons-material/EventRounded';
-import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
+import { Typography, Input, Button, Card, Tag, Avatar, Tabs, Select, App } from 'antd';
+import {
+  SearchOutlined,
+  PlusOutlined,
+  UserOutlined,
+  RollbackOutlined,
+  EnvironmentOutlined,
+  CalendarOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
+import type { ComponentType } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
 import type { Patient } from '@/lib/types';
+
+const { Title, Text } = Typography;
 
 function computeEstimatedNext(patientId: string): number {
   const sessions = mockChartSessions[patientId] ?? [];
@@ -60,15 +52,23 @@ function sessionInfo(patient: Patient): { lastSeen: string | null; count: number
   return { lastSeen, count: sessions.length };
 }
 
+const SORT_OPTIONS = [
+  { value: 'upcoming', label: 'Upcoming' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'oldest', label: 'Oldest' },
+  { value: 'a-z', label: 'A → Z' },
+  { value: 'z-a', label: 'Z → A' },
+  { value: 'location', label: 'Location' },
+];
+
 export default function PatientsPage() {
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
   const [sort, setSort] = useState('newest');
   const [addOpen, setAddOpen] = useState(false);
   const [localPatients, setLocalPatients] = useState<Record<string, boolean>>({});
-  const [snackMsg, setSnackMsg] = useState('');
-  const [snackOpen, setSnackOpen] = useState(false);
 
   const { patients: scopedPatients } = useLocationScope();
   const yourEmpId = useYourEmpId();
@@ -117,8 +117,7 @@ export default function PatientsPage() {
 
   const restore = (patient: Patient) => {
     setLocalPatients((prev) => ({ ...prev, [patient.id]: false }));
-    setSnackMsg(`${patient.firstName} ${patient.lastName} restored to active.`);
-    setSnackOpen(true);
+    messageApi.success(`${patient.firstName} ${patient.lastName} restored to active.`);
   };
 
   const searchPlaceholders = showYoursTab
@@ -129,126 +128,114 @@ export default function PatientsPage() {
     ? ['No patients assigned to you yet', 'No active patients found', 'No archived patients found']
     : ['No active patients found', 'No archived patients found'];
 
+  const tabItems = [
+    ...(showYoursTab ? [{ key: '0', label: `Your Patients (${yourPatients.length})` }] : []),
+    { key: showYoursTab ? '1' : '0', label: `All (${allActive.length})` },
+    { key: showYoursTab ? '2' : '1', label: `Archived (${archived.length})` },
+  ];
+
+  const archivedTabIndex = showYoursTab ? 2 : 1;
+
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Patients' }]} />
-      <Box sx={{ px: 4, py: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h5" fontWeight={600}>Patients</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setAddOpen(true)} disableElevation>
+      <div style={{ padding: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+          <Title level={2} style={{ margin: 0 }}>Patients</Title>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setAddOpen(true)}>
             Add New Patient
           </Button>
-        </Box>
+        </div>
 
         <Tabs
-          value={tab}
-          onChange={(_, v) => { setTab(v); setSearch(''); }}
-          sx={{ borderBottom: '1px solid #E0E0E0', mb: 3 }}
-          TabIndicatorProps={{ style: { backgroundColor: '#6750A4', height: 2 } }}
-        >
-          {showYoursTab && <Tab label={`Your Patients (${yourPatients.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />}
-          <Tab label={`All (${allActive.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
-          <Tab label={`Archived (${archived.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
-        </Tabs>
+          activeKey={String(tab)}
+          onChange={(k) => { setTab(Number(k)); setSearch(''); }}
+          style={{ marginBottom: 24 }}
+          items={tabItems}
+        />
 
-        <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
-          <TextField
+        <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+          <Input
             placeholder={searchPlaceholders[tab]}
-            size="small"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            sx={{ width: 340 }}
-            InputProps={{
-              startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 20 }} /></InputAdornment>,
-            }}
+            style={{ width: 340 }}
+            prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
           />
-          {tab !== (showYoursTab ? 2 : 1) && (
+          {tab !== archivedTabIndex && (
             <Select
-              size="small"
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              sx={{ minWidth: 140, fontSize: 14 }}
-            >
-              <MenuItem value="upcoming">Upcoming</MenuItem>
-              <MenuItem value="newest">Newest</MenuItem>
-              <MenuItem value="oldest">Oldest</MenuItem>
-              <MenuItem value="a-z">A → Z</MenuItem>
-              <MenuItem value="z-a">Z → A</MenuItem>
-              <MenuItem value="location">Location</MenuItem>
-            </Select>
+              onChange={setSort}
+              style={{ minWidth: 140 }}
+              options={SORT_OPTIONS}
+            />
           )}
-        </Box>
+        </div>
 
         {empty ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <PersonOutlineIcon sx={{ fontSize: 48, color: '#BDBDBD', mb: 1 }} />
-            <Typography color="text.secondary">{emptyMessages[tab]}</Typography>
-          </Box>
+          <div style={{ textAlign: 'center', padding: '64px 0' }}>
+            <UserOutlined style={{ fontSize: 48, color: '#BDBDBD', marginBottom: 8 }} />
+            <div><Text type="secondary">{emptyMessages[tab]}</Text></div>
+          </div>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {displayed.map((patient) => (
               <Card
                 key={patient.id}
-                sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s', opacity: patient.archived ? 0.75 : 1 }}
+                hoverable
+                styles={{ body: { padding: 0 } }}
+                style={{ opacity: patient.archived ? 0.75 : 1 }}
                 onClick={() => router.push(`/patients/${patient.id}/overview`)}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2.5 }}>
-                  <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600, width: 44, height: 44 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px' }}>
+                  <Avatar style={{ background: '#EDE7F6', color: '#6750A4', fontWeight: 600, width: 44, height: 44 }}>
                     {patient.avatarInitials}
                   </Avatar>
-                  <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                    <Typography variant="body1" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
-                    <Typography variant="body2" color="text.secondary">{patient.email}</Typography>
+                  <div style={{ flexGrow: 1, minWidth: 0 }}>
+                    <Text strong style={{ display: 'block' }}>{patient.firstName} {patient.lastName}</Text>
+                    <Text type="secondary">{patient.email}</Text>
                     {conditionChip(patient) && (
-                      <Chip
-                        label={conditionChip(patient)}
-                        size="small"
-                        sx={{ mt: 0.75, bgcolor: 'primary.light', color: 'primary.main', fontSize: '0.72rem', height: 22, fontWeight: 500 }}
-                      />
+                      <div style={{ marginTop: 6 }}>
+                        <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontSize: '0.72rem', fontWeight: 500 }}>
+                          {conditionChip(patient)}
+                        </Tag>
+                      </div>
                     )}
-                  </Box>
-                  <Box sx={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.25 }}>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
                     {(() => {
                       const { lastSeen, count } = sessionInfo(patient);
-                      return (
-                        <>
-                          {[
-                            { icon: LocationOnOutlinedIcon, text: patient.location },
-                            { icon: EventRoundedIcon, text: lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet' },
-                            { icon: RepeatRoundedIcon, text: count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—' },
-                          ].map(({ icon: Icon, text }) => (
-                            <Box key={text} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <Icon sx={{ fontSize: 12, color: 'text.disabled' }} />
-                              <Typography variant="caption" color="text.secondary">{text}</Typography>
-                            </Box>
-                          ))}
-                        </>
-                      );
+                      const rows: { icon: ComponentType<{ style?: React.CSSProperties }>; text: string }[] = [
+                        { icon: EnvironmentOutlined, text: patient.location },
+                        { icon: CalendarOutlined, text: lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet' },
+                        { icon: SyncOutlined, text: count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—' },
+                      ];
+                      return rows.map(({ icon: Icon, text }) => (
+                        <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Icon style={{ fontSize: 12, color: '#BDBDBD' }} />
+                          <Text type="secondary" style={{ fontSize: 12 }}>{text}</Text>
+                        </div>
+                      ));
                     })()}
-                    {tab === (showYoursTab ? 2 : 1) && (
+                    {tab === archivedTabIndex && (
                       <Button
                         size="small"
-                        variant="outlined"
-                        startIcon={<RestoreIcon />}
+                        icon={<RollbackOutlined />}
                         onClick={(e) => { e.stopPropagation(); restore(patient); }}
-                        sx={{ mt: 0.5 }}
+                        style={{ marginTop: 4 }}
                       >
                         Restore
                       </Button>
                     )}
-                  </Box>
-                </Box>
+                  </div>
+                </div>
               </Card>
             ))}
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       <AddPatientDialog open={addOpen} onClose={() => setAddOpen(false)} />
-
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
-      </Snackbar>
     </>
   );
 }

@@ -1,36 +1,22 @@
 'use client';
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Chip from '@mui/material/Chip';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
-import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
-import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
+import { Typography, Avatar, Button, Card, Tag, Tabs, Modal, Select, Input, Alert, App } from 'antd';
+import {
+  EditOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  SwapOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  InboxOutlined,
+} from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockEmployees, mockPatients } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import type { Patient, Employee } from '@/lib/types';
+
+const { Title, Text } = Typography;
 
 const AVATAR_COLORS: Record<string, string> = {
   emp1: '#6750A4',
@@ -56,36 +42,28 @@ function TransferDialog({
   const otherEmployees = mockEmployees.filter((e) => e.id !== currentEmployee.id && !e.archived);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ fontWeight: 600 }}>Transfer Patient</DialogTitle>
-      <DialogContent sx={{ pt: '12px !important' }}>
-        <Typography variant="body2" color="text.secondary" mb={2}>
-          Transfer <strong>{patient?.firstName} {patient?.lastName}</strong> to another physiotherapist.
-        </Typography>
-        <Autocomplete
-          options={otherEmployees}
-          getOptionLabel={(e) => `${e.firstName} ${e.lastName} — ${e.credentials}`}
-          renderOption={(props, e) => (
-            <Box component="li" {...props}>
-              <Box>
-                <Typography variant="body2" fontWeight={500}>{e.firstName} {e.lastName}</Typography>
-                <Typography variant="caption" color="text.secondary">{e.title} · {e.credentials}</Typography>
-              </Box>
-            </Box>
-          )}
-          value={selected}
-          onChange={(_, val) => setSelected(val)}
-          renderInput={(params) => <TextField {...params} label="Select physiotherapist" size="small" autoFocus />}
-          size="small"
-        />
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" disableElevation disabled={!selected} onClick={() => { if (selected) onTransfer(selected); }}>
-          Transfer
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <Modal
+      open={open}
+      onCancel={onClose}
+      title="Transfer Patient"
+      footer={[
+        <Button key="cancel" onClick={onClose}>Cancel</Button>,
+        <Button key="transfer" type="primary" disabled={!selected} onClick={() => { if (selected) onTransfer(selected); }}>Transfer</Button>,
+      ]}
+    >
+      <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+        Transfer <strong>{patient?.firstName} {patient?.lastName}</strong> to another physiotherapist.
+      </Text>
+      <Select
+        showSearch
+        placeholder="Select physiotherapist"
+        style={{ width: '100%' }}
+        value={selected?.id}
+        onChange={(val) => setSelected(otherEmployees.find((e) => e.id === val) ?? null)}
+        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+        options={otherEmployees.map((e) => ({ value: e.id, label: `${e.firstName} ${e.lastName} — ${e.credentials}` }))}
+      />
+    </Modal>
   );
 }
 
@@ -118,64 +96,17 @@ function ArchiveEmployeeDialog({
   const canConfirm = !hasPatients || allReassigned;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 600 }}>Archive Employee?</DialogTitle>
-      <DialogContent sx={{ pt: '12px !important' }}>
-        {!hasPatients ? (
-          <Typography variant="body2" color="text.secondary">
-            Are you sure you want to archive <strong>{employee.firstName} {employee.lastName}</strong>? They will be moved to the Archived tab and lose clinic access. You can restore them at any time.
-          </Typography>
-        ) : (
-          <>
-            <Alert severity="warning" sx={{ mb: 3 }}>
-              <strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new physiotherapist for each before archiving.
-            </Alert>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {assignedPatients.map((p) => (
-                <Box key={p.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.light', color: 'primary.main', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
-                    {p.avatarInitials}
-                  </Avatar>
-                  <Box sx={{ minWidth: 130, flexShrink: 0 }}>
-                    <Typography variant="body2" fontWeight={500}>{p.firstName} {p.lastName}</Typography>
-                  </Box>
-                  <Autocomplete
-                    options={otherEmployees}
-                    getOptionLabel={(e) => `${e.firstName} ${e.lastName}`}
-                    renderOption={(props, e) => (
-                      <Box component="li" {...props}>
-                        <Box>
-                          <Typography variant="body2" fontWeight={500}>{e.firstName} {e.lastName}</Typography>
-                          <Typography variant="caption" color="text.secondary">{e.credentials}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    value={reassignments[p.id] ?? null}
-                    onChange={(_, val) => setReassignments((r) => ({ ...r, [p.id]: val }))}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        size="small"
-                        label="Transfer to…"
-                        error={reassignments[p.id] === null && allReassigned === false}
-                      />
-                    )}
-                    size="small"
-                    sx={{ flex: 1 }}
-                  />
-                </Box>
-              ))}
-            </Box>
-          </>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
+    <Modal
+      open={open}
+      onCancel={onClose}
+      title="Archive Employee?"
+      footer={[
+        <Button key="cancel" onClick={onClose}>Cancel</Button>,
         <Button
-          variant="contained"
-          color="warning"
-          disableElevation
+          key="archive"
+          type="primary"
           disabled={!canConfirm}
+          style={{ background: canConfirm ? '#FB8C00' : undefined, borderColor: canConfirm ? '#FB8C00' : undefined }}
           onClick={() => {
             const result: Record<string, Employee> = {};
             assignedPatients.forEach((p) => {
@@ -185,24 +116,56 @@ function ArchiveEmployeeDialog({
           }}
         >
           Archive Employee
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </Button>,
+      ]}
+    >
+      {!hasPatients ? (
+        <Text type="secondary">
+          Are you sure you want to archive <strong>{employee.firstName} {employee.lastName}</strong>? They will be moved to the Archived tab and lose clinic access. You can restore them at any time.
+        </Text>
+      ) : (
+        <>
+          <Alert
+            type="warning"
+            style={{ marginBottom: 24 }}
+            message={<span><strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new physiotherapist for each before archiving.</span>}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {assignedPatients.map((p) => (
+              <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <Avatar style={{ width: 36, height: 36, background: '#EDE7F6', color: '#6750A4', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                  {p.avatarInitials}
+                </Avatar>
+                <div style={{ minWidth: 130, flexShrink: 0 }}>
+                  <Text strong>{p.firstName} {p.lastName}</Text>
+                </div>
+                <Select
+                  placeholder="Transfer to…"
+                  style={{ flex: 1 }}
+                  value={reassignments[p.id]?.id}
+                  status={reassignments[p.id] === null && allReassigned === false ? 'error' : undefined}
+                  onChange={(val) => setReassignments((r) => ({ ...r, [p.id]: otherEmployees.find((e) => e.id === val) ?? null }))}
+                  options={otherEmployees.map((e) => ({ value: e.id, label: `${e.firstName} ${e.lastName}` }))}
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </Modal>
   );
 }
 
 export default function EmployeeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const emp = mockEmployees.find((e) => e.id === id);
 
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState('0');
   const [archived, setArchived] = useState(emp?.archived ?? false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [transferPatient, setTransferPatient] = useState<Patient | null>(null);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [snackMsg, setSnackMsg] = useState('');
-  const [snackSeverity, setSnackSeverity] = useState<'success' | 'warning'>('success');
 
   // Details tab edit state
   const [editingContact, setEditingContact] = useState(false);
@@ -221,7 +184,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [professionalDraft, setProfessionalDraft] = useState({ ...savedProfessional });
   const can = usePermissions();
 
-  if (!emp) return <Box sx={{ p: 4 }}><Typography>Employee not found.</Typography></Box>;
+  if (!emp) return <div style={{ padding: 32 }}><Text>Employee not found.</Text></div>;
 
   const assignedPatients = mockPatients.filter((p) => emp.patientIds.includes(p.id));
   const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
@@ -229,9 +192,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const handleTransfer = (toEmployee: Employee) => {
     const name = `${transferPatient?.firstName} ${transferPatient?.lastName}`;
     setTransferPatient(null);
-    setSnackMsg(`${name} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
-    setSnackSeverity('success');
-    setSnackOpen(true);
+    messageApi.success(`${name} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
   };
 
   const handleConfirmArchive = (reassignments: Record<string, Employee>) => {
@@ -241,16 +202,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
     const msg = count > 0
       ? `${emp.firstName} ${emp.lastName} archived. ${count} patient${count !== 1 ? 's' : ''} transferred.`
       : `${emp.firstName} ${emp.lastName} has been archived.`;
-    setSnackMsg(msg);
-    setSnackSeverity('warning');
-    setSnackOpen(true);
+    messageApi.warning(msg);
   };
 
   const handleRestore = () => {
     setArchived(false);
-    setSnackMsg(`${emp.firstName} ${emp.lastName} restored to active.`);
-    setSnackSeverity('success');
-    setSnackOpen(true);
+    messageApi.success(`${emp.firstName} ${emp.lastName} restored to active.`);
   };
 
   const handleEditContact = () => {
@@ -261,9 +218,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const handleSaveContact = () => {
     setSavedContact({ ...contactDraft });
     setEditingContact(false);
-    setSnackMsg('Contact information updated.');
-    setSnackSeverity('success');
-    setSnackOpen(true);
+    messageApi.success('Contact information updated.');
   };
 
   const handleEditProfessional = () => {
@@ -274,288 +229,258 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const handleSaveProfessional = () => {
     setSavedProfessional({ ...professionalDraft });
     setEditingProfessional(false);
-    setSnackMsg('Professional details updated.');
-    setSnackSeverity('success');
-    setSnackOpen(true);
+    messageApi.success('Professional details updated.');
   };
+
+  const fieldLabel = (label: string) => <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>;
 
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Employees', href: '/employees' }, { label: `${savedContact.firstName} ${savedContact.lastName}` }]} />
-      <Box sx={{ px: 4, py: 4 }}>
+      <div style={{ padding: '32px' }}>
 
         {archived && (
-          <Alert severity="warning" sx={{ mb: 3, borderRadius: 1 }}>
-            This employee profile is archived. Restore it to re-activate their access.
-          </Alert>
+          <Alert
+            type="warning"
+            showIcon
+            style={{ marginBottom: 24, borderRadius: 8 }}
+            message="This employee profile is archived. Restore it to re-activate their access."
+          />
         )}
 
         {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3, mb: 4 }}>
-          <Avatar sx={{ width: 72, height: 72, bgcolor: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 24, flexShrink: 0, opacity: archived ? 0.6 : 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, marginBottom: 32 }}>
+          <Avatar style={{ width: 72, height: 72, background: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 24, flexShrink: 0, opacity: archived ? 0.6 : 1 }}>
             {emp.avatarInitials}
           </Avatar>
-          <Box sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-              <Typography variant="h5" fontWeight={700}>{savedContact.firstName} {savedContact.lastName}</Typography>
-              <Chip label={savedProfessional.credentials} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 600 }} />
-            </Box>
-            <Typography variant="body1" color="text.secondary" mb={1}>{savedProfessional.title}</Typography>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <EmailOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">{savedContact.email}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <PhoneOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">{savedContact.phone}</Typography>
-              </Box>
-            </Box>
-          </Box>
+          <div style={{ flexGrow: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+              <Title level={2} style={{ margin: 0 }}>{savedContact.firstName} {savedContact.lastName}</Title>
+              <Tag style={{ background: '#EDE7F6', color: '#6750A4', fontWeight: 600, border: 'none' }}>{savedProfessional.credentials}</Tag>
+            </div>
+            <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>{savedProfessional.title}</Text>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <MailOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <Text type="secondary">{savedContact.email}</Text>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <PhoneOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <Text type="secondary">{savedContact.phone}</Text>
+              </div>
+            </div>
+          </div>
           {can.canManageStaff && (
             archived ? (
-              <Button variant="outlined" startIcon={<UnarchiveOutlinedIcon />} size="small" onClick={handleRestore} color="warning">
+              <Button icon={<InboxOutlined />} size="small" onClick={handleRestore} style={{ borderColor: '#FB8C00', color: '#FB8C00' }}>
                 Restore Employee
               </Button>
             ) : (
               <Button
-                variant="outlined"
-                startIcon={<ArchiveOutlinedIcon />}
+                icon={<InboxOutlined />}
                 size="small"
                 onClick={() => setArchiveDialogOpen(true)}
-                sx={{ color: 'text.secondary', borderColor: '#BDBDBD', '&:hover': { borderColor: '#9E9E9E', bgcolor: 'action.hover' } }}
+                style={{ color: '#49454F', borderColor: '#BDBDBD' }}
               >
                 Archive Employee
               </Button>
             )
           )}
-        </Box>
+        </div>
 
         {/* Tabs */}
         <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{ borderBottom: '1px solid #E0E0E0', mb: 3 }}
-          TabIndicatorProps={{ style: { backgroundColor: '#6750A4', height: 2 } }}
-        >
-          <Tab label="Overview" sx={{ textTransform: 'none', minHeight: 48 }} />
-          <Tab label={`Patients (${assignedPatients.length})`} sx={{ textTransform: 'none', minHeight: 48 }} />
-          <Tab label="Details" sx={{ textTransform: 'none', minHeight: 48 }} />
-        </Tabs>
+          activeKey={tab}
+          onChange={setTab}
+          style={{ marginBottom: 24 }}
+          items={[
+            { key: '0', label: 'Overview' },
+            { key: '1', label: `Patients (${assignedPatients.length})` },
+            { key: '2', label: 'Details' },
+          ]}
+        />
 
         {/* Overview Tab */}
-        {tab === 0 && (
-          <Box sx={{ display: 'flex', gap: 3 }}>
-            <Box sx={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Card sx={{ flex: 1 }}>
-                  <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: '#6750A418', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <PersonOutlinedIcon sx={{ color: '#6750A4', fontSize: 20 }} />
-                    </Box>
-                    <Box>
-                      <Typography variant="h5" fontWeight={700} lineHeight={1}>{assignedPatients.length}</Typography>
-                      <Typography variant="caption" color="text.secondary">Active Patients</Typography>
-                    </Box>
-                  </CardContent>
+        {tab === '0' && (
+          <div style={{ display: 'flex', gap: 24 }}>
+            <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <Card style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 8, background: '#6750A418', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <UserOutlined style={{ color: '#6750A4', fontSize: 20 }} />
+                    </div>
+                    <div>
+                      <Title level={2} style={{ margin: 0, lineHeight: 1 }}>{assignedPatients.length}</Title>
+                      <Text type="secondary" style={{ fontSize: 12 }}>Active Patients</Text>
+                    </div>
+                  </div>
                 </Card>
-                <Card sx={{ flex: 1 }}>
-                  <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: '#0288D118', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <CalendarTodayRoundedIcon sx={{ color: '#0288D1', fontSize: 20 }} />
-                    </Box>
-                    <Box>
-                      <Typography variant="h5" fontWeight={700} lineHeight={1}>
-                        {new Date(emp.joinedAt).getFullYear()}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">Joined</Typography>
-                    </Box>
-                  </CardContent>
+                <Card style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 8, background: '#0288D118', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <CalendarOutlined style={{ color: '#0288D1', fontSize: 20 }} />
+                    </div>
+                    <div>
+                      <Title level={2} style={{ margin: 0, lineHeight: 1 }}>{new Date(emp.joinedAt).getFullYear()}</Title>
+                      <Text type="secondary" style={{ fontSize: 12 }}>Joined</Text>
+                    </div>
+                  </div>
                 </Card>
-              </Box>
+              </div>
 
               <Card>
-                <CardContent>
-                  <Typography variant="subtitle2" fontWeight={600} mb={1.5}>About</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>{emp.bio}</Typography>
-                </CardContent>
+                <Text strong style={{ display: 'block', marginBottom: 12 }}>About</Text>
+                <Text type="secondary" style={{ lineHeight: 1.7 }}>{emp.bio}</Text>
               </Card>
-            </Box>
+            </div>
 
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <Card>
-                <CardContent>
-                  <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Specialties</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                    {emp.specialties.map((s) => (
-                      <Chip key={s} label={s} size="small" variant="outlined" sx={{ fontSize: 12 }} />
+                <Text strong style={{ display: 'block', marginBottom: 12 }}>Specialties</Text>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {emp.specialties.map((s) => (
+                    <Tag key={s} style={{ fontSize: 12 }}>{s}</Tag>
+                  ))}
+                </div>
+              </Card>
+
+              <Card>
+                <Text strong style={{ display: 'block', marginBottom: 12 }}>Assigned Patients</Text>
+                {assignedPatients.length === 0 ? (
+                  <Text type="secondary">No patients assigned.</Text>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {assignedPatients.map((p) => (
+                      <div
+                        key={p.id}
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: 8, borderRadius: 8 }}
+                        onClick={() => router.push(`/patients/${p.id}/overview`)}
+                      >
+                        <Avatar style={{ width: 32, height: 32, background: '#EDE7F6', color: '#6750A4', fontSize: 12, fontWeight: 600 }}>{p.avatarInitials}</Avatar>
+                        <Text strong>{p.firstName} {p.lastName}</Text>
+                      </div>
                     ))}
-                  </Box>
-                </CardContent>
+                  </div>
+                )}
               </Card>
-
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Assigned Patients</Typography>
-                  {assignedPatients.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">No patients assigned.</Typography>
-                  ) : (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      {assignedPatients.map((p) => (
-                        <Box
-                          key={p.id}
-                          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', p: 1, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' } }}
-                          onClick={() => router.push(`/patients/${p.id}/overview`)}
-                        >
-                          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', color: 'primary.main', fontSize: 12, fontWeight: 600 }}>{p.avatarInitials}</Avatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight={500}>{p.firstName} {p.lastName}</Typography>
-                          </Box>
-                        </Box>
-                      ))}
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
 
         {/* Patients Tab */}
-        {tab === 1 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        {tab === '1' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {assignedPatients.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Typography variant="body1" color="text.secondary">No patients assigned to {emp.firstName} yet.</Typography>
-              </Box>
+              <div style={{ textAlign: 'center', padding: '64px 0' }}>
+                <Text type="secondary">No patients assigned to {emp.firstName} yet.</Text>
+              </div>
             ) : (
               assignedPatients.map((p) => (
-                <Card key={p.id} sx={{ '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2 }}>
-                    <Avatar sx={{ width: 48, height: 48, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
+                <Card key={p.id} hoverable styles={{ body: { padding: 0 } }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 24px' }}>
+                    <Avatar style={{ width: 48, height: 48, background: '#EDE7F6', color: '#6750A4', fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
                       {p.avatarInitials}
                     </Avatar>
-                    <Box sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => router.push(`/patients/${p.id}/overview`)}>
-                      <Box sx={{ mb: 0.3 }}>
-                        <Typography variant="body1" fontWeight={600}>{p.firstName} {p.lastName}</Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">{p.email}</Typography>
-                    </Box>
+                    <div style={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => router.push(`/patients/${p.id}/overview`)}>
+                      <Text strong style={{ display: 'block', marginBottom: 2 }}>{p.firstName} {p.lastName}</Text>
+                      <Text type="secondary">{p.email}</Text>
+                    </div>
                     {can.canManageStaff && (
                       <Button
                         size="small"
-                        variant="outlined"
-                        startIcon={<SwapHorizRoundedIcon />}
+                        icon={<SwapOutlined />}
                         onClick={() => setTransferPatient(p)}
-                        sx={{ flexShrink: 0 }}
+                        style={{ flexShrink: 0 }}
                       >
                         Transfer
                       </Button>
                     )}
-                  </Box>
+                  </div>
                 </Card>
               ))
             )}
-          </Box>
+          </div>
         )}
 
         {/* Details Tab */}
-        {tab === 2 && (
-          <Box sx={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {tab === '2' && (
+          <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="subtitle2" fontWeight={600}>Contact Information</Typography>
-                  {can.canManageStaff && !editingContact && (
-                    <IconButton size="small" onClick={handleEditContact}><EditOutlinedIcon fontSize="small" /></IconButton>
-                  )}
-                </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Box sx={{ display: 'flex', gap: 1.5 }}>
-                    <TextField
-                      label="First Name" size="small" fullWidth
-                      value={editingContact ? contactDraft.firstName : savedContact.firstName}
-                      onChange={(e) => setContactDraft((d) => ({ ...d, firstName: e.target.value }))}
-                      InputProps={{ readOnly: !editingContact }}
-                    />
-                    <TextField
-                      label="Last Name" size="small" fullWidth
-                      value={editingContact ? contactDraft.lastName : savedContact.lastName}
-                      onChange={(e) => setContactDraft((d) => ({ ...d, lastName: e.target.value }))}
-                      InputProps={{ readOnly: !editingContact }}
-                    />
-                  </Box>
-                  <TextField
-                    label="Email" size="small" fullWidth
-                    value={editingContact ? contactDraft.email : savedContact.email}
-                    onChange={(e) => setContactDraft((d) => ({ ...d, email: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact }}
-                  />
-                  <TextField
-                    label="Phone" size="small" fullWidth
-                    value={editingContact ? contactDraft.phone : savedContact.phone}
-                    onChange={(e) => setContactDraft((d) => ({ ...d, phone: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact }}
-                  />
-                </Box>
-                {editingContact && (
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-                    <Button size="small" onClick={() => setEditingContact(false)}>Cancel</Button>
-                    <Button size="small" variant="contained" disableElevation onClick={handleSaveContact}>Save</Button>
-                  </Box>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <Text strong>Contact Information</Text>
+                {can.canManageStaff && !editingContact && (
+                  <Button type="text" size="small" onClick={handleEditContact} icon={<EditOutlined />} />
                 )}
-              </CardContent>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    {fieldLabel('First Name')}
+                    <Input value={editingContact ? contactDraft.firstName : savedContact.firstName} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, firstName: e.target.value }))} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    {fieldLabel('Last Name')}
+                    <Input value={editingContact ? contactDraft.lastName : savedContact.lastName} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, lastName: e.target.value }))} />
+                  </div>
+                </div>
+                <div>
+                  {fieldLabel('Email')}
+                  <Input value={editingContact ? contactDraft.email : savedContact.email} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, email: e.target.value }))} />
+                </div>
+                <div>
+                  {fieldLabel('Phone')}
+                  <Input value={editingContact ? contactDraft.phone : savedContact.phone} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, phone: e.target.value }))} />
+                </div>
+              </div>
+              {editingContact && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+                  <Button size="small" onClick={() => setEditingContact(false)}>Cancel</Button>
+                  <Button size="small" type="primary" onClick={handleSaveContact}>Save</Button>
+                </div>
+              )}
             </Card>
 
             <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="subtitle2" fontWeight={600}>Professional Details</Typography>
-                  {can.canManageStaff && !editingProfessional && (
-                    <IconButton size="small" onClick={handleEditProfessional}><EditOutlinedIcon fontSize="small" /></IconButton>
-                  )}
-                </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <TextField
-                    label="Title" size="small" fullWidth
-                    value={editingProfessional ? professionalDraft.title : savedProfessional.title}
-                    onChange={(e) => setProfessionalDraft((d) => ({ ...d, title: e.target.value }))}
-                    InputProps={{ readOnly: !editingProfessional }}
-                  />
-                  <TextField
-                    label="Credentials" size="small" fullWidth
-                    value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials}
-                    onChange={(e) => setProfessionalDraft((d) => ({ ...d, credentials: e.target.value }))}
-                    InputProps={{ readOnly: !editingProfessional }}
-                  />
-                  <TextField
-                    label="Date Joined" size="small" fullWidth
-                    value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    InputProps={{ readOnly: true }}
-                  />
-                </Box>
-                {editingProfessional && (
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-                    <Button size="small" onClick={() => setEditingProfessional(false)}>Cancel</Button>
-                    <Button size="small" variant="contained" disableElevation onClick={handleSaveProfessional}>Save</Button>
-                  </Box>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <Text strong>Professional Details</Text>
+                {can.canManageStaff && !editingProfessional && (
+                  <Button type="text" size="small" onClick={handleEditProfessional} icon={<EditOutlined />} />
                 )}
-              </CardContent>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div>
+                  {fieldLabel('Title')}
+                  <Input value={editingProfessional ? professionalDraft.title : savedProfessional.title} readOnly={!editingProfessional} onChange={(e) => setProfessionalDraft((d) => ({ ...d, title: e.target.value }))} />
+                </div>
+                <div>
+                  {fieldLabel('Credentials')}
+                  <Input value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials} readOnly={!editingProfessional} onChange={(e) => setProfessionalDraft((d) => ({ ...d, credentials: e.target.value }))} />
+                </div>
+                <div>
+                  {fieldLabel('Date Joined')}
+                  <Input value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} readOnly />
+                </div>
+              </div>
+              {editingProfessional && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+                  <Button size="small" onClick={() => setEditingProfessional(false)}>Cancel</Button>
+                  <Button size="small" type="primary" onClick={handleSaveProfessional}>Save</Button>
+                </div>
+              )}
             </Card>
 
             <Card>
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight={600} mb={1.5}>Specialties</Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                  {emp.specialties.map((s) => (
-                    <Chip key={s} label={s} size="small" variant="outlined" sx={{ fontSize: 12 }} />
-                  ))}
-                </Box>
-              </CardContent>
+              <Text strong style={{ display: 'block', marginBottom: 12 }}>Specialties</Text>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {emp.specialties.map((s) => (
+                  <Tag key={s} style={{ fontSize: 12 }}>{s}</Tag>
+                ))}
+              </div>
             </Card>
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       <TransferDialog
         open={!!transferPatient}
@@ -572,10 +497,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         onClose={() => setArchiveDialogOpen(false)}
         onConfirm={handleConfirmArchive}
       />
-
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity={snackSeverity} onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
-      </Snackbar>
     </>
   );
 }

@@ -1,20 +1,18 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
+import { Typography, Input, Button, Avatar, Card, Tag, Divider } from 'antd';
 import TopBar from '@/components/layout/TopBar';
-import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
+import { ShopOutlined } from '@ant-design/icons';
 import { mockPhysio, mockClinic } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
+
+const { Title, Text } = Typography;
+
+const fieldLabel = (label: string) => (
+  <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>
+);
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -24,72 +22,63 @@ export default function ProfilePage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Account' }, { label: 'Your Profile' }]} />
-      <Box sx={{ px: 4, py: 4, maxWidth: 640 }}>
-        <Typography variant="h5" fontWeight={600} mb={3}>Your Profile</Typography>
+      <div style={{ padding: '32px', maxWidth: 640 }}>
+        <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>Your Profile</Title>
 
-        <Card sx={{ mb: 2 }}>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: 3 }}>
-              <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.light', color: 'primary.main', fontWeight: 700, fontSize: 22 }}>
-                {mockPhysio.avatarInitials}
-              </Avatar>
-              <Box sx={{ flexGrow: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-                  <Typography variant="subtitle1" fontWeight={600}>{mockPhysio.firstName} {mockPhysio.lastName}</Typography>
-                  <Chip
-                    label={roleLabel(role)}
-                    size="small"
-                    color="primary"
-                    sx={{ height: 20, fontSize: 11, fontWeight: 600 }}
-                  />
-                </Box>
-                <Typography variant="body2" color="text.secondary">{mockPhysio.title}</Typography>
-              </Box>
-              <Button variant="outlined" size="small">Change Photo</Button>
-            </Box>
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 24 }}>
+            <Avatar style={{ width: 64, height: 64, background: '#EDE7F6', color: '#6750A4', fontWeight: 700, fontSize: 22 }}>
+              {mockPhysio.avatarInitials}
+            </Avatar>
+            <div style={{ flexGrow: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+                <Text strong>{mockPhysio.firstName} {mockPhysio.lastName}</Text>
+                <Tag color="purple" style={{ fontSize: 11, fontWeight: 600 }}>{roleLabel(role)}</Tag>
+              </div>
+              <Text type="secondary">{mockPhysio.title}</Text>
+            </div>
+            <Button size="small">Change Photo</Button>
+          </div>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <TextField label="First Name" size="small" fullWidth defaultValue={mockPhysio.firstName} />
-                <TextField label="Last Name" size="small" fullWidth defaultValue={mockPhysio.lastName} />
-              </Box>
-              <TextField label="Title" size="small" fullWidth defaultValue={mockPhysio.title} />
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <TextField label="Email" size="small" fullWidth defaultValue={mockPhysio.email} />
-                <TextField label="Phone" size="small" fullWidth defaultValue={mockPhysio.phone} />
-              </Box>
-              <TextField label="Credentials" size="small" fullWidth defaultValue={mockPhysio.credentials} />
-              <TextField label="Bio" size="small" fullWidth multiline rows={3} defaultValue={mockPhysio.bio} />
-            </Box>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <div style={{ flex: 1 }}>{fieldLabel('First Name')}<Input defaultValue={mockPhysio.firstName} /></div>
+              <div style={{ flex: 1 }}>{fieldLabel('Last Name')}<Input defaultValue={mockPhysio.lastName} /></div>
+            </div>
+            <div>{fieldLabel('Title')}<Input defaultValue={mockPhysio.title} /></div>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <div style={{ flex: 1 }}>{fieldLabel('Email')}<Input defaultValue={mockPhysio.email} /></div>
+              <div style={{ flex: 1 }}>{fieldLabel('Phone')}<Input defaultValue={mockPhysio.phone} /></div>
+            </div>
+            <div>{fieldLabel('Credentials')}<Input defaultValue={mockPhysio.credentials} /></div>
+            <div>{fieldLabel('Bio')}<Input.TextArea rows={3} defaultValue={mockPhysio.bio} /></div>
+          </div>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-              <Button variant="contained" disableElevation>Save Changes</Button>
-            </Box>
-          </CardContent>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+            <Button type="primary">Save Changes</Button>
+          </div>
         </Card>
 
         {can.canManageClinic && (
           <Card>
-            <CardContent>
-              <Typography variant="subtitle2" fontWeight={600} mb={2}>Organization</Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer', p: 1.5, border: '1px solid #E0E0E0', borderRadius: 2, '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' }, transition: 'all 0.15s' }}
-                onClick={() => router.push('/clinic')}
-              >
-                <Avatar sx={{ width: 44, height: 44, bgcolor: 'primary.main', color: '#fff', fontWeight: 700, fontSize: 16 }}>
-                  {mockClinic.logoInitials}
-                </Avatar>
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="body2" fontWeight={600}>{mockClinic.name}</Typography>
-                  <Typography variant="caption" color="text.secondary">{mockClinic.address}</Typography>
-                </Box>
-                <BusinessOutlinedIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
-              </Box>
-            </CardContent>
+            <Text strong style={{ display: 'block', marginBottom: 16 }}>Organization</Text>
+            <Divider style={{ marginBottom: 16 }} />
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', padding: 12, border: '1px solid #E0E0E0', borderRadius: 8, transition: 'all 0.15s' }}
+              onClick={() => router.push('/clinic')}
+            >
+              <Avatar style={{ width: 44, height: 44, background: '#6750A4', color: '#fff', fontWeight: 700, fontSize: 16 }}>
+                {mockClinic.logoInitials}
+              </Avatar>
+              <div style={{ flexGrow: 1 }}>
+                <Text strong style={{ display: 'block' }}>{mockClinic.name}</Text>
+                <Text type="secondary" style={{ fontSize: 12 }}>{mockClinic.address}</Text>
+              </div>
+              <ShopOutlined style={{ color: '#49454F', fontSize: 18 }} />
+            </div>
           </Card>
         )}
-      </Box>
+      </div>
     </>
   );
 }

@@ -1,17 +1,26 @@
 'use client';
-import { useMemo } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { createAppTheme } from '@/theme/theme';
-import { useThemeMode } from '@/lib/themeStore';
+import { ConfigProvider, App } from 'antd';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  const mode = useThemeMode();
-  const theme = useMemo(() => createAppTheme(mode), [mode]);
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#6750A4',
+          colorPrimaryBg: '#EDE7F6',
+          borderRadius: 8,
+          fontFamily: 'inherit',
+        },
+        components: {
+          Button: { borderRadius: 8 },
+          Card: { borderRadius: 12 },
+          Input: { borderRadius: 8 },
+          Select: { borderRadius: 8 },
+          Tag: { borderRadius: 999 },
+        },
+      }}
+    >
+      <App>{children}</App>
+    </ConfigProvider>
   );
 }

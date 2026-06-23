@@ -1,35 +1,29 @@
 'use client';
 import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputAdornment from '@mui/material/InputAdornment';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import SearchIcon from '@mui/icons-material/Search';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlined';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutlined';
-import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { Typography, Input, Button, Card, Tag, Select, Divider, Tooltip, InputNumber } from 'antd';
+import {
+  SearchOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined,
+  ThunderboltOutlined,
+  HeartFilled,
+  HeartOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
+
+const { Text } = Typography;
 
 const ALL_CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
 const ALL_SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
 const ALL_MUSCLES = ['Levator Ani', 'Coccygeus', 'Transverse Abdominis', 'Glutes', 'Diaphragm', 'Multifidus', 'Hip Abductors', 'Adductors', 'Hip Flexors', 'Quadriceps'];
 const ALL_BODY_PARTS = ['Pelvis', 'Core', 'Hip', 'Spine', 'Knee'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Most Popular', 'Newest Added'];
+const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
 
 interface ProgramRow {
   exerciseId: string;
@@ -60,7 +54,6 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     if (surgery.includes('hysterectomy') || surgery.includes('Hysterectomy')) return ['Post-Hysterectomy'];
     return [];
   });
-  const [filterSpecialty] = useState(['Pelvic Floor']);
   const [filterMuscles, setFilterMuscles] = useState<string[]>([]);
   const [filterBodyParts, setFilterBodyParts] = useState<string[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -104,138 +97,121 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     setProgramRows((prev) => prev.map((r) => r.exerciseId === exId ? { ...r, [field]: value } : r));
 
   return (
-    <Box sx={{ display: 'flex', gap: 3, height: 'calc(100vh - 290px)', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', gap: 24, height: 'calc(100vh - 290px)', overflow: 'hidden' }}>
       {/* Left: Exercise Library */}
-      <Box sx={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
-        <Typography variant="subtitle1" fontWeight={600}>Exercise Library</Typography>
+      <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
+        <Text strong>Exercise Library</Text>
 
-        <TextField
-          placeholder="Search exercises…" size="small" fullWidth
-          value={search} onChange={(e) => setSearch(e.target.value)}
-          InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 18 }} /></InputAdornment> }}
+        <Input
+          placeholder="Search exercises…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
         />
 
         {/* Filters */}
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Chip label="Pelvic Floor" size="small" color="primary" variant="filled" />
-          <Chip
-            label="Favorites"
-            size="small"
-            variant={showFavoritesOnly ? 'filled' : 'outlined'}
-            color={showFavoritesOnly ? 'primary' : 'default'}
-            icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />}
-            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-          />
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Tag color="purple" style={{ margin: 0 }}>Pelvic Floor</Tag>
+          <Tag.CheckableTag
+            checked={showFavoritesOnly}
+            onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            style={{ border: '1px solid #E0E0E0', padding: '2px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+          >
+            <HeartFilled style={{ fontSize: 14 }} /> Favorites
+          </Tag.CheckableTag>
           <FilterMenu label="Condition" options={ALL_CONDITIONS} selected={filterConditions} onChange={setFilterConditions} />
           <FilterMenu label="Surgery" options={ALL_SURGERIES} selected={filterSurgeries} onChange={setFilterSurgeries} />
           <FilterMenu label="Muscle" options={ALL_MUSCLES} selected={filterMuscles} onChange={setFilterMuscles} />
           <FilterMenu label="Body Part" options={ALL_BODY_PARTS} selected={filterBodyParts} onChange={setFilterBodyParts} />
-        </Box>
+        </div>
 
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Typography variant="caption" color="text.secondary">Sort:</Typography>
-          <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 140 }}>
-            {SORT_OPTIONS.map((o) => <MenuItem key={o} value={o} sx={{ fontSize: 13 }}>{o}</MenuItem>)}
-          </Select>
-        </Box>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Text type="secondary" style={{ fontSize: 12 }}>Sort:</Text>
+          <Select value={sortBy} onChange={setSortBy} style={{ minWidth: 140 }} options={SORT_OPTIONS.map((o) => ({ value: o, label: o }))} />
+        </div>
 
-        <Box sx={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 1, minHeight: 0 }}>
+        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 0 }}>
           {filteredExercises.map((ex) => (
-            <Card key={ex.id} sx={{ flexShrink: 0, '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
-                <Box sx={{ width: 44, height: 44, borderRadius: 1, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 20 }} />
-                </Box>
-                <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography variant="body2" fontWeight={600} noWrap>{ex.name}</Typography>
-                    {favorites.has(ex.id) && <FavoriteIcon sx={{ fontSize: 12, color: '#E91E63' }} />}
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 0.3 }}>
-                    {ex.tags.specialty.slice(0, 2).map((t) => <Chip key={t} label={t} size="small" variant="outlined" sx={{ fontSize: 10, height: 18 }} />)}
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', gap: 0.5 }}>
+            <Card key={ex.id} hoverable styles={{ body: { padding: 12 } }} style={{ flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 44, height: 44, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 20 }} />
+                </div>
+                <div style={{ flexGrow: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Text strong ellipsis>{ex.name}</Text>
+                    {favorites.has(ex.id) && <HeartFilled style={{ fontSize: 12, color: '#E91E63' }} />}
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
+                    {ex.tags.specialty.slice(0, 2).map((t) => <Tag key={t} style={{ fontSize: 10 }}>{t}</Tag>)}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 4 }}>
                   <Tooltip title="Preview">
-                    <IconButton size="small" onClick={() => setPreviewExercise(ex)}><VisibilityOutlinedIcon fontSize="small" /></IconButton>
+                    <Button type="text" size="small" onClick={() => setPreviewExercise(ex)} icon={<EyeOutlined />} />
                   </Tooltip>
                   <Tooltip title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}>
-                    <IconButton size="small" onClick={() => toggleFavorite(ex.id)}>
-                      {favorites.has(ex.id) ? <FavoriteIcon fontSize="small" sx={{ color: '#E91E63' }} /> : <FavoriteBorderIcon fontSize="small" />}
-                    </IconButton>
+                    <Button type="text" size="small" onClick={() => toggleFavorite(ex.id)} icon={favorites.has(ex.id) ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />} />
                   </Tooltip>
                   <Tooltip title="Add to program">
-                    <IconButton size="small" onClick={() => addExercise(ex)} disabled={programRows.some((r) => r.exerciseId === ex.id)} color="primary">
-                      <AddCircleOutlineIcon fontSize="small" />
-                    </IconButton>
+                    <Button type="text" size="small" onClick={() => addExercise(ex)} disabled={programRows.some((r) => r.exerciseId === ex.id)} icon={<PlusCircleOutlined style={{ color: '#6750A4' }} />} />
                   </Tooltip>
-                </Box>
-              </Box>
+                </div>
+              </div>
             </Card>
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
-      <Divider orientation="vertical" flexItem />
+      <Divider type="vertical" style={{ height: 'auto' }} />
 
       {/* Right: Patient's Program */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, minHeight: 0 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="subtitle1" fontWeight={600}>{patient?.firstName}&apos;s Program</Typography>
-          <Typography variant="caption" color="text.secondary">{programRows.length} exercise{programRows.length !== 1 ? 's' : ''}</Typography>
-        </Box>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text strong>{patient?.firstName}&apos;s Program</Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>{programRows.length} exercise{programRows.length !== 1 ? 's' : ''}</Text>
+        </div>
 
-        <Box sx={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 1, minHeight: 0 }}>
+        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 0 }}>
           {programRows.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 6 }}>
-              <Typography variant="body2" color="text.secondary">Add exercises from the library</Typography>
-            </Box>
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+              <Text type="secondary">Add exercises from the library</Text>
+            </div>
           ) : programRows.map((row) => {
             const ex = mockExercises.find((e) => e.id === row.exerciseId);
             if (!ex) return null;
             return (
-              <Card key={row.exerciseId} sx={{ flexShrink: 0 }}>
-                <Box sx={{ p: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                    <Typography variant="body2" fontWeight={600}>{ex.name}</Typography>
-                    <IconButton size="small" onClick={() => removeExercise(row.exerciseId)} sx={{ color: '#9E9E9E', '&:hover': { color: '#F44336' } }}>
-                      <RemoveCircleOutlineIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-                    {[
-                      { label: 'Sets', field: 'sets' as const, value: row.sets },
-                      { label: 'Reps', field: 'reps' as const, value: row.reps },
-                      { label: 'Hold (sec)', field: 'holdSecs' as const, value: row.holdSecs },
-                    ].map(({ label, field, value }) => (
-                      <Box key={field} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Typography variant="caption" color="text.secondary">{label}:</Typography>
-                        <TextField
-                          type="number" size="small" value={value}
-                          onChange={(e) => updateRow(row.exerciseId, field, parseInt(e.target.value) || 0)}
-                          sx={{ width: 64, '& input': { py: 0.5, px: 1, fontSize: 13 } }}
-                          inputProps={{ min: 0 }}
-                        />
-                      </Box>
-                    ))}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography variant="caption" color="text.secondary">Freq:</Typography>
-                      <Select value={row.frequency} onChange={(e) => updateRow(row.exerciseId, 'frequency', e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 130 }}>
-                        {['Daily', '2x Daily', 'Every Other Day', '3x Weekly'].map((f) => <MenuItem key={f} value={f} sx={{ fontSize: 13 }}>{f}</MenuItem>)}
-                      </Select>
-                    </Box>
-                  </Box>
-                </Box>
+              <Card key={row.exerciseId} styles={{ body: { padding: 16 } }} style={{ flexShrink: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                  <Text strong>{ex.name}</Text>
+                  <Button type="text" size="small" onClick={() => removeExercise(row.exerciseId)} icon={<MinusCircleOutlined />} style={{ color: '#9E9E9E' }} />
+                </div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                  {([
+                    { label: 'Sets', field: 'sets' as const, value: row.sets },
+                    { label: 'Reps', field: 'reps' as const, value: row.reps },
+                    { label: 'Hold (sec)', field: 'holdSecs' as const, value: row.holdSecs },
+                  ]).map(({ label, field, value }) => (
+                    <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <Text type="secondary" style={{ fontSize: 12 }}>{label}:</Text>
+                      <InputNumber size="small" min={0} value={value} onChange={(v) => updateRow(row.exerciseId, field, v ?? 0)} style={{ width: 64 }} />
+                    </div>
+                  ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Text type="secondary" style={{ fontSize: 12 }}>Freq:</Text>
+                    <Select value={row.frequency} onChange={(v) => updateRow(row.exerciseId, 'frequency', v)} size="small" style={{ minWidth: 130 }} options={FREQUENCIES.map((f) => ({ value: f, label: f }))} />
+                  </div>
+                </div>
               </Card>
             );
           })}
-        </Box>
+        </div>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 2, borderTop: '1px solid #E0E0E0' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, paddingTop: 16, borderTop: '1px solid #E0E0E0' }}>
           <Button onClick={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-          <Button variant="contained" onClick={() => router.push(`/patients/${id}/program`)} disableElevation>Save Program Updates</Button>
-        </Box>
-      </Box>
+          <Button type="primary" onClick={() => router.push(`/patients/${id}/program`)}>Save Program Updates</Button>
+        </div>
+      </div>
 
       <ExercisePreviewDrawer
         exercise={previewExercise}
@@ -245,6 +221,6 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           ? () => { if (previewExercise) addExercise(previewExercise); }
           : undefined}
       />
-    </Box>
+    </div>
   );
 }

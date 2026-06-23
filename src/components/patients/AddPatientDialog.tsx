@@ -1,21 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Divider from '@mui/material/Divider';
-import MenuItem from '@mui/material/MenuItem';
+import { Modal, Button, Input, Typography, Steps, Divider, Select } from 'antd';
 import { mockClinicLocations } from '@/lib/mock-data';
 import { useRole } from '@/lib/roleStore';
+
+const { Title, Text } = Typography;
 
 interface Props {
   open: boolean;
@@ -85,87 +75,102 @@ export default function AddPatientDialog({ open, onClose }: Props) {
 
   const isLastStep = isOwner ? activeStep === steps.length - 1 : true;
 
-  return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h6" fontWeight={600}>Add New Patient</Typography>
-      </DialogTitle>
-      <Divider />
+  const fieldLabel = (label: string, required?: boolean) => (
+    <div style={{ marginBottom: 4, fontSize: 13 }}>
+      {label}{required && <span style={{ color: '#D32F2F' }}> *</span>}
+    </div>
+  );
 
-      <DialogContent sx={{ pt: 3 }}>
+  return (
+    <Modal
+      open={open}
+      onCancel={handleClose}
+      width={560}
+      title={<Title level={3} style={{ margin: 0 }}>Add New Patient</Title>}
+      footer={
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Button type="text" onClick={handleClose} style={{ color: '#49454F' }}>Cancel</Button>
+          <div style={{ flexGrow: 1 }} />
+          {isOwner && activeStep > 0 && <Button onClick={handleBack} style={{ marginRight: 8 }}>Back</Button>}
+          {isOwner ? (
+            isLastStep
+              ? <Button type="primary" onClick={handleConfirm}>Create Patient</Button>
+              : <Button type="primary" onClick={handleNext}>Next</Button>
+          ) : (
+            <Button type="primary" onClick={handleCreate}>Create Patient</Button>
+          )}
+        </div>
+      }
+    >
+      <Divider style={{ marginTop: 0 }} />
+
+      <div style={{ paddingTop: 8 }}>
         {isOwner && (
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+          <Steps
+            current={activeStep}
+            style={{ marginBottom: 32 }}
+            items={steps.map((label) => ({ title: label }))}
+          />
         )}
 
         {activeStep === 0 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField
-                label="First Name" fullWidth required size="small"
-                value={firstName} onChange={(e) => setFirstName(e.target.value)}
-                error={!!errors.firstName} helperText={errors.firstName}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <div style={{ flex: 1 }}>
+                {fieldLabel('First Name', true)}
+                <Input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  status={errors.firstName ? 'error' : undefined}
+                />
+                {errors.firstName && <Text type="danger" style={{ fontSize: 12 }}>{errors.firstName}</Text>}
+              </div>
+              <div style={{ flex: 1 }}>
+                {fieldLabel('Last Name', true)}
+                <Input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  status={errors.lastName ? 'error' : undefined}
+                />
+                {errors.lastName && <Text type="danger" style={{ fontSize: 12 }}>{errors.lastName}</Text>}
+              </div>
+            </div>
+            <div>
+              {fieldLabel('Email Address', true)}
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                status={errors.email ? 'error' : undefined}
               />
-              <TextField
-                label="Last Name" fullWidth required size="small"
-                value={lastName} onChange={(e) => setLastName(e.target.value)}
-                error={!!errors.lastName} helperText={errors.lastName}
-              />
-            </Box>
-            <TextField
-              label="Email Address" fullWidth required size="small" type="email"
-              value={email} onChange={(e) => setEmail(e.target.value)}
-              error={!!errors.email} helperText={errors.email}
-            />
-          </Box>
+              {errors.email && <Text type="danger" style={{ fontSize: 12 }}>{errors.email}</Text>}
+            </div>
+          </div>
         )}
 
         {isOwner && activeStep === 1 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="body2" color="text.secondary">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Text type="secondary">
               Which clinic location will {firstName} be seen at?
-            </Typography>
-            <TextField
-              select
-              label="Location"
-              fullWidth
-              size="small"
-              value={locationId}
-              onChange={(e) => setLocationId(e.target.value)}
-              error={!!errors.location}
-              helperText={errors.location}
-            >
-              {mockClinicLocations.map((loc) => (
-                <MenuItem key={loc.id} value={loc.id}>
-                  <Box>
-                    <Typography variant="body2" fontWeight={500}>{loc.name}</Typography>
-                    <Typography variant="caption" color="text.secondary">{loc.city}, {loc.regionCountry}</Typography>
-                  </Box>
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
+            </Text>
+            <div>
+              {fieldLabel('Location')}
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Select a location"
+                value={locationId || undefined}
+                onChange={(val) => setLocationId(val)}
+                status={errors.location ? 'error' : undefined}
+                options={mockClinicLocations.map((loc) => ({
+                  value: loc.id,
+                  label: `${loc.name} — ${loc.city}, ${loc.regionCountry}`,
+                }))}
+              />
+              {errors.location && <Text type="danger" style={{ fontSize: 12 }}>{errors.location}</Text>}
+            </div>
+          </div>
         )}
-      </DialogContent>
-
-      <Divider />
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>Cancel</Button>
-        <Box sx={{ flexGrow: 1 }} />
-        {isOwner && activeStep > 0 && <Button onClick={handleBack}>Back</Button>}
-        {isOwner ? (
-          isLastStep
-            ? <Button variant="contained" onClick={handleConfirm} disableElevation>Create Patient</Button>
-            : <Button variant="contained" onClick={handleNext} disableElevation>Next</Button>
-        ) : (
-          <Button variant="contained" onClick={handleCreate} disableElevation>Create Patient</Button>
-        )}
-      </DialogActions>
-    </Dialog>
+      </div>
+    </Modal>
   );
 }

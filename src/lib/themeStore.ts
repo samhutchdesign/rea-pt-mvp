@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { PaletteMode } from '@mui/material';
+
+type PaletteMode = 'light' | 'dark';
 
 let _mode: PaletteMode = 'light';
 const _listeners = new Set<(m: PaletteMode) => void>();

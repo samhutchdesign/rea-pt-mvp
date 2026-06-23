@@ -1,22 +1,21 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
+import { Typography, Input, Button, Select, Card } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 
+const { Title, Text } = Typography;
+
 interface Field { id: string; label: string; type: string; }
+
+const typeOptions = [
+  { value: 'text', label: 'Short Text' },
+  { value: 'textarea', label: 'Long Text' },
+  { value: 'date', label: 'Date' },
+  { value: 'checkbox', label: 'Checkbox' },
+  { value: 'dropdown', label: 'Dropdown' },
+];
 
 export default function NewDocumentPage() {
   const router = useRouter();
@@ -31,46 +30,50 @@ export default function NewDocumentPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Documents', href: '/documents' }, { label: 'New Form' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4, maxWidth: 700 }}>
-        <Typography variant="h5" fontWeight={600} mb={3}>Create New Form</Typography>
+      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 700 }}>
+        <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>Create New Form</Title>
 
-        <TextField label="Form Name" fullWidth size="small" value={formName} onChange={(e) => setFormName(e.target.value)} sx={{ mb: 3 }} />
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ marginBottom: 4, fontSize: 13 }}>Form Name</div>
+          <Input value={formName} onChange={(e) => setFormName(e.target.value)} />
+        </div>
 
-        <Typography variant="subtitle2" fontWeight={600} mb={2}>Fields</Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 2 }}>
+        <Text strong style={{ display: 'block', marginBottom: 16 }}>Fields</Text>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
           {fields.map((field, i) => (
-            <Card key={field.id}>
-              <CardContent sx={{ display: 'flex', gap: 2, alignItems: 'center', py: '12px !important' }}>
-                <Typography variant="caption" color="text.secondary" sx={{ minWidth: 24 }}>{i + 1}.</Typography>
-                <TextField
-                  label="Field Label" size="small" sx={{ flexGrow: 1 }}
-                  value={field.label} onChange={(e) => updateField(field.id, 'label', e.target.value)}
-                />
-                <FormControl size="small" sx={{ minWidth: 140 }}>
-                  <InputLabel>Type</InputLabel>
-                  <Select label="Type" value={field.type} onChange={(e) => updateField(field.id, 'type', e.target.value)}>
-                    <MenuItem value="text">Short Text</MenuItem>
-                    <MenuItem value="textarea">Long Text</MenuItem>
-                    <MenuItem value="date">Date</MenuItem>
-                    <MenuItem value="checkbox">Checkbox</MenuItem>
-                    <MenuItem value="dropdown">Dropdown</MenuItem>
-                  </Select>
-                </FormControl>
-                <IconButton size="small" onClick={() => removeField(field.id)} disabled={fields.length === 1} sx={{ color: '#9E9E9E', '&:hover': { color: '#F44336' } }}>
-                  <DeleteOutlineIcon fontSize="small" />
-                </IconButton>
-              </CardContent>
+            <Card key={field.id} styles={{ body: { padding: 12, display: 'flex', gap: 16, alignItems: 'center' } }}>
+              <Text type="secondary" style={{ minWidth: 24 }}>{i + 1}.</Text>
+              <Input
+                placeholder="Field Label"
+                style={{ flexGrow: 1 }}
+                value={field.label}
+                onChange={(e) => updateField(field.id, 'label', e.target.value)}
+              />
+              <Select
+                style={{ minWidth: 140 }}
+                value={field.type}
+                onChange={(val) => updateField(field.id, 'type', val)}
+                options={typeOptions}
+              />
+              <Button
+                type="text"
+                size="small"
+                onClick={() => removeField(field.id)}
+                disabled={fields.length === 1}
+                icon={<DeleteOutlined />}
+                style={{ color: '#9E9E9E' }}
+              />
             </Card>
           ))}
-        </Box>
+        </div>
 
-        <Button startIcon={<AddIcon />} onClick={addField} sx={{ mb: 4 }}>Add Field</Button>
+        <Button type="text" icon={<PlusOutlined />} onClick={addField} style={{ marginBottom: 32 }}>Add Field</Button>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
           <Button onClick={() => router.push('/documents')}>Cancel</Button>
-          <Button variant="contained" onClick={() => router.push('/documents')} disableElevation>Save Form</Button>
-        </Box>
-      </Box>
+          <Button type="primary" onClick={() => router.push('/documents')}>Save Form</Button>
+        </div>
+      </div>
     </>
   );
 }

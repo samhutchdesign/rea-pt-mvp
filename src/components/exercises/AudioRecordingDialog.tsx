@@ -1,20 +1,16 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Alert from '@mui/material/Alert';
-import LinearProgress from '@mui/material/LinearProgress';
-import CloseIcon from '@mui/icons-material/Close';
-import MicIcon from '@mui/icons-material/Mic';
-import StopIcon from '@mui/icons-material/Stop';
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
-import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
+import { Typography, Button, Modal, Alert, Progress } from 'antd';
+import {
+  CloseOutlined,
+  AudioOutlined,
+  BorderOutlined,
+  CaretRightOutlined,
+  PauseOutlined,
+  ThunderboltOutlined,
+} from '@ant-design/icons';
+
+const { Title, Text } = Typography;
 
 const MAX_SECS = 300; // 5-minute ceiling
 
@@ -203,174 +199,169 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
     onClose();
   };
 
+  const footer =
+    phase === 'idle' ? (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Button type="text" onClick={handleClose} style={{ color: '#49454F' }}>Cancel</Button>
+        <div style={{ flex: 1 }} />
+        <Button
+          type="primary"
+          icon={<AudioOutlined />}
+          onClick={startRecording}
+          style={{ background: '#D32F2F', borderColor: '#D32F2F', padding: '0 24px' }}
+        >
+          Start Recording
+        </Button>
+      </div>
+    ) : phase === 'recording' ? (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Button type="text" onClick={handleClose} style={{ color: '#49454F' }}>Cancel</Button>
+        <div style={{ flex: 1 }} />
+        <Button
+          type="primary"
+          icon={<BorderOutlined />}
+          onClick={doStop}
+          style={{ background: '#D32F2F', borderColor: '#D32F2F', padding: '0 24px' }}
+        >
+          Stop Recording
+        </Button>
+      </div>
+    ) : (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Button type="text" onClick={handleDiscard} style={{ color: '#49454F' }}>Discard</Button>
+        <div style={{ flex: 1 }} />
+        <Button type="primary" onClick={handleSave} style={{ padding: '0 24px' }}>
+          Save Audio
+        </Button>
+      </div>
+    );
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth PaperProps={{ sx: { overflow: 'hidden' } }}>
+    <Modal
+      open={open}
+      onCancel={handleClose}
+      width={760}
+      closable={false}
+      footer={footer}
+      styles={{ body: { padding: 0 }, container: { overflow: 'hidden', padding: 0 } }}
+    >
       {/* Title bar */}
-      <Box sx={{ display: 'flex', alignItems: 'center', px: 3, pt: 2.5, pb: 1.5 }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6" fontWeight={600} lineHeight={1.2}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '20px 24px 12px' }}>
+        <div style={{ flexGrow: 1 }}>
+          <Title level={3} style={{ margin: 0, lineHeight: 1.2 }}>
             {phase === 'preview' ? 'Preview Recording' : 'Record Audio Overlay'}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">{exerciseName}</Typography>
-        </Box>
-        <IconButton onClick={handleClose} size="small"><CloseIcon fontSize="small" /></IconButton>
-      </Box>
+          </Title>
+          <Text type="secondary" style={{ fontSize: 12 }}>{exerciseName}</Text>
+        </div>
+        <Button type="text" size="small" icon={<CloseOutlined />} onClick={handleClose} />
+      </div>
 
-      <DialogContent sx={{ p: 0 }}>
-        {/* Video / iframe */}
-        <Box sx={{ width: '100%', height: 320, bgcolor: '#0f0f0f', position: 'relative', flexShrink: 0 }}>
-          {videoId && iframeSrc ? (
-            <iframe
-              ref={iframeRef}
-              src={iframeSrc}
-              width="100%"
-              height="100%"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{ border: 'none', display: 'block' }}
-            />
-          ) : (
-            <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FitnessCenterRoundedIcon sx={{ fontSize: 72, color: 'rgba(255,255,255,0.15)' }} />
-            </Box>
-          )}
+      {/* Video / iframe */}
+      <div style={{ width: '100%', height: 320, background: '#0f0f0f', position: 'relative', flexShrink: 0 }}>
+        {videoId && iframeSrc ? (
+          <iframe
+            ref={iframeRef}
+            src={iframeSrc}
+            width="100%"
+            height="100%"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ border: 'none', display: 'block' }}
+          />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ThunderboltOutlined style={{ fontSize: 72, color: 'rgba(255,255,255,0.15)' }} />
+          </div>
+        )}
 
-          {/* Recording badge */}
-          {phase === 'recording' && (
-            <Box sx={{
-              position: 'absolute', top: 12, left: 12,
-              display: 'flex', alignItems: 'center', gap: 1,
-              bgcolor: 'rgba(0,0,0,0.72)', borderRadius: 1, px: 1.5, py: 0.6,
-            }}>
-              <Box sx={{
-                width: 8, height: 8, borderRadius: '50%', bgcolor: '#F44336',
-                '@keyframes recblink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.2 } },
-                animation: 'recblink 1s ease infinite',
-              }} />
-              <Typography variant="caption" sx={{ color: '#fff', fontFamily: 'monospace', fontSize: 13, letterSpacing: 1 }}>
-                REC {fmt(elapsed)}
-              </Typography>
-            </Box>
-          )}
+        {/* Recording badge */}
+        {phase === 'recording' && (
+          <div style={{
+            position: 'absolute', top: 12, left: 12,
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: 'rgba(0,0,0,0.72)', borderRadius: 8, padding: '5px 12px',
+          }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#F44336', animation: 'recblink 1s ease infinite' }} />
+            <span style={{ color: '#fff', fontFamily: 'monospace', fontSize: 13, letterSpacing: 1 }}>
+              REC {fmt(elapsed)}
+            </span>
+            <style>{`@keyframes recblink { 0%,100% { opacity: 1 } 50% { opacity: 0.2 } }`}</style>
+          </div>
+        )}
 
-          {/* Preview badge */}
-          {phase === 'preview' && (
-            <Box sx={{
-              position: 'absolute', top: 12, left: 12,
-              display: 'flex', alignItems: 'center', gap: 0.75,
-              bgcolor: 'rgba(0,0,0,0.72)', borderRadius: 1, px: 1.5, py: 0.6,
-            }}>
-              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#4CAF50' }} />
-              <Typography variant="caption" sx={{ color: '#fff', fontSize: 12 }}>
-                Audio overlay · video muted
-              </Typography>
-            </Box>
-          )}
-        </Box>
+        {/* Preview badge */}
+        {phase === 'preview' && (
+          <div style={{
+            position: 'absolute', top: 12, left: 12,
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(0,0,0,0.72)', borderRadius: 8, padding: '5px 12px',
+          }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4CAF50' }} />
+            <span style={{ color: '#fff', fontSize: 12 }}>Audio overlay · video muted</span>
+          </div>
+        )}
+      </div>
 
-        {/* Controls panel */}
-        <Box sx={{ px: 3, pt: 2.5, pb: 1 }}>
-          {phase === 'idle' && (
-            <>
-              <Typography variant="body2" color="text.secondary" mb={1.5}>
-                The video will play automatically when you click Start Recording. Your microphone will capture your voice as an overlay — patients will hear your audio instead of the original video audio.
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Maximum recording length: 5 minutes. Recording stops automatically when the video ends.
-              </Typography>
-              {permDenied && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                  Microphone access was denied. Allow microphone access in your browser and try again.
-                </Alert>
-              )}
-            </>
-          )}
-
-          {phase === 'recording' && (
-            <>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                <Typography variant="body2" fontWeight={500}>Recording in progress</Typography>
-                <Typography variant="caption" color="text.secondary">· Stop manually or recording ends with the video</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={(elapsed / MAX_SECS) * 100}
-                  sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: '#F44336', borderRadius: 3 } }}
-                />
-                <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace', minWidth: 90, textAlign: 'right' }}>
-                  {fmt(elapsed)} / {fmt(MAX_SECS)}
-                </Typography>
-              </Box>
-            </>
-          )}
-
-          {phase === 'preview' && (
-            <>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body2" fontWeight={500} mb={0.3}>
-                    Previewing — your audio plays over the muted video
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Duration: {fmt(savedDur)} · This is exactly how patients will hear it
-                  </Typography>
-                </Box>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={previewPlaying ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
-                  onClick={togglePreview}
-                >
-                  {previewPlaying ? 'Pause' : 'Play Again'}
-                </Button>
-              </Box>
-            </>
-          )}
-        </Box>
-      </DialogContent>
-
-      <DialogActions sx={{ px: 3, pb: 2.5, pt: 1, gap: 1 }}>
+      {/* Controls panel */}
+      <div style={{ padding: '20px 24px 8px' }}>
         {phase === 'idle' && (
           <>
-            <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>Cancel</Button>
-            <Box sx={{ flex: 1 }} />
-            <Button
-              variant="contained"
-              startIcon={<MicIcon />}
-              disableElevation
-              onClick={startRecording}
-              sx={{ bgcolor: '#D32F2F', '&:hover': { bgcolor: '#B71C1C' }, px: 3 }}
-            >
-              Start Recording
-            </Button>
+            <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+              The video will play automatically when you click Start Recording. Your microphone will capture your voice as an overlay — patients will hear your audio instead of the original video audio.
+            </Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              Maximum recording length: 5 minutes. Recording stops automatically when the video ends.
+            </Text>
+            {permDenied && (
+              <Alert
+                type="error"
+                style={{ marginTop: 16 }}
+                message="Microphone access was denied. Allow microphone access in your browser and try again."
+              />
+            )}
           </>
         )}
+
         {phase === 'recording' && (
           <>
-            <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>Cancel</Button>
-            <Box sx={{ flex: 1 }} />
-            <Button
-              variant="contained"
-              startIcon={<StopIcon />}
-              disableElevation
-              onClick={doStop}
-              sx={{ bgcolor: '#D32F2F', '&:hover': { bgcolor: '#B71C1C' }, px: 3 }}
-            >
-              Stop Recording
-            </Button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+              <Text strong>Recording in progress</Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>· Stop manually or recording ends with the video</Text>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <Progress
+                percent={(elapsed / MAX_SECS) * 100}
+                showInfo={false}
+                strokeColor="#F44336"
+                style={{ flex: 1 }}
+              />
+              <Text type="secondary" style={{ fontFamily: 'monospace', minWidth: 90, textAlign: 'right' }}>
+                {fmt(elapsed)} / {fmt(MAX_SECS)}
+              </Text>
+            </div>
           </>
         )}
+
         {phase === 'preview' && (
-          <>
-            <Button onClick={handleDiscard} sx={{ color: 'text.secondary' }}>Discard</Button>
-            <Box sx={{ flex: 1 }} />
-            <Button variant="contained" disableElevation onClick={handleSave} sx={{ px: 3 }}>
-              Save Audio
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ flex: 1 }}>
+              <Text strong style={{ display: 'block', marginBottom: 2 }}>
+                Previewing — your audio plays over the muted video
+              </Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                Duration: {fmt(savedDur)} · This is exactly how patients will hear it
+              </Text>
+            </div>
+            <Button
+              size="small"
+              icon={previewPlaying ? <PauseOutlined /> : <CaretRightOutlined />}
+              onClick={togglePreview}
+            >
+              {previewPlaying ? 'Pause' : 'Play Again'}
             </Button>
-          </>
+          </div>
         )}
-      </DialogActions>
-    </Dialog>
+      </div>
+    </Modal>
   );
 }

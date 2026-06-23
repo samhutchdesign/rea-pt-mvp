@@ -1,18 +1,9 @@
 'use client';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Box from '@mui/material/Box';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { Avatar, Dropdown, Breadcrumb } from 'antd';
+import type { MenuProps } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 import { mockPhysio } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -24,99 +15,102 @@ interface TopBarProps {
 }
 
 export default function TopBar({ breadcrumbs }: TopBarProps) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const can = usePermissions();
   const role = useRole();
   const yourEmpId = useYourEmpId();
+  void yourEmpId;
 
+  const menuItems: MenuProps['items'] = [
+    {
+      key: 'header',
+      disabled: true,
+      label: (
+        <div style={{ paddingTop: 4, paddingBottom: 4 }}>
+          <div style={{ fontWeight: 600, color: '#1C1B1F' }}>
+            {mockPhysio.firstName} {mockPhysio.lastName}
+          </div>
+          <div style={{ fontSize: 12, color: '#6750A4', fontWeight: 500 }}>{roleLabel(role)}</div>
+          <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.45)' }}>{mockPhysio.email}</div>
+        </div>
+      ),
+    },
+    { type: 'divider' },
+    ...(can.canManageClinic
+      ? [{ key: 'org', label: 'Organization Profile', onClick: () => router.push('/clinic') }]
+      : []),
+    ...(can.canManageLocation
+      ? [{ key: 'clinic', label: 'Clinic Profile', onClick: () => router.push(`/clinic/${mockPhysio.locationId}`) }]
+      : []),
+    ...(can.canManageBilling
+      ? [{ key: 'billing', label: 'Billing', onClick: () => router.push('/billing') }]
+      : []),
+    { key: 'profile', label: 'Your Profile', onClick: () => router.push('/account/profile') },
+    { key: 'settings', label: 'Settings', onClick: () => router.push('/account/settings') },
+    { key: 'email', label: 'Email Change', onClick: () => router.push('/account/email') },
+    { key: 'password', label: 'Password Reset', onClick: () => router.push('/account/password') },
+    { type: 'divider' },
+    { key: 'logout', label: <span style={{ color: '#49454F' }}>Log Out</span> },
+  ];
 
   return (
-    <>
-    <AppBar
-      position="fixed"
-      elevation={0}
-      sx={{
-        top: '40px',
+    <div
+      style={{
+        position: 'fixed',
+        top: 40,
         left: 80,
         width: 'calc(100% - 80px)',
-        bgcolor: 'background.paper',
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        color: 'text.primary',
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E0E0E0',
+        color: '#1C1B1F',
         zIndex: 99,
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 24px',
       }}
     >
-      <Toolbar sx={{ minHeight: '56px !important', px: 3 }}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" sx={{ color: '#9E9E9E' }} />}
-          sx={{ flexGrow: 1 }}
-        >
-          {breadcrumbs.map((crumb, i) =>
-            crumb.href && i < breadcrumbs.length - 1 ? (
-              <Link key={i} href={crumb.href}>
-                <Typography
-                  variant="body2"
-                  sx={{ color: 'text.secondary', textDecoration: 'underline', cursor: 'pointer', '&:hover': { color: 'primary.main' } }}
-                >
-                  {crumb.label}
-                </Typography>
-              </Link>
-            ) : (
-              <Typography key={i} variant="body2" sx={{ color: i === breadcrumbs.length - 1 ? 'text.primary' : 'text.secondary', fontWeight: i === breadcrumbs.length - 1 ? 500 : 400 }}>
+      <Breadcrumb
+        style={{ flexGrow: 1 }}
+        separator={<RightOutlined style={{ fontSize: 10, color: '#9E9E9E' }} />}
+        items={breadcrumbs.map((crumb, i) => {
+          const isLast = i === breadcrumbs.length - 1;
+          if (crumb.href && !isLast) {
+            return {
+              title: (
+                <Link href={crumb.href}>
+                  <span style={{ color: '#49454F', textDecoration: 'underline', cursor: 'pointer', fontSize: 14 }}>
+                    {crumb.label}
+                  </span>
+                </Link>
+              ),
+            };
+          }
+          return {
+            title: (
+              <span style={{ color: isLast ? '#1C1B1F' : '#49454F', fontWeight: isLast ? 500 : 400, fontSize: 14 }}>
                 {crumb.label}
-              </Typography>
-            )
-          )}
-        </Breadcrumbs>
+              </span>
+            ),
+          };
+        })}
+      />
 
-
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
         <Avatar
-          onClick={(e) => setAnchorEl(e.currentTarget)}
-          sx={{ width: 36, height: 36, bgcolor: 'primary.light', color: 'primary.main', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+          style={{
+            width: 36,
+            height: 36,
+            background: '#EDE7F6',
+            color: '#6750A4',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
         >
           {mockPhysio.avatarInitials}
         </Avatar>
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={() => setAnchorEl(null)}
-          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          PaperProps={{ sx: { mt: 1, minWidth: 200, border: '1px solid #E0E0E0', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' } }}
-        >
-          <MenuItem disabled sx={{ opacity: '1 !important' }}>
-            <Box>
-              <Typography variant="body2" fontWeight={600}>{mockPhysio.firstName} {mockPhysio.lastName}</Typography>
-              <Typography variant="caption" color="primary.main" sx={{ fontWeight: 500 }}>
-                {roleLabel(role)}
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem disabled sx={{ opacity: '0.7 !important', mt: -1 }}>
-            <Typography variant="caption">{mockPhysio.email}</Typography>
-          </MenuItem>
-          <Divider />
-          {can.canManageClinic && (
-            <MenuItem onClick={() => { setAnchorEl(null); router.push('/clinic'); }}>Organization Profile</MenuItem>
-          )}
-          {can.canManageLocation && (
-            <MenuItem onClick={() => { setAnchorEl(null); router.push(`/clinic/${mockPhysio.locationId}`); }}>Clinic Profile</MenuItem>
-          )}
-          {can.canManageBilling && (
-            <MenuItem onClick={() => { setAnchorEl(null); router.push('/billing'); }}>Billing</MenuItem>
-          )}
-          <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/profile'); }}>Your Profile</MenuItem>
-          <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/settings'); }}>Settings</MenuItem>
-          <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/email'); }}>Email Change</MenuItem>
-          <MenuItem onClick={() => { setAnchorEl(null); router.push('/account/password'); }}>Password Reset</MenuItem>
-          <Divider />
-          <MenuItem onClick={() => setAnchorEl(null)} sx={{ color: 'text.secondary' }}>Log Out</MenuItem>
-        </Menu>
-      </Toolbar>
-    </AppBar>
-
-</>
+      </Dropdown>
+    </div>
   );
 }

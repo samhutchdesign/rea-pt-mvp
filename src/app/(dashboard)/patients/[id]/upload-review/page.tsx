@@ -1,20 +1,13 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import Divider from '@mui/material/Divider';
-import Chip from '@mui/material/Chip';
-import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import ArticleRoundedIcon from '@mui/icons-material/ArticleRounded';
-import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded';
+import { Typography, Button, Input, Alert, Divider, Tag } from 'antd';
+import { StarOutlined, ArrowLeftOutlined, FileTextOutlined, TranslationOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients } from '@/lib/mock-data';
 import { saveUploadedData } from '@/lib/uploadStore';
+
+const { Title, Text } = Typography;
 
 const FAKE_FILENAME = 'Patient_Intake_Form.pdf';
 
@@ -163,27 +156,31 @@ const TOTAL_FIELDS = FORM_SECTIONS.reduce((sum, s) => sum + s.fields.length, 0);
 
 function DocField({ label, value }: { label: string; value: string }) {
   return (
-    <Box sx={{ mb: 2 }}>
-      <Typography sx={{ fontSize: 8, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: '#666', mb: 0.25 }}>
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: '#666', marginBottom: 2 }}>
         {label}
-      </Typography>
-      <Typography sx={{ fontSize: 12, borderBottom: '1px solid #BDBDBD', pb: 0.5, minHeight: 20, lineHeight: 1.5, color: '#1a1a1a' }}>
+      </div>
+      <div style={{ fontSize: 12, borderBottom: '1px solid #BDBDBD', paddingBottom: 4, minHeight: 20, lineHeight: 1.5, color: '#1a1a1a' }}>
         {value || ' '}
-      </Typography>
-    </Box>
+      </div>
+    </div>
   );
 }
 
 function DocSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Box sx={{ mb: 2.5 }}>
-      <Typography sx={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: '#333', borderBottom: '1.5px solid #333', pb: 0.5, mb: 1.5 }}>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: '#333', borderBottom: '1.5px solid #333', paddingBottom: 4, marginBottom: 12 }}>
         {title}
-      </Typography>
+      </div>
       {children}
-    </Box>
+    </div>
   );
 }
+
+const pageStyle: React.CSSProperties = { background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.14)', padding: 24, fontFamily: '"Times New Roman", Times, serif' };
+const footerRow: React.CSSProperties = { marginTop: 16, paddingTop: 12, borderTop: '1px solid #DDD', display: 'flex', justifyContent: 'space-between' };
+const footerTxt: React.CSSProperties = { fontSize: 8, color: '#999', fontFamily: 'inherit' };
 
 export default function UploadReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -214,139 +211,135 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
         ]}
       />
 
-      <Box sx={{ pt: '56px', display: 'flex', gap: 4, alignItems: 'flex-start', px: 4, py: 4 }}>
+      <div style={{ paddingTop: 56, display: 'flex', gap: 32, alignItems: 'flex-start', padding: '32px' }}>
 
         {/* ── Left: editable clinical form ── */}
-        <Box sx={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <Button
-            startIcon={<ArrowBackRoundedIcon />}
+            type="text"
+            icon={<ArrowLeftOutlined />}
             onClick={() => router.back()}
-            sx={{ mb: 2, color: 'text.secondary', fontSize: 13 }}
+            style={{ marginBottom: 16, color: '#49454F', fontSize: 13, paddingLeft: 0 }}
           >
             Back to Documents
           </Button>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <AutoAwesomeRoundedIcon sx={{ color: '#F57C00', fontSize: 22 }} />
-            <Typography variant="h5" fontWeight={700}>Review Extracted Information</Typography>
-          </Box>
-          <Typography variant="body2" color="text.secondary" mb={0.75}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <StarOutlined style={{ color: '#F57C00', fontSize: 22 }} />
+            <Title level={2} style={{ margin: 0 }}>Review Extracted Information</Title>
+          </div>
+          <Text type="secondary" style={{ display: 'block', marginBottom: 6 }}>
             AI extracted and translated responses from <strong>{FAKE_FILENAME}</strong>. Compare against the original on the right, edit if needed, then confirm.
-          </Typography>
+          </Text>
 
-          <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
-            <Chip
-              label={`${TOTAL_FIELDS} fields extracted`}
-              size="small"
-              icon={<AutoAwesomeRoundedIcon sx={{ fontSize: '14px !important' }} />}
-              sx={{ bgcolor: '#FFF8E1', color: '#F57F17', fontWeight: 500 }}
-            />
-            <Chip
-              label="Patient language → clinical notes"
-              size="small"
-              icon={<TranslateRoundedIcon sx={{ fontSize: '14px !important' }} />}
-              sx={{ bgcolor: '#F3E5F5', color: '#6A1B9A', fontWeight: 500 }}
-            />
+          <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+            <Tag icon={<StarOutlined />} style={{ background: '#FFF8E1', color: '#F57F17', fontWeight: 500, border: 'none' }}>
+              {`${TOTAL_FIELDS} fields extracted`}
+            </Tag>
+            <Tag icon={<TranslationOutlined />} style={{ background: '#F3E5F5', color: '#6A1B9A', fontWeight: 500, border: 'none' }}>
+              Patient language → clinical notes
+            </Tag>
             {editCount > 0 && (
-              <Chip
-                label={`${editCount} field${editCount > 1 ? 's' : ''} edited`}
-                size="small"
-                sx={{ bgcolor: '#E8F5E9', color: '#2E7D32', fontWeight: 500 }}
-              />
+              <Tag style={{ background: '#E8F5E9', color: '#2E7D32', fontWeight: 500, border: 'none' }}>
+                {`${editCount} field${editCount > 1 ? 's' : ''} edited`}
+              </Tag>
             )}
-          </Box>
+          </div>
 
-          <Alert severity="info" sx={{ mb: 3, fontSize: 13 }}>
-            Patient responses have been translated to clinical terminology. The original patient-filled form is shown on the right. Fields highlighted in yellow have been edited from the AI translation.
-          </Alert>
+          <Alert
+            type="info"
+            showIcon
+            style={{ marginBottom: 24, fontSize: 13 }}
+            message="Patient responses have been translated to clinical terminology. The original patient-filled form is shown on the right. Fields highlighted in yellow have been edited from the AI translation."
+          />
 
           {FORM_SECTIONS.map((section, si) => (
-            <Box key={section.title}>
-              {si > 0 && <Divider sx={{ my: 3 }} />}
-              <Typography
-                variant="subtitle2"
-                fontWeight={600}
-                color="text.secondary"
-                sx={{ textTransform: 'uppercase', letterSpacing: 0.5, mb: 2 }}
-              >
+            <div key={section.title}>
+              {si > 0 && <Divider style={{ margin: '24px 0' }} />}
+              <Text type="secondary" strong style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16, display: 'block' }}>
                 {section.title}
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+              </Text>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                 {section.fields.map(({ key, label, multiline, rows }) => (
-                  <TextField
-                    key={key}
-                    label={label}
-                    value={fields[key]}
-                    onChange={(e) => set(key, e.target.value)}
-                    multiline={multiline}
-                    rows={multiline ? rows : undefined}
-                    fullWidth
-                    size="small"
-                    InputLabelProps={{ shrink: true }}
-                    sx={isEdited(key) ? { '& .MuiInputBase-root': { bgcolor: '#FFFDE7' } } : {}}
-                  />
+                  <div key={key}>
+                    <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>
+                    {multiline ? (
+                      <Input.TextArea
+                        rows={rows}
+                        value={fields[key]}
+                        onChange={(e) => set(key, e.target.value)}
+                        style={isEdited(key) ? { background: '#FFFDE7' } : undefined}
+                      />
+                    ) : (
+                      <Input
+                        value={fields[key]}
+                        onChange={(e) => set(key, e.target.value)}
+                        style={isEdited(key) ? { background: '#FFFDE7' } : undefined}
+                      />
+                    )}
+                  </div>
                 ))}
-              </Box>
-            </Box>
+              </div>
+            </div>
           ))}
 
-          <Divider sx={{ my: 4 }} />
+          <Divider style={{ margin: '32px 0' }} />
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
             <Button onClick={() => router.back()}>Cancel</Button>
-            <Button variant="contained" disableElevation onClick={handleConfirm} sx={{ px: 3 }}>
+            <Button type="primary" onClick={handleConfirm} style={{ padding: '0 24px' }}>
               Confirm New Information
             </Button>
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {/* ── Right: sticky PDF (original patient voice) ── */}
-        <Box
-          sx={{
+        <div
+          style={{
             flex: 1,
             minWidth: 0,
             position: 'sticky',
             top: 72,
             maxHeight: 'calc(100vh - 88px)',
             overflowY: 'auto',
-            borderRadius: 2,
-            bgcolor: '#EEEEEE',
-            p: 1.5,
+            borderRadius: 8,
+            background: '#EEEEEE',
+            padding: 12,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, px: 0.5 }}>
-            <ArticleRoundedIcon sx={{ fontSize: 16, color: '#C62828' }} />
-            <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{ fontSize: 11 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingLeft: 4 }}>
+            <FileTextOutlined style={{ fontSize: 16, color: '#C62828' }} />
+            <Text type="secondary" strong style={{ fontSize: 11 }}>
               {FAKE_FILENAME}
-            </Typography>
-            <Chip label="Original (patient voice)" size="small" sx={{ ml: 'auto', height: 18, fontSize: 10, bgcolor: '#FFEBEE', color: '#C62828' }} />
-          </Box>
+            </Text>
+            <Tag style={{ marginLeft: 'auto', fontSize: 10, background: '#FFEBEE', color: '#C62828', border: 'none' }}>Original (patient voice)</Tag>
+          </div>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
             {/* ── Page 1: Demographics & Referral ── */}
-            <Box sx={{ bgcolor: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.14)', p: 3, fontFamily: '"Times New Roman", Times, serif' }}>
-              <Box sx={{ textAlign: 'center', mb: 2.5, pb: 2, borderBottom: '2px solid #1a1a1a' }}>
-                <Typography sx={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', fontFamily: 'inherit' }}>Rea Pelvic Health</Typography>
-                <Typography sx={{ fontSize: 8.5, color: '#555', mt: 0.25, fontFamily: 'inherit' }}>1420 Health Sciences Drive, Suite 300, Vancouver, BC · (604) 555-0100</Typography>
-                <Typography sx={{ fontSize: 12, fontWeight: 600, mt: 1.5, letterSpacing: 0.5, fontFamily: 'inherit' }}>PATIENT INTAKE FORM</Typography>
-              </Box>
+            <div style={pageStyle}>
+              <div style={{ textAlign: 'center', marginBottom: 20, paddingBottom: 16, borderBottom: '2px solid #1a1a1a' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', fontFamily: 'inherit' }}>Rea Pelvic Health</div>
+                <div style={{ fontSize: 8.5, color: '#555', marginTop: 2, fontFamily: 'inherit' }}>1420 Health Sciences Drive, Suite 300, Vancouver, BC · (604) 555-0100</div>
+                <div style={{ fontSize: 12, fontWeight: 600, marginTop: 12, letterSpacing: 0.5, fontFamily: 'inherit' }}>PATIENT INTAKE FORM</div>
+              </div>
 
               <DocSection title="Patient Information">
                 <DocField label="Full Name" value={FAKE_RAW.fullName} />
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="Date of Birth" value={FAKE_RAW.dateOfBirth} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="Sex Assigned at Birth" value="Female" /></Box>
-                </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="Phone" value={FAKE_RAW.phone} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="Email" value={FAKE_RAW.email} /></Box>
-                </Box>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="Date of Birth" value={FAKE_RAW.dateOfBirth} /></div>
+                  <div style={{ flex: 1 }}><DocField label="Sex Assigned at Birth" value="Female" /></div>
+                </div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="Phone" value={FAKE_RAW.phone} /></div>
+                  <div style={{ flex: 1 }}><DocField label="Email" value={FAKE_RAW.email} /></div>
+                </div>
                 <DocField label="Home Address" value={FAKE_RAW.address} />
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="What is your occupation?" value={FAKE_RAW.occupation} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="Preferred Language" value="English" /></Box>
-                </Box>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="What is your occupation?" value={FAKE_RAW.occupation} /></div>
+                  <div style={{ flex: 1 }}><DocField label="Preferred Language" value="English" /></div>
+                </div>
               </DocSection>
 
               <DocSection title="Referring Physician">
@@ -354,27 +347,27 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
                 <DocField label="Reason for referral" value={FAKE_RAW.referralReason} />
               </DocSection>
 
-              <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #DDD', display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ fontSize: 8, color: '#999', fontFamily: 'inherit' }}>Rea Pelvic Health — Confidential Patient Record</Typography>
-                <Typography sx={{ fontSize: 8, color: '#999', fontFamily: 'inherit' }}>Page 1 of 3</Typography>
-              </Box>
-            </Box>
+              <div style={footerRow}>
+                <div style={footerTxt}>Rea Pelvic Health — Confidential Patient Record</div>
+                <div style={footerTxt}>Page 1 of 3</div>
+              </div>
+            </div>
 
             {/* ── Page 2: Clinical History ── */}
-            <Box sx={{ bgcolor: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.14)', p: 3, fontFamily: '"Times New Roman", Times, serif' }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, pb: 1.5, borderBottom: '1px solid #1a1a1a' }}>
-                <Typography sx={{ fontSize: 11, fontWeight: 600, fontFamily: 'inherit' }}>PATIENT INTAKE FORM — Clinical History</Typography>
-                <Typography sx={{ fontSize: 10, color: '#555', fontFamily: 'inherit' }}>Isabelle Martin · DOB 1990-03-22</Typography>
-              </Box>
+            <div style={pageStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #1a1a1a' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'inherit' }}>PATIENT INTAKE FORM — Clinical History</div>
+                <div style={{ fontSize: 10, color: '#555', fontFamily: 'inherit' }}>Isabelle Martin · DOB 1990-03-22</div>
+              </div>
 
               <DocSection title="What brings you in today?">
                 <DocField label="Describe your main concern" value={FAKE_RAW.chiefComplaint} />
                 <DocField label="When did this start?" value={FAKE_RAW.symptomDuration} />
                 <DocField label="How have your symptoms changed over time?" value={FAKE_RAW.symptomEvolution} />
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="Pain level right now (0 = none, 10 = worst)" value={FAKE_RAW.painLevel} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="How does this affect your daily life?" value={FAKE_RAW.functionalMobility} /></Box>
-                </Box>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="Pain level right now (0 = none, 10 = worst)" value={FAKE_RAW.painLevel} /></div>
+                  <div style={{ flex: 1 }}><DocField label="How does this affect your daily life?" value={FAKE_RAW.functionalMobility} /></div>
+                </div>
               </DocSection>
 
               <DocSection title="Your Health History">
@@ -394,80 +387,80 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
                 <DocField label="Anything else you'd like us to know?" value={FAKE_RAW.additionalNotes} />
               </DocSection>
 
-              <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #DDD', display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ fontSize: 8, color: '#999', fontFamily: 'inherit' }}>Rea Pelvic Health — Confidential Patient Record</Typography>
-                <Typography sx={{ fontSize: 8, color: '#999', fontFamily: 'inherit' }}>Page 2 of 3</Typography>
-              </Box>
-            </Box>
+              <div style={footerRow}>
+                <div style={footerTxt}>Rea Pelvic Health — Confidential Patient Record</div>
+                <div style={footerTxt}>Page 2 of 3</div>
+              </div>
+            </div>
 
             {/* ── Page 3: Lifestyle, Emergency Contact & Consent ── */}
-            <Box sx={{ bgcolor: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.14)', p: 3, fontFamily: '"Times New Roman", Times, serif' }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, pb: 1.5, borderBottom: '1px solid #1a1a1a' }}>
-                <Typography sx={{ fontSize: 11, fontWeight: 600, fontFamily: 'inherit' }}>PATIENT INTAKE FORM — Lifestyle & Consent</Typography>
-                <Typography sx={{ fontSize: 10, color: '#555', fontFamily: 'inherit' }}>Isabelle Martin · DOB 1990-03-22</Typography>
-              </Box>
+            <div style={pageStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #1a1a1a' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'inherit' }}>PATIENT INTAKE FORM — Lifestyle & Consent</div>
+                <div style={{ fontSize: 10, color: '#555', fontFamily: 'inherit' }}>Isabelle Martin · DOB 1990-03-22</div>
+              </div>
 
               <DocSection title="Lifestyle & Habits">
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="How would you describe your diet?" value={FAKE_RAW.diet} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="What exercise do you currently do?" value={FAKE_RAW.exercise} /></Box>
-                </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="Do you smoke?" value={FAKE_RAW.smoker} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="Do you drink alcohol?" value={FAKE_RAW.alcohol} /></Box>
-                </Box>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="How would you describe your diet?" value={FAKE_RAW.diet} /></div>
+                  <div style={{ flex: 1 }}><DocField label="What exercise do you currently do?" value={FAKE_RAW.exercise} /></div>
+                </div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="Do you smoke?" value={FAKE_RAW.smoker} /></div>
+                  <div style={{ flex: 1 }}><DocField label="Do you drink alcohol?" value={FAKE_RAW.alcohol} /></div>
+                </div>
                 <DocField label="Who do you live with? What is your home situation like?" value={FAKE_RAW.socialEnvironment} />
               </DocSection>
 
               <DocSection title="Emergency Contact">
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="First Name" value={FAKE_RAW.emergencyFirstName} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="Last Name" value={FAKE_RAW.emergencyLastName} /></Box>
-                </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}><DocField label="Phone" value={FAKE_RAW.emergencyPhone} /></Box>
-                  <Box sx={{ flex: 1 }}><DocField label="Relationship to you" value={FAKE_RAW.emergencyRelationship} /></Box>
-                </Box>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="First Name" value={FAKE_RAW.emergencyFirstName} /></div>
+                  <div style={{ flex: 1 }}><DocField label="Last Name" value={FAKE_RAW.emergencyLastName} /></div>
+                </div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}><DocField label="Phone" value={FAKE_RAW.emergencyPhone} /></div>
+                  <div style={{ flex: 1 }}><DocField label="Relationship to you" value={FAKE_RAW.emergencyRelationship} /></div>
+                </div>
               </DocSection>
 
               <DocSection title="Consent & Declaration">
-                <Typography sx={{ fontSize: 10, color: '#333', lineHeight: 1.6, mb: 1.5, fontFamily: 'inherit' }}>
+                <div style={{ fontSize: 10, color: '#333', lineHeight: 1.6, marginBottom: 12, fontFamily: 'inherit' }}>
                   I consent to physiotherapy assessment and treatment at Rea Pelvic Health. I understand that I may withdraw consent at any time and that my information will be kept strictly confidential in accordance with applicable privacy legislation.
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
                   {['I consent to treatment', 'I consent to information sharing with my referring physician', 'I have read and understood the privacy policy'].map((item) => (
-                    <Box key={item} sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.5, mr: 1 }}>
-                      <Box sx={{ width: 10, height: 10, border: '1px solid #333', mt: 0.15, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Typography sx={{ fontSize: 8, lineHeight: 1, fontFamily: 'inherit' }}>✓</Typography>
-                      </Box>
-                      <Typography sx={{ fontSize: 9, color: '#333', fontFamily: 'inherit' }}>{item}</Typography>
-                    </Box>
+                    <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 4, marginRight: 8 }}>
+                      <div style={{ width: 10, height: 10, border: '1px solid #333', marginTop: 2, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: 8, lineHeight: 1, fontFamily: 'inherit' }}>✓</span>
+                      </div>
+                      <span style={{ fontSize: 9, color: '#333', fontFamily: 'inherit' }}>{item}</span>
+                    </div>
                   ))}
-                </Box>
+                </div>
               </DocSection>
 
-              <Box sx={{ mt: 3, pt: 2, borderTop: '1.5px solid #333' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 4 }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontSize: 9, color: '#555', mb: 1.5, fontFamily: 'inherit' }}>Patient Signature</Typography>
-                    <Typography sx={{ fontSize: 13, fontStyle: 'italic', borderBottom: '1px solid #333', pb: 0.5, color: '#333', fontFamily: '"Dancing Script", cursive, serif' }}>Isabelle Martin</Typography>
-                  </Box>
-                  <Box sx={{ width: 120 }}>
-                    <Typography sx={{ fontSize: 9, color: '#555', mb: 1.5, fontFamily: 'inherit' }}>Date</Typography>
-                    <Typography sx={{ fontSize: 11, borderBottom: '1px solid #333', pb: 0.5, color: '#333', fontFamily: 'inherit' }}>June 1, 2026</Typography>
-                  </Box>
-                </Box>
-              </Box>
+              <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1.5px solid #333' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 32 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 9, color: '#555', marginBottom: 12, fontFamily: 'inherit' }}>Patient Signature</div>
+                    <div style={{ fontSize: 13, fontStyle: 'italic', borderBottom: '1px solid #333', paddingBottom: 4, color: '#333', fontFamily: '"Dancing Script", cursive, serif' }}>Isabelle Martin</div>
+                  </div>
+                  <div style={{ width: 120 }}>
+                    <div style={{ fontSize: 9, color: '#555', marginBottom: 12, fontFamily: 'inherit' }}>Date</div>
+                    <div style={{ fontSize: 11, borderBottom: '1px solid #333', paddingBottom: 4, color: '#333', fontFamily: 'inherit' }}>June 1, 2026</div>
+                  </div>
+                </div>
+              </div>
 
-              <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #DDD', display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ fontSize: 8, color: '#999', fontFamily: 'inherit' }}>Rea Pelvic Health — Confidential Patient Record</Typography>
-                <Typography sx={{ fontSize: 8, color: '#999', fontFamily: 'inherit' }}>Page 3 of 3</Typography>
-              </Box>
-            </Box>
+              <div style={footerRow}>
+                <div style={footerTxt}>Rea Pelvic Health — Confidential Patient Record</div>
+                <div style={footerTxt}>Page 3 of 3</div>
+              </div>
+            </div>
 
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

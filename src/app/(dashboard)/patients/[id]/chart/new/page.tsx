@@ -1,21 +1,11 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import { Typography, Input, Button, Card, Tag, Spin, App } from 'antd';
+import { StarOutlined, UserOutlined, HistoryOutlined } from '@ant-design/icons';
 import { mockPatients, mockChartSessions } from '@/lib/mock-data';
+
+const { Text } = Typography;
 
 const SOAPIER_SECTIONS = [
   {
@@ -71,6 +61,7 @@ const GENERIC_STUB = {
 export default function NewChartPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const patient = mockPatients.find((p) => p.id === id);
   const sessions = mockChartSessions[id] ?? [];
   const sessionNumber = sessions.length + 1;
@@ -79,7 +70,6 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const [soapie, setSoapie] = useState<Record<string, string>>({});
   const [populated, setPopulated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [snackOpen, setSnackOpen] = useState(false);
 
   const handlePopulate = () => {
     setLoading(true);
@@ -92,7 +82,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
 
   const handleSave = () => {
     router.push(`/patients/${id}/chart`);
-    setSnackOpen(true);
+    messageApi.success('Chart saved successfully.');
   };
 
   if (!patient) return null;
@@ -102,84 +92,75 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const sexLabel = patient.metrics?.sexAssignedAtBirth ?? '';
 
   return (
-    <Box sx={{ maxWidth: 820 }}>
+    <div style={{ maxWidth: 820 }}>
       {/* Session header bar */}
-      <Box sx={{ bgcolor: 'action.hover', border: '1px solid #E0E0E0', borderRadius: 1, px: 2.5, py: 1.5, mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
-        <Typography variant="body2" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
-        {ageLabel && <Typography variant="body2" color="text.secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</Typography>}
-        <Typography variant="body2" color="text.secondary">{sessionDate}</Typography>
-        <Box sx={{ ml: 'auto' }}>
-          <Chip label={`Session ${sessionNumber}`} size="small" sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 600 }} />
-        </Box>
-      </Box>
+      <div style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: 8, padding: '12px 20px', marginBottom: 24, display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
+        <Text strong>{patient.firstName} {patient.lastName}</Text>
+        {ageLabel && <Text type="secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</Text>}
+        <Text type="secondary">{sessionDate}</Text>
+        <div style={{ marginLeft: 'auto' }}>
+          <Tag style={{ background: '#6750A4', color: 'white', border: 'none', fontWeight: 600 }}>{`Session ${sessionNumber}`}</Tag>
+        </div>
+      </div>
 
       {/* Dictation + notes */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="subtitle2" fontWeight={600} mb={2}>Session Notes</Typography>
-          <TextField
-            multiline rows={4} fullWidth size="small"
-            placeholder="Type session notes…"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1.5, flexWrap: 'wrap', gap: 1 }}>
-            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-              <Chip icon={<PersonRoundedIcon sx={{ fontSize: '0.85rem !important' }} />} label="Patient profile" size="small" variant="outlined" sx={{ fontSize: '0.72rem', height: 24, color: 'text.secondary' }} />
-              <Chip icon={<HistoryRoundedIcon sx={{ fontSize: '0.85rem !important' }} />} label={`${sessions.length} previous session${sessions.length !== 1 ? 's' : ''}`} size="small" variant="outlined" sx={{ fontSize: '0.72rem', height: 24, color: 'text.secondary' }} />
-            </Box>
-            <Button
-              variant="outlined"
-              startIcon={loading ? <CircularProgress size={14} /> : <AutoAwesomeIcon />}
-              onClick={handlePopulate}
-              size="small"
-              disabled={!notes.trim() || loading}
-            >
-              {loading ? `Reading ${sessions.length} sessions…` : 'Add to Chart'}
-            </Button>
-          </Box>
-        </CardContent>
+      <Card style={{ marginBottom: 24 }}>
+        <Text strong style={{ display: 'block', marginBottom: 16 }}>Session Notes</Text>
+        <Input.TextArea
+          rows={4}
+          placeholder="Type session notes…"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <Tag icon={<UserOutlined />} style={{ fontSize: '0.72rem', color: '#49454F' }}>Patient profile</Tag>
+            <Tag icon={<HistoryOutlined />} style={{ fontSize: '0.72rem', color: '#49454F' }}>{`${sessions.length} previous session${sessions.length !== 1 ? 's' : ''}`}</Tag>
+          </div>
+          <Button
+            size="small"
+            icon={loading ? <Spin size="small" /> : <StarOutlined />}
+            onClick={handlePopulate}
+            disabled={!notes.trim() || loading}
+          >
+            {loading ? `Reading ${sessions.length} sessions…` : 'Add to Chart'}
+          </Button>
+        </div>
       </Card>
 
       {/* H-SOAPIER sections */}
-      <Typography variant="subtitle1" fontWeight={600} mb={2}>H-SOAPIER Chart</Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Text strong style={{ display: 'block', marginBottom: 16 }}>H-SOAPIER Chart</Text>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {SOAPIER_SECTIONS.map(({ key, letter, label, placeholder, rows }) => {
           const isEmpty = populated && !soapie[key];
           return (
-            <Card key={key} sx={isEmpty ? { border: '2px solid #FB8C00' } : {}}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                  <Box sx={{ width: 30, height: 30, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.8rem', lineHeight: 1 }}>{letter}</Typography>
-                  </Box>
-                  <Typography variant="subtitle2" fontWeight={600}>{label}</Typography>
-                </Box>
-                <TextField
-                  multiline rows={rows} fullWidth size="small"
-                  placeholder={placeholder}
-                  value={soapie[key] || ''}
-                  onChange={(e) => setSoapie((prev) => ({ ...prev, [key]: e.target.value }))}
-                />
-                {isEmpty && (
-                  <Typography variant="caption" sx={{ color: '#FB8C00', mt: 0.5, display: 'block' }}>This section may be important to fill in</Typography>
-                )}
-              </CardContent>
+            <Card key={key} style={isEmpty ? { border: '2px solid #FB8C00' } : undefined}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#6750A4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ color: 'white', fontWeight: 700, fontSize: '0.8rem', lineHeight: 1 }}>{letter}</span>
+                </div>
+                <Text strong>{label}</Text>
+              </div>
+              <Input.TextArea
+                rows={rows}
+                placeholder={placeholder}
+                value={soapie[key] || ''}
+                onChange={(e) => setSoapie((prev) => ({ ...prev, [key]: e.target.value }))}
+              />
+              {isEmpty && (
+                <Text style={{ color: '#FB8C00', marginTop: 4, display: 'block', fontSize: 12 }}>This section may be important to fill in</Text>
+              )}
             </Card>
           );
         })}
-      </Box>
+      </div>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, marginTop: 32 }}>
         <Button onClick={() => router.push(`/patients/${id}/chart`)}>Cancel</Button>
-        <Button variant="contained" onClick={handleSave} disableElevation>Save New Chart</Button>
-      </Box>
-
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)}>Chart saved successfully.</Alert>
-      </Snackbar>
+        <Button type="primary" onClick={handleSave}>Save New Chart</Button>
+      </div>
 
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
-    </Box>
+    </div>
   );
 }

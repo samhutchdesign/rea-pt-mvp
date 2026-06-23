@@ -1,25 +1,11 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Tooltip from '@mui/material/Tooltip';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import { Typography, Input, Button, Card, Tag, Modal, Tooltip, App } from 'antd';
+import { EditOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import { mockPatients, mockChartSessions } from '@/lib/mock-data';
+
+const { Text } = Typography;
 
 const SOAPIER_SECTIONS = [
   { key: 'subjective', letter: 'S', label: 'Subjective', rows: 5 },
@@ -34,6 +20,7 @@ const SOAPIER_SECTIONS = [
 export default function ChartDetailPage({ params }: { params: Promise<{ id: string; sessionId: string }> }) {
   const { id, sessionId } = use(params);
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const patient = mockPatients.find((p) => p.id === id);
   const sessions = mockChartSessions[id] ?? [];
   const session = sessions.find((s) => s.id === sessionId);
@@ -43,10 +30,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const [soapie, setSoapie] = useState<Record<string, string>>(session?.soapie ?? {});
   const [copySuccess, setCopySuccess] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [saveSnack, setSaveSnack] = useState(false);
-  const [deleteSnack, setDeleteSnack] = useState(false);
 
-  if (!patient || !session) return <Typography sx={{ p: 4 }}>Session not found.</Typography>;
+  if (!patient || !session) return <Text style={{ padding: 32, display: 'block' }}>Session not found.</Text>;
 
   const sessionDate = new Date(session.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   const ageLabel = patient.metrics?.age ? `${patient.metrics.age} y.o.` : '';
@@ -67,138 +52,121 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
 
   const handleDelete = () => {
     setDeleteOpen(false);
-    setDeleteSnack(true);
+    messageApi.success('Session deleted.');
     setTimeout(() => router.push(`/patients/${id}/chart`), 1500);
   };
 
   const letterBadge = (letter: string) => (
-    <Box sx={{ width: 30, height: 30, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.8rem', lineHeight: 1 }}>{letter}</Typography>
-    </Box>
+    <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#6750A4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <span style={{ color: 'white', fontWeight: 700, fontSize: '0.8rem', lineHeight: 1 }}>{letter}</span>
+    </div>
   );
 
   return (
-    <Box sx={{ maxWidth: 820 }}>
+    <div style={{ maxWidth: 820 }}>
       {/* Session header bar */}
-      <Box sx={{ bgcolor: 'action.hover', border: '1px solid #E0E0E0', borderRadius: 1, px: 2.5, py: 1.5, mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
-        <Typography variant="body2" fontWeight={600}>{patient.firstName} {patient.lastName}</Typography>
-        {ageLabel && <Typography variant="body2" color="text.secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</Typography>}
-        <Typography variant="body2" color="text.secondary">{sessionDate}</Typography>
-        <Box sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Chip label={sessionLabel} size="small" sx={{ bgcolor: session.isIntakeSession ? '#EDE7F6' : 'primary.main', color: session.isIntakeSession ? 'primary.main' : 'white', fontWeight: 600 }} />
+      <div style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: 8, padding: '12px 20px', marginBottom: 24, display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
+        <Text strong>{patient.firstName} {patient.lastName}</Text>
+        {ageLabel && <Text type="secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</Text>}
+        <Text type="secondary">{sessionDate}</Text>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Tag style={{ background: session.isIntakeSession ? '#EDE7F6' : '#6750A4', color: session.isIntakeSession ? '#6750A4' : 'white', border: 'none', fontWeight: 600 }}>{sessionLabel}</Tag>
           {!editing && (
             <>
               <Tooltip title={copySuccess ? 'Copied!' : 'Copy chart notes'}>
-                <IconButton size="small" onClick={handleCopy} sx={{ color: copySuccess ? '#2E7D32' : 'text.secondary' }}>
-                  <ContentCopyRoundedIcon fontSize="small" />
-                </IconButton>
+                <Button type="text" size="small" onClick={handleCopy} icon={<CopyOutlined />} style={{ color: copySuccess ? '#2E7D32' : '#49454F' }} />
               </Tooltip>
-              <Button size="small" variant="outlined" startIcon={<EditRoundedIcon />} onClick={() => setEditing(true)}>
+              <Button size="small" icon={<EditOutlined />} onClick={() => setEditing(true)}>
                 Edit
               </Button>
             </>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Session summary */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: editing ? 2 : 1 }}>
-            <Typography variant="subtitle2" fontWeight={600}>Session Notes</Typography>
-          </Box>
-          {editing ? (
-            <>
-              <TextField multiline rows={3} fullWidth defaultValue={session.summary} size="small" />
-            </>
-          ) : (
-            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>{session.summary}</Typography>
-          )}
-        </CardContent>
+      <Card style={{ marginBottom: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: editing ? 16 : 8 }}>
+          <Text strong>Session Notes</Text>
+        </div>
+        {editing ? (
+          <Input.TextArea rows={3} defaultValue={session.summary} />
+        ) : (
+          <Text type="secondary" style={{ whiteSpace: 'pre-wrap' }}>{session.summary}</Text>
+        )}
       </Card>
 
       {/* H-SOAPIER sections */}
-      <Typography variant="subtitle1" fontWeight={600} mb={2}>H-SOAPIER Chart</Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Text strong style={{ display: 'block', marginBottom: 16 }}>H-SOAPIER Chart</Text>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {SOAPIER_SECTIONS.map(({ key, letter, label, rows }) => {
           const value = (soapie as Record<string, string>)[key] || '';
           return (
             <Card key={key}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                  {letterBadge(letter)}
-                  <Typography variant="subtitle2" fontWeight={600}>{label}</Typography>
-                </Box>
-                {editing ? (
-                  <TextField
-                    multiline rows={rows} fullWidth size="small"
-                    value={value}
-                    onChange={(e) => setSoapie((prev) => ({ ...prev, [key]: e.target.value }))}
-                  />
-                ) : value ? (
-                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{value}</Typography>
-                ) : (
-                  <Typography variant="body2" color="text.secondary" fontStyle="italic">Not recorded</Typography>
-                )}
-              </CardContent>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                {letterBadge(letter)}
+                <Text strong>{label}</Text>
+              </div>
+              {editing ? (
+                <Input.TextArea
+                  rows={rows}
+                  value={value}
+                  onChange={(e) => setSoapie((prev) => ({ ...prev, [key]: e.target.value }))}
+                />
+              ) : value ? (
+                <Text style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{value}</Text>
+              ) : (
+                <Text type="secondary" italic>Not recorded</Text>
+              )}
             </Card>
           );
         })}
-      </Box>
+      </div>
 
       {editing ? (
-        <Box sx={{ mt: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Button variant="text" size="small" sx={{ color: 'text.secondary' }}>View Version History</Button>
-            <Box sx={{ display: 'flex', gap: 2 }}>
+        <div style={{ marginTop: 32 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Button type="text" size="small" style={{ color: '#49454F' }}>View Version History</Button>
+            <div style={{ display: 'flex', gap: 16 }}>
               <Button onClick={() => setEditing(false)}>Cancel</Button>
-              <Button variant="contained" disableElevation onClick={() => { setEditing(false); setSaveSnack(true); }}>
+              <Button type="primary" onClick={() => { setEditing(false); messageApi.success('Chart updated successfully.'); }}>
                 Save Updates
               </Button>
-            </Box>
-          </Box>
-          <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid #F0F0F0' }}>
+            </div>
+          </div>
+          <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid #F0F0F0' }}>
             <Button
-              variant="outlined"
-              color="error"
+              danger
               size="small"
-              startIcon={<DeleteOutlineRoundedIcon />}
+              icon={<DeleteOutlined />}
               onClick={() => setDeleteOpen(true)}
             >
               Delete Session
             </Button>
-          </Box>
-        </Box>
+          </div>
+        </div>
       ) : (
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
           <Button onClick={() => router.push(`/patients/${id}/chart`)}>Back to Chart</Button>
-        </Box>
+        </div>
       )}
 
       {/* Delete confirmation */}
-      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Delete Session?</DialogTitle>
-        <DialogContent sx={{ pt: '12px !important' }}>
-          <Typography variant="body2" color="text.secondary">
-            This will permanently delete <strong>{sessionLabel}</strong> for {patient.firstName} {patient.lastName}. This cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="error" disableElevation onClick={handleDelete}>
-            Delete Session
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar open={saveSnack} autoHideDuration={3000} onClose={() => setSaveSnack(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSaveSnack(false)}>Chart updated successfully.</Alert>
-      </Snackbar>
-      <Snackbar open={deleteSnack} autoHideDuration={3000} onClose={() => setDeleteSnack(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setDeleteSnack(false)}>Session deleted.</Alert>
-      </Snackbar>
+      <Modal
+        open={deleteOpen}
+        onCancel={() => setDeleteOpen(false)}
+        title="Delete Session?"
+        footer={[
+          <Button key="cancel" onClick={() => setDeleteOpen(false)}>Cancel</Button>,
+          <Button key="delete" type="primary" danger onClick={handleDelete}>Delete Session</Button>,
+        ]}
+      >
+        <Text type="secondary">
+          This will permanently delete <strong>{sessionLabel}</strong> for {patient.firstName} {patient.lastName}. This cannot be undone.
+        </Text>
+      </Modal>
 
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
-    </Box>
+    </div>
   );
 }

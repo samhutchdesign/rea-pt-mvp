@@ -1,28 +1,21 @@
 'use client';
 import { use, useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { Typography, Card, Input, Button, App } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
 
+const { Text } = Typography;
+
 export default function PatientContactPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { message: messageApi } = App.useApp();
   const patient = mockPatients.find((p) => p.id === id);
   const uploaded = getUploadedData(id);
 
   const [editingContact, setEditingContact] = useState(false);
   const [editingEmergency, setEditingEmergency] = useState(false);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [snackMsg, setSnackMsg] = useState('');
 
   const [savedContact, setSavedContact] = useState({
     firstName: patient?.firstName ?? '',
@@ -54,8 +47,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const handleSaveContact = () => {
     setSavedContact({ ...contactDraft });
     setEditingContact(false);
-    setSnackMsg('Contact information updated.');
-    setSnackOpen(true);
+    messageApi.success('Contact information updated.');
   };
 
   const handleEditEmergency = () => {
@@ -66,164 +58,79 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const handleSaveEmergency = () => {
     setSavedEmergency({ ...emergencyDraft });
     setEditingEmergency(false);
-    setSnackMsg('Emergency contact updated.');
-    setSnackOpen(true);
+    messageApi.success('Emergency contact updated.');
   };
 
+  const readonlyStyle = { background: 'rgba(0,0,0,0.04)' };
+
+  const field = (label: string, value: string, editing: boolean, onChange: (v: string) => void) => (
+    <div style={{ flex: 1 }}>
+      <Text type="secondary" style={{ display: 'block', marginBottom: 4, fontSize: 12 }}>{label}</Text>
+      <Input
+        value={value}
+        readOnly={!editing}
+        onChange={(e) => onChange(e.target.value)}
+        style={editing ? undefined : readonlyStyle}
+      />
+    </div>
+  );
+
   return (
-    <>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {/* Contact Information */}
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-              <Typography variant="subtitle1" fontWeight={600}>Contact Information</Typography>
-              {can.canEditContactInfo && !editingContact && (
-                <IconButton size="small" onClick={handleEditContact}><EditOutlinedIcon fontSize="small" /></IconButton>
-              )}
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>First Name</Typography>
-                  <TextField
-                    value={editingContact ? contactDraft.firstName : savedContact.firstName}
-                    size="small" fullWidth
-                    onChange={(e) => setContactDraft((d) => ({ ...d, firstName: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Last Name</Typography>
-                  <TextField
-                    value={editingContact ? contactDraft.lastName : savedContact.lastName}
-                    size="small" fullWidth
-                    onChange={(e) => setContactDraft((d) => ({ ...d, lastName: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Phone Number</Typography>
-                  <TextField
-                    value={editingContact ? contactDraft.phone : savedContact.phone}
-                    size="small" fullWidth
-                    onChange={(e) => setContactDraft((d) => ({ ...d, phone: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Email Address</Typography>
-                  <TextField
-                    value={editingContact ? contactDraft.email : savedContact.email}
-                    size="small" fullWidth
-                    onChange={(e) => setContactDraft((d) => ({ ...d, email: e.target.value }))}
-                    InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Home Address</Typography>
-                <TextField
-                  value={editingContact ? contactDraft.address : savedContact.address}
-                  size="small" fullWidth
-                  onChange={(e) => setContactDraft((d) => ({ ...d, address: e.target.value }))}
-                  InputProps={{ readOnly: !editingContact, sx: editingContact ? {} : { bgcolor: 'action.hover' } }}
-                />
-              </Box>
-            </Box>
-            {editingContact && (
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2.5 }}>
-                <Button size="small" onClick={() => setEditingContact(false)}>Cancel</Button>
-                <Button size="small" variant="contained" disableElevation onClick={handleSaveContact}>Save Changes</Button>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* Contact Information */}
+      <Card>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <Text strong>Contact Information</Text>
+          {can.canEditContactInfo && !editingContact && (
+            <Button type="text" size="small" onClick={handleEditContact} icon={<EditOutlined />} />
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {field('First Name', editingContact ? contactDraft.firstName : savedContact.firstName, editingContact, (v) => setContactDraft((d) => ({ ...d, firstName: v })))}
+            {field('Last Name', editingContact ? contactDraft.lastName : savedContact.lastName, editingContact, (v) => setContactDraft((d) => ({ ...d, lastName: v })))}
+          </div>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {field('Phone Number', editingContact ? contactDraft.phone : savedContact.phone, editingContact, (v) => setContactDraft((d) => ({ ...d, phone: v })))}
+            {field('Email Address', editingContact ? contactDraft.email : savedContact.email, editingContact, (v) => setContactDraft((d) => ({ ...d, email: v })))}
+          </div>
+          {field('Home Address', editingContact ? contactDraft.address : savedContact.address, editingContact, (v) => setContactDraft((d) => ({ ...d, address: v })))}
+        </div>
+        {editingContact && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
+            <Button size="small" onClick={() => setEditingContact(false)}>Cancel</Button>
+            <Button size="small" type="primary" onClick={handleSaveContact}>Save Changes</Button>
+          </div>
+        )}
+      </Card>
 
-        {/* Emergency Contact */}
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-              <Typography variant="subtitle1" fontWeight={600}>Emergency Contact</Typography>
-              {can.canEditContactInfo && !editingEmergency && (
-                <IconButton size="small" onClick={handleEditEmergency}><EditOutlinedIcon fontSize="small" /></IconButton>
-              )}
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>First Name</Typography>
-                  <TextField
-                    value={editingEmergency ? emergencyDraft.firstName : savedEmergency.firstName}
-                    size="small" fullWidth
-                    onChange={(e) => setEmergencyDraft((d) => ({ ...d, firstName: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Last Name</Typography>
-                  <TextField
-                    value={editingEmergency ? emergencyDraft.lastName : savedEmergency.lastName}
-                    size="small" fullWidth
-                    onChange={(e) => setEmergencyDraft((d) => ({ ...d, lastName: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Phone Number</Typography>
-                  <TextField
-                    value={editingEmergency ? emergencyDraft.phone : savedEmergency.phone}
-                    size="small" fullWidth
-                    onChange={(e) => setEmergencyDraft((d) => ({ ...d, phone: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Email Address</Typography>
-                  <TextField
-                    value={editingEmergency ? emergencyDraft.email : savedEmergency.email}
-                    size="small" fullWidth
-                    onChange={(e) => setEmergencyDraft((d) => ({ ...d, email: e.target.value }))}
-                    InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
-                  />
-                </Box>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Home Address</Typography>
-                <TextField
-                  value={editingEmergency ? emergencyDraft.address : savedEmergency.address}
-                  size="small" fullWidth
-                  onChange={(e) => setEmergencyDraft((d) => ({ ...d, address: e.target.value }))}
-                  InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
-                />
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Relationship</Typography>
-                <TextField
-                  value={editingEmergency ? emergencyDraft.relationship : savedEmergency.relationship}
-                  size="small" fullWidth
-                  onChange={(e) => setEmergencyDraft((d) => ({ ...d, relationship: e.target.value }))}
-                  InputProps={{ readOnly: !editingEmergency, sx: editingEmergency ? {} : { bgcolor: 'action.hover' } }}
-                />
-              </Box>
-            </Box>
-            {editingEmergency && (
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2.5 }}>
-                <Button size="small" onClick={() => setEditingEmergency(false)}>Cancel</Button>
-                <Button size="small" variant="contained" disableElevation onClick={handleSaveEmergency}>Save Changes</Button>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      </Box>
-
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
-      </Snackbar>
-    </>
+      {/* Emergency Contact */}
+      <Card>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <Text strong>Emergency Contact</Text>
+          {can.canEditContactInfo && !editingEmergency && (
+            <Button type="text" size="small" onClick={handleEditEmergency} icon={<EditOutlined />} />
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {field('First Name', editingEmergency ? emergencyDraft.firstName : savedEmergency.firstName, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, firstName: v })))}
+            {field('Last Name', editingEmergency ? emergencyDraft.lastName : savedEmergency.lastName, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, lastName: v })))}
+          </div>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {field('Phone Number', editingEmergency ? emergencyDraft.phone : savedEmergency.phone, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, phone: v })))}
+            {field('Email Address', editingEmergency ? emergencyDraft.email : savedEmergency.email, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, email: v })))}
+          </div>
+          {field('Home Address', editingEmergency ? emergencyDraft.address : savedEmergency.address, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, address: v })))}
+          {field('Relationship', editingEmergency ? emergencyDraft.relationship : savedEmergency.relationship, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, relationship: v })))}
+        </div>
+        {editingEmergency && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
+            <Button size="small" onClick={() => setEditingEmergency(false)}>Cancel</Button>
+            <Button size="small" type="primary" onClick={handleSaveEmergency}>Save Changes</Button>
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }

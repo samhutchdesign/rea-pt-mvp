@@ -1,138 +1,112 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
+import { Typography, Button, Card, Tag, Modal, Select, App } from 'antd';
 import TopBar from '@/components/layout/TopBar';
-import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { ThunderboltOutlined, EditOutlined, UserAddOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import { mockPrograms, mockExercises, mockPatients } from '@/lib/mock-data';
 import type { Patient } from '@/lib/types';
+
+const { Title, Text } = Typography;
 
 export default function ProgramDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const prog = mockPrograms.find((p) => p.id === id);
   const [isFavorite, setIsFavorite] = useState(prog?.isFavorite ?? false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [assignedName, setAssignedName] = useState('');
 
-  if (!prog) return <Box sx={{ p: 4 }}><Typography>Program not found.</Typography></Box>;
+  if (!prog) return <div style={{ padding: 32 }}><Text>Program not found.</Text></div>;
 
   const handleAssign = () => {
-    if (selectedPatient) setAssignedName(`${selectedPatient.firstName} ${selectedPatient.lastName}`);
+    if (selectedPatient) {
+      messageApi.success(`Program assigned to ${selectedPatient.firstName} ${selectedPatient.lastName}!`);
+    }
     setAssignOpen(false);
     setSelectedPatient(null);
-    setSnackOpen(true);
   };
 
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Programs', href: '/programs' }, { label: prog.name }]} />
-      <Box sx={{ px: 4, py: 4, maxWidth: 700 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-              <Typography variant="h5" fontWeight={700}>{prog.name}</Typography>
-              <IconButton onClick={() => setIsFavorite(!isFavorite)}>
-                {isFavorite ? <FavoriteIcon sx={{ color: '#E91E63' }} /> : <FavoriteBorderIcon />}
-              </IconButton>
-            </Box>
-            <Typography variant="body1" color="text.secondary" mb={1}>{prog.description}</Typography>
-            <Box sx={{ display: 'flex', gap: 0.75 }}>
-              {prog.tags.map((t) => <Chip key={t} label={t} size="small" variant="outlined" />)}
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button variant="outlined" startIcon={<PersonAddOutlinedIcon />} onClick={() => setAssignOpen(true)}>
+      <div style={{ padding: '32px', maxWidth: 700 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <Title level={2} style={{ margin: 0 }}>{prog.name}</Title>
+              <Button
+                type="text"
+                shape="circle"
+                onClick={() => setIsFavorite(!isFavorite)}
+                icon={isFavorite ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />}
+              />
+            </div>
+            <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>{prog.description}</Text>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {prog.tags.map((t) => <Tag key={t}>{t}</Tag>)}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button icon={<UserAddOutlined />} onClick={() => setAssignOpen(true)}>
               Assign to Patient
             </Button>
-            <Button variant="outlined" startIcon={<EditOutlinedIcon />} onClick={() => router.push('/programs/new')}>Edit</Button>
-          </Box>
-        </Box>
+            <Button icon={<EditOutlined />} onClick={() => router.push('/programs/new')}>Edit</Button>
+          </div>
+        </div>
 
-        <Typography variant="subtitle2" color="text.secondary" mb={2}>{prog.exercises.length} exercises</Typography>
+        <Text strong style={{ display: 'block', marginBottom: 16, color: '#49454F' }}>{prog.exercises.length} exercises</Text>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {prog.exercises.map((pe) => {
             const ex = mockExercises.find((e) => e.id === pe.exerciseId);
             if (!ex) return null;
             return (
-              <Card key={pe.exerciseId}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 2 }}>
-                  <Box sx={{ width: 48, height: 48, borderRadius: 1, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 22 }} />
-                  </Box>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" fontWeight={600} mb={0.5}>{ex.name}</Typography>
-                    <Box sx={{ display: 'flex', gap: 0.75 }}>
-                      <Chip label={`${pe.sets} Sets`} size="small" variant="outlined" />
-                      <Chip label={`${pe.reps} Reps`} size="small" variant="outlined" />
-                      {pe.holdSecs > 0 && <Chip label={`${pe.holdSecs}s Hold`} size="small" variant="outlined" />}
-                      <Chip label={pe.frequency} size="small" variant="outlined" />
-                    </Box>
-                  </Box>
-                </Box>
+              <Card key={pe.exerciseId} styles={{ body: { padding: 0 } }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 22 }} />
+                  </div>
+                  <div style={{ flexGrow: 1 }}>
+                    <Text strong style={{ display: 'block', marginBottom: 4 }}>{ex.name}</Text>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <Tag>{`${pe.sets} Sets`}</Tag>
+                      <Tag>{`${pe.reps} Reps`}</Tag>
+                      {pe.holdSecs > 0 && <Tag>{`${pe.holdSecs}s Hold`}</Tag>}
+                      <Tag>{pe.frequency}</Tag>
+                    </div>
+                  </div>
+                </div>
               </Card>
             );
           })}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Assign to Patient Dialog */}
-      <Dialog open={assignOpen} onClose={() => setAssignOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Assign to Patient</DialogTitle>
-        <DialogContent sx={{ pt: '12px !important' }}>
-          <Typography variant="body2" color="text.secondary" mb={2}>
-            Select a patient to assign <strong>{prog.name}</strong> to.
-          </Typography>
-          <Autocomplete
-            options={mockPatients}
-            getOptionLabel={(p) => `${p.firstName} ${p.lastName}`}
-            renderOption={(props, p) => (
-              <Box component="li" {...props}>
-                <Box>
-                  <Typography variant="body2" fontWeight={500}>{p.firstName} {p.lastName}</Typography>
-                  <Typography variant="caption" color="text.secondary">{p.email}</Typography>
-                </Box>
-              </Box>
-            )}
-            value={selectedPatient}
-            onChange={(_, val) => setSelectedPatient(val)}
-            renderInput={(params) => <TextField {...params} label="Search patients" size="small" autoFocus />}
-            size="small"
-          />
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setAssignOpen(false)}>Cancel</Button>
-          <Button variant="contained" disableElevation disabled={!selectedPatient} onClick={handleAssign}>
-            Assign Program
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>
-          Program assigned to {assignedName}!
-        </Alert>
-      </Snackbar>
+      <Modal
+        open={assignOpen}
+        onCancel={() => setAssignOpen(false)}
+        title="Assign to Patient"
+        footer={[
+          <Button key="cancel" onClick={() => setAssignOpen(false)}>Cancel</Button>,
+          <Button key="assign" type="primary" disabled={!selectedPatient} onClick={handleAssign}>Assign Program</Button>,
+        ]}
+      >
+        <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+          Select a patient to assign <strong>{prog.name}</strong> to.
+        </Text>
+        <Select
+          showSearch
+          placeholder="Search patients"
+          style={{ width: '100%' }}
+          value={selectedPatient?.id}
+          onChange={(val) => setSelectedPatient(mockPatients.find((p) => p.id === val) ?? null)}
+          filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+          options={mockPatients.map((p) => ({ value: p.id, label: `${p.firstName} ${p.lastName}` }))}
+        />
+      </Modal>
     </>
   );
 }

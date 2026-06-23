@@ -1,26 +1,29 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Box from '@mui/material/Box';
-import Tooltip from '@mui/material/Tooltip';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
-import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
-import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
-import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
+import { Tooltip } from 'antd';
+import {
+  TeamOutlined,
+  UsergroupAddOutlined,
+  ThunderboltOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons';
+import type { ComponentType } from 'react';
 import { usePermissions } from '@/lib/permissionsHook';
 
-const baseNavItems = [
-  { label: 'Patients', href: '/patients', icon: PeopleAltRoundedIcon },
-  { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
-  { label: 'Programs', href: '/programs', icon: ListAltRoundedIcon },
+type NavItem = { label: string; href: string; icon: ComponentType<{ style?: React.CSSProperties }> };
+
+const baseNavItems: NavItem[] = [
+  { label: 'Patients', href: '/patients', icon: TeamOutlined },
+  { label: 'Exercises', href: '/exercises', icon: ThunderboltOutlined },
+  { label: 'Programs', href: '/programs', icon: UnorderedListOutlined },
 ];
 
-const ownerNavItems = [
-  { label: 'Patients', href: '/patients', icon: PeopleAltRoundedIcon },
-  { label: 'Employees', href: '/employees', icon: GroupsRoundedIcon },
-  { label: 'Exercises', href: '/exercises', icon: FitnessCenterRoundedIcon },
-  { label: 'Programs', href: '/programs', icon: ListAltRoundedIcon },
+const ownerNavItems: NavItem[] = [
+  { label: 'Patients', href: '/patients', icon: TeamOutlined },
+  { label: 'Employees', href: '/employees', icon: UsergroupAddOutlined },
+  { label: 'Exercises', href: '/exercises', icon: ThunderboltOutlined },
+  { label: 'Programs', href: '/programs', icon: UnorderedListOutlined },
 ];
 
 export default function Sidebar() {
@@ -29,34 +32,32 @@ export default function Sidebar() {
   const navItems = can.canManageStaff ? ownerNavItems : baseNavItems;
 
   return (
-    <Box
-      component="nav"
-      sx={{
+    <nav
+      style={{
         width: 80,
         flexShrink: 0,
-        bgcolor: 'background.paper',
-        borderRight: '1px solid',
-        borderColor: 'divider',
+        background: '#FFFFFF',
+        borderRight: '1px solid #E0E0E0',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pt: 2,
-        pb: 2,
+        paddingTop: 16,
+        paddingBottom: 16,
         position: 'fixed',
-        top: '40px',
+        top: 40,
         left: 0,
         height: 'calc(100vh - 40px)',
         zIndex: 100,
       }}
     >
       {/* Logo */}
-      <Box sx={{ mb: 3, mt: 1 }}>
-        <Box
-          sx={{
+      <div style={{ marginBottom: 24, marginTop: 8 }}>
+        <div
+          style={{
             width: 36,
             height: 36,
             borderRadius: '50%',
-            bgcolor: 'primary.main',
+            background: '#6750A4',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -67,50 +68,46 @@ export default function Sidebar() {
           }}
         >
           R
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {navItems.map(({ label, href, icon: Icon }) => {
         const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
         return (
           <Tooltip key={href} title={label} placement="right">
             <Link href={href} style={{ textDecoration: 'none', width: '100%' }}>
-              <Box
-                sx={{
+              <div
+                style={{
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  py: 1,
-                  px: 0.5,
-                  mx: 1,
-                  borderRadius: 2,
+                  padding: '8px 4px',
+                  margin: '0 8px 4px',
+                  borderRadius: 8,
                   cursor: 'pointer',
-                  mb: 0.5,
-                  bgcolor: isActive ? 'primary.light' : 'transparent',
-                  '&:hover': { bgcolor: isActive ? 'primary.light' : 'action.hover' },
+                  background: isActive ? '#EDE7F6' : 'transparent',
                   transition: 'background-color 0.15s',
                 }}
               >
-                <Icon sx={{ fontSize: 22, color: isActive ? 'primary.main' : 'text.secondary' }} />
-                <Box
-                  component="span"
-                  sx={{
+                <Icon style={{ fontSize: 22, color: isActive ? '#6750A4' : '#49454F' }} />
+                <span
+                  style={{
                     fontSize: 10,
-                    mt: 0.4,
-                    color: isActive ? 'primary.main' : 'text.secondary',
+                    marginTop: 3,
+                    color: isActive ? '#6750A4' : '#49454F',
                     fontWeight: isActive ? 600 : 400,
                     lineHeight: 1,
                     textAlign: 'center',
                   }}
                 >
                   {label}
-                </Box>
-              </Box>
+                </span>
+              </div>
             </Link>
           </Tooltip>
         );
       })}
-    </Box>
+    </nav>
   );
 }

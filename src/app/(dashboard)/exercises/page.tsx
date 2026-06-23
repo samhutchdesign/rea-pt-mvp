@@ -1,49 +1,44 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputAdornment from '@mui/material/InputAdornment';
-import Tooltip from '@mui/material/Tooltip';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import AccessibilityNewRoundedIcon from '@mui/icons-material/AccessibilityNewRounded';
-import SportsRoundedIcon from '@mui/icons-material/SportsRounded';
-import PsychologyRoundedIcon from '@mui/icons-material/PsychologyRounded';
-import ElderlyRoundedIcon from '@mui/icons-material/ElderlyRounded';
-import ChildCareRoundedIcon from '@mui/icons-material/ChildCareRounded';
-import HealingRoundedIcon from '@mui/icons-material/HealingRounded';
-import BoltRoundedIcon from '@mui/icons-material/BoltRounded';
-import SelfImprovementRoundedIcon from '@mui/icons-material/SelfImprovementRounded';
-import ContentCutRoundedIcon from '@mui/icons-material/ContentCutRounded';
-import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import { Typography, Input, Button, Card, Tag, Select, Tooltip } from 'antd';
+import {
+  SearchOutlined,
+  PlusOutlined,
+  ArrowLeftOutlined,
+  ThunderboltOutlined,
+  HeartFilled,
+  HeartOutlined,
+  EyeOutlined,
+  UserOutlined,
+  TrophyOutlined,
+  BulbOutlined,
+  SmileOutlined,
+  MedicineBoxOutlined,
+  ScissorOutlined,
+  HeartOutlined as HeartLineOutlined,
+} from '@ant-design/icons';
+import type { ComponentType } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
 import { mockExercises } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 
+type IconType = ComponentType<{ style?: React.CSSProperties }>;
+
 // ── Specialties ───────────────────────────────────────────────────────────────
 
-const SPECIALTIES = [
+const SPECIALTIES: {
+  id: string; name: string; apta: string; description: string;
+  icon: IconType; color: string; bg: string; available: boolean; count: number;
+}[] = [
   {
     id: 'pelvic-health',
     name: 'Pelvic Health',
     apta: "Pelvic & Women's Health",
     description: 'Pelvic floor, incontinence, prolapse, pain with sex, postpartum & pregnancy',
-    icon: SelfImprovementRoundedIcon,
+    icon: HeartOutlined,
     color: '#6750A4', bg: '#EDE7F6',
     available: true, count: 50,
   },
@@ -52,7 +47,7 @@ const SPECIALTIES = [
     name: 'Orthopaedics',
     apta: 'Orthopaedics',
     description: 'Spine, hip, knee, shoulder, and extremity rehabilitation',
-    icon: AccessibilityNewRoundedIcon,
+    icon: UserOutlined,
     color: '#0277BD', bg: '#E1F5FE',
     available: false, count: 0,
   },
@@ -61,7 +56,7 @@ const SPECIALTIES = [
     name: 'Sports & Performance',
     apta: 'Sports',
     description: 'Return to sport, athletic performance, and injury prevention',
-    icon: SportsRoundedIcon,
+    icon: TrophyOutlined,
     color: '#2E7D32', bg: '#E8F5E9',
     available: false, count: 0,
   },
@@ -70,7 +65,7 @@ const SPECIALTIES = [
     name: 'Neurological Rehab',
     apta: 'Neurology',
     description: "Stroke, MS, Parkinson's, and spinal cord conditions",
-    icon: PsychologyRoundedIcon,
+    icon: BulbOutlined,
     color: '#E65100', bg: '#FFF3E0',
     available: false, count: 0,
   },
@@ -79,7 +74,7 @@ const SPECIALTIES = [
     name: 'Cardio & Respiratory',
     apta: 'Cardiovascular & Pulmonary',
     description: 'Cardiac rehabilitation and pulmonary physiotherapy',
-    icon: FavoriteBorderRoundedIcon,
+    icon: HeartLineOutlined,
     color: '#C62828', bg: '#FFEBEE',
     available: false, count: 0,
   },
@@ -88,7 +83,7 @@ const SPECIALTIES = [
     name: 'Cancer Care',
     apta: 'Oncology',
     description: 'Lymphoedema, post-mastectomy, and cancer-related fatigue',
-    icon: HealingRoundedIcon,
+    icon: MedicineBoxOutlined,
     color: '#6A1B9A', bg: '#F3E5F5',
     available: false, count: 0,
   },
@@ -97,7 +92,7 @@ const SPECIALTIES = [
     name: 'Ageing & Geriatrics',
     apta: 'Geriatrics',
     description: 'Falls prevention, balance, mobility, and frailty',
-    icon: ElderlyRoundedIcon,
+    icon: UserOutlined,
     color: '#1565C0', bg: '#E8EAF6',
     available: false, count: 0,
   },
@@ -106,7 +101,7 @@ const SPECIALTIES = [
     name: 'Paediatrics',
     apta: 'Pediatrics',
     description: "Children's physiotherapy and developmental conditions",
-    icon: ChildCareRoundedIcon,
+    icon: SmileOutlined,
     color: '#F57F17', bg: '#FFF8E1',
     available: false, count: 0,
   },
@@ -115,7 +110,7 @@ const SPECIALTIES = [
     name: 'Vestibular & Balance',
     apta: 'Vestibular',
     description: 'BPPV, vertigo, and vestibular rehabilitation',
-    icon: FitnessCenterRoundedIcon,
+    icon: ThunderboltOutlined,
     color: '#00695C', bg: '#E0F2F1',
     available: false, count: 0,
   },
@@ -124,7 +119,7 @@ const SPECIALTIES = [
     name: 'Wound & Skin',
     apta: 'Wound Management',
     description: 'Wound care, scar management, and skin rehabilitation',
-    icon: ContentCutRoundedIcon,
+    icon: ScissorOutlined,
     color: '#4E342E', bg: '#EFEBE9',
     available: false, count: 0,
   },
@@ -133,7 +128,7 @@ const SPECIALTIES = [
     name: 'Hand & Upper Limb',
     apta: 'Hands',
     description: 'Fine motor rehabilitation, hand therapy, and upper extremity',
-    icon: AccessibilityNewRoundedIcon,
+    icon: UserOutlined,
     color: '#37474F', bg: '#ECEFF1',
     available: false, count: 0,
   },
@@ -142,14 +137,13 @@ const SPECIALTIES = [
     name: 'Electrophysiology',
     apta: 'Clinical Electrophysiology',
     description: 'Pain science, neuromodulation, and electrophysiology',
-    icon: BoltRoundedIcon,
+    icon: ThunderboltOutlined,
     color: '#880E4F', bg: '#FCE4EC',
     available: false, count: 0,
   },
 ];
 
 // ── Per-specialty filter config ───────────────────────────────────────────────
-// When more specialties get exercises, add their filter sets here.
 
 type SpecialtyFilters = {
   conditionLabel: string;
@@ -194,6 +188,8 @@ const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
 
+const { Title, Text } = Typography;
+
 function expandSearch(q: string) {
   return SEARCH_ALIASES[q.toLowerCase().trim()] ?? q;
 }
@@ -202,52 +198,45 @@ function expandSearch(q: string) {
 
 function SpecialtyGrid({ onSelect }: { onSelect: (id: string) => void }) {
   return (
-    <Box>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+    <div>
+      <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
         Select a specialty to browse exercises.
-      </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+      </Text>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {SPECIALTIES.map((sp) => {
           const Icon = sp.icon;
           return (
-            <Box
+            <div
               key={sp.id}
               onClick={() => onSelect(sp.id)}
-              sx={{
-                border: '1px solid',
-                borderColor: sp.available ? sp.color + '44' : 'divider',
-                borderRadius: 2,
-                p: 2.5,
+              style={{
+                border: `1px solid ${sp.available ? sp.color + '44' : '#E0E0E0'}`,
+                borderRadius: 8,
+                padding: 20,
                 cursor: 'pointer',
-                bgcolor: 'background.paper',
+                background: '#FFFFFF',
                 transition: 'all 0.15s',
-                '&:hover': {
-                  borderColor: sp.color,
-                  bgcolor: sp.bg + 'aa',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                },
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1.5 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: 1.5, bgcolor: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon sx={{ fontSize: 22, color: sp.color }} />
-                </Box>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon style={{ fontSize: 22, color: sp.color }} />
+                </div>
                 {sp.available ? (
-                  <Chip label={`${sp.count} exercises`} size="small" sx={{ fontSize: 11, bgcolor: sp.bg, color: sp.color, fontWeight: 600 }} />
+                  <Tag style={{ fontSize: 11, background: sp.bg, color: sp.color, fontWeight: 600, border: 'none' }}>{`${sp.count} exercises`}</Tag>
                 ) : (
-                  <Chip label="Coming soon" size="small" sx={{ fontSize: 11, color: 'text.disabled', bgcolor: 'action.hover' }} />
+                  <Tag style={{ fontSize: 11, color: '#BDBDBD', background: 'rgba(0,0,0,0.04)', border: 'none' }}>Coming soon</Tag>
                 )}
-              </Box>
-              <Typography variant="body2" fontWeight={600} mb={0.5}>{sp.name}</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1.4 }}>
+              </div>
+              <Text strong style={{ display: 'block', marginBottom: 4 }}>{sp.name}</Text>
+              <Text type="secondary" style={{ display: 'block', lineHeight: 1.4, fontSize: 12 }}>
                 {sp.description}
-              </Typography>
-            </Box>
+              </Text>
+            </div>
           );
         })}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 
@@ -256,17 +245,17 @@ function SpecialtyGrid({ onSelect }: { onSelect: (id: string) => void }) {
 function ComingSoonState({ sp }: { sp: typeof SPECIALTIES[0] }) {
   const Icon = sp.icon;
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 10, borderRadius: 2, border: '2px dashed', borderColor: 'divider', bgcolor: sp.bg + '44' }}>
-      <Box sx={{ width: 60, height: 60, borderRadius: '50%', bgcolor: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-        <Icon sx={{ fontSize: 30, color: sp.color }} />
-      </Box>
-      <Typography variant="h6" fontWeight={600} mb={0.5}>{sp.name}</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 380, textAlign: 'center', mb: 2 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 0', borderRadius: 8, border: '2px dashed #E0E0E0', background: sp.bg + '44' }}>
+      <div style={{ width: 60, height: 60, borderRadius: '50%', background: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+        <Icon style={{ fontSize: 30, color: sp.color }} />
+      </div>
+      <Title level={3} style={{ marginTop: 0, marginBottom: 4 }}>{sp.name}</Title>
+      <Text type="secondary" style={{ maxWidth: 380, textAlign: 'center', marginBottom: 16 }}>
         {sp.description}
-      </Typography>
-      <Chip label="Coming Soon" size="small" sx={{ bgcolor: sp.bg, color: sp.color, fontWeight: 600, mb: 1 }} />
-      <Typography variant="caption" color="text.disabled">APTA: {sp.apta}</Typography>
-    </Box>
+      </Text>
+      <Tag style={{ background: sp.bg, color: sp.color, fontWeight: 600, marginBottom: 8, border: 'none' }}>Coming Soon</Tag>
+      <Text type="secondary" style={{ fontSize: 12 }}>APTA: {sp.apta}</Text>
+    </div>
   );
 }
 
@@ -324,7 +313,7 @@ export default function ExercisesPage() {
 
   const filtered = useMemo(() => {
     if (!specialty?.available) return [];
-    let exs = mockExercises.filter((ex) => {
+    const exs = mockExercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
       if (effectiveSearch) {
         const q = effectiveSearch.toLowerCase();
@@ -353,29 +342,27 @@ export default function ExercisesPage() {
   return (
     <>
       <TopBar breadcrumbs={breadcrumbs} />
-      <Box sx={{ px: 4, py: 4 }}>
+      <div style={{ padding: '32px' }}>
 
         {/* Header */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {specialty && (
-              <IconButton size="small" onClick={goBack} sx={{ color: 'text.secondary' }}>
-                <ArrowBackRoundedIcon fontSize="small" />
-              </IconButton>
+              <Button type="text" size="small" onClick={goBack} icon={<ArrowLeftOutlined />} style={{ color: '#49454F' }} />
             )}
-            <Box>
-              <Typography variant="h5" fontWeight={600}>
+            <div>
+              <Title level={2} style={{ margin: 0 }}>
                 {specialty ? specialty.name : 'Exercises'}
-              </Typography>
+              </Title>
               {specialty && (
-                <Typography variant="caption" color="text.secondary">{specialty.apta}</Typography>
+                <Text type="secondary" style={{ fontSize: 12 }}>{specialty.apta}</Text>
               )}
-            </Box>
-          </Box>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => router.push('/exercises/new')} disableElevation>
+            </div>
+          </div>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push('/exercises/new')}>
             Create New
           </Button>
-        </Box>
+        </div>
 
         {/* Landing: specialty grid */}
         {!specialty && <SpecialtyGrid onSelect={selectSpecialty} />}
@@ -387,19 +374,21 @@ export default function ExercisesPage() {
         {specialty && specialty.available && (
           <>
             {/* Filter bar */}
-            <Box sx={{ display: 'flex', gap: 1.5, mb: 1.5, alignItems: 'center', flexWrap: 'wrap', pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-              <TextField
-                placeholder="Search exercises, SUI, OAB…" size="small" sx={{ width: 260 }}
-                value={search} onChange={(e) => setSearch(e.target.value)}
-                InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 18 }} /></InputAdornment> }}
+            <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center', flexWrap: 'wrap', paddingBottom: 16, borderBottom: '1px solid #E0E0E0' }}>
+              <Input
+                placeholder="Search exercises, SUI, OAB…"
+                style={{ width: 260 }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
               />
-              <Chip
-                label="Favourites" size="small"
-                variant={showFavoritesOnly ? 'filled' : 'outlined'}
-                color={showFavoritesOnly ? 'primary' : 'default'}
-                icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />}
-                onClick={() => setShowFavoritesOnly((v) => !v)}
-              />
+              <Tag.CheckableTag
+                checked={showFavoritesOnly}
+                onChange={() => setShowFavoritesOnly((v) => !v)}
+                style={{ border: '1px solid #E0E0E0', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+              >
+                <HeartFilled style={{ fontSize: 14 }} /> Favourites
+              </Tag.CheckableTag>
               {filterConfig && (
                 <FilterMenu
                   label={filterConfig.conditionLabel}
@@ -419,77 +408,71 @@ export default function ExercisesPage() {
               <FilterMenu label="Level" options={ALL_LEVELS} selected={filterLevels} onChange={setFilterLevels} />
               <FilterMenu label="Equipment" options={ALL_EQUIPMENT} selected={filterEquipment} onChange={setFilterEquipment} />
               {hasFilters && (
-                <Button size="small" onClick={clearFilters} sx={{ color: 'text.secondary', textTransform: 'none', fontSize: 13 }}>
+                <Button type="text" size="small" onClick={clearFilters} style={{ color: '#49454F', fontSize: 13 }}>
                   Clear all
                 </Button>
               )}
-              <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 130, ml: 'auto' }}>
-                {SORT_OPTIONS.map((o) => <MenuItem key={o} value={o} sx={{ fontSize: 13 }}>{o}</MenuItem>)}
-              </Select>
-            </Box>
+              <Select value={sortBy} onChange={setSortBy} style={{ minWidth: 130, marginLeft: 'auto' }} options={SORT_OPTIONS.map((o) => ({ value: o, label: o }))} />
+            </div>
 
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+            <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 12 }}>
               {filtered.length} of {mockExercises.length} exercises
-            </Typography>
+            </Text>
 
             {/* Exercise list */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {filtered.length === 0 ? (
-                <Box sx={{ textAlign: 'center', py: 8 }}>
-                  <Typography color="text.secondary" mb={1}>No exercises match your filters.</Typography>
+                <div style={{ textAlign: 'center', padding: '64px 0' }}>
+                  <div style={{ marginBottom: 8 }}><Text type="secondary">No exercises match your filters.</Text></div>
                   <Button size="small" onClick={clearFilters}>Clear filters</Button>
-                </Box>
+                </div>
               ) : filtered.map((ex) => (
                 <Card
                   key={ex.id}
-                  sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}
+                  hoverable
+                  styles={{ body: { padding: 0 } }}
                   onClick={() => router.push(`/exercises/${ex.id}`)}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2 }}>
-                    <Box sx={{ width: 52, height: 52, borderRadius: 1.5, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 24 }} />
-                    </Box>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                        <Typography variant="body1" fontWeight={600}>{ex.name}</Typography>
-                        {favorites.has(ex.id) && <FavoriteIcon sx={{ fontSize: 14, color: '#E91E63' }} />}
-                      </Box>
-                      <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
-                        <Chip label={ex.category} size="small" variant="outlined" sx={{ fontSize: 11, height: 20 }} />
-                        <Chip
-                          label={ex.level} size="small"
-                          sx={{
-                            fontSize: 11, height: 20,
-                            bgcolor: ex.level === 'Beginner' ? '#E8F5E9' : ex.level === 'Intermediate' ? '#FFF8E1' : '#FFF3E0',
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 24px' }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 12, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 24 }} />
+                    </div>
+                    <div style={{ flexGrow: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <Text strong>{ex.name}</Text>
+                        {favorites.has(ex.id) && <HeartFilled style={{ fontSize: 14, color: '#E91E63' }} />}
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Tag style={{ fontSize: 11 }}>{ex.category}</Tag>
+                        <Tag
+                          style={{
+                            fontSize: 11, border: 'none',
+                            background: ex.level === 'Beginner' ? '#E8F5E9' : ex.level === 'Intermediate' ? '#FFF8E1' : '#FFF3E0',
                             color: ex.level === 'Beginner' ? '#2E7D32' : ex.level === 'Intermediate' ? '#F57F17' : '#E65100',
                           }}
-                        />
+                        >
+                          {ex.level}
+                        </Tag>
                         {ex.equipment !== 'None' && (
-                          <Chip label={ex.equipment} size="small" variant="outlined" sx={{ fontSize: 11, height: 20 }} />
+                          <Tag style={{ fontSize: 11 }}>{ex.equipment}</Tag>
                         )}
-                      </Box>
-                    </Box>
-                    <Box sx={{ display: 'flex', gap: 0.5 }} onClick={(e) => e.stopPropagation()}>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 4 }} onClick={(e) => e.stopPropagation()}>
                       <Tooltip title="Preview">
-                        <IconButton size="small" onClick={() => setPreviewExercise(ex)}>
-                          <VisibilityOutlinedIcon fontSize="small" />
-                        </IconButton>
+                        <Button type="text" size="small" onClick={() => setPreviewExercise(ex)} icon={<EyeOutlined />} />
                       </Tooltip>
                       <Tooltip title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}>
-                        <IconButton size="small" onClick={() => toggleFavorite(ex.id)}>
-                          {favorites.has(ex.id)
-                            ? <FavoriteIcon fontSize="small" sx={{ color: '#E91E63' }} />
-                            : <FavoriteBorderIcon fontSize="small" />}
-                        </IconButton>
+                        <Button type="text" size="small" onClick={() => toggleFavorite(ex.id)} icon={favorites.has(ex.id) ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />} />
                       </Tooltip>
-                    </Box>
-                  </Box>
+                    </div>
+                  </div>
                 </Card>
               ))}
-            </Box>
+            </div>
           </>
         )}
-      </Box>
+      </div>
 
       <ExercisePreviewDrawer exercise={previewExercise} open={!!previewExercise} onClose={() => setPreviewExercise(null)} />
     </>

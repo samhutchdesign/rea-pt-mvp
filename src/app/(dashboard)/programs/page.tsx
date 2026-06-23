@@ -1,25 +1,13 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputAdornment from '@mui/material/InputAdornment';
-import Tooltip from '@mui/material/Tooltip';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FitnessCenterRoundedIcon from '@mui/icons-material/FitnessCenterRounded';
+import { Typography, Input, Button, Card, Tag, Select, Tooltip } from 'antd';
+import { SearchOutlined, PlusOutlined, HeartFilled, HeartOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import FilterMenu from '@/components/exercises/FilterMenu';
 import { mockPrograms } from '@/lib/mock-data';
+
+const { Title, Text } = Typography;
 
 const ALL_TAGS = ['Pelvic Floor', 'Postpartum', 'Incontinence', 'Pelvic Pain', 'Beginner', 'Intermediate', 'Relaxation'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Exercises', 'Newest Added'];
@@ -57,65 +45,74 @@ export default function ProgramsPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Programs' }]} />
-      <Box sx={{ px: 4, py: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" fontWeight={600}>Programs</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => router.push('/programs/new')} disableElevation>Create New Program</Button>
-        </Box>
+      <div style={{ padding: '32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <Title level={2} style={{ margin: 0 }}>Programs</Title>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push('/programs/new')}>Create New Program</Button>
+        </div>
 
-        <Box sx={{ display: 'flex', gap: 2, mb: 2.5, alignItems: 'center', flexWrap: 'wrap' }}>
-          <TextField
-            placeholder="Search programs…" size="small" sx={{ width: 280 }}
-            value={search} onChange={(e) => setSearch(e.target.value)}
-            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 18 }} /></InputAdornment> }}
+        <div style={{ display: 'flex', gap: 16, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+          <Input
+            placeholder="Search programs…"
+            style={{ width: 280 }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
           />
-          <Chip
-            label="Favorites" size="small"
-            variant={showFavoritesOnly ? 'filled' : 'outlined'}
-            color={showFavoritesOnly ? 'primary' : 'default'}
-            icon={<FavoriteIcon sx={{ fontSize: '14px !important' }} />}
-            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-          />
+          <Tag.CheckableTag
+            checked={showFavoritesOnly}
+            onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            style={{ border: '1px solid #E0E0E0', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+          >
+            <HeartFilled style={{ fontSize: 14 }} /> Favorites
+          </Tag.CheckableTag>
           <FilterMenu label="Tag" options={ALL_TAGS} selected={filterTags} onChange={setFilterTags} />
-          <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} size="small" sx={{ fontSize: 13, minWidth: 150, ml: 'auto' }}>
-            {SORT_OPTIONS.map((o) => <MenuItem key={o} value={o} sx={{ fontSize: 13 }}>{o}</MenuItem>)}
-          </Select>
-        </Box>
+          <Select
+            value={sortBy}
+            onChange={setSortBy}
+            style={{ minWidth: 150, marginLeft: 'auto' }}
+            options={SORT_OPTIONS.map((o) => ({ value: o, label: o }))}
+          />
+        </div>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {filtered.length === 0 ? (
-            <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>No programs match your filters.</Typography>
+            <Text type="secondary" style={{ padding: '32px 0', textAlign: 'center' }}>No programs match your filters.</Text>
           ) : filtered.map((prog) => (
             <Card
               key={prog.id}
-              sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s' }}
+              hoverable
+              styles={{ body: { padding: 0 } }}
               onClick={() => router.push(`/programs/${prog.id}`)}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2.5 }}>
-                <Box sx={{ width: 48, height: 48, borderRadius: 1.5, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FitnessCenterRoundedIcon sx={{ color: '#6750A4', fontSize: 22 }} />
-                </Box>
-                <Box sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                    <Typography variant="body1" fontWeight={600}>{prog.name}</Typography>
-                    {favorites.has(prog.id) && <FavoriteIcon sx={{ fontSize: 14, color: '#E91E63' }} />}
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" mb={0.75}>{prog.description}</Typography>
-                  <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                    {prog.tags.map((t) => <Chip key={t} label={t} size="small" variant="outlined" sx={{ fontSize: 11 }} />)}
-                  </Box>
-                </Box>
-                <Chip label={`${prog.exercises.length} exercises`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 500 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px' }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 22 }} />
+                </div>
+                <div style={{ flexGrow: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <Text strong>{prog.name}</Text>
+                    {favorites.has(prog.id) && <HeartFilled style={{ fontSize: 14, color: '#E91E63' }} />}
+                  </div>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 6 }}>{prog.description}</Text>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {prog.tags.map((t) => <Tag key={t} style={{ fontSize: 11 }}>{t}</Tag>)}
+                  </div>
+                </div>
+                <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 500 }}>{`${prog.exercises.length} exercises`}</Tag>
                 <Tooltip title={favorites.has(prog.id) ? 'Unfavorite' : 'Favorite'}>
-                  <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFavorite(prog.id); }}>
-                    {favorites.has(prog.id) ? <FavoriteIcon fontSize="small" sx={{ color: '#E91E63' }} /> : <FavoriteBorderIcon fontSize="small" />}
-                  </IconButton>
+                  <Button
+                    type="text"
+                    size="small"
+                    onClick={(e) => { e.stopPropagation(); toggleFavorite(prog.id); }}
+                    icon={favorites.has(prog.id) ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />}
+                  />
                 </Tooltip>
-              </Box>
+              </div>
             </Card>
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   );
 }

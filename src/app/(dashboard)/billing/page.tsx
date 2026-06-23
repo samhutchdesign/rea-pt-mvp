@@ -1,24 +1,10 @@
 'use client';
 import { useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
-import LinearProgress from '@mui/material/LinearProgress';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import CheckIcon from '@mui/icons-material/Check';
-import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import { Typography, Tabs, Card, Button, Tag, Divider, Progress, Table } from 'antd';
+import { CheckOutlined, CreditCardOutlined, DownloadOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
+
+const { Title, Text } = Typography;
 
 const PLAN = {
   name: 'Clinic Pro',
@@ -49,214 +35,176 @@ const INVOICES = [
 ];
 
 const USAGE = [
-  { label: 'Active Patients', used: 18, limit: null, unit: 'patients' },
-  { label: 'Practitioners', used: 4, limit: 5, unit: 'seats' },
-  { label: 'AI Extractions This Month', used: 7, limit: 50, unit: 'extractions' },
-  { label: 'Exercise Library', used: 12, limit: null, unit: 'custom exercises added' },
-  { label: 'Programs Created', used: 3, limit: null, unit: 'programs' },
+  { label: 'Active Patients', used: 18, limit: null as number | null, unit: 'patients' },
+  { label: 'Practitioners', used: 4, limit: 5 as number | null, unit: 'seats' },
+  { label: 'AI Extractions This Month', used: 7, limit: 50 as number | null, unit: 'extractions' },
+  { label: 'Exercise Library', used: 12, limit: null as number | null, unit: 'custom exercises added' },
+  { label: 'Programs Created', used: 3, limit: null as number | null, unit: 'programs' },
 ];
 
 function SubscriptionTab() {
   return (
-    <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-      <Card sx={{ flex: 2, minWidth: 300 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                <Typography variant="h6" fontWeight={700}>{PLAN.name}</Typography>
-                <Chip label="Active" size="small" sx={{ bgcolor: '#E8F5E9', color: '#2E7D32', fontWeight: 600, fontSize: 11 }} />
-              </Box>
-              <Typography variant="h4" fontWeight={700} color="primary.main">
-                {PLAN.price}<Typography component="span" variant="body2" color="text.secondary">/{PLAN.interval}</Typography>
-              </Typography>
-            </Box>
-            <Button variant="outlined" size="small">Change Plan</Button>
-          </Box>
+    <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+      <Card style={{ flex: 2, minWidth: 300 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <Title level={3} style={{ margin: 0 }}>{PLAN.name}</Title>
+              <Tag style={{ background: '#E8F5E9', color: '#2E7D32', fontWeight: 600, fontSize: 11, border: 'none' }}>Active</Tag>
+            </div>
+            <div>
+              <Text style={{ fontSize: 30, fontWeight: 700, color: '#6750A4' }}>{PLAN.price}</Text>
+              <Text type="secondary">/{PLAN.interval}</Text>
+            </div>
+          </div>
+          <Button size="small">Change Plan</Button>
+        </div>
 
-          <Divider sx={{ mb: 2 }} />
+        <Divider style={{ marginBottom: 16 }} />
 
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-            What's included
-          </Typography>
-          <Box component="ul" sx={{ pl: 0, mt: 1.5, mb: 2, listStyle: 'none' }}>
-            {PLAN.features.map((f) => (
-              <Box component="li" key={f} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
-                <CheckIcon sx={{ fontSize: 16, color: '#2E7D32' }} />
-                <Typography variant="body2">{f}</Typography>
-              </Box>
-            ))}
-          </Box>
+        <Text type="secondary" style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 12 }}>
+          What&apos;s included
+        </Text>
+        <ul style={{ paddingLeft: 0, marginTop: 12, marginBottom: 16, listStyle: 'none' }}>
+          {PLAN.features.map((f) => (
+            <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <CheckOutlined style={{ fontSize: 16, color: '#2E7D32' }} />
+              <Text>{f}</Text>
+            </li>
+          ))}
+        </ul>
 
-          <Divider sx={{ mb: 2 }} />
+        <Divider style={{ marginBottom: 16 }} />
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box>
-              <Typography variant="caption" color="text.secondary">Renews on</Typography>
-              <Typography variant="body2" fontWeight={500}>{PLAN.renewsOn}</Typography>
-            </Box>
-            <Button size="small" color="error" sx={{ color: 'error.main' }}>Cancel Subscription</Button>
-          </Box>
-        </CardContent>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>Renews on</Text>
+            <Text strong>{PLAN.renewsOn}</Text>
+          </div>
+          <Button size="small" danger type="text">Cancel Subscription</Button>
+        </div>
       </Card>
 
-      <Card sx={{ flex: 1, minWidth: 240, alignSelf: 'flex-start' }}>
-        <CardContent>
-          <Typography variant="body2" fontWeight={600} mb={2}>Seats</Typography>
-          <Typography variant="h5" fontWeight={700}>{PLAN.usedSeats} / {PLAN.seats}</Typography>
-          <Typography variant="caption" color="text.secondary">practitioners on your plan</Typography>
-          <LinearProgress
-            variant="determinate"
-            value={(PLAN.usedSeats / PLAN.seats) * 100}
-            sx={{ mt: 1.5, height: 6, borderRadius: 3, bgcolor: '#E0E0E0', '& .MuiLinearProgress-bar': { bgcolor: '#6750A4', borderRadius: 3 } }}
-          />
-          <Button variant="outlined" size="small" fullWidth sx={{ mt: 2 }}>
-            Add Practitioner
-          </Button>
-        </CardContent>
+      <Card style={{ flex: 1, minWidth: 240, alignSelf: 'flex-start' }}>
+        <Text strong style={{ display: 'block', marginBottom: 16 }}>Seats</Text>
+        <Title level={2} style={{ margin: 0 }}>{PLAN.usedSeats} / {PLAN.seats}</Title>
+        <Text type="secondary" style={{ fontSize: 12 }}>practitioners on your plan</Text>
+        <Progress
+          percent={(PLAN.usedSeats / PLAN.seats) * 100}
+          showInfo={false}
+          strokeColor="#6750A4"
+          style={{ marginTop: 12 }}
+        />
+        <Button size="small" block style={{ marginTop: 16 }}>
+          Add Practitioner
+        </Button>
       </Card>
-    </Box>
+    </div>
   );
 }
 
 function PaymentMethodTab() {
   return (
-    <Box sx={{ maxWidth: 560 }}>
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Box sx={{ width: 48, height: 48, borderRadius: 1.5, bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CreditCardRoundedIcon sx={{ color: '#6750A4', fontSize: 24 }} />
-            </Box>
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant="body2" fontWeight={600}>Visa ending in 4242</Typography>
-              <Typography variant="caption" color="text.secondary">Expires 08 / 2028</Typography>
-            </Box>
-            <Chip label="Default" size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontSize: 11 }} />
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button variant="outlined" size="small">Update Card</Button>
-            <Button size="small" color="error">Remove</Button>
-          </Box>
-        </CardContent>
+    <div style={{ maxWidth: 560 }}>
+      <Card style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CreditCardOutlined style={{ color: '#6750A4', fontSize: 24 }} />
+          </div>
+          <div style={{ flexGrow: 1 }}>
+            <Text strong style={{ display: 'block' }}>Visa ending in 4242</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>Expires 08 / 2028</Text>
+          </div>
+          <Tag style={{ background: '#EDE7F6', color: '#6750A4', fontSize: 11, border: 'none' }}>Default</Tag>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button size="small">Update Card</Button>
+          <Button size="small" danger type="text">Remove</Button>
+        </div>
       </Card>
-      <Button variant="contained" disableElevation startIcon={<CreditCardRoundedIcon />}>
+      <Button type="primary" icon={<CreditCardOutlined />}>
         Add Payment Method
       </Button>
-      <Typography variant="caption" color="text.secondary" display="block" mt={1.5}>
+      <Text type="secondary" style={{ display: 'block', marginTop: 12, fontSize: 12 }}>
         Payment processing is secured and encrypted. Your card details are never stored on our servers.
-      </Typography>
-    </Box>
+      </Text>
+    </div>
   );
 }
 
 function InvoiceHistoryTab() {
   return (
-    <Box sx={{ maxWidth: 720 }}>
-      <Card>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ '& th': { fontWeight: 600, fontSize: 12, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 } }}>
-              <TableCell>Invoice</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Receipt</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {INVOICES.map((inv) => (
-              <TableRow key={inv.id} sx={{ '&:last-child td': { border: 0 } }}>
-                <TableCell>
-                  <Typography variant="body2" fontWeight={500}>{inv.id}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" color="text.secondary">{inv.date}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">{inv.amount}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip label={inv.status} size="small" sx={{ bgcolor: '#E8F5E9', color: '#2E7D32', fontWeight: 500, fontSize: 11 }} />
-                </TableCell>
-                <TableCell align="right">
-                  <Button size="small" startIcon={<DownloadRoundedIcon />} sx={{ fontSize: 12 }}>
-                    PDF
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+    <div style={{ maxWidth: 720 }}>
+      <Card styles={{ body: { padding: 0 } }}>
+        <Table
+          dataSource={INVOICES}
+          rowKey="id"
+          pagination={false}
+          columns={[
+            { title: 'Invoice', dataIndex: 'id', render: (v) => <Text strong>{v}</Text> },
+            { title: 'Date', dataIndex: 'date', render: (v) => <Text type="secondary">{v}</Text> },
+            { title: 'Amount', dataIndex: 'amount', render: (v) => <Text>{v}</Text> },
+            { title: 'Status', dataIndex: 'status', render: (v) => <Tag style={{ background: '#E8F5E9', color: '#2E7D32', fontWeight: 500, fontSize: 11, border: 'none' }}>{v}</Tag> },
+            { title: 'Receipt', align: 'right', render: () => <Button type="text" size="small" icon={<DownloadOutlined />} style={{ fontSize: 12 }}>PDF</Button> },
+          ]}
+        />
       </Card>
-    </Box>
+    </div>
   );
 }
 
 function UsageStatsTab() {
   return (
-    <Box sx={{ maxWidth: 600 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <div style={{ maxWidth: 600 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {USAGE.map(({ label, used, limit, unit }) => (
-          <Card key={label}>
-            <CardContent sx={{ py: '14px !important' }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: limit ? 1 : 0 }}>
-                <Typography variant="body2" fontWeight={500}>{label}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {limit ? `${used} / ${limit} ${unit}` : `${used} ${unit}`}
-                </Typography>
-              </Box>
-              {limit && (
-                <LinearProgress
-                  variant="determinate"
-                  value={Math.min((used / limit) * 100, 100)}
-                  sx={{
-                    height: 6, borderRadius: 3, bgcolor: '#E0E0E0',
-                    '& .MuiLinearProgress-bar': {
-                      bgcolor: used / limit > 0.85 ? '#F57C00' : '#6750A4',
-                      borderRadius: 3,
-                    },
-                  }}
-                />
-              )}
-            </CardContent>
+          <Card key={label} styles={{ body: { padding: 14 } }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: limit ? 8 : 0 }}>
+              <Text strong>{label}</Text>
+              <Text type="secondary">
+                {limit ? `${used} / ${limit} ${unit}` : `${used} ${unit}`}
+              </Text>
+            </div>
+            {limit && (
+              <Progress
+                percent={Math.min((used / limit) * 100, 100)}
+                showInfo={false}
+                strokeColor={used / limit > 0.85 ? '#F57C00' : '#6750A4'}
+              />
+            )}
           </Card>
         ))}
-      </Box>
-      <Typography variant="caption" color="text.secondary" display="block" mt={2}>
+      </div>
+      <Text type="secondary" style={{ display: 'block', marginTop: 16, fontSize: 12 }}>
         Usage resets on the 1st of each month. AI extractions included with Clinic Pro plan.
-      </Typography>
-    </Box>
+      </Text>
+    </div>
   );
 }
 
 const TABS = ['Subscription & Plan', 'Payment Method', 'Invoice History', 'Usage Stats'];
 
 export default function BillingPage() {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState('0');
 
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Billing' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4 }}>
-        <Typography variant="h5" fontWeight={600} mb={3}>Billing</Typography>
+      <div style={{ paddingTop: 56, padding: '32px' }}>
+        <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>Billing</Title>
 
         <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{ borderBottom: '1px solid #E0E0E0', mb: 3 }}
-          TabIndicatorProps={{ style: { backgroundColor: '#6750A4' } }}
-        >
-          {TABS.map((t) => (
-            <Tab key={t} label={t} sx={{ textTransform: 'none', fontWeight: 500, fontSize: 14, '&.Mui-selected': { color: 'primary.main' } }} />
-          ))}
-        </Tabs>
+          activeKey={tab}
+          onChange={setTab}
+          style={{ marginBottom: 24 }}
+          items={TABS.map((t, i) => ({ key: String(i), label: t }))}
+        />
 
-        {tab === 0 && <SubscriptionTab />}
-        {tab === 1 && <PaymentMethodTab />}
-        {tab === 2 && <InvoiceHistoryTab />}
-        {tab === 3 && <UsageStatsTab />}
-      </Box>
+        {tab === '0' && <SubscriptionTab />}
+        {tab === '1' && <PaymentMethodTab />}
+        {tab === '2' && <InvoiceHistoryTab />}
+        {tab === '3' && <UsageStatsTab />}
+      </div>
     </>
   );
 }

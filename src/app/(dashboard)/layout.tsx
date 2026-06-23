@@ -1,26 +1,24 @@
 import Sidebar from '@/components/layout/Sidebar';
 import DemoRoleBar from '@/components/layout/DemoRoleBar';
-import Box from '@mui/material/Box';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <DemoRoleBar />
-      <Box sx={{ display: 'flex', minHeight: '100vh', pt: '40px' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', paddingTop: 40 }}>
         <Sidebar />
-        <Box
-          component="main"
-          sx={{
-            ml: '80px',
+        <main
+          style={{
+            marginLeft: 80,
             flexGrow: 1,
             minHeight: '100vh',
-            pt: '56px',
-            bgcolor: 'background.default',
+            paddingTop: 56,
+            background: '#F5F5F5',
           }}
         >
           {children}
-        </Box>
-      </Box>
+        </main>
+      </div>
     </>
   );
 }

@@ -1,27 +1,14 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Avatar from '@mui/material/Avatar';
-import Chip from '@mui/material/Chip';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import InputAdornment from '@mui/material/InputAdornment';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import RestoreIcon from '@mui/icons-material/Restore';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import { Typography, Input, Button, Card, Avatar, Tag, Tabs, App } from 'antd';
+import { SearchOutlined, PlusOutlined, RollbackOutlined, MailOutlined, TeamOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients } from '@/lib/mock-data';
 import { useLocationScope } from '@/lib/locationScope';
 import type { Employee } from '@/lib/types';
+
+const { Title, Text } = Typography;
 
 const AVATAR_COLORS: Record<string, string> = {
   emp1: '#6750A4',
@@ -32,14 +19,13 @@ const AVATAR_COLORS: Record<string, string> = {
 
 export default function EmployeesPage() {
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const [search, setSearch] = useState('');
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState('0');
   const { employees: scopedEmployees } = useLocationScope();
   const [overrides, setOverrides] = useState<Record<string, Partial<Employee>>>({});
 
   const employees = scopedEmployees.map((e) => overrides[e.id] ? { ...e, ...overrides[e.id] } : e);
-  const [snackMsg, setSnackMsg] = useState('');
-  const [snackOpen, setSnackOpen] = useState(false);
 
   const activeEmployees = employees.filter((e) => !e.archived);
   const archivedEmployees = employees.filter((e) => e.archived);
@@ -53,12 +39,11 @@ export default function EmployeesPage() {
     );
   };
 
-  const displayed = applySearch(tab === 0 ? activeEmployees : archivedEmployees);
+  const displayed = applySearch(tab === '0' ? activeEmployees : archivedEmployees);
 
   const restore = (emp: Employee) => {
     setOverrides((prev) => ({ ...prev, [emp.id]: { archived: false } }));
-    setSnackMsg(`${emp.firstName} ${emp.lastName} restored to active.`);
-    setSnackOpen(true);
+    messageApi.success(`${emp.firstName} ${emp.lastName} restored to active.`);
   };
 
   const empty = displayed.length === 0;
@@ -66,100 +51,90 @@ export default function EmployeesPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Employees' }]} />
-      <Box sx={{ px: 4, py: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" fontWeight={600}>Employees</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} disableElevation>Add Employee</Button>
-        </Box>
+      <div style={{ padding: '32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <Title level={2} style={{ margin: 0 }}>Employees</Title>
+          <Button type="primary" icon={<PlusOutlined />}>Add Employee</Button>
+        </div>
 
         <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{ borderBottom: '1px solid #E0E0E0', mb: 3 }}
-          TabIndicatorProps={{ style: { backgroundColor: '#6750A4', height: 2 } }}
-        >
-          <Tab label={`Active (${activeEmployees.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
-          <Tab label={`Archived (${archivedEmployees.length})`} sx={{ textTransform: 'none', minHeight: 44, fontSize: 14 }} />
-        </Tabs>
+          activeKey={tab}
+          onChange={setTab}
+          style={{ marginBottom: 24 }}
+          items={[
+            { key: '0', label: `Active (${activeEmployees.length})` },
+            { key: '1', label: `Archived (${archivedEmployees.length})` },
+          ]}
+        />
 
-        <TextField
-          placeholder={tab === 0 ? 'Search active employees…' : 'Search archived employees…'}
-          size="small"
+        <Input
+          placeholder={tab === '0' ? 'Search active employees…' : 'Search archived employees…'}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          sx={{ mb: 3, width: 340 }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9E9E9E', fontSize: 20 }} /></InputAdornment>,
-          }}
+          style={{ marginBottom: 24, width: 340 }}
+          prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
         />
 
         {empty ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <PeopleOutlineIcon sx={{ fontSize: 48, color: '#BDBDBD', mb: 1 }} />
-            <Typography color="text.secondary">
-              {tab === 0 ? 'No active employees found' : 'No archived employees found'}
-            </Typography>
-          </Box>
+          <div style={{ textAlign: 'center', padding: '64px 0' }}>
+            <TeamOutlined style={{ fontSize: 48, color: '#BDBDBD', marginBottom: 8 }} />
+            <div><Text type="secondary">{tab === '0' ? 'No active employees found' : 'No archived employees found'}</Text></div>
+          </div>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {displayed.map((emp) => {
               const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
               const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
               return (
                 <Card
                   key={emp.id}
-                  sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, transition: 'border-color 0.15s', opacity: emp.archived ? 0.75 : 1 }}
+                  hoverable
+                  styles={{ body: { padding: 0 } }}
+                  style={{ opacity: emp.archived ? 0.75 : 1 }}
                   onClick={() => router.push(`/employees/${emp.id}`)}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, px: 3, py: 2 }}>
-                    <Avatar sx={{ width: 52, height: 52, bgcolor: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 17, flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 24px' }}>
+                    <Avatar style={{ width: 52, height: 52, background: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 17, flexShrink: 0 }}>
                       {emp.avatarInitials}
                     </Avatar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.3 }}>
-                        <Typography variant="body1" fontWeight={600}>{emp.firstName} {emp.lastName}</Typography>
-                        <Typography variant="body2" color="text.secondary">{emp.credentials}</Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" mb={0.75}>{emp.title}</Typography>
-                      <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                    <div style={{ flexGrow: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 2 }}>
+                        <Text strong>{emp.firstName} {emp.lastName}</Text>
+                        <Text type="secondary">{emp.credentials}</Text>
+                      </div>
+                      <Text type="secondary" style={{ display: 'block', marginBottom: 6 }}>{emp.title}</Text>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {emp.specialties.map((s) => (
-                          <Chip key={s} label={s} size="small" variant="outlined" sx={{ fontSize: 11, height: 20 }} />
+                          <Tag key={s} style={{ fontSize: 11 }}>{s}</Tag>
                         ))}
-                      </Box>
-                    </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.75, flexShrink: 0 }}>
-                      <Chip
-                        label={`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
-                        size="small"
-                        sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 500 }}
-                      />
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <EmailOutlinedIcon sx={{ fontSize: 13, color: 'text.secondary' }} />
-                        <Typography variant="caption" color="text.secondary">{emp.email}</Typography>
-                      </Box>
-                    </Box>
-                    {tab === 1 && (
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
+                      <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 500 }}>
+                        {`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
+                      </Tag>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <MailOutlined style={{ fontSize: 13, color: '#49454F' }} />
+                        <Text type="secondary" style={{ fontSize: 12 }}>{emp.email}</Text>
+                      </div>
+                    </div>
+                    {tab === '1' && (
                       <Button
                         size="small"
-                        variant="outlined"
-                        startIcon={<RestoreIcon />}
+                        icon={<RollbackOutlined />}
                         onClick={(e) => { e.stopPropagation(); restore(emp); }}
-                        sx={{ flexShrink: 0, ml: 1 }}
+                        style={{ flexShrink: 0, marginLeft: 8 }}
                       >
                         Restore
                       </Button>
                     )}
-                  </Box>
+                  </div>
                 </Card>
               );
             })}
-          </Box>
+          </div>
         )}
-      </Box>
-
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
-      </Snackbar>
+      </div>
     </>
   );
 }

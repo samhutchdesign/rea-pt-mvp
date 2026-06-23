@@ -1,31 +1,19 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { Typography, Avatar, Button, Card, Input, Tag, Divider, Modal, App } from 'antd';
+import {
+  EnvironmentOutlined,
+  ArrowLeftOutlined,
+  TeamOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockClinicLocations, mockClinic, mockEmployees, mockPatients } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
+
+const { Title, Text } = Typography;
 
 const AVATAR_COLORS: Record<string, string> = {
   emp1: '#6750A4',
@@ -37,14 +25,13 @@ const AVATAR_COLORS: Record<string, string> = {
 export default function ClinicLocationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
   const can = usePermissions();
 
   const location = mockClinicLocations.find((l) => l.id === id);
 
   const [editing, setEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [snackMsg, setSnackMsg] = useState('');
 
   const [form, setForm] = useState({
     name: location?.name ?? '',
@@ -64,8 +51,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
   const handleSave = () => {
     setSaved({ ...form });
     setEditing(false);
-    setSnackMsg('Clinic profile updated.');
-    setSnackOpen(true);
+    messageApi.success('Clinic profile updated.');
   };
 
   const handleCancel = () => {
@@ -79,6 +65,8 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
   };
 
   const readOnly = !editing;
+  const roStyle = readOnly ? { background: 'rgba(0,0,0,0.04)' } : undefined;
+  const fieldLabel = (label: string) => <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>;
 
   return (
     <>
@@ -88,218 +76,145 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
           { label: saved.name },
         ]}
       />
-      <Box sx={{ px: 4, py: 4, maxWidth: 900 }}>
+      <div style={{ padding: '32px', maxWidth: 900 }}>
         {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3, mb: 4 }}>
-          <Avatar sx={{ width: 72, height: 72, bgcolor: 'primary.main', color: '#fff', fontWeight: 700, fontSize: 22, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, marginBottom: 32 }}>
+          <Avatar style={{ width: 72, height: 72, background: '#6750A4', color: '#fff', fontWeight: 700, fontSize: 22, flexShrink: 0 }}>
             {mockClinic.logoInitials}
           </Avatar>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="overline" color="text.secondary" sx={{ letterSpacing: 1 }}>
+          <div style={{ flexGrow: 1 }}>
+            <Text type="secondary" style={{ letterSpacing: 1, textTransform: 'uppercase', fontSize: 11 }}>
               {mockClinic.name}
-            </Typography>
-            <Typography variant="h5" fontWeight={700} mt={0.25} mb={0.5}>{saved.name}</Typography>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <LocationOnOutlinedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">{saved.city}, {saved.regionCountry}</Typography>
-              </Box>
+            </Text>
+            <Title level={2} style={{ marginTop: 2, marginBottom: 4 }}>{saved.name}</Title>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <EnvironmentOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <Text type="secondary">{saved.city}, {saved.regionCountry}</Text>
+              </div>
               {teamMembers.length > 0 && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <GroupsRoundedIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-                  <Typography variant="body2" color="text.secondary">{teamMembers.length} physiotherapist{teamMembers.length !== 1 ? 's' : ''}</Typography>
-                </Box>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <TeamOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                  <Text type="secondary">{teamMembers.length} physiotherapist{teamMembers.length !== 1 ? 's' : ''}</Text>
+                </div>
               )}
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<ArrowBackIcon />}
-              onClick={() => router.push('/clinic')}
-            >
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Button size="small" icon={<ArrowLeftOutlined />} onClick={() => router.push('/clinic')}>
               Organization
             </Button>
             {can.canManageClinic && !editing && (
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<EditOutlinedIcon />}
-                onClick={() => setEditing(true)}
-              >
+              <Button size="small" icon={<EditOutlined />} onClick={() => setEditing(true)}>
                 Edit Clinic
               </Button>
             )}
             {editing && (
               <>
                 <Button size="small" onClick={handleCancel}>Cancel</Button>
-                <Button size="small" variant="contained" disableElevation onClick={handleSave}>Save Changes</Button>
+                <Button size="small" type="primary" onClick={handleSave}>Save Changes</Button>
               </>
             )}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
-        <Box sx={{ display: 'flex', gap: 3 }}>
+        <div style={{ display: 'flex', gap: 24 }}>
           {/* Left: About + Contact + Danger Zone */}
-          <Box sx={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <Card>
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight={600} mb={2}>About This Location</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <TextField
-                      label="Clinic Name" size="small" fullWidth
-                      value={form.name}
-                      onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                      InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
-                    />
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <TextField
-                      label="City" size="small" fullWidth
-                      value={form.city}
-                      onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
-                      InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
-                    />
-                    <TextField
-                      label="Region / Country" size="small" fullWidth
-                      value={form.regionCountry}
-                      onChange={(e) => setForm((f) => ({ ...f, regionCountry: e.target.value }))}
-                      InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
-                    />
-                  </Box>
-                  <TextField
-                    label="Description" size="small" fullWidth multiline rows={4}
-                    value={form.description}
-                    onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                    InputProps={{ readOnly }}
-                    sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
-                  />
-                </Box>
-              </CardContent>
+              <Text strong style={{ display: 'block', marginBottom: 16 }}>About This Location</Text>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>{fieldLabel('Clinic Name')}<Input value={form.name} readOnly={readOnly} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} style={roStyle} /></div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}>{fieldLabel('City')}<Input value={form.city} readOnly={readOnly} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} style={roStyle} /></div>
+                  <div style={{ flex: 1 }}>{fieldLabel('Region / Country')}<Input value={form.regionCountry} readOnly={readOnly} onChange={(e) => setForm((f) => ({ ...f, regionCountry: e.target.value }))} style={roStyle} /></div>
+                </div>
+                <div>{fieldLabel('Description')}<Input.TextArea rows={4} value={form.description} readOnly={readOnly} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} style={roStyle} /></div>
+              </div>
             </Card>
 
             <Card>
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight={600} mb={2}>Contact</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <TextField
-                    label="Address" size="small" fullWidth
-                    value={form.address}
-                    onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-                    InputProps={{ readOnly }}
-                    sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
-                  />
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <TextField
-                      label="Phone" size="small" fullWidth
-                      value={form.phone}
-                      onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                      InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
-                    />
-                    <TextField
-                      label="Email" size="small" fullWidth
-                      value={form.email}
-                      onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                      InputProps={{ readOnly }}
-                      sx={readOnly ? { '& .MuiInputBase-root': { bgcolor: 'action.hover' } } : {}}
-                    />
-                  </Box>
-                </Box>
-              </CardContent>
+              <Text strong style={{ display: 'block', marginBottom: 16 }}>Contact</Text>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>{fieldLabel('Address')}<Input value={form.address} readOnly={readOnly} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} style={roStyle} /></div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}>{fieldLabel('Phone')}<Input value={form.phone} readOnly={readOnly} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} style={roStyle} /></div>
+                  <div style={{ flex: 1 }}>{fieldLabel('Email')}<Input value={form.email} readOnly={readOnly} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} style={roStyle} /></div>
+                </div>
+              </div>
             </Card>
 
             {can.canManageClinic && (
-              <Card sx={{ border: '1px solid #FFCDD2' }}>
-                <CardContent>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ textTransform: 'uppercase', fontWeight: 600, letterSpacing: 0.5 }}>
-                    Danger Zone
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box>
-                      <Typography variant="body2" fontWeight={500}>Delete this clinic location</Typography>
-                      <Typography variant="caption" color="text.secondary">This will remove the location from the organization permanently.</Typography>
-                    </Box>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      size="small"
-                      startIcon={<DeleteOutlineIcon />}
-                      onClick={() => setDeleteOpen(true)}
-                    >
-                      Delete Location
-                    </Button>
-                  </Box>
-                </CardContent>
+              <Card style={{ border: '1px solid #FFCDD2' }}>
+                <Text type="secondary" style={{ display: 'block', marginBottom: 8, textTransform: 'uppercase', fontWeight: 600, letterSpacing: 0.5, fontSize: 12 }}>
+                  Danger Zone
+                </Text>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <Text strong style={{ display: 'block' }}>Delete this clinic location</Text>
+                    <Text type="secondary" style={{ fontSize: 12 }}>This will remove the location from the organization permanently.</Text>
+                  </div>
+                  <Button danger size="small" icon={<DeleteOutlined />} onClick={() => setDeleteOpen(true)}>
+                    Delete Location
+                  </Button>
+                </div>
               </Card>
             )}
-          </Box>
+          </div>
 
           {/* Right: Team */}
-          <Box sx={{ flex: 2 }}>
+          <div style={{ flex: 2 }}>
             <Card>
-              <CardContent>
-                <Typography variant="subtitle2" fontWeight={600} mb={2}>
-                  Team {teamMembers.length > 0 ? `(${teamMembers.length})` : ''}
-                </Typography>
-                {teamMembers.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary">No staff assigned to this location yet.</Typography>
-                ) : (
-                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    {teamMembers.map((emp, i) => {
-                      const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
-                      const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
-                      return (
-                        <Box key={emp.id}>
-                          <Box
-                            sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.5, cursor: 'pointer', borderRadius: 1, px: 0.5, '&:hover': { bgcolor: 'action.hover' } }}
-                            onClick={() => router.push(`/employees/${emp.id}`)}
-                          >
-                            <Avatar sx={{ width: 40, height: 40, bgcolor: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
-                              {emp.avatarInitials}
-                            </Avatar>
-                            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                              <Typography variant="body2" fontWeight={600} noWrap>{emp.firstName} {emp.lastName}</Typography>
-                              <Typography variant="caption" color="text.secondary" noWrap>{emp.credentials} · {emp.title}</Typography>
-                            </Box>
-                            <Chip label={`${patientCount}p`} size="small" sx={{ bgcolor: 'primary.light', color: 'primary.main', fontSize: 11, height: 20, fontWeight: 600 }} />
-                          </Box>
-                          {i < teamMembers.length - 1 && <Divider />}
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                )}
-              </CardContent>
+              <Text strong style={{ display: 'block', marginBottom: 16 }}>
+                Team {teamMembers.length > 0 ? `(${teamMembers.length})` : ''}
+              </Text>
+              {teamMembers.length === 0 ? (
+                <Text type="secondary">No staff assigned to this location yet.</Text>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {teamMembers.map((emp, i) => {
+                    const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
+                    const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
+                    return (
+                      <div key={emp.id}>
+                        <div
+                          style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 4px', cursor: 'pointer', borderRadius: 8 }}
+                          onClick={() => router.push(`/employees/${emp.id}`)}
+                        >
+                          <Avatar style={{ width: 40, height: 40, background: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
+                            {emp.avatarInitials}
+                          </Avatar>
+                          <div style={{ flexGrow: 1, minWidth: 0 }}>
+                            <Text strong ellipsis style={{ display: 'block' }}>{emp.firstName} {emp.lastName}</Text>
+                            <Text type="secondary" ellipsis style={{ fontSize: 12 }}>{emp.credentials} · {emp.title}</Text>
+                          </div>
+                          <Tag style={{ background: '#EDE7F6', color: '#6750A4', fontSize: 11, fontWeight: 600, border: 'none' }}>{`${patientCount}p`}</Tag>
+                        </div>
+                        {i < teamMembers.length - 1 && <Divider style={{ margin: 0 }} />}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </Card>
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </div>
 
       {/* Delete Confirmation */}
-      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Delete Clinic Location?</DialogTitle>
-        <DialogContent sx={{ pt: '12px !important' }}>
-          <Typography variant="body2" color="text.secondary">
-            This will permanently remove <strong>{saved.name}</strong> from the organization. This cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="error" disableElevation onClick={handleDelete}>
-            Delete Location
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => setSnackOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="success" onClose={() => setSnackOpen(false)} sx={{ width: '100%' }}>{snackMsg}</Alert>
-      </Snackbar>
+      <Modal
+        open={deleteOpen}
+        onCancel={() => setDeleteOpen(false)}
+        title="Delete Clinic Location?"
+        footer={[
+          <Button key="cancel" onClick={() => setDeleteOpen(false)}>Cancel</Button>,
+          <Button key="delete" type="primary" danger onClick={handleDelete}>Delete Location</Button>,
+        ]}
+      >
+        <Text type="secondary">
+          This will permanently remove <strong>{saved.name}</strong> from the organization. This cannot be undone.
+        </Text>
+      </Modal>
     </>
   );
 }

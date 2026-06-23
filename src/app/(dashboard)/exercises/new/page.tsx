@@ -1,19 +1,10 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Chip from '@mui/material/Chip';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import { Typography, Input, Button, Select, Card, InputNumber } from 'antd';
 import TopBar from '@/components/layout/TopBar';
 import { useState } from 'react';
+
+const { Title, Text } = Typography;
 
 const CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
 const SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
@@ -21,6 +12,8 @@ const SPECIALTIES = ['Pelvic Floor', 'Orthopedic'];
 const MUSCLES = ['Levator Ani', 'Coccygeus', 'Transverse Abdominis', 'Glutes', 'Diaphragm', 'Multifidus', 'Hip Abductors', 'Adductors', 'Hip Flexors', 'Quadriceps'];
 const BODY_PARTS = ['Pelvis', 'Core', 'Hip', 'Spine', 'Knee'];
 const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
+
+const fieldLabel = (label: string) => <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>;
 
 export default function NewExercisePage() {
   const router = useRouter();
@@ -39,90 +32,83 @@ export default function NewExercisePage() {
   const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>([]);
   const [youtubeUrl, setYoutubeUrl] = useState('');
 
+  const tagFields = [
+    { label: 'Specialty', options: SPECIALTIES, selected: selectedSpecialties, set: setSelectedSpecialties },
+    { label: 'Condition', options: CONDITIONS, selected: selectedConditions, set: setSelectedConditions },
+    { label: 'Surgery', options: SURGERIES, selected: selectedSurgeries, set: setSelectedSurgeries },
+    { label: 'Muscle', options: MUSCLES, selected: selectedMuscles, set: setSelectedMuscles },
+    { label: 'Body Part', options: BODY_PARTS, selected: selectedBodyParts, set: setSelectedBodyParts },
+  ];
+
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: 'New Exercise' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4, maxWidth: 700 }}>
-        <Typography variant="h5" fontWeight={600} mb={3}>New Exercise</Typography>
+      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 700 }}>
+        <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>New Exercise</Title>
 
-        <Card sx={{ mb: 3 }}>
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <Typography variant="subtitle2" fontWeight={600}>Basic Info</Typography>
-            <TextField label="Exercise Name" fullWidth size="small" value={name} onChange={(e) => setName(e.target.value)} />
-            <TextField label="Description" fullWidth size="small" multiline rows={2} value={description} onChange={(e) => setDescription(e.target.value)} />
-            <TextField label="Instructions (one step per line)" fullWidth size="small" multiline rows={4} value={instructions} onChange={(e) => setInstructions(e.target.value)} />
-            <TextField label="Common Mistakes (one per line)" fullWidth size="small" multiline rows={3} value={mistakes} onChange={(e) => setMistakes(e.target.value)} />
-          </CardContent>
+        <Card style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <Text strong>Basic Info</Text>
+            <div>{fieldLabel('Exercise Name')}<Input value={name} onChange={(e) => setName(e.target.value)} /></div>
+            <div>{fieldLabel('Description')}<Input.TextArea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+            <div>{fieldLabel('Instructions (one step per line)')}<Input.TextArea rows={4} value={instructions} onChange={(e) => setInstructions(e.target.value)} /></div>
+            <div>{fieldLabel('Common Mistakes (one per line)')}<Input.TextArea rows={3} value={mistakes} onChange={(e) => setMistakes(e.target.value)} /></div>
+          </div>
         </Card>
 
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="subtitle2" fontWeight={600} mb={2}>Defaults</Typography>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              {[{ label: 'Sets', value: sets, set: setSets }, { label: 'Reps', value: reps, set: setReps }, { label: 'Hold (sec)', value: hold, set: setHold }].map(({ label, value, set }) => (
-                <TextField key={label} label={label} type="number" size="small" value={value} onChange={(e) => set(parseInt(e.target.value) || 0)} sx={{ width: 100 }} inputProps={{ min: 0 }} />
-              ))}
-              <FormControl size="small" sx={{ minWidth: 160 }}>
-                <InputLabel>Frequency</InputLabel>
-                <Select label="Frequency" value={frequency} onChange={(e) => setFrequency(e.target.value)}>
-                  {FREQUENCIES.map((f) => <MenuItem key={f} value={f}>{f}</MenuItem>)}
-                </Select>
-              </FormControl>
-            </Box>
-          </CardContent>
+        <Card style={{ marginBottom: 24 }}>
+          <Text strong style={{ display: 'block', marginBottom: 16 }}>Defaults</Text>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <div>{fieldLabel('Sets')}<InputNumber min={0} value={sets} onChange={(v) => setSets(v ?? 0)} style={{ width: 100 }} /></div>
+            <div>{fieldLabel('Reps')}<InputNumber min={0} value={reps} onChange={(v) => setReps(v ?? 0)} style={{ width: 100 }} /></div>
+            <div>{fieldLabel('Hold (sec)')}<InputNumber min={0} value={hold} onChange={(v) => setHold(v ?? 0)} style={{ width: 100 }} /></div>
+            <div>
+              {fieldLabel('Frequency')}
+              <Select value={frequency} onChange={setFrequency} style={{ minWidth: 160 }} options={FREQUENCIES.map((f) => ({ value: f, label: f }))} />
+            </div>
+          </div>
         </Card>
 
-        <Card sx={{ mb: 3 }}>
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <Typography variant="subtitle2" fontWeight={600}>Tags</Typography>
-            {[
-              { label: 'Specialty', options: SPECIALTIES, selected: selectedSpecialties, set: setSelectedSpecialties },
-              { label: 'Condition', options: CONDITIONS, selected: selectedConditions, set: setSelectedConditions },
-              { label: 'Surgery', options: SURGERIES, selected: selectedSurgeries, set: setSelectedSurgeries },
-              { label: 'Muscle', options: MUSCLES, selected: selectedMuscles, set: setSelectedMuscles },
-              { label: 'Body Part', options: BODY_PARTS, selected: selectedBodyParts, set: setSelectedBodyParts },
-            ].map(({ label, options, selected, set }) => (
-              <FormControl key={label} size="small" fullWidth>
-                <InputLabel>{label}</InputLabel>
+        <Card style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <Text strong>Tags</Text>
+            {tagFields.map(({ label, options, selected, set }) => (
+              <div key={label}>
+                {fieldLabel(label)}
                 <Select
-                  multiple value={selected}
-                  onChange={(e) => set(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
-                  input={<OutlinedInput label={label} />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as string[]).map((v) => <Chip key={v} label={v} size="small" />)}
-                    </Box>
-                  )}
-                >
-                  {options.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-                </Select>
-              </FormControl>
+                  mode="multiple"
+                  style={{ width: '100%' }}
+                  value={selected}
+                  onChange={(vals) => set(vals)}
+                  options={options.map((o) => ({ value: o, label: o }))}
+                />
+              </div>
             ))}
-          </CardContent>
+          </div>
         </Card>
 
-        <Card sx={{ mb: 3 }}>
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <Typography variant="subtitle2" fontWeight={600}>Media</Typography>
-            <TextField
-              label="YouTube URL"
-              fullWidth
-              size="small"
-              placeholder="https://www.youtube.com/watch?v=..."
-              value={youtubeUrl}
-              onChange={(e) => setYoutubeUrl(e.target.value)}
-            />
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button variant="outlined" size="small">Upload Video / Image</Button>
-            </Box>
-          </CardContent>
+        <Card style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <Text strong>Media</Text>
+            <div>
+              {fieldLabel('YouTube URL')}
+              <Input
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <Button size="small">Upload Video / Image</Button>
+            </div>
+          </div>
         </Card>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
           <Button onClick={() => router.push('/exercises')}>Cancel</Button>
-          <Button variant="contained" onClick={() => router.push('/exercises')} disableElevation>Save Exercise</Button>
-        </Box>
-      </Box>
+          <Button type="primary" onClick={() => router.push('/exercises')}>Save Exercise</Button>
+        </div>
+      </div>
     </>
   );
 }

@@ -1,14 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import { Typography, Button, Card, Divider } from 'antd';
+import { BellOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockNotifications } from '@/lib/mock-data';
+
+const { Title, Text } = Typography;
 
 function formatTime(ts: string) {
   const diff = Date.now() - new Date(ts).getTime();
@@ -29,49 +27,49 @@ export default function NotificationsPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Notifications' }]} />
-      <Box sx={{ pt: '56px', px: 4, py: 4, maxWidth: 720 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="h5" fontWeight={600}>Notifications</Typography>
+      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 720 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Title level={2} style={{ margin: 0 }}>Notifications</Title>
             {unreadCount > 0 && (
-              <Box sx={{ px: 1, py: 0.25, bgcolor: 'primary.main', borderRadius: 10, minWidth: 22, textAlign: 'center' }}>
-                <Typography variant="caption" sx={{ color: '#fff', fontWeight: 600, fontSize: 11 }}>{unreadCount}</Typography>
-              </Box>
+              <div style={{ padding: '2px 8px', background: '#6750A4', borderRadius: 10, minWidth: 22, textAlign: 'center' }}>
+                <span style={{ color: '#fff', fontWeight: 600, fontSize: 11 }}>{unreadCount}</span>
+              </div>
             )}
-          </Box>
-          {unreadCount > 0 && <Button size="small" onClick={markAllRead}>Mark all as read</Button>}
-        </Box>
+          </div>
+          {unreadCount > 0 && <Button size="small" type="text" onClick={markAllRead}>Mark all as read</Button>}
+        </div>
 
         {notifications.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <NotificationsOutlinedIcon sx={{ fontSize: 48, color: '#BDBDBD', mb: 1 }} />
-            <Typography color="text.secondary">No notifications</Typography>
-          </Box>
+          <div style={{ textAlign: 'center', padding: '64px 0' }}>
+            <BellOutlined style={{ fontSize: 48, color: '#BDBDBD', marginBottom: 8 }} />
+            <div><Text type="secondary">No notifications</Text></div>
+          </div>
         ) : (
-          <Card>
+          <Card styles={{ body: { padding: 0 } }}>
             {notifications.map((notif, i) => (
-              <Box key={notif.id}>
-                <Box
-                  sx={{ px: 3, py: 2.5, display: 'flex', gap: 2, alignItems: 'flex-start', cursor: 'pointer', bgcolor: !notif.read ? '#FAFAFA' : 'transparent', '&:hover': { bgcolor: 'action.hover' }, transition: 'background 0.1s' }}
+              <div key={notif.id}>
+                <div
+                  style={{ padding: '20px 24px', display: 'flex', gap: 16, alignItems: 'flex-start', cursor: 'pointer', background: !notif.read ? '#FAFAFA' : 'transparent', transition: 'background 0.1s' }}
                   onClick={() => notif.patientId && router.push(`/patients/${notif.patientId}/documents`)}
                 >
-                  <Box sx={{ width: 36, height: 36, borderRadius: '50%', bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <NotificationsOutlinedIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-                  </Box>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" fontWeight={!notif.read ? 600 : 400}>{notif.message}</Typography>
-                    <Typography variant="caption" color="text.secondary">{formatTime(notif.timestamp)}</Typography>
-                  </Box>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <BellOutlined style={{ fontSize: 18, color: '#6750A4' }} />
+                  </div>
+                  <div style={{ flexGrow: 1 }}>
+                    <div><Text style={{ fontWeight: !notif.read ? 600 : 400 }}>{notif.message}</Text></div>
+                    <Text type="secondary" style={{ fontSize: 12 }}>{formatTime(notif.timestamp)}</Text>
+                  </div>
                   {!notif.read && (
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', mt: 1, flexShrink: 0 }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#6750A4', marginTop: 8, flexShrink: 0 }} />
                   )}
-                </Box>
-                {i < notifications.length - 1 && <Divider />}
-              </Box>
+                </div>
+                {i < notifications.length - 1 && <Divider style={{ margin: 0 }} />}
+              </div>
             ))}
           </Card>
         )}
-      </Box>
+      </div>
     </>
   );
 }
