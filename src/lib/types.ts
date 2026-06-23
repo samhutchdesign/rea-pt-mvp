@@ -70,6 +70,9 @@ export interface Exercise {
   id: string;
   name: string;
   description: string;
+  category: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  equipment: string;
   instructions: string[];
   commonMistakes: string[];
   tags: ExerciseTags;
