@@ -6,7 +6,7 @@ import type { ComponentType } from 'react';
 import { usePermissions } from '@/lib/permissionsHook';
 import { List, Users, Zap } from 'lucide-react';
 
-type NavItem = { label: string; href: string; icon: ComponentType<{ style?: React.CSSProperties }> };
+type NavItem = { label: string; href: string; icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }> };
 
 const baseNavItems: NavItem[] = [
   { label: 'Patients', href: '/patients', icon: Users },
@@ -85,7 +85,7 @@ export default function Sidebar() {
                   transition: 'background-color 0.15s',
                 }}
               >
-                <Icon style={{ fontSize: 22, color: isActive ? '#6750A4' : '#49454F' }} />
+                <Icon size={20} color={isActive ? '#6750A4' : '#49454F'} />
                 <span
                   style={{
                     fontSize: 10,

@@ -69,7 +69,7 @@ export default function ClinicPage() {
     messageApi.success('Location added.');
   };
 
-  const contactItems: { icon: ComponentType<{ style?: React.CSSProperties }>; label: string }[] = [
+  const contactItems: { icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; label: string }[] = [
     { icon: Phone, label: mockClinic.phone },
     { icon: Mail, label: mockClinic.email },
     { icon: Globe, label: mockClinic.website },
@@ -169,7 +169,7 @@ export default function ClinicPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {contactItems.map(({ icon: Icon, label }) => (
                     <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <Icon style={{ fontSize: 17, color: '#49454F', marginTop: 2, flexShrink: 0 }} />
+                      <Icon size={16} color="#49454F" style={{ marginTop: 2, flexShrink: 0 }} />
                       <Text type="secondary">{label}</Text>
                     </div>
                   ))}

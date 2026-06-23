@@ -10,7 +10,7 @@ import { mockExercises } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 import { ArrowLeft, Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, Zap } from 'lucide-react';
 
-type IconType = ComponentType<{ style?: React.CSSProperties }>;
+type IconType = ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>;
 
 // ── Specialties ───────────────────────────────────────────────────────────────
 
@@ -205,7 +205,7 @@ function SpecialtyGrid({ onSelect }: { onSelect: (id: string) => void }) {
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 12, background: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon style={{ fontSize: 22, color: sp.color }} />
+                  <Icon size={20} color={sp.color} />
                 </div>
                 {sp.available ? (
                   <Tag style={{ fontSize: 11, background: sp.bg, color: sp.color, fontWeight: 600, border: 'none' }}>{`${sp.count} exercises`}</Tag>
@@ -232,7 +232,7 @@ function ComingSoonState({ sp }: { sp: typeof SPECIALTIES[0] }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 0', borderRadius: 8, border: '2px dashed #E0E0E0', background: sp.bg + '44' }}>
       <div style={{ width: 60, height: 60, borderRadius: '50%', background: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-        <Icon style={{ fontSize: 30, color: sp.color }} />
+        <Icon size={28} color={sp.color} />
       </div>
       <Title level={3} style={{ marginTop: 0, marginBottom: 4 }}>{sp.name}</Title>
       <Text type="secondary" style={{ maxWidth: 380, textAlign: 'center', marginBottom: 16 }}>

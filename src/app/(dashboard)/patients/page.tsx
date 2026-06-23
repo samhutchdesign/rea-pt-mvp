@@ -197,14 +197,14 @@ export default function PatientsPage() {
                   <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
                     {(() => {
                       const { lastSeen, count } = sessionInfo(patient);
-                      const rows: { icon: ComponentType<{ style?: React.CSSProperties }>; text: string }[] = [
+                      const rows: { icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; text: string }[] = [
                         { icon: MapPin, text: patient.location },
                         { icon: Calendar, text: lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet' },
                         { icon: RefreshCw, text: count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—' },
                       ];
                       return rows.map(({ icon: Icon, text }) => (
                         <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Icon style={{ fontSize: 12, color: '#BDBDBD' }} />
+                          <Icon size={12} color={'#BDBDBD'} />
                           <Text type="secondary" style={{ fontSize: 12 }}>{text}</Text>
                         </div>
                       ));

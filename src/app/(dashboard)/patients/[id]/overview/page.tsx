@@ -35,7 +35,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const assignedEmployees = patient ? mockEmployees.filter((e) => patient.assignedEmployeeIds.includes(e.id)) : [];
   const can = usePermissions();
 
-  const stats: { label: string; value: number | string; icon: ComponentType<{ style?: React.CSSProperties }>; color: string }[] = [
+  const stats: { label: string; value: number | string; icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; color: string }[] = [
     { label: 'Total Sessions', value: sessions.length, icon: Calendar, color: '#0288D1' },
     { label: 'Exercises in Program', value: program ? program.exercises.length : '—', icon: Zap, color: '#F57C00' },
   ];
@@ -66,7 +66,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           <Card key={label} style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <div style={{ width: 40, height: 40, borderRadius: 8, background: color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon style={{ color, fontSize: 20 }} />
+                <Icon size={20} color={color} />
               </div>
               <div>
                 <Title level={2} style={{ margin: 0, lineHeight: 1 }}>{value}</Title>
