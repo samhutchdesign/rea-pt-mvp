@@ -12,7 +12,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           colorPrimary: '#6750A4',
           colorPrimaryBg: '#EDE7F6',
           borderRadius: 8,
-          fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         },
         components: {
           Button: { borderRadius: 8 },

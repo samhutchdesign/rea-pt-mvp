@@ -50,7 +50,7 @@ export default function DemoRoleBar() {
               color: active ? '#D0BCFF' : 'rgba(255,255,255,0.55)',
               fontSize: 12,
               fontWeight: active ? 600 : 400,
-              fontFamily: "var(--font-inter), sans-serif",
+              fontFamily: "inherit",
               lineHeight: '20px',
               transition: 'all 0.15s',
             }}
