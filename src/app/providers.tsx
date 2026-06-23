@@ -1,5 +1,8 @@
 'use client';
-import { ConfigProvider, App } from 'antd';
+import { ConfigProvider, App, Typography } from 'antd';
+
+// Override Ant Design's Title to use Poppins globally
+const { Title: AntTitle } = Typography;
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +12,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           colorPrimary: '#6750A4',
           colorPrimaryBg: '#EDE7F6',
           borderRadius: 8,
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+          fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif",
         },
         components: {
           Button: { borderRadius: 8 },
@@ -17,6 +20,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           Input: { borderRadius: 8 },
           Select: { borderRadius: 8 },
           Tag: { borderRadius: 999 },
+          Typography: {
+            fontWeightStrong: 600,
+          },
         },
       }}
     >
