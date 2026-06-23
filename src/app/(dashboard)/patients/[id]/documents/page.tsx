@@ -2,15 +2,8 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Button, Card, Tag, Modal, Progress } from 'antd';
-import {
-  FilePdfOutlined,
-  UploadOutlined,
-  StarOutlined,
-  CheckCircleFilled,
-  CloseOutlined,
-  FileTextOutlined,
-} from '@ant-design/icons';
 import { mockPatients, mockDocuments } from '@/lib/mock-data';
+import { CheckCircle, FileText, Star, Upload, X } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -260,7 +253,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <Text strong style={{ fontSize: 18 }}>Documents</Text>
-        <Button type="primary" icon={<UploadOutlined />} onClick={openUpload}>
+        <Button type="primary" icon={<Upload />} onClick={openUpload}>
           Upload Patient PDF
         </Button>
       </div>
@@ -276,7 +269,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px' }}>
               <div style={{ width: 44, height: 44, background: '#FFF3E0', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <FilePdfOutlined style={{ color: '#E65100', fontSize: 24 }} />
+                <FileText size={24} />
               </div>
               <div style={{ flexGrow: 1 }}>
                 <Text strong style={{ display: 'block' }}>{doc.name}</Text>
@@ -311,7 +304,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
               onClick={handleBrowseClick}
               style={{ border: '2px dashed #E0E0E0', borderRadius: 8, padding: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, cursor: 'pointer', transition: 'border-color 0.15s' }}
             >
-              <UploadOutlined style={{ fontSize: 40, color: '#BDBDBD' }} />
+              <Upload size={40} />
               <Text strong>Drag & drop a PDF here</Text>
               <Text type="secondary" style={{ fontSize: 12 }}>or click to browse</Text>
             </div>
@@ -320,7 +313,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
         {(uploadPhase === 'uploading' || uploadPhase === 'processing') && (
           <div style={{ padding: '24px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              {uploadPhase === 'uploading' ? <UploadOutlined style={{ color: '#6750A4' }} /> : <StarOutlined style={{ color: '#F57C00' }} />}
+              {uploadPhase === 'uploading' ? <Upload style={{ color: '#6750A4' }} /> : <Star style={{ color: '#F57C00' }} />}
               <div style={{ flexGrow: 1 }}>
                 <Text strong style={{ display: 'block', marginBottom: 2 }}>{uploadPhase === 'uploading' ? `Uploading ${FAKE_FILENAME}…` : 'AI is reading your document…'}</Text>
                 <Text type="secondary" style={{ fontSize: 12 }}>{uploadPhase === 'uploading' ? 'Uploading file' : 'Extracting patient information'}</Text>
@@ -332,7 +325,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
         {uploadPhase === 'done' && (
           <div style={{ padding: '16px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, padding: 16, background: '#F1F8E9', borderRadius: 8, border: '1px solid #C5E1A5' }}>
-              <CheckCircleFilled style={{ color: '#2E7D32', fontSize: 22, flexShrink: 0 }} />
+              <CheckCircle size={22} fill="currentColor" />
               <div>
                 <Text strong style={{ color: '#2E7D32', display: 'block' }}>PDF successfully uploaded</Text>
                 <Text type="secondary" style={{ fontSize: 12 }}>{FAKE_FILENAME}</Text>
@@ -358,10 +351,10 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
         footer={null}
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <FileTextOutlined style={{ fontSize: 18, color: '#C62828' }} />
+            <FileText size={18} />
             <Text strong style={{ flexGrow: 1 }}>Patient_Intake_Form.pdf</Text>
             <Tag style={{ background: '#FFEBEE', color: '#C62828', fontSize: '0.7rem', border: 'none' }}>Original (patient voice)</Tag>
-            <Button type="text" size="small" onClick={() => setPdfOpen(false)} icon={<CloseOutlined />} />
+            <Button type="text" size="small" onClick={() => setPdfOpen(false)} icon={<X />} />
           </div>
         }
         styles={{ body: { background: '#EEEEEE', padding: 16 } }}

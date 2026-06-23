@@ -2,8 +2,8 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Spin, App } from 'antd';
-import { StarOutlined, UserOutlined, HistoryOutlined } from '@ant-design/icons';
 import { mockPatients, mockChartSessions } from '@/lib/mock-data';
+import { History, Star, User } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -114,12 +114,12 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, flexWrap: 'wrap', gap: 8 }}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <Tag icon={<UserOutlined />} style={{ fontSize: '0.72rem', color: '#49454F' }}>Patient profile</Tag>
-            <Tag icon={<HistoryOutlined />} style={{ fontSize: '0.72rem', color: '#49454F' }}>{`${sessions.length} previous session${sessions.length !== 1 ? 's' : ''}`}</Tag>
+            <Tag icon={<User />} style={{ fontSize: '0.72rem', color: '#49454F' }}>Patient profile</Tag>
+            <Tag icon={<History />} style={{ fontSize: '0.72rem', color: '#49454F' }}>{`${sessions.length} previous session${sessions.length !== 1 ? 's' : ''}`}</Tag>
           </div>
           <Button
             size="small"
-            icon={loading ? <Spin size="small" /> : <StarOutlined />}
+            icon={loading ? <Spin size="small" /> : <Star />}
             onClick={handlePopulate}
             disabled={!notes.trim() || loading}
           >

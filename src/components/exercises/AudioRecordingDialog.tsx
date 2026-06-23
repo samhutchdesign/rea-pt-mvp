@@ -1,14 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Typography, Button, Modal, Alert, Progress } from 'antd';
-import {
-  CloseOutlined,
-  AudioOutlined,
-  BorderOutlined,
-  CaretRightOutlined,
-  PauseOutlined,
-  ThunderboltOutlined,
-} from '@ant-design/icons';
+import { ChevronRight, Mic, Pause, Square, X, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -206,7 +199,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
         <div style={{ flex: 1 }} />
         <Button
           type="primary"
-          icon={<AudioOutlined />}
+          icon={<Mic />}
           onClick={startRecording}
           style={{ background: '#D32F2F', borderColor: '#D32F2F', padding: '0 24px' }}
         >
@@ -219,7 +212,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
         <div style={{ flex: 1 }} />
         <Button
           type="primary"
-          icon={<BorderOutlined />}
+          icon={<Square />}
           onClick={doStop}
           style={{ background: '#D32F2F', borderColor: '#D32F2F', padding: '0 24px' }}
         >
@@ -253,7 +246,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>{exerciseName}</Text>
         </div>
-        <Button type="text" size="small" icon={<CloseOutlined />} onClick={handleClose} />
+        <Button type="text" size="small" icon={<X />} onClick={handleClose} />
       </div>
 
       {/* Video / iframe */}
@@ -270,7 +263,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
           />
         ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ThunderboltOutlined style={{ fontSize: 72, color: 'rgba(255,255,255,0.15)' }} />
+            <Zap size={72} />
           </div>
         )}
 
@@ -354,7 +347,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
             </div>
             <Button
               size="small"
-              icon={previewPlaying ? <PauseOutlined /> : <CaretRightOutlined />}
+              icon={previewPlaying ? <Pause /> : <ChevronRight />}
               onClick={togglePreview}
             >
               {previewPlaying ? 'Pause' : 'Play Again'}

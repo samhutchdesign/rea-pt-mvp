@@ -1,10 +1,10 @@
 'use client';
 import { use, useState } from 'react';
 import { Typography, Card, Input, Button, App } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
+import { Pencil } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -82,7 +82,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <Text strong>Contact Information</Text>
           {can.canEditContactInfo && !editingContact && (
-            <Button type="text" size="small" onClick={handleEditContact} icon={<EditOutlined />} />
+            <Button type="text" size="small" onClick={handleEditContact} icon={<Pencil />} />
           )}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -109,7 +109,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <Text strong>Emergency Contact</Text>
           {can.canEditContactInfo && !editingEmergency && (
-            <Button type="text" size="small" onClick={handleEditEmergency} icon={<EditOutlined />} />
+            <Button type="text" size="small" onClick={handleEditEmergency} icon={<Pencil />} />
           )}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

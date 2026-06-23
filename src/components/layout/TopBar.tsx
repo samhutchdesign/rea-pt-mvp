@@ -3,12 +3,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Avatar, Dropdown, Breadcrumb } from 'antd';
 import type { MenuProps } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
 import { mockPhysio } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
 import { useYourEmpId } from '@/lib/locationScope';
+import { ChevronRight } from 'lucide-react';
 
 interface TopBarProps {
   breadcrumbs: { label: string; href?: string }[];
@@ -72,7 +72,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
     >
       <Breadcrumb
         style={{ flexGrow: 1 }}
-        separator={<RightOutlined style={{ fontSize: 10, color: '#9E9E9E' }} />}
+        separator={<ChevronRight size={10} />}
         items={breadcrumbs.map((crumb, i) => {
           const isLast = i === breadcrumbs.length - 1;
           if (crumb.href && !isLast) {

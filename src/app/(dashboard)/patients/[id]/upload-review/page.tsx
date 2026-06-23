@@ -2,10 +2,10 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Button, Input, Alert, Divider, Tag } from 'antd';
-import { StarOutlined, ArrowLeftOutlined, FileTextOutlined, TranslationOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients } from '@/lib/mock-data';
 import { saveUploadedData } from '@/lib/uploadStore';
+import { ArrowLeft, FileText, Languages, Star } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -217,7 +217,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
         <div style={{ flex: 1, minWidth: 0 }}>
           <Button
             type="text"
-            icon={<ArrowLeftOutlined />}
+            icon={<ArrowLeft />}
             onClick={() => router.back()}
             style={{ marginBottom: 16, color: '#49454F', fontSize: 13, paddingLeft: 0 }}
           >
@@ -225,7 +225,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
           </Button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <StarOutlined style={{ color: '#F57C00', fontSize: 22 }} />
+            <Star size={22} />
             <Title level={2} style={{ margin: 0 }}>Review Extracted Information</Title>
           </div>
           <Text type="secondary" style={{ display: 'block', marginBottom: 6 }}>
@@ -233,10 +233,10 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
           </Text>
 
           <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
-            <Tag icon={<StarOutlined />} style={{ background: '#FFF8E1', color: '#F57F17', fontWeight: 500, border: 'none' }}>
+            <Tag icon={<Star />} style={{ background: '#FFF8E1', color: '#F57F17', fontWeight: 500, border: 'none' }}>
               {`${TOTAL_FIELDS} fields extracted`}
             </Tag>
-            <Tag icon={<TranslationOutlined />} style={{ background: '#F3E5F5', color: '#6A1B9A', fontWeight: 500, border: 'none' }}>
+            <Tag icon={<Languages />} style={{ background: '#F3E5F5', color: '#6A1B9A', fontWeight: 500, border: 'none' }}>
               Patient language → clinical notes
             </Tag>
             {editCount > 0 && (
@@ -308,7 +308,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingLeft: 4 }}>
-            <FileTextOutlined style={{ fontSize: 16, color: '#C62828' }} />
+            <FileText size={16} />
             <Text type="secondary" strong style={{ fontSize: 11 }}>
               {FAKE_FILENAME}
             </Text>

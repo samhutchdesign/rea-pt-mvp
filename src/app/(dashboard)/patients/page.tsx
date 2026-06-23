@@ -2,21 +2,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Avatar, Tabs, Select, App } from 'antd';
-import {
-  SearchOutlined,
-  PlusOutlined,
-  UserOutlined,
-  RollbackOutlined,
-  EnvironmentOutlined,
-  CalendarOutlined,
-  SyncOutlined,
-} from '@ant-design/icons';
 import type { ComponentType } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
 import type { Patient } from '@/lib/types';
+import { Calendar, MapPin, Plus, RefreshCw, RotateCcw, Search, User } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -142,7 +134,7 @@ export default function PatientsPage() {
       <div style={{ padding: '32px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <Title level={2} style={{ margin: 0 }}>Patients</Title>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setAddOpen(true)}>
+          <Button type="primary" icon={<Plus />} onClick={() => setAddOpen(true)}>
             Add New Patient
           </Button>
         </div>
@@ -160,7 +152,7 @@ export default function PatientsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{ width: 340 }}
-            prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
+            prefix={<Search style={{ color: '#9E9E9E' }} />}
           />
           {tab !== archivedTabIndex && (
             <Select
@@ -174,7 +166,7 @@ export default function PatientsPage() {
 
         {empty ? (
           <div style={{ textAlign: 'center', padding: '64px 0' }}>
-            <UserOutlined style={{ fontSize: 48, color: '#BDBDBD', marginBottom: 8 }} />
+            <User size={48} />
             <div><Text type="secondary">{emptyMessages[tab]}</Text></div>
           </div>
         ) : (
@@ -206,9 +198,9 @@ export default function PatientsPage() {
                     {(() => {
                       const { lastSeen, count } = sessionInfo(patient);
                       const rows: { icon: ComponentType<{ style?: React.CSSProperties }>; text: string }[] = [
-                        { icon: EnvironmentOutlined, text: patient.location },
-                        { icon: CalendarOutlined, text: lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet' },
-                        { icon: SyncOutlined, text: count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—' },
+                        { icon: MapPin, text: patient.location },
+                        { icon: Calendar, text: lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet' },
+                        { icon: RefreshCw, text: count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—' },
                       ];
                       return rows.map(({ icon: Icon, text }) => (
                         <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -220,7 +212,7 @@ export default function PatientsPage() {
                     {tab === archivedTabIndex && (
                       <Button
                         size="small"
-                        icon={<RollbackOutlined />}
+                        icon={<RotateCcw />}
                         onClick={(e) => { e.stopPropagation(); restore(patient); }}
                         style={{ marginTop: 4 }}
                       >

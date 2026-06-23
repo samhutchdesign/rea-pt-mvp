@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Select, Card } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
+import { Plus, Trash2 } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -60,14 +60,14 @@ export default function NewDocumentPage() {
                 size="small"
                 onClick={() => removeField(field.id)}
                 disabled={fields.length === 1}
-                icon={<DeleteOutlined />}
+                icon={<Trash2 />}
                 style={{ color: '#9E9E9E' }}
               />
             </Card>
           ))}
         </div>
 
-        <Button type="text" icon={<PlusOutlined />} onClick={addField} style={{ marginBottom: 32 }}>Add Field</Button>
+        <Button type="text" icon={<Plus />} onClick={addField} style={{ marginBottom: 32 }}>Add Field</Button>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
           <Button onClick={() => router.push('/documents')}>Cancel</Button>

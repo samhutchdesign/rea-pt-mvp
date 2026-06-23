@@ -2,8 +2,8 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Divider, App } from 'antd';
-import { SendOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { mockPatients, mockPrograms, mockExercises } from '@/lib/mock-data';
+import { Send, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -47,7 +47,7 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
               <div key={pe.exerciseId}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ width: 36, height: 36, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 18 }} />
+                    <Zap size={18} />
                   </div>
                   <div style={{ flexGrow: 1 }}>
                     <Text strong>{ex.name}</Text>
@@ -68,7 +68,7 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
         <Button onClick={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-        <Button type="primary" icon={<SendOutlined />} onClick={handleSend}>Send to Patient</Button>
+        <Button type="primary" icon={<Send />} onClick={handleSend}>Send to Patient</Button>
       </div>
     </div>
   );

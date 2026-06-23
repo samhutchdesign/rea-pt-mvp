@@ -3,17 +3,12 @@ import { useState, useEffect } from 'react';
 import { usePathname, useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Avatar, Typography, Tabs, Button, Tag, Alert, Modal, Input, Select, Divider, App } from 'antd';
-import {
-  MailOutlined,
-  EnvironmentOutlined,
-  EditOutlined,
-  InboxOutlined,
-} from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useYourEmpId } from '@/lib/locationScope';
 import { clearUploadedData } from '@/lib/uploadStore';
+import { Inbox, Mail, MapPin, Pencil } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -121,11 +116,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
               <Title level={2} style={{ margin: 0 }}>{patient.firstName} {patient.lastName}</Title>
               <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <MailOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                  <Mail size={15} />
                   <Text type="secondary">{patient.email}</Text>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <EnvironmentOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                  <MapPin size={15} />
                   <Text type="secondary">{patient.location}</Text>
                 </div>
               </div>
@@ -141,7 +136,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             {can.canArchivePatient && archived && (
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button
-                  icon={<InboxOutlined />}
+                  icon={<Inbox />}
                   size="small"
                   onClick={handleRestore}
                   style={{ borderColor: '#FB8C00', color: '#FB8C00' }}
@@ -159,7 +154,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             )}
             {canEdit && !archived && (
               <Button
-                icon={<EditOutlined />}
+                icon={<Pencil />}
                 size="small"
                 onClick={() => {
                   setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, locationId: mockClinicLocations.find((l) => patient.location.includes(l.city))?.id ?? '' });
@@ -230,7 +225,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 </Text>
                 <Button
                   size="small"
-                  icon={<InboxOutlined />}
+                  icon={<Inbox />}
                   onClick={() => setConfirmArchiveOpen(true)}
                   style={{ borderColor: '#FB8C00', color: '#FB8C00' }}
                 >

@@ -2,8 +2,8 @@
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Card, Button } from 'antd';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { mockChartSessions } from '@/lib/mock-data';
+import { Pencil, Plus } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -15,7 +15,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push(`/patients/${id}/chart/new`)}>
+        <Button type="primary" icon={<Plus />} onClick={() => router.push(`/patients/${id}/chart/new`)}>
           Add to Chart
         </Button>
       </div>
@@ -37,7 +37,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 <Button
                   type="text"
                   size="small"
-                  icon={<EditOutlined />}
+                  icon={<Pencil />}
                   onClick={() => router.push(`/patients/${id}/chart/${session.id}`)}
                   style={{ marginLeft: 8 }}
                 />

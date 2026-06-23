@@ -2,20 +2,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Avatar, Button, Card, Input, Tag, Divider, Modal, App } from 'antd';
-import {
-  EditOutlined,
-  ShopOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  GlobalOutlined,
-  EnvironmentOutlined,
-  PlusOutlined,
-  RightOutlined,
-} from '@ant-design/icons';
 import type { ComponentType } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import { mockClinic, mockClinicLocations, mockEmployees, mockPatients } from '@/lib/mock-data';
 import type { ClinicLocation } from '@/lib/types';
+import { Building2, ChevronRight, Globe, Mail, MapPin, Pencil, Phone, Plus } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -79,10 +70,10 @@ export default function ClinicPage() {
   };
 
   const contactItems: { icon: ComponentType<{ style?: React.CSSProperties }>; label: string }[] = [
-    { icon: PhoneOutlined, label: mockClinic.phone },
-    { icon: MailOutlined, label: mockClinic.email },
-    { icon: GlobalOutlined, label: mockClinic.website },
-    { icon: EnvironmentOutlined, label: mockClinic.address },
+    { icon: Phone, label: mockClinic.phone },
+    { icon: Mail, label: mockClinic.email },
+    { icon: Globe, label: mockClinic.website },
+    { icon: MapPin, label: mockClinic.address },
   ];
 
   return (
@@ -98,17 +89,17 @@ export default function ClinicPage() {
             <Title level={2} style={{ marginTop: 0, marginBottom: 4 }}>{mockClinic.name}</Title>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <EnvironmentOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <MapPin size={15} />
                 <Text type="secondary">{locations.length} location{locations.length !== 1 ? 's' : ''}</Text>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <ShopOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <Building2 size={15} />
                 <Text type="secondary">{mockEmployees.length} physiotherapists</Text>
               </div>
             </div>
           </div>
           {!editing ? (
-            <Button icon={<EditOutlined />} onClick={() => setEditing(true)}>Edit Organization</Button>
+            <Button icon={<Pencil />} onClick={() => setEditing(true)}>Edit Organization</Button>
           ) : (
             <div style={{ display: 'flex', gap: 8 }}>
               <Button onClick={() => setEditing(false)}>Cancel</Button>
@@ -138,7 +129,7 @@ export default function ClinicPage() {
             <Card>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Text strong>Locations</Text>
-                <Button type="text" size="small" icon={<PlusOutlined />} onClick={() => setAddLocationOpen(true)}>
+                <Button type="text" size="small" icon={<Plus />} onClick={() => setAddLocationOpen(true)}>
                   Add Location
                 </Button>
               </div>
@@ -149,7 +140,7 @@ export default function ClinicPage() {
                   {locations.map((loc, i) => (
                     <div key={loc.id}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
-                        <EnvironmentOutlined style={{ fontSize: 18, color: '#49454F', flexShrink: 0 }} />
+                        <MapPin size={18} />
                         <div
                           style={{ flexGrow: 1, cursor: 'pointer' }}
                           onClick={() => router.push(`/clinic/${loc.id}`)}
@@ -159,7 +150,7 @@ export default function ClinicPage() {
                             <Text type="secondary" style={{ fontSize: 12 }}>{loc.city}, {loc.regionCountry}</Text>
                           )}
                         </div>
-                        <RightOutlined
+                        <ChevronRight
                           style={{ fontSize: 14, color: '#49454F', cursor: 'pointer' }}
                           onClick={() => router.push(`/clinic/${loc.id}`)}
                         />

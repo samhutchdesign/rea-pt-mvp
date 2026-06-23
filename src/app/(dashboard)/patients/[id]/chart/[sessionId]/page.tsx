@@ -2,8 +2,8 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Modal, Tooltip, App } from 'antd';
-import { EditOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import { mockPatients, mockChartSessions } from '@/lib/mock-data';
+import { Copy, Pencil, Trash2 } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -74,9 +74,9 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           {!editing && (
             <>
               <Tooltip title={copySuccess ? 'Copied!' : 'Copy chart notes'}>
-                <Button type="text" size="small" onClick={handleCopy} icon={<CopyOutlined />} style={{ color: copySuccess ? '#2E7D32' : '#49454F' }} />
+                <Button type="text" size="small" onClick={handleCopy} icon={<Copy />} style={{ color: copySuccess ? '#2E7D32' : '#49454F' }} />
               </Tooltip>
-              <Button size="small" icon={<EditOutlined />} onClick={() => setEditing(true)}>
+              <Button size="small" icon={<Pencil />} onClick={() => setEditing(true)}>
                 Edit
               </Button>
             </>
@@ -138,7 +138,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             <Button
               danger
               size="small"
-              icon={<DeleteOutlined />}
+              icon={<Trash2 />}
               onClick={() => setDeleteOpen(true)}
             >
               Delete Session

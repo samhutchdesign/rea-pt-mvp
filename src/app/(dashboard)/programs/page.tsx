@@ -2,10 +2,10 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Select, Tooltip } from 'antd';
-import { SearchOutlined, PlusOutlined, HeartFilled, HeartOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import FilterMenu from '@/components/exercises/FilterMenu';
 import { mockPrograms } from '@/lib/mock-data';
+import { Heart, Plus, Search, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -48,7 +48,7 @@ export default function ProgramsPage() {
       <div style={{ padding: '32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <Title level={2} style={{ margin: 0 }}>Programs</Title>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push('/programs/new')}>Create New Program</Button>
+          <Button type="primary" icon={<Plus />} onClick={() => router.push('/programs/new')}>Create New Program</Button>
         </div>
 
         <div style={{ display: 'flex', gap: 16, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -57,14 +57,14 @@ export default function ProgramsPage() {
             style={{ width: 280 }}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
+            prefix={<Search style={{ color: '#9E9E9E' }} />}
           />
           <Tag.CheckableTag
             checked={showFavoritesOnly}
             onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
             style={{ border: '1px solid #E0E0E0', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
-            <HeartFilled style={{ fontSize: 14 }} /> Favorites
+            <Heart size={14} fill="currentColor" /> Favorites
           </Tag.CheckableTag>
           <FilterMenu label="Tag" options={ALL_TAGS} selected={filterTags} onChange={setFilterTags} />
           <Select
@@ -87,12 +87,12 @@ export default function ProgramsPage() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px' }}>
                 <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 22 }} />
+                  <Zap size={22} />
                 </div>
                 <div style={{ flexGrow: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <Text strong>{prog.name}</Text>
-                    {favorites.has(prog.id) && <HeartFilled style={{ fontSize: 14, color: '#E91E63' }} />}
+                    {favorites.has(prog.id) && <Heart size={14} fill="currentColor" />}
                   </div>
                   <Text type="secondary" style={{ display: 'block', marginBottom: 6 }}>{prog.description}</Text>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -105,7 +105,7 @@ export default function ProgramsPage() {
                     type="text"
                     size="small"
                     onClick={(e) => { e.stopPropagation(); toggleFavorite(prog.id); }}
-                    icon={favorites.has(prog.id) ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />}
+                    icon={favorites.has(prog.id) ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />}
                   />
                 </Tooltip>
               </div>

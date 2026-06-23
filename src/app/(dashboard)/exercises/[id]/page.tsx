@@ -2,23 +2,12 @@
 import { use, useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Button, Tag, Divider, Card, Switch, Select, Tooltip, Modal, Flex } from 'antd';
-import {
-  ThunderboltOutlined,
-  EditOutlined,
-  HeartFilled,
-  HeartOutlined,
-  AudioOutlined,
-  SoundOutlined,
-  CaretRightOutlined,
-  PauseOutlined,
-  DeleteOutlined,
-  CheckCircleFilled,
-} from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { mockExercises, mockPhysio, mockPrograms } from '@/lib/mock-data';
 import { getAudioTracks, saveAudioTrack, deleteAudioTrack } from '@/lib/audioStore';
 import type { AudioTrack } from '@/lib/types';
+import { CheckCircle, ChevronRight, Heart, Mic, Pause, Pencil, Trash2, Volume2, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -93,8 +82,8 @@ function AudioPanel({
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <div style={{ width: 36, height: 36, borderRadius: 8, background: myTrack && myEnabled ? '#E8F5E9' : 'rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {myTrack && myEnabled
-              ? <SoundOutlined style={{ fontSize: 18, color: '#2E7D32' }} />
-              : <SoundOutlined style={{ fontSize: 18, color: '#9E9E9E' }} />}
+              ? <Volume2 size={18} />
+              : <Volume2 size={18} />}
           </div>
           <Text strong>Audio Overlay</Text>
         </div>
@@ -103,7 +92,7 @@ function AudioPanel({
         {myTrack ? (
           <div style={{ padding: 16, background: 'rgba(0,0,0,0.04)', borderRadius: 8, border: '1px solid #E0E0E0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <CheckCircleFilled style={{ fontSize: 18, color: myEnabled ? '#2E7D32' : '#BDBDBD', flexShrink: 0 }} />
+              <CheckCircle size={18} fill="currentColor" />
               <div style={{ flexGrow: 1 }}>
                 <Text strong>Your recording</Text>
                 <div>
@@ -118,7 +107,7 @@ function AudioPanel({
                 <Text style={{ fontSize: 12 }}>{myEnabled ? 'On' : 'Off'}</Text>
               </Flex>
               <Tooltip title="Delete recording">
-                <Button type="text" size="small" onClick={() => setConfirmDelete(true)} icon={<DeleteOutlined />} />
+                <Button type="text" size="small" onClick={() => setConfirmDelete(true)} icon={<Trash2 />} />
               </Tooltip>
             </div>
 
@@ -135,7 +124,7 @@ function AudioPanel({
             )}
 
             <div style={{ marginTop: 12, paddingLeft: 28 }}>
-              <Button type="text" size="small" icon={<AudioOutlined />} onClick={onAdd} style={{ color: '#49454F', fontSize: 12 }}>
+              <Button type="text" size="small" icon={<Mic />} onClick={onAdd} style={{ color: '#49454F', fontSize: 12 }}>
                 Re-record
               </Button>
             </div>
@@ -145,7 +134,7 @@ function AudioPanel({
             <Text type="secondary">
               {tracks.length > 0 ? "You haven't recorded a voice-over yet." : 'No audio recorded. Record your voice-over to guide patients through this exercise.'}
             </Text>
-            <Button size="small" icon={<AudioOutlined />} onClick={onAdd} style={{ flexShrink: 0 }}>
+            <Button size="small" icon={<Mic />} onClick={onAdd} style={{ flexShrink: 0 }}>
               Add New Audio
             </Button>
           </div>
@@ -169,7 +158,7 @@ function AudioPanel({
                 <span>
                   <Button
                     size="small"
-                    icon={playing ? <PauseOutlined /> : <CaretRightOutlined />}
+                    icon={playing ? <Pause /> : <ChevronRight />}
                     disabled={!selectedTrack?.blobUrl}
                     onClick={togglePlay}
                   >
@@ -274,8 +263,8 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         ) : (
           <div style={{ width: '100%', height: 300, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
             <div style={{ textAlign: 'center' }}>
-              <ThunderboltOutlined style={{ fontSize: 64, color: '#6750A4', opacity: 0.4, marginBottom: 16, display: 'block' }} />
-              <Button type="primary" icon={<CaretRightOutlined />}>Play Video</Button>
+              <Zap size={64} />
+              <Button type="primary" icon={<ChevronRight />}>Play Video</Button>
             </div>
           </div>
         )}
@@ -286,8 +275,8 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             <Text type="secondary">{ex.description}</Text>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <Button type="text" shape="circle" onClick={() => setIsFavorite(!isFavorite)} icon={isFavorite ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />} />
-            <Button icon={<EditOutlined />} onClick={() => router.push(`/exercises/new?edit=${id}`)}>Edit</Button>
+            <Button type="text" shape="circle" onClick={() => setIsFavorite(!isFavorite)} icon={isFavorite ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />} />
+            <Button icon={<Pencil />} onClick={() => router.push(`/exercises/new?edit=${id}`)}>Edit</Button>
           </div>
         </div>
 

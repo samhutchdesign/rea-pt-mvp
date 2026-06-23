@@ -3,9 +3,9 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Button, Card, Tag, Modal, Select, App } from 'antd';
 import TopBar from '@/components/layout/TopBar';
-import { ThunderboltOutlined, EditOutlined, UserAddOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import { mockPrograms, mockExercises, mockPatients } from '@/lib/mock-data';
 import type { Patient } from '@/lib/types';
+import { Heart, Pencil, UserPlus, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -40,7 +40,7 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
                 type="text"
                 shape="circle"
                 onClick={() => setIsFavorite(!isFavorite)}
-                icon={isFavorite ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />}
+                icon={isFavorite ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />}
               />
             </div>
             <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>{prog.description}</Text>
@@ -49,10 +49,10 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <Button icon={<UserAddOutlined />} onClick={() => setAssignOpen(true)}>
+            <Button icon={<UserPlus />} onClick={() => setAssignOpen(true)}>
               Assign to Patient
             </Button>
-            <Button icon={<EditOutlined />} onClick={() => router.push('/programs/new')}>Edit</Button>
+            <Button icon={<Pencil />} onClick={() => router.push('/programs/new')}>Edit</Button>
           </div>
         </div>
 
@@ -66,7 +66,7 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
               <Card key={pe.exerciseId} styles={{ body: { padding: 0 } }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px' }}>
                   <div style={{ width: 48, height: 48, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 22 }} />
+                    <Zap size={22} />
                   </div>
                   <div style={{ flexGrow: 1 }}>
                     <Text strong style={{ display: 'block', marginBottom: 4 }}>{ex.name}</Text>

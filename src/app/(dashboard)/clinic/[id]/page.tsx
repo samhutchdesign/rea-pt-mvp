@@ -2,16 +2,10 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Avatar, Button, Card, Input, Tag, Divider, Modal, App } from 'antd';
-import {
-  EnvironmentOutlined,
-  ArrowLeftOutlined,
-  TeamOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockClinicLocations, mockClinic, mockEmployees, mockPatients } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
+import { ArrowLeft, MapPin, Pencil, Trash2, Users } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -89,23 +83,23 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
             <Title level={2} style={{ marginTop: 2, marginBottom: 4 }}>{saved.name}</Title>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <EnvironmentOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <MapPin size={15} />
                 <Text type="secondary">{saved.city}, {saved.regionCountry}</Text>
               </div>
               {teamMembers.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <TeamOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                  <Users size={15} />
                   <Text type="secondary">{teamMembers.length} physiotherapist{teamMembers.length !== 1 ? 's' : ''}</Text>
                 </div>
               )}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Button size="small" icon={<ArrowLeftOutlined />} onClick={() => router.push('/clinic')}>
+            <Button size="small" icon={<ArrowLeft />} onClick={() => router.push('/clinic')}>
               Organization
             </Button>
             {can.canManageClinic && !editing && (
-              <Button size="small" icon={<EditOutlined />} onClick={() => setEditing(true)}>
+              <Button size="small" icon={<Pencil />} onClick={() => setEditing(true)}>
                 Edit Clinic
               </Button>
             )}
@@ -154,7 +148,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                     <Text strong style={{ display: 'block' }}>Delete this clinic location</Text>
                     <Text type="secondary" style={{ fontSize: 12 }}>This will remove the location from the organization permanently.</Text>
                   </div>
-                  <Button danger size="small" icon={<DeleteOutlined />} onClick={() => setDeleteOpen(true)}>
+                  <Button danger size="small" icon={<Trash2 />} onClick={() => setDeleteOpen(true)}>
                     Delete Location
                   </Button>
                 </div>

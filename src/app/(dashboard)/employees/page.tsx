@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Avatar, Tag, Tabs, App } from 'antd';
-import { SearchOutlined, PlusOutlined, RollbackOutlined, MailOutlined, TeamOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients } from '@/lib/mock-data';
 import { useLocationScope } from '@/lib/locationScope';
 import type { Employee } from '@/lib/types';
+import { Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -54,7 +54,7 @@ export default function EmployeesPage() {
       <div style={{ padding: '32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <Title level={2} style={{ margin: 0 }}>Employees</Title>
-          <Button type="primary" icon={<PlusOutlined />}>Add Employee</Button>
+          <Button type="primary" icon={<Plus />}>Add Employee</Button>
         </div>
 
         <Tabs
@@ -72,12 +72,12 @@ export default function EmployeesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ marginBottom: 24, width: 340 }}
-          prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
+          prefix={<Search style={{ color: '#9E9E9E' }} />}
         />
 
         {empty ? (
           <div style={{ textAlign: 'center', padding: '64px 0' }}>
-            <TeamOutlined style={{ fontSize: 48, color: '#BDBDBD', marginBottom: 8 }} />
+            <Users size={48} />
             <div><Text type="secondary">{tab === '0' ? 'No active employees found' : 'No archived employees found'}</Text></div>
           </div>
         ) : (
@@ -114,14 +114,14 @@ export default function EmployeesPage() {
                         {`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
                       </Tag>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <MailOutlined style={{ fontSize: 13, color: '#49454F' }} />
+                        <Mail size={13} />
                         <Text type="secondary" style={{ fontSize: 12 }}>{emp.email}</Text>
                       </div>
                     </div>
                     {tab === '1' && (
                       <Button
                         size="small"
-                        icon={<RollbackOutlined />}
+                        icon={<RotateCcw />}
                         onClick={(e) => { e.stopPropagation(); restore(emp); }}
                         style={{ flexShrink: 0, marginLeft: 8 }}
                       >

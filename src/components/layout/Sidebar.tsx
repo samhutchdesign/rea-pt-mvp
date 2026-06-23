@@ -2,28 +2,23 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Tooltip } from 'antd';
-import {
-  TeamOutlined,
-  UsergroupAddOutlined,
-  ThunderboltOutlined,
-  UnorderedListOutlined,
-} from '@ant-design/icons';
 import type { ComponentType } from 'react';
 import { usePermissions } from '@/lib/permissionsHook';
+import { List, Users, Zap } from 'lucide-react';
 
 type NavItem = { label: string; href: string; icon: ComponentType<{ style?: React.CSSProperties }> };
 
 const baseNavItems: NavItem[] = [
-  { label: 'Patients', href: '/patients', icon: TeamOutlined },
-  { label: 'Exercises', href: '/exercises', icon: ThunderboltOutlined },
-  { label: 'Programs', href: '/programs', icon: UnorderedListOutlined },
+  { label: 'Patients', href: '/patients', icon: Users },
+  { label: 'Exercises', href: '/exercises', icon: Zap },
+  { label: 'Programs', href: '/programs', icon: List },
 ];
 
 const ownerNavItems: NavItem[] = [
-  { label: 'Patients', href: '/patients', icon: TeamOutlined },
-  { label: 'Employees', href: '/employees', icon: UsergroupAddOutlined },
-  { label: 'Exercises', href: '/exercises', icon: ThunderboltOutlined },
-  { label: 'Programs', href: '/programs', icon: UnorderedListOutlined },
+  { label: 'Patients', href: '/patients', icon: Users },
+  { label: 'Employees', href: '/employees', icon: Users },
+  { label: 'Exercises', href: '/exercises', icon: Zap },
+  { label: 'Programs', href: '/programs', icon: List },
 ];
 
 export default function Sidebar() {

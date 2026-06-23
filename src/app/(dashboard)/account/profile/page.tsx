@@ -2,11 +2,11 @@
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Avatar, Card, Tag, Divider } from 'antd';
 import TopBar from '@/components/layout/TopBar';
-import { ShopOutlined } from '@ant-design/icons';
 import { mockPhysio, mockClinic } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
+import { Building2 } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -74,7 +74,7 @@ export default function ProfilePage() {
                 <Text strong style={{ display: 'block' }}>{mockClinic.name}</Text>
                 <Text type="secondary" style={{ fontSize: 12 }}>{mockClinic.address}</Text>
               </div>
-              <ShopOutlined style={{ color: '#49454F', fontSize: 18 }} />
+              <Building2 size={18} />
             </div>
           </Card>
         )}

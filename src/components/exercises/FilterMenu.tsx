@@ -1,6 +1,6 @@
 'use client';
 import { Button, Dropdown, Checkbox } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { ChevronDown } from 'lucide-react';
 
 interface FilterMenuProps {
   label: string;
@@ -43,7 +43,7 @@ export default function FilterMenu({ label, options, selected, onChange }: Filte
       >
         {label}
         {selected.length > 0 ? ` (${selected.length})` : ''}
-        <DownOutlined />
+        <ChevronDown />
       </Button>
     </Dropdown>
   );

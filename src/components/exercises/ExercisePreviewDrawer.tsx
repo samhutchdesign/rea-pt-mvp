@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { Drawer, Typography, Tag, Button, Divider, Modal, Select } from 'antd';
-import { CloseOutlined, ThunderboltOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { mockPrograms } from '@/lib/mock-data';
 import type { Exercise, Program } from '@/lib/types';
+import { List, X, Zap } from 'lucide-react';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -68,14 +68,14 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             />
           ) : (
             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ThunderboltOutlined style={{ fontSize: 52, color: '#6750A4', opacity: 0.5 }} />
+              <Zap size={52} />
             </div>
           )}
           <Button
             onClick={onClose}
             size="small"
             shape="circle"
-            icon={<CloseOutlined />}
+            icon={<X />}
             style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.9)' }}
           />
         </div>
@@ -141,7 +141,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           )}
           <Button
             type={onAddToCurrentProgram ? 'default' : 'primary'}
-            icon={<UnorderedListOutlined />}
+            icon={<List />}
             onClick={() => setProgramSelectorOpen(true)}
             style={{ flex: 1 }}
           >

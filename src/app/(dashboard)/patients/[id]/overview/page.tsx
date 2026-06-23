@@ -4,11 +4,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Typography, Card, Button, Tag, Avatar, Modal, Select, Alert, App } from 'antd';
 import { useState, useEffect } from 'react';
 import type { ComponentType } from 'react';
-import { PlusOutlined, ThunderboltOutlined, CalendarOutlined, SwapOutlined, ShopOutlined } from '@ant-design/icons';
 import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
 import type { Employee } from '@/lib/types';
+import { ArrowLeftRight, Building2, Calendar, Plus, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -36,8 +36,8 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const can = usePermissions();
 
   const stats: { label: string; value: number | string; icon: ComponentType<{ style?: React.CSSProperties }>; color: string }[] = [
-    { label: 'Total Sessions', value: sessions.length, icon: CalendarOutlined, color: '#0288D1' },
-    { label: 'Exercises in Program', value: program ? program.exercises.length : '—', icon: ThunderboltOutlined, color: '#F57C00' },
+    { label: 'Total Sessions', value: sessions.length, icon: Calendar, color: '#0288D1' },
+    { label: 'Exercises in Program', value: program ? program.exercises.length : '—', icon: Zap, color: '#F57C00' },
   ];
 
   if (!patient) return null;
@@ -82,7 +82,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         <Card style={{ flex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <Text strong>Latest Session</Text>
-            <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => router.push(`/patients/${id}/chart/new`)}>
+            <Button size="small" type="primary" icon={<Plus />} onClick={() => router.push(`/patients/${id}/chart/new`)}>
               Add to Chart
             </Button>
           </div>
@@ -143,7 +143,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <Text strong>Care Team</Text>
           {can.canTransferPatient && (
-            <Button size="small" icon={<SwapOutlined />} onClick={() => setTransferOpen(true)}>
+            <Button size="small" icon={<ArrowLeftRight />} onClick={() => setTransferOpen(true)}>
               Transfer Patient
             </Button>
           )}
@@ -168,7 +168,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={() => router.push('/clinic')}>
-          <ShopOutlined style={{ fontSize: 16, color: '#49454F' }} />
+          <Building2 size={16} />
           <Text style={{ color: '#6750A4', textDecoration: 'underline' }}>{mockClinic.name}</Text>
         </div>
       </Card>

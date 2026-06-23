@@ -2,19 +2,11 @@
 import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Select, Divider, Tooltip, InputNumber } from 'antd';
-import {
-  SearchOutlined,
-  PlusCircleOutlined,
-  MinusCircleOutlined,
-  ThunderboltOutlined,
-  HeartFilled,
-  HeartOutlined,
-  EyeOutlined,
-} from '@ant-design/icons';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
+import { Eye, Heart, MinusCircle, PlusCircle, Search, Zap } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -106,7 +98,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           placeholder="Search exercises…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
+          prefix={<Search style={{ color: '#9E9E9E' }} />}
         />
 
         {/* Filters */}
@@ -117,7 +109,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
             style={{ border: '1px solid #E0E0E0', padding: '2px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
-            <HeartFilled style={{ fontSize: 14 }} /> Favorites
+            <Heart size={14} fill="currentColor" /> Favorites
           </Tag.CheckableTag>
           <FilterMenu label="Condition" options={ALL_CONDITIONS} selected={filterConditions} onChange={setFilterConditions} />
           <FilterMenu label="Surgery" options={ALL_SURGERIES} selected={filterSurgeries} onChange={setFilterSurgeries} />
@@ -135,12 +127,12 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <Card key={ex.id} hoverable styles={{ body: { padding: 12 } }} style={{ flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ width: 44, height: 44, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 20 }} />
+                  <Zap size={20} />
                 </div>
                 <div style={{ flexGrow: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Text strong ellipsis>{ex.name}</Text>
-                    {favorites.has(ex.id) && <HeartFilled style={{ fontSize: 12, color: '#E91E63' }} />}
+                    {favorites.has(ex.id) && <Heart size={12} fill="currentColor" />}
                   </div>
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
                     {ex.tags.specialty.slice(0, 2).map((t) => <Tag key={t} style={{ fontSize: 10 }}>{t}</Tag>)}
@@ -148,13 +140,13 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   <Tooltip title="Preview">
-                    <Button type="text" size="small" onClick={() => setPreviewExercise(ex)} icon={<EyeOutlined />} />
+                    <Button type="text" size="small" onClick={() => setPreviewExercise(ex)} icon={<Eye />} />
                   </Tooltip>
                   <Tooltip title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}>
-                    <Button type="text" size="small" onClick={() => toggleFavorite(ex.id)} icon={favorites.has(ex.id) ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />} />
+                    <Button type="text" size="small" onClick={() => toggleFavorite(ex.id)} icon={favorites.has(ex.id) ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />} />
                   </Tooltip>
                   <Tooltip title="Add to program">
-                    <Button type="text" size="small" onClick={() => addExercise(ex)} disabled={programRows.some((r) => r.exerciseId === ex.id)} icon={<PlusCircleOutlined style={{ color: '#6750A4' }} />} />
+                    <Button type="text" size="small" onClick={() => addExercise(ex)} disabled={programRows.some((r) => r.exerciseId === ex.id)} icon={<PlusCircle style={{ color: '#6750A4' }} />} />
                   </Tooltip>
                 </div>
               </div>
@@ -184,7 +176,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
               <Card key={row.exerciseId} styles={{ body: { padding: 16 } }} style={{ flexShrink: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <Text strong>{ex.name}</Text>
-                  <Button type="text" size="small" onClick={() => removeExercise(row.exerciseId)} icon={<MinusCircleOutlined />} style={{ color: '#9E9E9E' }} />
+                  <Button type="text" size="small" onClick={() => removeExercise(row.exerciseId)} icon={<MinusCircle />} style={{ color: '#9E9E9E' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                   {([

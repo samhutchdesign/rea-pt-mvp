@@ -2,28 +2,13 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Select, Tooltip } from 'antd';
-import {
-  SearchOutlined,
-  PlusOutlined,
-  ArrowLeftOutlined,
-  ThunderboltOutlined,
-  HeartFilled,
-  HeartOutlined,
-  EyeOutlined,
-  UserOutlined,
-  TrophyOutlined,
-  BulbOutlined,
-  SmileOutlined,
-  MedicineBoxOutlined,
-  ScissorOutlined,
-  HeartOutlined as HeartLineOutlined,
-} from '@ant-design/icons';
 import type { ComponentType } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
 import { mockExercises } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
+import { ArrowLeft, Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, Zap } from 'lucide-react';
 
 type IconType = ComponentType<{ style?: React.CSSProperties }>;
 
@@ -38,7 +23,7 @@ const SPECIALTIES: {
     name: 'Pelvic Health',
     apta: "Pelvic & Women's Health",
     description: 'Pelvic floor, incontinence, prolapse, pain with sex, postpartum & pregnancy',
-    icon: HeartOutlined,
+    icon: Heart,
     color: '#6750A4', bg: '#EDE7F6',
     available: true, count: 50,
   },
@@ -47,7 +32,7 @@ const SPECIALTIES: {
     name: 'Orthopaedics',
     apta: 'Orthopaedics',
     description: 'Spine, hip, knee, shoulder, and extremity rehabilitation',
-    icon: UserOutlined,
+    icon: User,
     color: '#0277BD', bg: '#E1F5FE',
     available: false, count: 0,
   },
@@ -56,7 +41,7 @@ const SPECIALTIES: {
     name: 'Sports & Performance',
     apta: 'Sports',
     description: 'Return to sport, athletic performance, and injury prevention',
-    icon: TrophyOutlined,
+    icon: Trophy,
     color: '#2E7D32', bg: '#E8F5E9',
     available: false, count: 0,
   },
@@ -65,7 +50,7 @@ const SPECIALTIES: {
     name: 'Neurological Rehab',
     apta: 'Neurology',
     description: "Stroke, MS, Parkinson's, and spinal cord conditions",
-    icon: BulbOutlined,
+    icon: Lightbulb,
     color: '#E65100', bg: '#FFF3E0',
     available: false, count: 0,
   },
@@ -74,7 +59,7 @@ const SPECIALTIES: {
     name: 'Cardio & Respiratory',
     apta: 'Cardiovascular & Pulmonary',
     description: 'Cardiac rehabilitation and pulmonary physiotherapy',
-    icon: HeartLineOutlined,
+    icon: Heart,
     color: '#C62828', bg: '#FFEBEE',
     available: false, count: 0,
   },
@@ -83,7 +68,7 @@ const SPECIALTIES: {
     name: 'Cancer Care',
     apta: 'Oncology',
     description: 'Lymphoedema, post-mastectomy, and cancer-related fatigue',
-    icon: MedicineBoxOutlined,
+    icon: Stethoscope,
     color: '#6A1B9A', bg: '#F3E5F5',
     available: false, count: 0,
   },
@@ -92,7 +77,7 @@ const SPECIALTIES: {
     name: 'Ageing & Geriatrics',
     apta: 'Geriatrics',
     description: 'Falls prevention, balance, mobility, and frailty',
-    icon: UserOutlined,
+    icon: User,
     color: '#1565C0', bg: '#E8EAF6',
     available: false, count: 0,
   },
@@ -101,7 +86,7 @@ const SPECIALTIES: {
     name: 'Paediatrics',
     apta: 'Pediatrics',
     description: "Children's physiotherapy and developmental conditions",
-    icon: SmileOutlined,
+    icon: Smile,
     color: '#F57F17', bg: '#FFF8E1',
     available: false, count: 0,
   },
@@ -110,7 +95,7 @@ const SPECIALTIES: {
     name: 'Vestibular & Balance',
     apta: 'Vestibular',
     description: 'BPPV, vertigo, and vestibular rehabilitation',
-    icon: ThunderboltOutlined,
+    icon: Zap,
     color: '#00695C', bg: '#E0F2F1',
     available: false, count: 0,
   },
@@ -119,7 +104,7 @@ const SPECIALTIES: {
     name: 'Wound & Skin',
     apta: 'Wound Management',
     description: 'Wound care, scar management, and skin rehabilitation',
-    icon: ScissorOutlined,
+    icon: Scissors,
     color: '#4E342E', bg: '#EFEBE9',
     available: false, count: 0,
   },
@@ -128,7 +113,7 @@ const SPECIALTIES: {
     name: 'Hand & Upper Limb',
     apta: 'Hands',
     description: 'Fine motor rehabilitation, hand therapy, and upper extremity',
-    icon: UserOutlined,
+    icon: User,
     color: '#37474F', bg: '#ECEFF1',
     available: false, count: 0,
   },
@@ -137,7 +122,7 @@ const SPECIALTIES: {
     name: 'Electrophysiology',
     apta: 'Clinical Electrophysiology',
     description: 'Pain science, neuromodulation, and electrophysiology',
-    icon: ThunderboltOutlined,
+    icon: Zap,
     color: '#880E4F', bg: '#FCE4EC',
     available: false, count: 0,
   },
@@ -348,7 +333,7 @@ export default function ExercisesPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {specialty && (
-              <Button type="text" size="small" onClick={goBack} icon={<ArrowLeftOutlined />} style={{ color: '#49454F' }} />
+              <Button type="text" size="small" onClick={goBack} icon={<ArrowLeft />} style={{ color: '#49454F' }} />
             )}
             <div>
               <Title level={2} style={{ margin: 0 }}>
@@ -359,7 +344,7 @@ export default function ExercisesPage() {
               )}
             </div>
           </div>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push('/exercises/new')}>
+          <Button type="primary" icon={<Plus />} onClick={() => router.push('/exercises/new')}>
             Create New
           </Button>
         </div>
@@ -380,14 +365,14 @@ export default function ExercisesPage() {
                 style={{ width: 260 }}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                prefix={<SearchOutlined style={{ color: '#9E9E9E' }} />}
+                prefix={<Search style={{ color: '#9E9E9E' }} />}
               />
               <Tag.CheckableTag
                 checked={showFavoritesOnly}
                 onChange={() => setShowFavoritesOnly((v) => !v)}
                 style={{ border: '1px solid #E0E0E0', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
               >
-                <HeartFilled style={{ fontSize: 14 }} /> Favourites
+                <Heart size={14} fill="currentColor" /> Favourites
               </Tag.CheckableTag>
               {filterConfig && (
                 <FilterMenu
@@ -435,12 +420,12 @@ export default function ExercisesPage() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 24px' }}>
                     <div style={{ width: 52, height: 52, borderRadius: 12, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 24 }} />
+                      <Zap size={24} />
                     </div>
                     <div style={{ flexGrow: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         <Text strong>{ex.name}</Text>
-                        {favorites.has(ex.id) && <HeartFilled style={{ fontSize: 14, color: '#E91E63' }} />}
+                        {favorites.has(ex.id) && <Heart size={14} fill="currentColor" />}
                       </div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
                         <Tag style={{ fontSize: 11 }}>{ex.category}</Tag>
@@ -460,10 +445,10 @@ export default function ExercisesPage() {
                     </div>
                     <div style={{ display: 'flex', gap: 4 }} onClick={(e) => e.stopPropagation()}>
                       <Tooltip title="Preview">
-                        <Button type="text" size="small" onClick={() => setPreviewExercise(ex)} icon={<EyeOutlined />} />
+                        <Button type="text" size="small" onClick={() => setPreviewExercise(ex)} icon={<Eye />} />
                       </Tooltip>
                       <Tooltip title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}>
-                        <Button type="text" size="small" onClick={() => toggleFavorite(ex.id)} icon={favorites.has(ex.id) ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />} />
+                        <Button type="text" size="small" onClick={() => toggleFavorite(ex.id)} icon={favorites.has(ex.id) ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />} />
                       </Tooltip>
                     </div>
                   </div>

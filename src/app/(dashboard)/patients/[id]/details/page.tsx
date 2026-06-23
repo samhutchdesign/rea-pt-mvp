@@ -1,10 +1,10 @@
 'use client';
 import { use, useState } from 'react';
 import { Typography, Card, Button, Switch, Input, Modal, Alert, Tag, Flex, App } from 'antd';
-import { EditOutlined, StarOutlined } from '@ant-design/icons';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import type { PatientMetrics, InjuryHistory, ObstetricPelvicHealth, PMHx, SOHx, LifestyleHabits, MedicalHistory } from '@/lib/types';
+import { Pencil, Star } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -25,7 +25,7 @@ function SectionCard({ title, children, onEdit }: { title: string; children: Rea
     <Card style={{ marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Text strong>{title}</Text>
-        <Button type="text" size="small" onClick={onEdit} icon={<EditOutlined />} />
+        <Button type="text" size="small" onClick={onEdit} icon={<Pencil />} />
       </div>
       {children}
     </Card>
@@ -327,7 +327,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
     <>
       {uploaded && (
         <Alert
-          icon={<StarOutlined />}
+          icon={<Star />}
           showIcon
           type="info"
           style={{ marginBottom: 24, alignItems: 'center' }}

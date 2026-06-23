@@ -3,8 +3,8 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Button, Input, Tag, Divider } from 'antd';
 import TopBar from '@/components/layout/TopBar';
-import { EditOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import { mockDocuments } from '@/lib/mock-data';
+import { Heart, Pencil } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -29,14 +29,14 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
                 type="text"
                 shape="circle"
                 onClick={() => setIsFavorite(!isFavorite)}
-                icon={isFavorite ? <HeartFilled style={{ color: '#E91E63' }} /> : <HeartOutlined />}
+                icon={isFavorite ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />}
               />
             </div>
             <Text type="secondary" style={{ fontSize: 12 }}>
               Updated {new Date(doc.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {doc.fields.length} fields
             </Text>
           </div>
-          <Button icon={<EditOutlined />} onClick={() => router.push('/documents/new')}>Edit</Button>
+          <Button icon={<Pencil />} onClick={() => router.push('/documents/new')}>Edit</Button>
         </div>
 
         <Divider style={{ marginBottom: 24 }} />

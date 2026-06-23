@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { Typography, Tabs, Card, Button, Tag, Divider, Progress, Table } from 'antd';
-import { CheckOutlined, CreditCardOutlined, DownloadOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
+import { Check, CreditCard, Download } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -68,7 +68,7 @@ function SubscriptionTab() {
         <ul style={{ paddingLeft: 0, marginTop: 12, marginBottom: 16, listStyle: 'none' }}>
           {PLAN.features.map((f) => (
             <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <CheckOutlined style={{ fontSize: 16, color: '#2E7D32' }} />
+              <Check size={16} />
               <Text>{f}</Text>
             </li>
           ))}
@@ -109,7 +109,7 @@ function PaymentMethodTab() {
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
           <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <CreditCardOutlined style={{ color: '#6750A4', fontSize: 24 }} />
+            <CreditCard size={24} />
           </div>
           <div style={{ flexGrow: 1 }}>
             <Text strong style={{ display: 'block' }}>Visa ending in 4242</Text>
@@ -122,7 +122,7 @@ function PaymentMethodTab() {
           <Button size="small" danger type="text">Remove</Button>
         </div>
       </Card>
-      <Button type="primary" icon={<CreditCardOutlined />}>
+      <Button type="primary" icon={<CreditCard />}>
         Add Payment Method
       </Button>
       <Text type="secondary" style={{ display: 'block', marginTop: 12, fontSize: 12 }}>
@@ -145,7 +145,7 @@ function InvoiceHistoryTab() {
             { title: 'Date', dataIndex: 'date', render: (v) => <Text type="secondary">{v}</Text> },
             { title: 'Amount', dataIndex: 'amount', render: (v) => <Text>{v}</Text> },
             { title: 'Status', dataIndex: 'status', render: (v) => <Tag style={{ background: '#E8F5E9', color: '#2E7D32', fontWeight: 500, fontSize: 11, border: 'none' }}>{v}</Tag> },
-            { title: 'Receipt', align: 'right', render: () => <Button type="text" size="small" icon={<DownloadOutlined />} style={{ fontSize: 12 }}>PDF</Button> },
+            { title: 'Receipt', align: 'right', render: () => <Button type="text" size="small" icon={<Download />} style={{ fontSize: 12 }}>PDF</Button> },
           ]}
         />
       </Card>

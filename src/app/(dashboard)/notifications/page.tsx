@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Button, Card, Divider } from 'antd';
-import { BellOutlined } from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockNotifications } from '@/lib/mock-data';
+import { Bell } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -42,7 +42,7 @@ export default function NotificationsPage() {
 
         {notifications.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '64px 0' }}>
-            <BellOutlined style={{ fontSize: 48, color: '#BDBDBD', marginBottom: 8 }} />
+            <Bell size={48} />
             <div><Text type="secondary">No notifications</Text></div>
           </div>
         ) : (
@@ -54,7 +54,7 @@ export default function NotificationsPage() {
                   onClick={() => notif.patientId && router.push(`/patients/${notif.patientId}/documents`)}
                 >
                   <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <BellOutlined style={{ fontSize: 18, color: '#6750A4' }} />
+                    <Bell size={18} />
                   </div>
                   <div style={{ flexGrow: 1 }}>
                     <div><Text style={{ fontWeight: !notif.read ? 600 : 400 }}>{notif.message}</Text></div>

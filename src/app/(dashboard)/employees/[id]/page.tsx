@@ -2,19 +2,11 @@
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Avatar, Button, Card, Tag, Tabs, Modal, Select, Input, Alert, App } from 'antd';
-import {
-  EditOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  SwapOutlined,
-  UserOutlined,
-  CalendarOutlined,
-  InboxOutlined,
-} from '@ant-design/icons';
 import TopBar from '@/components/layout/TopBar';
 import { mockEmployees, mockPatients } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import type { Patient, Employee } from '@/lib/types';
+import { ArrowLeftRight, Calendar, Inbox, Mail, Pencil, Phone, User } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -261,23 +253,23 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
             <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>{savedProfessional.title}</Text>
             <div style={{ display: 'flex', gap: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <MailOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <Mail size={15} />
                 <Text type="secondary">{savedContact.email}</Text>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <PhoneOutlined style={{ fontSize: 15, color: '#49454F' }} />
+                <Phone size={15} />
                 <Text type="secondary">{savedContact.phone}</Text>
               </div>
             </div>
           </div>
           {can.canManageStaff && (
             archived ? (
-              <Button icon={<InboxOutlined />} size="small" onClick={handleRestore} style={{ borderColor: '#FB8C00', color: '#FB8C00' }}>
+              <Button icon={<Inbox />} size="small" onClick={handleRestore} style={{ borderColor: '#FB8C00', color: '#FB8C00' }}>
                 Restore Employee
               </Button>
             ) : (
               <Button
-                icon={<InboxOutlined />}
+                icon={<Inbox />}
                 size="small"
                 onClick={() => setArchiveDialogOpen(true)}
                 style={{ color: '#49454F', borderColor: '#BDBDBD' }}
@@ -308,7 +300,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <Card style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ width: 40, height: 40, borderRadius: 8, background: '#6750A418', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <UserOutlined style={{ color: '#6750A4', fontSize: 20 }} />
+                      <User size={20} />
                     </div>
                     <div>
                       <Title level={2} style={{ margin: 0, lineHeight: 1 }}>{assignedPatients.length}</Title>
@@ -319,7 +311,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <Card style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ width: 40, height: 40, borderRadius: 8, background: '#0288D118', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <CalendarOutlined style={{ color: '#0288D1', fontSize: 20 }} />
+                      <Calendar size={20} />
                     </div>
                     <div>
                       <Title level={2} style={{ margin: 0, lineHeight: 1 }}>{new Date(emp.joinedAt).getFullYear()}</Title>
@@ -389,7 +381,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                     {can.canManageStaff && (
                       <Button
                         size="small"
-                        icon={<SwapOutlined />}
+                        icon={<ArrowLeftRight />}
                         onClick={() => setTransferPatient(p)}
                         style={{ flexShrink: 0 }}
                       >
@@ -410,7 +402,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Text strong>Contact Information</Text>
                 {can.canManageStaff && !editingContact && (
-                  <Button type="text" size="small" onClick={handleEditContact} icon={<EditOutlined />} />
+                  <Button type="text" size="small" onClick={handleEditContact} icon={<Pencil />} />
                 )}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -445,7 +437,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Text strong>Professional Details</Text>
                 {can.canManageStaff && !editingProfessional && (
-                  <Button type="text" size="small" onClick={handleEditProfessional} icon={<EditOutlined />} />
+                  <Button type="text" size="small" onClick={handleEditProfessional} icon={<Pencil />} />
                 )}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

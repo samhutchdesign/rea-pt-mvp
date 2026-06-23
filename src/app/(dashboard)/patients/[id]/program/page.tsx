@@ -2,10 +2,10 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Card, Button, Tag, Tooltip } from 'antd';
-import { EditOutlined, SendOutlined, ThunderboltOutlined, EyeOutlined } from '@ant-design/icons';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { mockPatients, mockPrograms, mockExercises, mockChartSessions } from '@/lib/mock-data';
 import type { Exercise, ProgramExercise } from '@/lib/types';
+import { Eye, Pencil, Send, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -64,10 +64,10 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           <Text type="secondary">{completedSessions} out of {totalSessions} total sessions</Text>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
-          <Button icon={<EditOutlined />} onClick={() => router.push(`/patients/${id}/program/edit`)}>
+          <Button icon={<Pencil />} onClick={() => router.push(`/patients/${id}/program/edit`)}>
             Modify
           </Button>
-          <Button type="primary" icon={<SendOutlined />} onClick={() => router.push(`/patients/${id}/program/send`)}>
+          <Button type="primary" icon={<Send />} onClick={() => router.push(`/patients/${id}/program/send`)}>
             Send Program to Patient
           </Button>
         </div>
@@ -81,7 +81,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
             <Card key={pe.exerciseId} styles={{ body: { padding: 16 } }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                 <div style={{ width: 80, height: 64, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <ThunderboltOutlined style={{ color: '#6750A4', fontSize: 28 }} />
+                  <Zap size={28} />
                 </div>
                 <div style={{ flexGrow: 1 }}>
                   <Text strong style={{ display: 'block', marginBottom: 2 }}>{ex.name}</Text>
@@ -99,7 +99,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
                       type="text"
                       size="small"
                       onClick={() => { setPreviewExercise(ex); setPreviewPE(pe); }}
-                      icon={<EyeOutlined />}
+                      icon={<Eye />}
                     />
                   </Tooltip>
                 </div>
