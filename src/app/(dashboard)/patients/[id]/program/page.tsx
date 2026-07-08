@@ -5,6 +5,7 @@ import { Typography, Card, Button, Tag, Tooltip } from 'antd';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { mockPatients, mockPrograms, mockExercises, mockChartSessions } from '@/lib/mock-data';
 import type { Exercise, ProgramExercise } from '@/lib/types';
+import { useViewMode } from '@/lib/viewModeStore';
 import { Eye, Pencil, Send, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
@@ -14,6 +15,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
   const router = useRouter();
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
   const [previewPE, setPreviewPE] = useState<ProgramExercise | null>(null);
+  const viewMode = useViewMode();
   const patient = mockPatients.find((p) => p.id === id);
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
   const completedSessions = (mockChartSessions[id] ?? []).filter((s) => !s.isIntakeSession).length;
@@ -64,10 +66,10 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           <Text type="secondary">{completedSessions} out of {totalSessions} total sessions</Text>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
-          <Button icon={<Pencil />} onClick={() => router.push(`/patients/${id}/program/edit`)}>
+          <Button icon={<Pencil size={16} />} onClick={() => router.push(`/patients/${id}/program/edit`)}>
             Modify
           </Button>
-          <Button type="primary" icon={<Send />} onClick={() => router.push(`/patients/${id}/program/send`)}>
+          <Button type="primary" icon={<Send size={16} />} onClick={() => router.push(`/patients/${id}/program/send`)}>
             Send Program to Patient
           </Button>
         </div>
@@ -93,13 +95,24 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
                     <Tag>{pe.frequency}</Tag>
                   </div>
                 </div>
+                {viewMode === 'full' && pe.adherence != null && (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 64 }}>
+                    <Text style={{
+                      fontSize: 18, fontWeight: 700, lineHeight: 1,
+                      color: pe.adherence >= 80 ? '#2E7D32' : pe.adherence >= 60 ? '#F57F17' : '#C62828',
+                    }}>
+                      {pe.adherence}%
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: 10, whiteSpace: 'nowrap' }}>adherence</Text>
+                  </div>
+                )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
                   <Tooltip title="Preview exercise">
                     <Button
                       type="text"
                       size="small"
                       onClick={() => { setPreviewExercise(ex); setPreviewPE(pe); }}
-                      icon={<Eye />}
+                      icon={<Eye size={14} />}
                     />
                   </Tooltip>
                 </div>

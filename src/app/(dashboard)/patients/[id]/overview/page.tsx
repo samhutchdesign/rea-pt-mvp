@@ -8,6 +8,7 @@ import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmplo
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
 import type { Employee } from '@/lib/types';
+import { useViewMode } from '@/lib/viewModeStore';
 import { ArrowLeftRight, Building2, Calendar, Plus, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
@@ -34,10 +35,21 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
   const assignedEmployees = patient ? mockEmployees.filter((e) => patient.assignedEmployeeIds.includes(e.id)) : [];
   const can = usePermissions();
+  const viewMode = useViewMode();
+
+  const avgAdherence = (() => {
+    if (!program) return null;
+    const vals = program.exercises.map((e) => e.adherence).filter((v): v is number => v != null);
+    if (!vals.length) return null;
+    return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+  })();
 
   const stats: { label: string; value: number | string; icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; color: string }[] = [
     { label: 'Total Sessions', value: sessions.length, icon: Calendar, color: '#0288D1' },
     { label: 'Exercises in Program', value: program ? program.exercises.length : '—', icon: Zap, color: '#F57C00' },
+    ...(viewMode === 'full' && avgAdherence != null
+      ? [{ label: 'Avg. Adherence', value: `${avgAdherence}%`, icon: Zap, color: avgAdherence >= 80 ? '#2E7D32' : avgAdherence >= 60 ? '#F57F17' : '#C62828' }]
+      : []),
   ];
 
   if (!patient) return null;

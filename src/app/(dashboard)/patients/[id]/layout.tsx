@@ -7,16 +7,18 @@ import TopBar from '@/components/layout/TopBar';
 import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useYourEmpId } from '@/lib/locationScope';
+import { useViewMode } from '@/lib/viewModeStore';
 import { clearUploadedData } from '@/lib/uploadStore';
 import { Inbox, Mail, MapPin, Pencil } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
-const patientTabs = [
+const ALL_TABS = [
   { label: 'Overview', path: 'overview' },
   { label: 'Details', path: 'details' },
   { label: 'Program', path: 'program' },
   { label: 'Chart', path: 'chart' },
+  { label: 'Documents', path: 'documents', fullOnly: true },
   { label: 'Contact', path: 'contact' },
 ];
 
@@ -45,6 +47,14 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
   const can = usePermissions();
   const yourEmpId = useYourEmpId();
+  const viewMode = useViewMode();
+
+  const MVP_HIDDEN = new Set(['pat8', 'pat1']);
+  useEffect(() => {
+    if (viewMode === 'mvp' && MVP_HIDDEN.has(id)) router.push('/patients');
+  }, [viewMode, id, router]);
+
+  const patientTabs = ALL_TABS.filter((t) => !(t.fullOnly && viewMode === 'mvp'));
   const isYourPatient = yourEmpId !== null && (patient?.assignedEmployeeIds ?? []).includes(yourEmpId);
   const canEdit = can.canArchivePatient || isYourPatient;
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
@@ -136,7 +146,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             {can.canArchivePatient && archived && (
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button
-                  icon={<Inbox />}
+                  icon={<Inbox size={14} />}
                   size="small"
                   onClick={handleRestore}
                   style={{ borderColor: '#FB8C00', color: '#FB8C00' }}
@@ -154,7 +164,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             )}
             {canEdit && !archived && (
               <Button
-                icon={<Pencil />}
+                icon={<Pencil size={14} />}
                 size="small"
                 onClick={() => {
                   setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, locationId: mockClinicLocations.find((l) => patient.location.includes(l.city))?.id ?? '' });
@@ -225,7 +235,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 </Text>
                 <Button
                   size="small"
-                  icon={<Inbox />}
+                  icon={<Inbox size={14} />}
                   onClick={() => setConfirmArchiveOpen(true)}
                   style={{ borderColor: '#FB8C00', color: '#FB8C00' }}
                 >

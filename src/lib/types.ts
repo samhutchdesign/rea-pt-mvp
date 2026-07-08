@@ -86,6 +86,7 @@ export interface Exercise {
   isFavorite: boolean;
   usageCount: number;
   createdAt: string;
+  variationGroup?: string;
 }
 
 export interface ProgramExercise {

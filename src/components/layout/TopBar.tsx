@@ -7,6 +7,7 @@ import { mockPhysio } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
+import { useViewMode } from '@/lib/viewModeStore';
 import { useYourEmpId } from '@/lib/locationScope';
 import { ChevronRight } from 'lucide-react';
 
@@ -18,6 +19,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
   const router = useRouter();
   const can = usePermissions();
   const role = useRole();
+  const viewMode = useViewMode();
   const yourEmpId = useYourEmpId();
   void yourEmpId;
 
@@ -70,6 +72,21 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
         padding: '0 24px',
       }}
     >
+      {viewMode === 'mvp' && (
+        <span style={{
+          marginRight: 12,
+          padding: '2px 8px',
+          background: '#1E4D2B',
+          color: '#A8D5A2',
+          borderRadius: 999,
+          fontSize: 11,
+          fontWeight: 600,
+          letterSpacing: 0.4,
+          flexShrink: 0,
+        }}>
+          MVP
+        </span>
+      )}
       <Breadcrumb
         style={{ flexGrow: 1 }}
         separator={<ChevronRight size={10} />}

@@ -1,51 +1,20 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Tag, Divider, Select } from 'antd';
+import { Typography, Button, Tag, Divider } from 'antd';
 import TopBar from '@/components/layout/TopBar';
-import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { mockExercises, mockPrograms } from '@/lib/mock-data';
-import { useViewMode } from '@/lib/viewModeStore';
-import { ChevronRight, Heart, Mic, Pencil, Zap } from 'lucide-react';
+import { ChevronRight, Heart, Pencil, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
-
-const GROUP_NAMES: Record<string, string> = {
-  'pelvic-floor': 'Pelvic Floor',
-  'core-breathing': 'Core Breathing',
-  'breathing': 'Breathing',
-  'transversus': 'Transversus',
-  'deadbug': 'Deadbug',
-  'pelvic-tilt': 'Pelvic Tilt',
-  'plank': 'Plank',
-  'glute-bridge': 'Glute Bridge',
-  'childs-pose': "Child's Pose",
-  'squat': 'Squat',
-  'bowel': 'Bowel',
-  'csection-massage': 'C-Section Massage',
-  'perineal-massage': 'Perineal Massage',
-};
-
-function variationLabel(name: string): string {
-  const idx = name.indexOf(':');
-  return idx !== -1 ? name.slice(idx + 1).trim() : name;
-}
 
 export default function ExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const ex = mockExercises.find((e) => e.id === id);
   const [isFavorite, setIsFavorite] = useState(ex?.isFavorite ?? false);
-  const [audioOpen, setAudioOpen] = useState(false);
-  const viewMode = useViewMode();
 
   if (!ex) return <div style={{ padding: 32 }}><Text>Exercise not found.</Text></div>;
-
-  const siblings = ex.variationGroup
-    ? mockExercises.filter((e) => e.variationGroup === ex.variationGroup).sort((a, b) => b.usageCount - a.usageCount)
-    : [];
-
-  const groupName = ex.variationGroup ? (GROUP_NAMES[ex.variationGroup] ?? ex.variationGroup) : null;
 
   const allTags = [...new Set([...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart])];
 
@@ -55,32 +24,10 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
   const usedInPrograms = mockPrograms.filter((prog) => prog.exercises.some((pe) => pe.exerciseId === id));
 
-  const breadcrumbs = groupName
-    ? [{ label: 'All Exercises', href: '/exercises' }, { label: groupName, href: `/exercises/${siblings[0]?.id ?? id}` }, { label: variationLabel(ex.name) }]
-    : [{ label: 'All Exercises', href: '/exercises' }, { label: ex.name }];
-
   return (
     <>
-      <TopBar breadcrumbs={breadcrumbs} />
+      <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: ex.name }]} />
       <div style={{ paddingTop: 56, padding: '32px', maxWidth: 820 }}>
-
-        {/* Variation selector */}
-        {siblings.length > 1 && (
-          <div style={{ background: '#F5F3FF', border: '1px solid #D0BCFF', borderRadius: 8, padding: '12px 16px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <Text style={{ color: '#6750A4', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>
-              {groupName}
-            </Text>
-            <Select
-              value={id}
-              onChange={(val) => router.push(`/exercises/${val}`)}
-              style={{ flex: 1, minWidth: 200 }}
-              options={siblings.map((s) => ({ value: s.id, label: variationLabel(s.name) }))}
-            />
-            <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 600, margin: 0 }}>
-              {siblings.length} variations
-            </Tag>
-          </div>
-        )}
 
         {/* Video */}
         {ex.videoUrl ? (
@@ -112,9 +59,6 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             <Text type="secondary">{ex.description}</Text>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            {viewMode === 'full' && (
-              <Button icon={<Mic size={14} />} onClick={() => setAudioOpen(true)}>Record Audio Cue</Button>
-            )}
             <Button
               type="text"
               shape="circle"
@@ -146,7 +90,11 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             <Title level={3} style={{ marginTop: 0, marginBottom: 12 }}>Used in Programs</Title>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
               {usedInPrograms.map((prog) => (
-                <Tag key={prog.id} onClick={() => router.push(`/programs/${prog.id}`)} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 500, cursor: 'pointer' }}>
+                <Tag
+                  key={prog.id}
+                  onClick={() => router.push(`/programs/${prog.id}`)}
+                  style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 500, cursor: 'pointer' }}
+                >
                   {prog.name}
                 </Tag>
               ))}
@@ -159,7 +107,9 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         <Title level={3} style={{ marginTop: 0, marginBottom: 16 }}>Instructions</Title>
         <ol style={{ paddingLeft: 24, marginBottom: 24 }}>
           {ex.instructions.map((step, i) => (
-            <li key={i} style={{ marginBottom: 8 }}><Text>{step}</Text></li>
+            <li key={i} style={{ marginBottom: 8 }}>
+              <Text>{step}</Text>
+            </li>
           ))}
         </ol>
 
@@ -169,18 +119,12 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         <Title level={3} style={{ marginTop: 0, marginBottom: 16, color: '#FB8C00' }}>Common Mistakes</Title>
         <ul style={{ paddingLeft: 24 }}>
           {ex.commonMistakes.map((m, i) => (
-            <li key={i} style={{ marginBottom: 8 }}><Text>{m}</Text></li>
+            <li key={i} style={{ marginBottom: 8 }}>
+              <Text>{m}</Text>
+            </li>
           ))}
         </ul>
       </div>
-
-      <AudioRecordingDialog
-        open={audioOpen}
-        exerciseName={ex.name}
-        videoId={ex.videoUrl}
-        onClose={() => setAudioOpen(false)}
-        onSave={(_blobUrl, _dur) => setAudioOpen(false)}
-      />
     </>
   );
 }

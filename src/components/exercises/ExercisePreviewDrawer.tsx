@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { Drawer, Typography, Tag, Button, Divider, Modal, Select } from 'antd';
 import { mockPrograms } from '@/lib/mock-data';
 import type { Exercise, Program } from '@/lib/types';
-import { List, X, Zap } from 'lucide-react';
+import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
+import { useViewMode } from '@/lib/viewModeStore';
+import { List, Mic, X, Zap } from 'lucide-react';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -25,6 +27,8 @@ interface Props {
 export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram, patientPrescription }: Props) {
   const [programSelectorOpen, setProgramSelectorOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+  const [audioOpen, setAudioOpen] = useState(false);
+  const viewMode = useViewMode();
 
   if (!exercise) return null;
 
@@ -134,6 +138,11 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
 
         {/* Action bar */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid #E0E0E0', display: 'flex', gap: 12, flexShrink: 0 }}>
+          {viewMode === 'full' && (
+            <Button icon={<Mic size={14} />} onClick={() => setAudioOpen(true)}>
+              Record Audio Cue
+            </Button>
+          )}
           {onAddToCurrentProgram && (
             <Button type="primary" onClick={() => { onAddToCurrentProgram(); onClose(); }} style={{ flex: 1 }}>
               Add to This Program
@@ -149,6 +158,14 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           </Button>
         </div>
       </Drawer>
+
+      <AudioRecordingDialog
+        open={audioOpen}
+        exerciseName={exercise.name}
+        videoId={exercise.videoUrl}
+        onClose={() => setAudioOpen(false)}
+        onSave={(_blobUrl, _dur) => setAudioOpen(false)}
+      />
 
       {/* Program Selector Dialog */}
       <Modal

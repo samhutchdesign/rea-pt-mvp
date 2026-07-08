@@ -7,6 +7,7 @@ import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
+import { useViewMode } from '@/lib/viewModeStore';
 import type { Patient } from '@/lib/types';
 import { Calendar, MapPin, Plus, RefreshCw, RotateCcw, Search, User } from 'lucide-react';
 
@@ -64,11 +65,13 @@ export default function PatientsPage() {
 
   const { patients: scopedPatients } = useLocationScope();
   const yourEmpId = useYourEmpId();
+  const viewMode = useViewMode();
 
-  // Apply local archived overrides
-  const patients = scopedPatients.map((p) =>
-    p.id in localPatients ? { ...p, archived: localPatients[p.id] } : p
-  );
+  // Apply local archived overrides; hide demo-only profiles in MVP mode
+  const MVP_HIDDEN = new Set(['pat8', 'pat1']);
+  const patients = scopedPatients
+    .filter((p) => !(viewMode === 'mvp' && MVP_HIDDEN.has(p.id)))
+    .map((p) => p.id in localPatients ? { ...p, archived: localPatients[p.id] } : p);
 
   const yourPatients = yourEmpId
     ? patients.filter((p) => !p.archived && p.assignedEmployeeIds.includes(yourEmpId))

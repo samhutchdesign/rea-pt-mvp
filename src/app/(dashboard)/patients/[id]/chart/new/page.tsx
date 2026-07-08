@@ -1,9 +1,10 @@
 'use client';
-import { use, useState } from 'react';
+import { use, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Input, Button, Card, Tag, Spin, App } from 'antd';
 import { mockPatients, mockChartSessions } from '@/lib/mock-data';
-import { History, Star, User } from 'lucide-react';
+import { useViewMode } from '@/lib/viewModeStore';
+import { History, Mic, MicOff, Star, User } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -70,6 +71,28 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const [soapie, setSoapie] = useState<Record<string, string>>({});
   const [populated, setPopulated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const viewMode = useViewMode();
+  const [dictating, setDictating] = useState(false);
+  const [dictSecs, setDictSecs] = useState(0);
+  const dictTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const DICTATION_STUB = id === 'pat1'
+    ? "Patient reports SUI down to zero to one episode per day, improved from daily at intake. HEP adherence seven out of seven days for the past two weeks. Perineal discomfort one out of ten at rest, zero with activity. No urgency. Patient is querying return to running and starting yoga this week. Confidence with pelvic floor activation is much improved."
+    : "Patient reports [describe symptoms]. HEP adherence [X] out of seven days. Pain level [X] out of ten. No significant changes since last session.";
+
+  const startDictation = () => {
+    setDictating(true);
+    setDictSecs(0);
+    dictTimer.current = setInterval(() => setDictSecs((s) => s + 1), 1000);
+  };
+
+  const stopDictation = () => {
+    if (dictTimer.current) clearInterval(dictTimer.current);
+    setDictating(false);
+    setNotes((prev) => (prev ? prev + ' ' + DICTATION_STUB : DICTATION_STUB));
+  };
+
+  useEffect(() => () => { if (dictTimer.current) clearInterval(dictTimer.current); }, []);
 
   const handlePopulate = () => {
     setLoading(true);
@@ -105,12 +128,27 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
 
       {/* Dictation + notes */}
       <Card style={{ marginBottom: 24 }}>
-        <Text strong style={{ display: 'block', marginBottom: 16 }}>Session Notes</Text>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <Text strong>Session Notes</Text>
+          {viewMode === 'full' && (
+            <Button
+              size="small"
+              type={dictating ? 'primary' : 'default'}
+              danger={dictating}
+              icon={dictating ? <MicOff size={14} /> : <Mic size={14} />}
+              onClick={dictating ? stopDictation : startDictation}
+              style={dictating ? { animation: 'pulse 1.5s ease-in-out infinite' } : undefined}
+            >
+              {dictating ? `Stop  ${Math.floor(dictSecs / 60)}:${String(dictSecs % 60).padStart(2, '0')}` : 'Dictate'}
+            </Button>
+          )}
+        </div>
         <Input.TextArea
           rows={4}
-          placeholder="Type session notes…"
+          placeholder={dictating ? 'Listening…' : 'Type or dictate session notes…'}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
+          style={dictating ? { borderColor: '#f5222d', background: '#fff1f0' } : undefined}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, flexWrap: 'wrap', gap: 8 }}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -119,7 +157,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
           </div>
           <Button
             size="small"
-            icon={loading ? <Spin size="small" /> : <Star />}
+            icon={loading ? <Spin size="small" /> : <Star size={14} />}
             onClick={handlePopulate}
             disabled={!notes.trim() || loading}
           >

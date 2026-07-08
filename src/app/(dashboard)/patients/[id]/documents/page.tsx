@@ -3,6 +3,7 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Button, Card, Tag, Modal, Progress } from 'antd';
 import { mockPatients, mockDocuments } from '@/lib/mock-data';
+import { useViewMode } from '@/lib/viewModeStore';
 import { CheckCircle, FileText, Star, Upload, X } from 'lucide-react';
 
 const { Text } = Typography;
@@ -211,6 +212,7 @@ function PdfViewer() {
 export default function PatientDocumentsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const viewMode = useViewMode();
   const patient = mockPatients.find((p) => p.id === id);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadPhase, setUploadPhase] = useState<UploadPhase>('idle');
@@ -253,9 +255,11 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <Text strong style={{ fontSize: 18 }}>Documents</Text>
-        <Button type="primary" icon={<Upload />} onClick={openUpload}>
-          Upload Patient PDF
-        </Button>
+        {viewMode === 'full' && (
+          <Button type="primary" icon={<Upload size={16} />} onClick={openUpload}>
+            Upload Patient PDF
+          </Button>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

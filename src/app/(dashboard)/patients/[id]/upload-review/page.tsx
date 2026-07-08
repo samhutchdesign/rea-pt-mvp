@@ -5,6 +5,7 @@ import { Typography, Button, Input, Alert, Divider, Tag } from 'antd';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients } from '@/lib/mock-data';
 import { saveUploadedData } from '@/lib/uploadStore';
+import { useViewMode } from '@/lib/viewModeStore';
 import { ArrowLeft, FileText, Languages, Star } from 'lucide-react';
 
 const { Title, Text } = Typography;
@@ -185,6 +186,7 @@ const footerTxt: React.CSSProperties = { fontSize: 8, color: '#999', fontFamily:
 export default function UploadReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const viewMode = useViewMode();
   const patient = mockPatients.find((p) => p.id === id);
   const [fields, setFields] = useState<typeof FAKE_EXTRACTED>({ ...FAKE_EXTRACTED });
 
@@ -213,8 +215,8 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
 
       <div style={{ paddingTop: 56, display: 'flex', gap: 32, alignItems: 'flex-start', padding: '32px' }}>
 
-        {/* ── Left: editable clinical form ── */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        {/* ── Left: editable clinical form (full mode only) ── */}
+        {viewMode === 'full' && <div style={{ flex: 1, minWidth: 0 }}>
           <Button
             type="text"
             icon={<ArrowLeft />}
@@ -291,7 +293,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
               Confirm New Information
             </Button>
           </div>
-        </div>
+        </div>}
 
         {/* ── Right: sticky PDF (original patient voice) ── */}
         <div

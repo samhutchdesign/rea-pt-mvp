@@ -261,7 +261,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: true, usageCount: 59, createdAt: '2026-01-10',
+    isFavorite: true, usageCount: 59, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex2',
@@ -280,7 +280,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: true, usageCount: 58, createdAt: '2026-01-10',
+    isFavorite: true, usageCount: 58, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex3',
@@ -299,7 +299,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: true, usageCount: 57, createdAt: '2026-01-10',
+    isFavorite: true, usageCount: 57, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex4',
@@ -318,7 +318,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: true, usageCount: 56, createdAt: '2026-01-10',
+    isFavorite: true, usageCount: 56, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex5',
@@ -337,7 +337,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: true, usageCount: 55, createdAt: '2026-01-10',
+    isFavorite: true, usageCount: 55, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex6',
@@ -356,7 +356,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor', 'Core'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 54, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 54, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex7',
@@ -375,7 +375,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 53, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 53, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex8',
@@ -394,7 +394,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 52, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 52, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex9',
@@ -413,7 +413,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 51, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 51, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex10',
@@ -432,7 +432,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 50, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 50, createdAt: '2026-01-10', variationGroup: 'pelvic-floor',
   },
   {
     id: 'ex11',
@@ -451,7 +451,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Pelvic floor', 'Lumbar spine', 'Thoracic spine', 'Chest', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 49, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 49, createdAt: '2026-01-10', variationGroup: 'core-breathing',
   },
   {
     id: 'ex12',
@@ -470,7 +470,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor', 'Core', 'Lumbar spine', 'Thoracic spine', 'Chest'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 48, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 48, createdAt: '2026-01-10', variationGroup: 'breathing',
   },
   {
     id: 'ex13',
@@ -489,7 +489,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Pelvic floor', 'Lumbar spine', 'Thoracic spine', 'Chest', 'Hip'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 47, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 47, createdAt: '2026-01-10', variationGroup: 'breathing',
   },
   {
     id: 'ex14',
@@ -508,7 +508,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor', 'Core', 'Thoracic spine', 'Chest', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 46, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 46, createdAt: '2026-01-10', variationGroup: 'breathing',
   },
   {
     id: 'ex15',
@@ -527,7 +527,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Pelvic floor', 'Lumbar spine', 'Thoracic spine', 'Chest', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 45, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 45, createdAt: '2026-01-10', variationGroup: 'core-breathing',
   },
   {
     id: 'ex16',
@@ -546,7 +546,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Hip', 'Glutes', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 44, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 44, createdAt: '2026-01-10', variationGroup: 'transversus',
   },
   {
     id: 'ex17',
@@ -565,7 +565,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Hip', 'Inner thigh', 'Glutes', 'Lumbar spine', 'Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 43, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 43, createdAt: '2026-01-10', variationGroup: 'transversus',
   },
   {
     id: 'ex18',
@@ -584,7 +584,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Hip', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 42, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 42, createdAt: '2026-01-10', variationGroup: 'transversus',
   },
   {
     id: 'ex19',
@@ -603,7 +603,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Hip', 'Shoulder', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 41, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 41, createdAt: '2026-01-10', variationGroup: 'deadbug',
   },
   {
     id: 'ex20',
@@ -622,7 +622,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Hip', 'Shoulder', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 40, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 40, createdAt: '2026-01-10', variationGroup: 'deadbug',
   },
   {
     id: 'ex21',
@@ -641,7 +641,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Lumbar spine', 'Core', 'Glutes', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 39, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 39, createdAt: '2026-01-10', variationGroup: 'pelvic-tilt',
   },
   {
     id: 'ex22',
@@ -660,7 +660,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Lumbar spine', 'Core', 'Hip', 'Glutes', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 38, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 38, createdAt: '2026-01-10', variationGroup: 'pelvic-tilt',
   },
   {
     id: 'ex23',
@@ -698,7 +698,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Shoulder', 'Glutes', 'Knee', 'Lumbar spine', 'Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 36, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 36, createdAt: '2026-01-10', variationGroup: 'plank',
   },
   {
     id: 'ex25',
@@ -717,7 +717,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Core', 'Shoulder', 'Glutes', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 35, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 35, createdAt: '2026-01-10', variationGroup: 'plank',
   },
   {
     id: 'ex26',
@@ -736,7 +736,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 2, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 34, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 34, createdAt: '2026-01-10', variationGroup: 'glute-bridge',
   },
   {
     id: 'ex27',
@@ -755,7 +755,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 2, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 33, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 33, createdAt: '2026-01-10', variationGroup: 'glute-bridge',
   },
   {
     id: 'ex28',
@@ -774,7 +774,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 2, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 32, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 32, createdAt: '2026-01-10', variationGroup: 'glute-bridge',
   },
   {
     id: 'ex29',
@@ -793,7 +793,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Glutes', 'Hip', 'Inner thigh', 'Core', 'Lumbar spine', 'Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 2, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 31, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 31, createdAt: '2026-01-10', variationGroup: 'glute-bridge',
   },
   {
     id: 'ex30',
@@ -850,7 +850,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Hip', 'Glutes', 'Inner thigh', 'Lumbar spine', 'Thoracic spine', 'Pelvic floor'],
     },
     defaultSets: 1, defaultReps: 5, defaultHoldSecs: 30, defaultFrequency: '3x Weekly',
-    isFavorite: false, usageCount: 28, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 28, createdAt: '2026-01-10', variationGroup: 'childs-pose',
   },
   {
     id: 'ex33',
@@ -869,7 +869,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Hip', 'Glutes', 'Inner thigh', 'Lumbar spine', 'Thoracic spine', 'Pelvic floor'],
     },
     defaultSets: 1, defaultReps: 5, defaultHoldSecs: 30, defaultFrequency: '3x Weekly',
-    isFavorite: false, usageCount: 27, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 27, createdAt: '2026-01-10', variationGroup: 'childs-pose',
   },
   {
     id: 'ex34',
@@ -983,7 +983,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Glutes', 'Hip', 'Knee', 'Core', 'Lumbar spine', 'Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 21, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 21, createdAt: '2026-01-10', variationGroup: 'squat',
   },
   {
     id: 'ex40',
@@ -1002,7 +1002,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Glutes', 'Hip', 'Knee', 'Core', 'Lumbar spine', 'Pelvic floor'],
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 20, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 20, createdAt: '2026-01-10', variationGroup: 'squat',
   },
   {
     id: 'ex41',
@@ -1078,7 +1078,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor', 'Hip', 'Lumbar spine'],
     },
     defaultSets: 1, defaultReps: 1, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 16, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 16, createdAt: '2026-01-10', variationGroup: 'bowel',
   },
   {
     id: 'ex45',
@@ -1097,7 +1097,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Abdomen', 'Pelvic floor', 'Core'],
     },
     defaultSets: 1, defaultReps: 1, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 15, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 15, createdAt: '2026-01-10', variationGroup: 'bowel',
   },
   {
     id: 'ex46',
@@ -1116,7 +1116,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor', 'Abdomen', 'Core'],
     },
     defaultSets: 1, defaultReps: 1, defaultHoldSecs: 0, defaultFrequency: 'Daily',
-    isFavorite: false, usageCount: 14, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 14, createdAt: '2026-01-10', variationGroup: 'bowel',
   },
   {
     id: 'ex47',
@@ -1135,7 +1135,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Abdomen', 'Core', 'C-section scar'],
     },
     defaultSets: 1, defaultReps: 5, defaultHoldSecs: 0, defaultFrequency: '3x Weekly',
-    isFavorite: false, usageCount: 13, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 13, createdAt: '2026-01-10', variationGroup: 'csection-massage',
   },
   {
     id: 'ex48',
@@ -1154,7 +1154,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Abdomen', 'Core', 'C-section scar'],
     },
     defaultSets: 1, defaultReps: 5, defaultHoldSecs: 0, defaultFrequency: '3x Weekly',
-    isFavorite: false, usageCount: 12, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 12, createdAt: '2026-01-10', variationGroup: 'csection-massage',
   },
   {
     id: 'ex49',
@@ -1173,7 +1173,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor', 'Perineum', 'Vulvovaginal tissue'],
     },
     defaultSets: 1, defaultReps: 5, defaultHoldSecs: 0, defaultFrequency: '3x Weekly',
-    isFavorite: false, usageCount: 11, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 11, createdAt: '2026-01-10', variationGroup: 'perineal-massage',
   },
   {
     id: 'ex50',
@@ -1192,7 +1192,7 @@ export const mockExercises: Exercise[] = [
       bodyPart: ['Pelvic floor', 'Perineum', 'Vulvovaginal tissue'],
     },
     defaultSets: 1, defaultReps: 5, defaultHoldSecs: 0, defaultFrequency: '3x Weekly',
-    isFavorite: false, usageCount: 10, createdAt: '2026-01-10',
+    isFavorite: false, usageCount: 10, createdAt: '2026-01-10', variationGroup: 'perineal-massage',
   },
 
 ];
