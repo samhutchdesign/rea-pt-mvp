@@ -1,12 +1,12 @@
 'use client';
 import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Tag, Select, Divider, Tooltip, InputNumber } from 'antd';
+import { Typography, Input, Button, Card, Tag, Select, Divider, Tooltip, InputNumber, ConfigProvider } from 'antd';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
-import { Eye, Heart, MinusCircle, PlusCircle, Search, Zap } from 'lucide-react';
+import { Eye, GripVertical, Heart, MinusCircle, PlusCircle, Search, Zap } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -55,6 +55,22 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     existingProgram?.exercises.map((e) => ({ exerciseId: e.exerciseId, sets: e.sets, reps: e.reps, holdSecs: e.holdSecs, frequency: e.frequency })) ?? []
   );
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (index: number) => setDragIndex(index);
+  const handleDragOver = (e: React.DragEvent, index: number) => { e.preventDefault(); setDragOverIndex(index); };
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (dragIndex === null || dragIndex === dropIndex) { setDragIndex(null); setDragOverIndex(null); return; }
+    const next = [...programRows];
+    const [moved] = next.splice(dragIndex, 1);
+    next.splice(dropIndex, 0, moved);
+    setProgramRows(next);
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+  const handleDragEnd = () => { setDragIndex(null); setDragOverIndex(null); };
 
   const filteredExercises = useMemo(() => {
     let exs = mockExercises.filter((ex) => {
@@ -169,26 +185,47 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <div style={{ textAlign: 'center', padding: '48px 0' }}>
               <Text type="secondary">Add exercises from the library</Text>
             </div>
-          ) : programRows.map((row) => {
+          ) : programRows.map((row, idx) => {
             const ex = mockExercises.find((e) => e.id === row.exerciseId);
             if (!ex) return null;
+            const isDragging = dragIndex === idx;
+            const isDropTarget = dragOverIndex === idx && dragIndex !== idx;
             return (
-              <Card key={row.exerciseId} styles={{ body: { padding: 16 } }} style={{ flexShrink: 0 }}>
+              <Card
+                key={row.exerciseId}
+                styles={{ body: { padding: 16 } }}
+                style={{
+                  flexShrink: 0,
+                  opacity: isDragging ? 0.4 : 1,
+                  border: isDropTarget ? '2px dashed #6750A4' : undefined,
+                  transition: 'opacity 0.15s',
+                }}
+                draggable
+                onDragStart={() => handleDragStart(idx)}
+                onDragOver={(e) => handleDragOver(e, idx)}
+                onDrop={(e) => handleDrop(e, idx)}
+                onDragEnd={handleDragEnd}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                  <Text strong>{ex.name}</Text>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <GripVertical size={16} style={{ color: '#BDBDBD', cursor: 'grab', flexShrink: 0 }} />
+                    <Text strong>{ex.name}</Text>
+                  </div>
                   <Button type="text" size="small" onClick={() => removeExercise(row.exerciseId)} icon={<MinusCircle />} style={{ color: '#9E9E9E' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                  {([
-                    { label: 'Sets', field: 'sets' as const, value: row.sets },
-                    { label: 'Reps', field: 'reps' as const, value: row.reps },
-                    { label: 'Hold (sec)', field: 'holdSecs' as const, value: row.holdSecs },
-                  ]).map(({ label, field, value }) => (
-                    <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Text type="secondary" style={{ fontSize: 12 }}>{label}:</Text>
-                      <InputNumber size="small" min={0} value={value} onChange={(v) => updateRow(row.exerciseId, field, v ?? 0)} style={{ width: 64 }} />
-                    </div>
-                  ))}
+                  <ConfigProvider theme={{ components: { InputNumber: { handleVisible: true } } }}>
+                    {([
+                      { label: 'Sets', field: 'sets' as const, value: row.sets },
+                      { label: 'Reps', field: 'reps' as const, value: row.reps },
+                      { label: 'Hold (sec)', field: 'holdSecs' as const, value: row.holdSecs },
+                    ]).map(({ label, field, value }) => (
+                      <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Text type="secondary" style={{ fontSize: 12 }}>{label}:</Text>
+                        <InputNumber size="small" min={0} value={value} onChange={(v) => updateRow(row.exerciseId, field, v ?? 0)} style={{ width: 72 }} />
+                      </div>
+                    ))}
+                  </ConfigProvider>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Text type="secondary" style={{ fontSize: 12 }}>Freq:</Text>
                     <Select value={row.frequency} onChange={(v) => updateRow(row.exerciseId, 'frequency', v)} size="small" style={{ minWidth: 130 }} options={FREQUENCIES.map((f) => ({ value: f, label: f }))} />
