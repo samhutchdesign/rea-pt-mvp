@@ -324,7 +324,7 @@ export default function ExercisesPage() {
             <div style={{ flex: 1, minWidth: 0 }}>
 
               {/* Top bar */}
-              <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 10, marginBottom: hasFilters ? 10 : 16, alignItems: 'center' }}>
                 <Input
                   placeholder="Search exercises, SUI, OAB…"
                   style={{ flex: 1 }}
@@ -335,6 +335,42 @@ export default function ExercisesPage() {
                 />
                 <Select value={sortBy} onChange={setSortBy} style={{ minWidth: 140 }} options={SORT_OPTIONS.map((o) => ({ value: o, label: o }))} />
               </div>
+
+              {/* Active filter tags */}
+              {hasFilters && (
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+                  {search && (
+                    <Tag closable onClose={() => setSearch('')} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', borderRadius: 4 }}>
+                      &ldquo;{search}&rdquo;
+                    </Tag>
+                  )}
+                  {showFavoritesOnly && (
+                    <Tag closable onClose={() => setShowFavoritesOnly(false)} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', borderRadius: 4 }}>
+                      Favourites only
+                    </Tag>
+                  )}
+                  {filterConditions.map((c) => (
+                    <Tag key={c} closable onClose={() => toggleArr(filterConditions, c, setFilterConditions)} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', borderRadius: 4 }}>
+                      {c}
+                    </Tag>
+                  ))}
+                  {filterCategories.map((c) => (
+                    <Tag key={c} closable onClose={() => toggleArr(filterCategories, c, setFilterCategories)} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', borderRadius: 4 }}>
+                      {c}
+                    </Tag>
+                  ))}
+                  {filterLevels.map((l) => (
+                    <Tag key={l} closable onClose={() => toggleArr(filterLevels, l, setFilterLevels)} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', borderRadius: 4 }}>
+                      {l}
+                    </Tag>
+                  ))}
+                  {filterEquipment.map((eq) => (
+                    <Tag key={eq} closable onClose={() => toggleArr(filterEquipment, eq, setFilterEquipment)} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', borderRadius: 4 }}>
+                      {eq}
+                    </Tag>
+                  ))}
+                </div>
+              )}
 
               <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 12 }}>
                 {filtered.length} exercise{filtered.length !== 1 ? 's' : ''} · {displayItems.length} card{displayItems.length !== 1 ? 's' : ''} shown
