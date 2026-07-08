@@ -385,6 +385,11 @@ export default function ExercisesPage() {
                           <Tag style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 3, background: '#6750A4', color: 'white', border: 'none', fontWeight: 600, fontSize: 11, margin: 0 }}>
                             {totalCount} variations
                           </Tag>
+                          <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 4 }} onClick={(e) => e.stopPropagation()}>
+                            <Tooltip title={favorites.has(rep.id) ? 'Unfavourite' : 'Favourite'}>
+                              <Button type="text" size="small" style={{ background: 'rgba(255,255,255,0.85)', borderRadius: 6 }} icon={favorites.has(rep.id) ? <Heart size={14} style={{ color: '#E91E63' }} fill="#E91E63" /> : <Heart size={14} />} onClick={() => toggleFavorite(rep.id)} />
+                            </Tooltip>
+                          </div>
                         </div>
                         <div style={{ padding: '12px 14px 14px' }}>
                           <Text strong style={{ display: 'block', marginBottom: 8, fontSize: 13, lineHeight: 1.3 }}>{gName}</Text>

@@ -4,27 +4,11 @@ import { useRouter } from 'next/navigation';
 import { Typography, Button, Tag, Divider, Select } from 'antd';
 import TopBar from '@/components/layout/TopBar';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
-import { mockExercises, mockPrograms } from '@/lib/mock-data';
+import { mockExercises, mockExercisesFull, mockPrograms } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import { ChevronRight, Heart, Mic, Pencil, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
-
-const GROUP_NAMES: Record<string, string> = {
-  'pelvic-floor': 'Pelvic Floor',
-  'core-breathing': 'Core Breathing',
-  'breathing': 'Breathing',
-  'transversus': 'Transversus',
-  'deadbug': 'Deadbug',
-  'pelvic-tilt': 'Pelvic Tilt',
-  'plank': 'Plank',
-  'glute-bridge': 'Glute Bridge',
-  'childs-pose': "Child's Pose",
-  'squat': 'Squat',
-  'bowel': 'Bowel',
-  'csection-massage': 'C-Section Massage',
-  'perineal-massage': 'Perineal Massage',
-};
 
 function variationLabel(name: string): string {
   const idx = name.indexOf(':');
@@ -34,18 +18,20 @@ function variationLabel(name: string): string {
 export default function ExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const ex = mockExercises.find((e) => e.id === id);
+  const viewMode = useViewMode();
+
+  const sourceArray = id.startsWith('fx-') ? mockExercisesFull : mockExercises;
+  const ex = sourceArray.find((e) => e.id === id);
   const [isFavorite, setIsFavorite] = useState(ex?.isFavorite ?? false);
   const [audioOpen, setAudioOpen] = useState(false);
-  const viewMode = useViewMode();
 
   if (!ex) return <div style={{ padding: 32 }}><Text>Exercise not found.</Text></div>;
 
   const siblings = ex.variationGroup
-    ? mockExercises.filter((e) => e.variationGroup === ex.variationGroup).sort((a, b) => b.usageCount - a.usageCount)
+    ? sourceArray.filter((e) => e.variationGroup === ex.variationGroup).sort((a, b) => b.usageCount - a.usageCount)
     : [];
 
-  const groupName = ex.variationGroup ? (GROUP_NAMES[ex.variationGroup] ?? ex.variationGroup) : null;
+  const groupName = ex.variationGroup ? (ex.defaultName ?? ex.name.split(':')[0].trim()) : null;
 
   const allTags = [...new Set([...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart])];
 

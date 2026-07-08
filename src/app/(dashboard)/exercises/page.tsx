@@ -5,7 +5,7 @@ import { Typography, Input, Button, Card, Tag, Select, Tooltip, Checkbox } from 
 import type { ComponentType } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
-import { mockExercises } from '@/lib/mock-data';
+import { mockExercises, mockExercisesFull } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import type { Exercise } from '@/lib/types';
 import { ArrowLeft, Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
@@ -16,7 +16,7 @@ const SPECIALTIES: {
   id: string; name: string; apta: string; description: string;
   icon: IconType; color: string; bg: string; available: boolean; count: number;
 }[] = [
-  { id: 'pelvic-health', name: 'Pelvic Health', apta: "Pelvic & Women's Health", description: 'Pelvic floor, incontinence, prolapse, pain with sex, postpartum & pregnancy', icon: Heart, color: '#6750A4', bg: '#EDE7F6', available: true, count: 50 },
+  { id: 'pelvic-health', name: 'Pelvic Health', apta: "Pelvic & Women's Health", description: 'Pelvic floor, incontinence, prolapse, pain with sex, postpartum & pregnancy', icon: Heart, color: '#6750A4', bg: '#EDE7F6', available: true, count: 266 },
   { id: 'orthopaedics', name: 'Orthopaedics', apta: 'Orthopaedics', description: 'Spine, hip, knee, shoulder, and extremity rehabilitation', icon: User, color: '#0277BD', bg: '#E1F5FE', available: false, count: 0 },
   { id: 'sports', name: 'Sports & Performance', apta: 'Sports', description: 'Return to sport, athletic performance, and injury prevention', icon: Trophy, color: '#2E7D32', bg: '#E8F5E9', available: false, count: 0 },
   { id: 'neurology', name: 'Neurological Rehab', apta: 'Neurology', description: "Stroke, MS, Parkinson's, and spinal cord conditions", icon: Lightbulb, color: '#E65100', bg: '#FFF3E0', available: false, count: 0 },
@@ -52,6 +52,25 @@ const SPECIALTY_FILTER_CONFIG: Record<string, SpecialtyFilters> = {
   },
 };
 
+const ALL_CATEGORIES_FULL = [...new Set(mockExercisesFull.map((e) => e.category))].sort();
+
+const SPECIALTY_FILTER_CONFIG_FULL: Record<string, SpecialtyFilters> = {
+  'pelvic-health': {
+    conditionLabel: 'Condition',
+    conditions: [
+      'Stress Urinary Incontinence', 'Urge Urinary Incontinence', 'Mixed Urinary Incontinence',
+      'Overactive Bladder', 'Pelvic Organ Prolapse', 'Diastasis Recti', 'Postpartum Recovery',
+      'Pregnancy', 'Pelvic Girdle Pain', 'Labour Preparation',
+      'Dyspareunia', 'Vaginismus', 'Hypertonic Pelvic Floor', 'Chronic Pelvic Pain', 'Endometriosis',
+      'Post-Prostatectomy Incontinence', 'Erectile Dysfunction', 'Male Pelvic Pain',
+      'Low Back Pain', 'Sacroiliac Joint Dysfunction',
+      'Constipation', 'Fecal Incontinence',
+      'C-Section Recovery', 'Gender-Affirming',
+    ],
+    categories: ALL_CATEGORIES_FULL,
+  },
+};
+
 const SEARCH_ALIASES: Record<string, string> = {
   sui: 'Stress Urinary Incontinence', uui: 'Urge Urinary Incontinence',
   oab: 'Overactive Bladder', 'ic-bps': 'Bladder Pain Syndrome',
@@ -62,22 +81,6 @@ const SEARCH_ALIASES: Record<string, string> = {
 const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
-
-const GROUP_NAMES: Record<string, string> = {
-  'pelvic-floor': 'Pelvic Floor',
-  'core-breathing': 'Core Breathing',
-  'breathing': 'Breathing',
-  'transversus': 'Transversus',
-  'deadbug': 'Deadbug',
-  'pelvic-tilt': 'Pelvic Tilt',
-  'plank': 'Plank',
-  'glute-bridge': 'Glute Bridge',
-  'childs-pose': "Child's Pose",
-  'squat': 'Squat',
-  'bowel': 'Bowel',
-  'csection-massage': 'C-Section Massage',
-  'perineal-massage': 'Perineal Massage',
-};
 
 const { Title, Text } = Typography;
 
@@ -159,6 +162,7 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
 export default function ExercisesPage() {
   const router = useRouter();
   const viewMode = useViewMode();
+  const exercises = viewMode === 'full' ? mockExercisesFull : mockExercises;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const effectiveSelectedId = viewMode === 'mvp' ? 'pelvic-health' : selectedId;
   const [search, setSearch] = useState('');
@@ -170,10 +174,13 @@ export default function ExercisesPage() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showMoreConditions, setShowMoreConditions] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
+
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
 
   const specialty = SPECIALTIES.find((s) => s.id === effectiveSelectedId) ?? null;
-  const filterConfig = effectiveSelectedId ? SPECIALTY_FILTER_CONFIG[effectiveSelectedId] : null;
+  const filterConfig = effectiveSelectedId
+    ? (viewMode === 'full' ? SPECIALTY_FILTER_CONFIG_FULL[effectiveSelectedId] : SPECIALTY_FILTER_CONFIG[effectiveSelectedId])
+    : null;
 
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
@@ -187,7 +194,7 @@ export default function ExercisesPage() {
 
   const filtered = useMemo(() => {
     if (!specialty?.available) return [];
-    return mockExercises.filter((ex) => {
+    return exercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
       if (effectiveSearch) {
         const q = effectiveSearch.toLowerCase();
@@ -206,7 +213,7 @@ export default function ExercisesPage() {
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, showFavoritesOnly, favorites]);
+  }, [specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, showFavoritesOnly, favorites, exercises]);
 
   const levelColor = (l: string) => l === 'Beginner' ? { bg: '#E8F5E9', color: '#2E7D32' } : l === 'Intermediate' ? { bg: '#FFF8E1', color: '#F57F17' } : { bg: '#FFF3E0', color: '#E65100' };
 
@@ -222,12 +229,13 @@ export default function ExercisesPage() {
         items.push({ kind: 'single', ex });
       } else if (!seenGroups.has(ex.variationGroup)) {
         seenGroups.add(ex.variationGroup);
-        const totalCount = mockExercises.filter((e) => e.variationGroup === ex.variationGroup).length;
-        items.push({ kind: 'group', groupId: ex.variationGroup, groupName: GROUP_NAMES[ex.variationGroup] ?? ex.variationGroup, representative: ex, totalCount });
+        const totalCount = exercises.filter((e) => e.variationGroup === ex.variationGroup).length;
+        const gName = ex.defaultName ?? ex.name.split(':')[0].trim();
+        items.push({ kind: 'group', groupId: ex.variationGroup, groupName: gName, representative: ex, totalCount });
       }
     }
     return items;
-  }, [filtered]);
+  }, [filtered, exercises]);
 
   const breadcrumbs = specialty ? [{ label: 'All Exercises' }, { label: specialty.name }] : [{ label: 'All Exercises' }];
 
@@ -385,6 +393,11 @@ export default function ExercisesPage() {
                           <Tag style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 3, background: '#6750A4', color: 'white', border: 'none', fontWeight: 600, fontSize: 11, margin: 0 }}>
                             {totalCount} variations
                           </Tag>
+                          <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 4 }} onClick={(e) => e.stopPropagation()}>
+                            <Tooltip title={favorites.has(rep.id) ? 'Unfavourite' : 'Favourite'}>
+                              <Button type="text" size="small" style={{ background: 'rgba(255,255,255,0.85)', borderRadius: 6 }} icon={favorites.has(rep.id) ? <Heart size={14} style={{ color: '#E91E63' }} fill="#E91E63" /> : <Heart size={14} />} onClick={() => toggleFavorite(rep.id)} />
+                            </Tooltip>
+                          </div>
                         </div>
                         <div style={{ padding: '12px 14px 14px' }}>
                           <Text strong style={{ display: 'block', marginBottom: 8, fontSize: 13, lineHeight: 1.3 }}>{gName}</Text>

@@ -83,6 +83,7 @@ export interface Exercise {
   videoUrl?: string;
   audioUrl?: string;
   imageUrl?: string;
+  defaultName?: string;
   isFavorite: boolean;
   usageCount: number;
   createdAt: string;
