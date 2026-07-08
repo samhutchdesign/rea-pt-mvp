@@ -7,7 +7,7 @@ import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import type { Patient } from '@/lib/types';
-import { ChevronRight, Heart, Mic, Pencil, UserPlus, Zap } from 'lucide-react';
+import { ChevronRight, Heart, ListPlus, Mic, Pencil, UserPlus, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -28,6 +28,15 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   const [audioOpen, setAudioOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [programOpen, setProgramOpen] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
+
+  const handleAddToProgram = () => {
+    const prog = mockPrograms.find((p) => p.id === selectedProgramId);
+    if (prog) messageApi.success(`Exercise added to "${prog.name}"!`);
+    setProgramOpen(false);
+    setSelectedProgramId(null);
+  };
 
   const handleAssign = () => {
     if (selectedPatient) {
@@ -113,6 +122,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             {viewMode === 'full' && (
               <Button icon={<Mic size={14} />} onClick={() => setAudioOpen(true)}>Record Audio Cue</Button>
             )}
+            <Button icon={<ListPlus size={14} />} onClick={() => setProgramOpen(true)}>Add to Program</Button>
             <Button icon={<UserPlus size={14} />} onClick={() => setAssignOpen(true)}>Add to Patient</Button>
             <Button
               type="text"
@@ -180,6 +190,36 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         onClose={() => setAudioOpen(false)}
         onSave={(_blobUrl, _dur) => setAudioOpen(false)}
       />
+
+      <Modal
+        open={programOpen}
+        onCancel={() => { setProgramOpen(false); setSelectedProgramId(null); }}
+        title="Add to Program"
+        footer={[
+          <Button key="cancel" onClick={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>,
+          <Button key="add" type="primary" disabled={!selectedProgramId} onClick={handleAddToProgram}>Add to Program</Button>,
+        ]}
+      >
+        <div style={{ padding: '16px 0' }}>
+          <Select
+            placeholder="Select a program…"
+            style={{ width: '100%' }}
+            value={selectedProgramId}
+            onChange={(val) => {
+              if (val === '__new__') {
+                router.push('/programs/new');
+                setProgramOpen(false);
+                return;
+              }
+              setSelectedProgramId(val);
+            }}
+            options={[
+              { value: '__new__', label: '+ Create new program' },
+              ...mockPrograms.map((p) => ({ value: p.id, label: p.name })),
+            ]}
+          />
+        </div>
+      </Modal>
 
       <Modal
         open={assignOpen}
