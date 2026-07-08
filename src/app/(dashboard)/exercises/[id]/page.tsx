@@ -1,12 +1,13 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Tag, Divider, Select } from 'antd';
+import { Typography, Button, Tag, Divider, Select, Modal, App } from 'antd';
 import TopBar from '@/components/layout/TopBar';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
-import { mockExercises, mockExercisesFull, mockPrograms } from '@/lib/mock-data';
+import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
-import { ChevronRight, Heart, Mic, Pencil, Zap } from 'lucide-react';
+import type { Patient } from '@/lib/types';
+import { ChevronRight, Heart, Mic, Pencil, UserPlus, Zap } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -19,11 +20,22 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   const { id } = use(params);
   const router = useRouter();
   const viewMode = useViewMode();
+  const { message: messageApi } = App.useApp();
 
   const sourceArray = id.startsWith('fx-') ? mockExercisesFull : mockExercises;
   const ex = sourceArray.find((e) => e.id === id);
   const [isFavorite, setIsFavorite] = useState(ex?.isFavorite ?? false);
   const [audioOpen, setAudioOpen] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+
+  const handleAssign = () => {
+    if (selectedPatient) {
+      messageApi.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program!`);
+    }
+    setAssignOpen(false);
+    setSelectedPatient(null);
+  };
 
   if (!ex) return <div style={{ padding: 32 }}><Text>Exercise not found.</Text></div>;
 
@@ -101,6 +113,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             {viewMode === 'full' && (
               <Button icon={<Mic size={14} />} onClick={() => setAudioOpen(true)}>Record Audio Cue</Button>
             )}
+            <Button icon={<UserPlus size={14} />} onClick={() => setAssignOpen(true)}>Add to Patient</Button>
             <Button
               type="text"
               shape="circle"
@@ -167,6 +180,28 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         onClose={() => setAudioOpen(false)}
         onSave={(_blobUrl, _dur) => setAudioOpen(false)}
       />
+
+      <Modal
+        open={assignOpen}
+        onCancel={() => { setAssignOpen(false); setSelectedPatient(null); }}
+        title="Add to Patient's Program"
+        footer={[
+          <Button key="cancel" onClick={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>,
+          <Button key="add" type="primary" disabled={!selectedPatient} onClick={handleAssign}>Add to Program</Button>,
+        ]}
+      >
+        <div style={{ padding: '16px 0' }}>
+          <Select
+            placeholder="Select a patient…"
+            style={{ width: '100%' }}
+            value={selectedPatient?.id ?? null}
+            onChange={(val) => setSelectedPatient(mockPatients.find((p) => p.id === val) ?? null)}
+            options={mockPatients.filter((p) => !p.archived).map((p) => ({ value: p.id, label: `${p.firstName} ${p.lastName}` }))}
+            showSearch
+            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+          />
+        </div>
+      </Modal>
     </>
   );
 }
