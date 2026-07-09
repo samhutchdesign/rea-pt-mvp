@@ -1,14 +1,17 @@
 'use client';
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Avatar, Button, Card, Tag, Tabs, Modal, Select, Input, Alert, App } from 'antd';
+import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { mockEmployees, mockPatients } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import type { Patient, Employee } from '@/lib/types';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Alert } from '@/components/ui/alert';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
+import { cx } from '@/utils/cx';
 import { ArrowLeftRight, Calendar, Inbox, Mail, Pencil, Phone, User } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 const AVATAR_COLORS: Record<string, string> = {
   emp1: '#6750A4',
@@ -34,28 +37,39 @@ function TransferDialog({
   const otherEmployees = mockEmployees.filter((e) => e.id !== currentEmployee.id && !e.archived);
 
   return (
-    <Modal
-      open={open}
-      onCancel={onClose}
-      title="Transfer Patient"
-      footer={[
-        <Button key="cancel" onClick={onClose}>Cancel</Button>,
-        <Button key="transfer" type="primary" disabled={!selected} onClick={() => { if (selected) onTransfer(selected); }}>Transfer</Button>,
-      ]}
-    >
-      <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-        Transfer <strong>{patient?.firstName} {patient?.lastName}</strong> to another physiotherapist.
-      </Text>
-      <Select
-        showSearch
-        placeholder="Select physiotherapist"
-        style={{ width: '100%' }}
-        value={selected?.id}
-        onChange={(val) => setSelected(otherEmployees.find((e) => e.id === val) ?? null)}
-        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-        options={otherEmployees.map((e) => ({ value: e.id, label: `${e.firstName} ${e.lastName} — ${e.credentials}` }))}
-      />
-    </Modal>
+    <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <Modal>
+        <Dialog>
+          <div className="p-6 w-full min-w-[420px]">
+            <h3 className="text-lg font-semibold text-primary mb-3">Transfer Patient</h3>
+            <p className="text-tertiary text-sm mb-4">
+              Transfer <strong className="text-primary">{patient?.firstName} {patient?.lastName}</strong> to another physiotherapist.
+            </p>
+            <select
+              className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand mb-6"
+              value={selected?.id ?? ''}
+              onChange={(e) => setSelected(otherEmployees.find((emp) => emp.id === e.target.value) ?? null)}
+            >
+              <option value="" disabled>Select physiotherapist</option>
+              {otherEmployees.map((e) => (
+                <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
+              ))}
+            </select>
+            <div className="flex justify-end gap-2">
+              <Button color="secondary" size="sm" onPress={onClose}>Cancel</Button>
+              <Button
+                color="primary"
+                size="sm"
+                isDisabled={!selected}
+                onPress={() => { if (selected) onTransfer(selected); }}
+              >
+                Transfer
+              </Button>
+            </div>
+          </div>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 }
 
@@ -88,70 +102,74 @@ function ArchiveEmployeeDialog({
   const canConfirm = !hasPatients || allReassigned;
 
   return (
-    <Modal
-      open={open}
-      onCancel={onClose}
-      title="Archive Employee?"
-      footer={[
-        <Button key="cancel" onClick={onClose}>Cancel</Button>,
-        <Button
-          key="archive"
-          type="primary"
-          disabled={!canConfirm}
-          style={{ background: canConfirm ? '#FB8C00' : undefined, borderColor: canConfirm ? '#FB8C00' : undefined }}
-          onClick={() => {
-            const result: Record<string, Employee> = {};
-            assignedPatients.forEach((p) => {
-              if (reassignments[p.id]) result[p.id] = reassignments[p.id]!;
-            });
-            onConfirm(result);
-          }}
-        >
-          Archive Employee
-        </Button>,
-      ]}
-    >
-      {!hasPatients ? (
-        <Text type="secondary">
-          Are you sure you want to archive <strong>{employee.firstName} {employee.lastName}</strong>? They will be moved to the Archived tab and lose clinic access. You can restore them at any time.
-        </Text>
-      ) : (
-        <>
-          <Alert
-            type="warning"
-            style={{ marginBottom: 24 }}
-            message={<span><strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new physiotherapist for each before archiving.</span>}
-          />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {assignedPatients.map((p) => (
-              <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <Avatar style={{ width: 36, height: 36, background: '#EDE7F6', color: '#6750A4', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
-                  {p.avatarInitials}
-                </Avatar>
-                <div style={{ minWidth: 130, flexShrink: 0 }}>
-                  <Text strong>{p.firstName} {p.lastName}</Text>
+    <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <Modal>
+        <Dialog>
+          <div className="p-6 w-full min-w-[420px]">
+            <h3 className="text-lg font-semibold text-primary mb-3">Archive Employee?</h3>
+            {!hasPatients ? (
+              <p className="text-tertiary text-sm mb-6">
+                Are you sure you want to archive <strong className="text-primary">{employee.firstName} {employee.lastName}</strong>? They will be moved to the Archived tab and lose clinic access. You can restore them at any time.
+              </p>
+            ) : (
+              <>
+                <Alert type="warning" className="mb-6">
+                  <strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new physiotherapist for each before archiving.
+                </Alert>
+                <div className="flex flex-col gap-4 mb-6">
+                  {assignedPatients.map((p) => (
+                    <div key={p.id} className="flex items-center gap-4">
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-semibold text-sm"
+                        style={{ background: '#EDE7F6', color: '#6750A4' }}
+                      >
+                        {p.avatarInitials}
+                      </div>
+                      <div className="min-w-[130px] shrink-0">
+                        <span className="font-semibold text-primary text-sm">{p.firstName} {p.lastName}</span>
+                      </div>
+                      <select
+                        className="flex-1 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand"
+                        value={reassignments[p.id]?.id ?? ''}
+                        onChange={(e) => setReassignments((r) => ({ ...r, [p.id]: otherEmployees.find((emp) => emp.id === e.target.value) ?? null }))}
+                      >
+                        <option value="" disabled>Transfer to…</option>
+                        {otherEmployees.map((e) => (
+                          <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
                 </div>
-                <Select
-                  placeholder="Transfer to…"
-                  style={{ flex: 1 }}
-                  value={reassignments[p.id]?.id}
-                  status={reassignments[p.id] === null && allReassigned === false ? 'error' : undefined}
-                  onChange={(val) => setReassignments((r) => ({ ...r, [p.id]: otherEmployees.find((e) => e.id === val) ?? null }))}
-                  options={otherEmployees.map((e) => ({ value: e.id, label: `${e.firstName} ${e.lastName}` }))}
-                />
-              </div>
-            ))}
+              </>
+            )}
+            <div className="flex justify-end gap-2">
+              <Button color="secondary" size="sm" onPress={onClose}>Cancel</Button>
+              <Button
+                color="secondary-destructive"
+                size="sm"
+                isDisabled={!canConfirm}
+                onPress={() => {
+                  const result: Record<string, Employee> = {};
+                  assignedPatients.forEach((p) => {
+                    if (reassignments[p.id]) result[p.id] = reassignments[p.id]!;
+                  });
+                  onConfirm(result);
+                }}
+              >
+                Archive Employee
+              </Button>
+            </div>
           </div>
-        </>
-      )}
-    </Modal>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 }
 
 export default function EmployeeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { message: messageApi } = App.useApp();
   const emp = mockEmployees.find((e) => e.id === id);
 
   const [tab, setTab] = useState('0');
@@ -176,7 +194,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [professionalDraft, setProfessionalDraft] = useState({ ...savedProfessional });
   const can = usePermissions();
 
-  if (!emp) return <div style={{ padding: 32 }}><Text>Employee not found.</Text></div>;
+  if (!emp) return <div className="p-8"><span className="text-tertiary text-sm">Employee not found.</span></div>;
 
   const assignedPatients = mockPatients.filter((p) => emp.patientIds.includes(p.id));
   const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
@@ -184,7 +202,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const handleTransfer = (toEmployee: Employee) => {
     const name = `${transferPatient?.firstName} ${transferPatient?.lastName}`;
     setTransferPatient(null);
-    messageApi.success(`${name} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
+    toast.success(`${name} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
   };
 
   const handleConfirmArchive = (reassignments: Record<string, Employee>) => {
@@ -194,12 +212,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
     const msg = count > 0
       ? `${emp.firstName} ${emp.lastName} archived. ${count} patient${count !== 1 ? 's' : ''} transferred.`
       : `${emp.firstName} ${emp.lastName} has been archived.`;
-    messageApi.warning(msg);
+    toast.warning(msg);
   };
 
   const handleRestore = () => {
     setArchived(false);
-    messageApi.success(`${emp.firstName} ${emp.lastName} restored to active.`);
+    toast.success(`${emp.firstName} ${emp.lastName} restored to active.`);
   };
 
   const handleEditContact = () => {
@@ -210,7 +228,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const handleSaveContact = () => {
     setSavedContact({ ...contactDraft });
     setEditingContact(false);
-    messageApi.success('Contact information updated.');
+    toast.success('Contact information updated.');
   };
 
   const handleEditProfessional = () => {
@@ -221,58 +239,67 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const handleSaveProfessional = () => {
     setSavedProfessional({ ...professionalDraft });
     setEditingProfessional(false);
-    messageApi.success('Professional details updated.');
+    toast.success('Professional details updated.');
   };
-
-  const fieldLabel = (label: string) => <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>;
 
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Employees', href: '/employees' }, { label: `${savedContact.firstName} ${savedContact.lastName}` }]} />
-      <div style={{ padding: '32px' }}>
+      <div className="p-8">
 
         {archived && (
-          <Alert
-            type="warning"
-            showIcon
-            style={{ marginBottom: 24, borderRadius: 8 }}
-            message="This employee profile is archived. Restore it to re-activate their access."
-          />
+          <Alert type="warning" className="mb-6 rounded-xl">
+            This employee profile is archived. Restore it to re-activate their access.
+          </Alert>
         )}
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, marginBottom: 32 }}>
-          <Avatar style={{ width: 72, height: 72, background: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 24, flexShrink: 0, opacity: archived ? 0.6 : 1 }}>
+        <div className="flex items-start gap-6 mb-8">
+          <div
+            className="w-[72px] h-[72px] rounded-full flex items-center justify-center shrink-0 font-bold text-2xl"
+            style={{ background: bgColor + '18', color: bgColor, opacity: archived ? 0.6 : 1 }}
+          >
             {emp.avatarInitials}
-          </Avatar>
-          <div style={{ flexGrow: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-              <Title level={2} style={{ margin: 0 }}>{savedContact.firstName} {savedContact.lastName}</Title>
-              <Tag style={{ background: '#EDE7F6', color: '#6750A4', fontWeight: 600, border: 'none' }}>{savedProfessional.credentials}</Tag>
+          </div>
+          <div className="grow">
+            <div className="flex items-center gap-3 mb-1">
+              <h2 className="text-xl font-semibold text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h2>
+              <span
+                className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                style={{ background: '#EDE7F6', color: '#6750A4' }}
+              >
+                {savedProfessional.credentials}
+              </span>
             </div>
-            <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>{savedProfessional.title}</Text>
-            <div style={{ display: 'flex', gap: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Mail size={15} />
-                <Text type="secondary">{savedContact.email}</Text>
+            <span className="block text-tertiary text-sm mb-2">{savedProfessional.title}</span>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-1">
+                <Mail size={15} className="text-tertiary" />
+                <span className="text-tertiary text-sm">{savedContact.email}</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Phone size={15} />
-                <Text type="secondary">{savedContact.phone}</Text>
+              <div className="flex items-center gap-1">
+                <Phone size={15} className="text-tertiary" />
+                <span className="text-tertiary text-sm">{savedContact.phone}</span>
               </div>
             </div>
           </div>
           {can.canManageStaff && (
             archived ? (
-              <Button icon={<Inbox />} size="small" onClick={handleRestore} style={{ borderColor: '#FB8C00', color: '#FB8C00' }}>
+              <Button
+                color="secondary"
+                size="xs"
+                iconLeading={Inbox}
+                onPress={handleRestore}
+                className="border-utility-warning-300 text-utility-warning-700"
+              >
                 Restore Employee
               </Button>
             ) : (
               <Button
-                icon={<Inbox />}
-                size="small"
-                onClick={() => setArchiveDialogOpen(true)}
-                style={{ color: '#49454F', borderColor: '#BDBDBD' }}
+                color="secondary"
+                size="xs"
+                iconLeading={Inbox}
+                onPress={() => setArchiveDialogOpen(true)}
               >
                 Archive Employee
               </Button>
@@ -281,115 +308,146 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         </div>
 
         {/* Tabs */}
-        <Tabs
-          activeKey={tab}
-          onChange={setTab}
-          style={{ marginBottom: 24 }}
-          items={[
+        <div className="flex border-b border-secondary mb-6">
+          {[
             { key: '0', label: 'Overview' },
             { key: '1', label: `Patients (${assignedPatients.length})` },
             { key: '2', label: 'Details' },
-          ]}
-        />
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={cx(
+                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                tab === key
+                  ? 'border-brand-600 text-brand-700'
+                  : 'border-transparent text-tertiary hover:text-secondary'
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
         {/* Overview Tab */}
         {tab === '0' && (
-          <div style={{ display: 'flex', gap: 24 }}>
-            <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'flex', gap: 16 }}>
-                <Card style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 8, background: '#6750A418', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <User size={20} />
+          <div className="flex gap-6">
+            <div className="flex-[2] flex flex-col gap-4">
+              <div className="flex gap-4">
+                <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 flex-1">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center">
+                      <User size={20} className="text-brand-700" />
                     </div>
                     <div>
-                      <Title level={2} style={{ margin: 0, lineHeight: 1 }}>{assignedPatients.length}</Title>
-                      <Text type="secondary" style={{ fontSize: 12 }}>Active Patients</Text>
+                      <h2 className="text-2xl font-bold text-primary m-0 leading-none">{assignedPatients.length}</h2>
+                      <span className="text-tertiary text-xs">Active Patients</span>
                     </div>
                   </div>
-                </Card>
-                <Card style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 8, background: '#0288D118', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Calendar size={20} />
+                </div>
+                <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 flex-1">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: '#0288D118' }}>
+                      <Calendar size={20} style={{ color: '#0288D1' }} />
                     </div>
                     <div>
-                      <Title level={2} style={{ margin: 0, lineHeight: 1 }}>{new Date(emp.joinedAt).getFullYear()}</Title>
-                      <Text type="secondary" style={{ fontSize: 12 }}>Joined</Text>
+                      <h2 className="text-2xl font-bold text-primary m-0 leading-none">{new Date(emp.joinedAt).getFullYear()}</h2>
+                      <span className="text-tertiary text-xs">Joined</span>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
 
-              <Card>
-                <Text strong style={{ display: 'block', marginBottom: 12 }}>About</Text>
-                <Text type="secondary" style={{ lineHeight: 1.7 }}>{emp.bio}</Text>
-              </Card>
+              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+                <span className="block font-semibold text-primary mb-3">About</span>
+                <p className="text-tertiary text-sm leading-relaxed m-0">{emp.bio}</p>
+              </div>
             </div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <Card>
-                <Text strong style={{ display: 'block', marginBottom: 12 }}>Specialties</Text>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div className="flex-1 flex flex-col gap-4">
+              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+                <span className="block font-semibold text-primary mb-3">Specialties</span>
+                <div className="flex flex-wrap gap-1.5">
                   {emp.specialties.map((s) => (
-                    <Tag key={s} style={{ fontSize: 12 }}>{s}</Tag>
+                    <span
+                      key={s}
+                      className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
+                    >
+                      {s}
+                    </span>
                   ))}
                 </div>
-              </Card>
+              </div>
 
-              <Card>
-                <Text strong style={{ display: 'block', marginBottom: 12 }}>Assigned Patients</Text>
+              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+                <span className="block font-semibold text-primary mb-3">Assigned Patients</span>
                 {assignedPatients.length === 0 ? (
-                  <Text type="secondary">No patients assigned.</Text>
+                  <span className="text-tertiary text-sm">No patients assigned.</span>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div className="flex flex-col gap-2">
                     {assignedPatients.map((p) => (
                       <div
                         key={p.id}
-                        style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: 8, borderRadius: 8 }}
+                        className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-secondary_alt transition-colors"
                         onClick={() => router.push(`/patients/${p.id}/overview`)}
                       >
-                        <Avatar style={{ width: 32, height: 32, background: '#EDE7F6', color: '#6750A4', fontSize: 12, fontWeight: 600 }}>{p.avatarInitials}</Avatar>
-                        <Text strong>{p.firstName} {p.lastName}</Text>
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
+                          style={{ background: '#EDE7F6', color: '#6750A4' }}
+                        >
+                          {p.avatarInitials}
+                        </div>
+                        <span className="font-semibold text-primary text-sm">{p.firstName} {p.lastName}</span>
                       </div>
                     ))}
                   </div>
                 )}
-              </Card>
+              </div>
             </div>
           </div>
         )}
 
         {/* Patients Tab */}
         {tab === '1' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="flex flex-col gap-3">
             {assignedPatients.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '64px 0' }}>
-                <Text type="secondary">No patients assigned to {emp.firstName} yet.</Text>
+              <div className="text-center py-16">
+                <span className="text-tertiary text-sm">No patients assigned to {emp.firstName} yet.</span>
               </div>
             ) : (
               assignedPatients.map((p) => (
-                <Card key={p.id} hoverable styles={{ body: { padding: 0 } }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 24px' }}>
-                    <Avatar style={{ width: 48, height: 48, background: '#EDE7F6', color: '#6750A4', fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
+                <div
+                  key={p.id}
+                  className="rounded-xl border border-secondary bg-primary shadow-xs hover:bg-secondary_alt transition-colors"
+                >
+                  <div className="flex items-center gap-5 px-6 py-4">
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base"
+                      style={{ background: '#EDE7F6', color: '#6750A4' }}
+                    >
                       {p.avatarInitials}
-                    </Avatar>
-                    <div style={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => router.push(`/patients/${p.id}/overview`)}>
-                      <Text strong style={{ display: 'block', marginBottom: 2 }}>{p.firstName} {p.lastName}</Text>
-                      <Text type="secondary">{p.email}</Text>
+                    </div>
+                    <div
+                      className="grow cursor-pointer"
+                      onClick={() => router.push(`/patients/${p.id}/overview`)}
+                    >
+                      <span className="block font-semibold text-primary text-sm mb-0.5">{p.firstName} {p.lastName}</span>
+                      <span className="text-tertiary text-sm">{p.email}</span>
                     </div>
                     {can.canManageStaff && (
-                      <Button
-                        size="small"
-                        icon={<ArrowLeftRight />}
-                        onClick={() => setTransferPatient(p)}
-                        style={{ flexShrink: 0 }}
-                      >
-                        Transfer
-                      </Button>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          color="secondary"
+                          size="xs"
+                          iconLeading={ArrowLeftRight}
+                          onPress={() => setTransferPatient(p)}
+                        >
+                          Transfer
+                        </Button>
+                      </div>
                     )}
                   </div>
-                </Card>
+                </div>
               ))
             )}
           </div>
@@ -397,79 +455,115 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Details Tab */}
         {tab === '2' && (
-          <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <Card>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Text strong>Contact Information</Text>
+          <div className="max-w-[600px] flex flex-col gap-4">
+            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+              <div className="flex justify-between items-center mb-4">
+                <span className="font-semibold text-primary">Contact Information</span>
                 {can.canManageStaff && !editingContact && (
-                  <Button type="text" size="small" onClick={handleEditContact} icon={<Pencil />} />
+                  <button onClick={handleEditContact} className="text-tertiary hover:text-secondary transition-colors p-1">
+                    <Pencil size={15} />
+                  </button>
                 )}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <div style={{ flex: 1 }}>
-                    {fieldLabel('First Name')}
-                    <Input value={editingContact ? contactDraft.firstName : savedContact.firstName} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, firstName: e.target.value }))} />
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <div className="mb-1 text-sm text-secondary">First Name</div>
+                    <Input
+                      value={editingContact ? contactDraft.firstName : savedContact.firstName}
+                      isReadOnly={!editingContact}
+                      onChange={(v) => setContactDraft((d) => ({ ...d, firstName: v }))}
+                    />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    {fieldLabel('Last Name')}
-                    <Input value={editingContact ? contactDraft.lastName : savedContact.lastName} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, lastName: e.target.value }))} />
+                  <div className="flex-1">
+                    <div className="mb-1 text-sm text-secondary">Last Name</div>
+                    <Input
+                      value={editingContact ? contactDraft.lastName : savedContact.lastName}
+                      isReadOnly={!editingContact}
+                      onChange={(v) => setContactDraft((d) => ({ ...d, lastName: v }))}
+                    />
                   </div>
                 </div>
                 <div>
-                  {fieldLabel('Email')}
-                  <Input value={editingContact ? contactDraft.email : savedContact.email} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, email: e.target.value }))} />
+                  <div className="mb-1 text-sm text-secondary">Email</div>
+                  <Input
+                    value={editingContact ? contactDraft.email : savedContact.email}
+                    isReadOnly={!editingContact}
+                    onChange={(v) => setContactDraft((d) => ({ ...d, email: v }))}
+                  />
                 </div>
                 <div>
-                  {fieldLabel('Phone')}
-                  <Input value={editingContact ? contactDraft.phone : savedContact.phone} readOnly={!editingContact} onChange={(e) => setContactDraft((d) => ({ ...d, phone: e.target.value }))} />
+                  <div className="mb-1 text-sm text-secondary">Phone</div>
+                  <Input
+                    value={editingContact ? contactDraft.phone : savedContact.phone}
+                    isReadOnly={!editingContact}
+                    onChange={(v) => setContactDraft((d) => ({ ...d, phone: v }))}
+                  />
                 </div>
               </div>
               {editingContact && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
-                  <Button size="small" onClick={() => setEditingContact(false)}>Cancel</Button>
-                  <Button size="small" type="primary" onClick={handleSaveContact}>Save</Button>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button color="secondary" size="xs" onPress={() => setEditingContact(false)}>Cancel</Button>
+                  <Button color="primary" size="xs" onPress={handleSaveContact}>Save</Button>
                 </div>
               )}
-            </Card>
+            </div>
 
-            <Card>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Text strong>Professional Details</Text>
+            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+              <div className="flex justify-between items-center mb-4">
+                <span className="font-semibold text-primary">Professional Details</span>
                 {can.canManageStaff && !editingProfessional && (
-                  <Button type="text" size="small" onClick={handleEditProfessional} icon={<Pencil />} />
+                  <button onClick={handleEditProfessional} className="text-tertiary hover:text-secondary transition-colors p-1">
+                    <Pencil size={15} />
+                  </button>
                 )}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="flex flex-col gap-3">
                 <div>
-                  {fieldLabel('Title')}
-                  <Input value={editingProfessional ? professionalDraft.title : savedProfessional.title} readOnly={!editingProfessional} onChange={(e) => setProfessionalDraft((d) => ({ ...d, title: e.target.value }))} />
+                  <div className="mb-1 text-sm text-secondary">Title</div>
+                  <Input
+                    value={editingProfessional ? professionalDraft.title : savedProfessional.title}
+                    isReadOnly={!editingProfessional}
+                    onChange={(v) => setProfessionalDraft((d) => ({ ...d, title: v }))}
+                  />
                 </div>
                 <div>
-                  {fieldLabel('Credentials')}
-                  <Input value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials} readOnly={!editingProfessional} onChange={(e) => setProfessionalDraft((d) => ({ ...d, credentials: e.target.value }))} />
+                  <div className="mb-1 text-sm text-secondary">Credentials</div>
+                  <Input
+                    value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials}
+                    isReadOnly={!editingProfessional}
+                    onChange={(v) => setProfessionalDraft((d) => ({ ...d, credentials: v }))}
+                  />
                 </div>
                 <div>
-                  {fieldLabel('Date Joined')}
-                  <Input value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} readOnly />
+                  <div className="mb-1 text-sm text-secondary">Date Joined</div>
+                  <Input
+                    value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    isReadOnly
+                  />
                 </div>
               </div>
               {editingProfessional && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
-                  <Button size="small" onClick={() => setEditingProfessional(false)}>Cancel</Button>
-                  <Button size="small" type="primary" onClick={handleSaveProfessional}>Save</Button>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button color="secondary" size="xs" onPress={() => setEditingProfessional(false)}>Cancel</Button>
+                  <Button color="primary" size="xs" onPress={handleSaveProfessional}>Save</Button>
                 </div>
               )}
-            </Card>
+            </div>
 
-            <Card>
-              <Text strong style={{ display: 'block', marginBottom: 12 }}>Specialties</Text>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+              <span className="block font-semibold text-primary mb-3">Specialties</span>
+              <div className="flex flex-wrap gap-1.5">
                 {emp.specialties.map((s) => (
-                  <Tag key={s} style={{ fontSize: 12 }}>{s}</Tag>
+                  <span
+                    key={s}
+                    className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
+                  >
+                    {s}
+                  </span>
                 ))}
               </div>
-            </Card>
+            </div>
           </div>
         )}
       </div>

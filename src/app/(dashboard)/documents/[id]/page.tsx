@@ -1,12 +1,11 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Input, Tag, Divider } from 'antd';
 import TopBar from '@/components/layout/TopBar';
 import { mockDocuments } from '@/lib/mock-data';
+import { Button } from '@/components/base/buttons/button';
+import { Divider } from '@/components/ui/divider';
 import { Heart, Pencil } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 export default function DocumentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -14,58 +13,88 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
   const doc = mockDocuments.find((d) => d.id === id);
   const [isFavorite, setIsFavorite] = useState(doc?.isFavorite ?? false);
 
-  if (!doc) return <div style={{ padding: 32 }}><Text>Document not found.</Text></div>;
+  if (!doc)
+    return (
+      <div className="p-8">
+        <span className="text-tertiary text-sm">Document not found.</span>
+      </div>
+    );
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Documents', href: '/documents' }, { label: doc.name }]} />
-      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 700 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <TopBar
+        breadcrumbs={[{ label: 'All Documents', href: '/documents' }, { label: doc.name }]}
+      />
+      <div className="p-8 max-w-[700px]">
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-              <Title level={2} style={{ margin: 0 }}>{doc.name}</Title>
-              {doc.isDefault && <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none' }}>Default</Tag>}
-              <Button
-                type="text"
-                shape="circle"
+            <div className="flex items-center gap-2 mb-0.5">
+              <h2 className="text-xl font-semibold text-primary m-0">{doc.name}</h2>
+              {doc.isDefault && (
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
+                  Default
+                </span>
+              )}
+              <button
                 onClick={() => setIsFavorite(!isFavorite)}
-                icon={isFavorite ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />}
-              />
+                className="p-1.5 rounded-full text-tertiary hover:bg-secondary_alt transition-colors"
+              >
+                {isFavorite ? (
+                  <Heart size={16} fill="currentColor" className="text-pink-500" />
+                ) : (
+                  <Heart size={16} />
+                )}
+              </button>
             </div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              Updated {new Date(doc.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {doc.fields.length} fields
-            </Text>
+            <span className="text-tertiary text-xs">
+              Updated{' '}
+              {new Date(doc.updatedAt).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}{' '}
+              · {doc.fields.length} fields
+            </span>
           </div>
-          <Button icon={<Pencil />} onClick={() => router.push('/documents/new')}>Edit</Button>
+          <Button
+            color="secondary"
+            size="sm"
+            iconLeading={Pencil}
+            onPress={() => router.push('/documents/new')}
+          >
+            Edit
+          </Button>
         </div>
 
-        <Divider style={{ marginBottom: 24 }} />
+        <Divider className="mb-6" />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div className="flex flex-col gap-5">
           {doc.fields.map((field) => (
             <div key={field.id}>
-              <Text type="secondary" style={{ display: 'block', marginBottom: 4, fontSize: 12 }}>{field.label}</Text>
+              <span className="block text-tertiary text-xs mb-1">{field.label}</span>
               {field.type === 'dropdown' ? (
-                <div style={{ border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 12px', background: 'rgba(0,0,0,0.04)' }}>
-                  <Text type="secondary">Options: {field.options?.join(', ')}</Text>
+                <div className="border border-secondary rounded-lg px-3 py-2 bg-secondary text-tertiary text-sm">
+                  Options: {field.options?.join(', ')}
                 </div>
               ) : field.type === 'checkbox' ? (
-                <div style={{ border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 12px', background: 'rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 16, height: 16, border: '1.5px solid #9E9E9E', borderRadius: 4 }} />
-                  <Text type="secondary">{field.label}</Text>
+                <div className="border border-secondary rounded-lg px-3 py-2 bg-secondary flex items-center gap-2">
+                  <div className="w-4 h-4 border border-secondary rounded shrink-0" />
+                  <span className="text-tertiary text-sm">{field.label}</span>
                 </div>
               ) : field.type === 'textarea' ? (
-                <Input.TextArea
+                <textarea
                   rows={3}
                   readOnly
                   placeholder={`Enter ${field.label.toLowerCase()}…`}
-                  style={{ background: 'rgba(0,0,0,0.04)', color: '#49454F' }}
+                  className="w-full rounded-lg border border-secondary bg-secondary px-3 py-2 text-sm text-tertiary placeholder:text-placeholder outline-none resize-none"
                 />
               ) : (
-                <Input
+                <input
                   readOnly
-                  placeholder={field.type === 'date' ? 'MM/DD/YYYY' : `Enter ${field.label.toLowerCase()}…`}
-                  style={{ background: 'rgba(0,0,0,0.04)', color: '#49454F' }}
+                  placeholder={
+                    field.type === 'date' ? 'MM/DD/YYYY' : `Enter ${field.label.toLowerCase()}…`
+                  }
+                  className="w-full rounded-lg border border-secondary bg-secondary px-3 py-2 text-sm text-tertiary placeholder:text-placeholder outline-none"
                 />
               )}
             </div>

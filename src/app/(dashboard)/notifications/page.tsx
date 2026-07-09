@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Card, Divider } from 'antd';
 import TopBar from '@/components/layout/TopBar';
+import { Button } from '@/components/base/buttons/button';
+import { Divider } from '@/components/ui/divider';
 import { mockNotifications } from '@/lib/mock-data';
 import { Bell } from 'lucide-react';
-
-const { Title, Text } = Typography;
+import { cx } from '@/utils/cx';
 
 function formatTime(ts: string) {
   const diff = Date.now() - new Date(ts).getTime();
@@ -27,47 +27,58 @@ export default function NotificationsPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Notifications' }]} />
-      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 720 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Title level={2} style={{ margin: 0 }}>Notifications</Title>
+      <div className="p-8 max-w-[720px]">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-primary m-0">Notifications</h2>
             {unreadCount > 0 && (
-              <div style={{ padding: '2px 8px', background: '#6750A4', borderRadius: 10, minWidth: 22, textAlign: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 600, fontSize: 11 }}>{unreadCount}</span>
+              <div className="px-2 py-0.5 bg-brand-600 rounded-full min-w-[22px] text-center">
+                <span className="text-white font-semibold text-xs">{unreadCount}</span>
               </div>
             )}
           </div>
-          {unreadCount > 0 && <Button size="small" type="text" onClick={markAllRead}>Mark all as read</Button>}
+          {unreadCount > 0 && (
+            <Button color="tertiary" size="xs" onPress={markAllRead}>
+              Mark all as read
+            </Button>
+          )}
         </div>
 
         {notifications.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '64px 0' }}>
-            <Bell size={48} />
-            <div><Text type="secondary">No notifications</Text></div>
+          <div className="text-center py-16">
+            <Bell size={48} className="mx-auto text-quaternary mb-3" />
+            <span className="text-secondary text-sm">No notifications</span>
           </div>
         ) : (
-          <Card styles={{ body: { padding: 0 } }}>
+          <div className="rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden">
             {notifications.map((notif, i) => (
               <div key={notif.id}>
                 <div
-                  style={{ padding: '20px 24px', display: 'flex', gap: 16, alignItems: 'flex-start', cursor: 'pointer', background: !notif.read ? '#FAFAFA' : 'transparent', transition: 'background 0.1s' }}
+                  className={cx(
+                    'px-6 py-5 flex gap-4 items-start cursor-pointer transition-colors',
+                    !notif.read ? 'bg-secondary_alt hover:bg-secondary' : 'hover:bg-secondary_alt',
+                  )}
                   onClick={() => notif.patientId && router.push(`/patients/${notif.patientId}/documents`)}
                 >
-                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Bell size={18} />
+                  <div className="w-9 h-9 rounded-full bg-brand-50 flex items-center justify-center shrink-0">
+                    <Bell size={18} className="text-brand-700" />
                   </div>
-                  <div style={{ flexGrow: 1 }}>
-                    <div><Text style={{ fontWeight: !notif.read ? 600 : 400 }}>{notif.message}</Text></div>
-                    <Text type="secondary" style={{ fontSize: 12 }}>{formatTime(notif.timestamp)}</Text>
+                  <div className="flex-1">
+                    <div>
+                      <span className={cx('text-sm', !notif.read ? 'font-semibold text-primary' : 'text-primary')}>
+                        {notif.message}
+                      </span>
+                    </div>
+                    <span className="text-secondary text-xs">{formatTime(notif.timestamp)}</span>
                   </div>
                   {!notif.read && (
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#6750A4', marginTop: 8, flexShrink: 0 }} />
+                    <div className="w-2 h-2 rounded-full bg-brand-600 mt-2 shrink-0" />
                   )}
                 </div>
-                {i < notifications.length - 1 && <Divider style={{ margin: 0 }} />}
+                {i < notifications.length - 1 && <Divider />}
               </div>
             ))}
-          </Card>
+          </div>
         )}
       </div>
     </>

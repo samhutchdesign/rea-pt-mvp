@@ -5,17 +5,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <>
       <DemoRoleBar />
-      <div style={{ display: 'flex', minHeight: '100vh', paddingTop: 40 }}>
+      <div className="flex min-h-screen pt-10">
         <Sidebar />
-        <main
-          style={{
-            marginLeft: 80,
-            flexGrow: 1,
-            minHeight: '100vh',
-            paddingTop: 56,
-            background: '#F5F5F5',
-          }}
-        >
+        <main className="ml-20 flex-1 min-h-screen pt-14 bg-secondary_alt">
           {children}
         </main>
       </div>

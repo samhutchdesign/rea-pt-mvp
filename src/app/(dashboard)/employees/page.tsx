@@ -1,14 +1,15 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Avatar, Tag, Tabs, App } from 'antd';
+import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { mockPatients } from '@/lib/mock-data';
 import { useLocationScope } from '@/lib/locationScope';
 import type { Employee } from '@/lib/types';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { cx } from '@/utils/cx';
 import { Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 const AVATAR_COLORS: Record<string, string> = {
   emp1: '#6750A4',
@@ -19,7 +20,6 @@ const AVATAR_COLORS: Record<string, string> = {
 
 export default function EmployeesPage() {
   const router = useRouter();
-  const { message: messageApi } = App.useApp();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('0');
   const { employees: scopedEmployees } = useLocationScope();
@@ -43,7 +43,7 @@ export default function EmployeesPage() {
 
   const restore = (emp: Employee) => {
     setOverrides((prev) => ({ ...prev, [emp.id]: { archived: false } }));
-    messageApi.success(`${emp.firstName} ${emp.lastName} restored to active.`);
+    toast.success(`${emp.firstName} ${emp.lastName} restored to active.`);
   };
 
   const empty = displayed.length === 0;
@@ -51,85 +51,112 @@ export default function EmployeesPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Employees' }]} />
-      <div style={{ padding: '32px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <Title level={2} style={{ margin: 0 }}>Employees</Title>
-          <Button type="primary" icon={<Plus />}>Add Employee</Button>
+      <div className="p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-primary m-0">Employees</h2>
+          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => {}}>Add Employee</Button>
         </div>
 
-        <Tabs
-          activeKey={tab}
-          onChange={setTab}
-          style={{ marginBottom: 24 }}
-          items={[
+        <div className="flex border-b border-secondary mb-6">
+          {[
             { key: '0', label: `Active (${activeEmployees.length})` },
             { key: '1', label: `Archived (${archivedEmployees.length})` },
-          ]}
-        />
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={cx(
+                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                tab === key
+                  ? 'border-brand-600 text-brand-700'
+                  : 'border-transparent text-tertiary hover:text-secondary'
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-        <Input
-          placeholder={tab === '0' ? 'Search active employees…' : 'Search archived employees…'}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ marginBottom: 24, width: 340 }}
-          prefix={<Search style={{ color: '#9E9E9E' }} />}
-        />
+        <div className="mb-6 w-[340px]">
+          <Input
+            placeholder={tab === '0' ? 'Search active employees…' : 'Search archived employees…'}
+            value={search}
+            onChange={(v) => setSearch(v)}
+            icon={Search}
+          />
+        </div>
 
         {empty ? (
-          <div style={{ textAlign: 'center', padding: '64px 0' }}>
-            <Users size={48} />
-            <div><Text type="secondary">{tab === '0' ? 'No active employees found' : 'No archived employees found'}</Text></div>
+          <div className="text-center py-16">
+            <Users size={48} className="text-quaternary mx-auto mb-3" />
+            <span className="text-tertiary text-sm">
+              {tab === '0' ? 'No active employees found' : 'No archived employees found'}
+            </span>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="flex flex-col gap-3">
             {displayed.map((emp) => {
               const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
               const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
               return (
-                <Card
+                <div
                   key={emp.id}
-                  hoverable
-                  styles={{ body: { padding: 0 } }}
-                  style={{ opacity: emp.archived ? 0.75 : 1 }}
+                  className={cx(
+                    'rounded-xl border border-secondary bg-primary shadow-xs cursor-pointer hover:bg-secondary_alt transition-colors',
+                    emp.archived && 'opacity-75'
+                  )}
                   onClick={() => router.push(`/employees/${emp.id}`)}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 24px' }}>
-                    <Avatar style={{ width: 52, height: 52, background: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 17, flexShrink: 0 }}>
+                  <div className="flex items-center gap-5 px-6 py-4">
+                    <div
+                      className="w-13 h-13 rounded-full flex items-center justify-center shrink-0 font-bold text-base"
+                      style={{ width: 52, height: 52, background: bgColor + '18', color: bgColor }}
+                    >
                       {emp.avatarInitials}
-                    </Avatar>
-                    <div style={{ flexGrow: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 2 }}>
-                        <Text strong>{emp.firstName} {emp.lastName}</Text>
-                        <Text type="secondary">{emp.credentials}</Text>
+                    </div>
+                    <div className="grow">
+                      <div className="flex items-center gap-3 mb-0.5">
+                        <span className="font-semibold text-primary text-sm">{emp.firstName} {emp.lastName}</span>
+                        <span className="text-tertiary text-sm">{emp.credentials}</span>
                       </div>
-                      <Text type="secondary" style={{ display: 'block', marginBottom: 6 }}>{emp.title}</Text>
-                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      <span className="block text-tertiary text-sm mb-1.5">{emp.title}</span>
+                      <div className="flex gap-1.5 flex-wrap">
                         {emp.specialties.map((s) => (
-                          <Tag key={s} style={{ fontSize: 11 }}>{s}</Tag>
+                          <span
+                            key={s}
+                            className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
+                          >
+                            {s}
+                          </span>
                         ))}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
-                      <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 500 }}>
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <span
+                        className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background: '#EDE7F6', color: '#6750A4' }}
+                      >
                         {`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
-                      </Tag>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Mail size={13} />
-                        <Text type="secondary" style={{ fontSize: 12 }}>{emp.email}</Text>
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Mail size={13} className="text-tertiary" />
+                        <span className="text-tertiary text-xs">{emp.email}</span>
                       </div>
                     </div>
                     {tab === '1' && (
-                      <Button
-                        size="small"
-                        icon={<RotateCcw />}
-                        onClick={(e) => { e.stopPropagation(); restore(emp); }}
-                        style={{ flexShrink: 0, marginLeft: 8 }}
-                      >
-                        Restore
-                      </Button>
+                      <div onClick={(e) => e.stopPropagation()} className="shrink-0 ml-2">
+                        <Button
+                          color="secondary"
+                          size="xs"
+                          iconLeading={RotateCcw}
+                          onPress={() => restore(emp)}
+                        >
+                          Restore
+                        </Button>
+                      </div>
                     )}
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>

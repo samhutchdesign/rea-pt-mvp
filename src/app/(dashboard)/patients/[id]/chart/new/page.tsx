@@ -1,12 +1,12 @@
 'use client';
 import { use, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Tag, Spin, App } from 'antd';
+import { toast } from 'sonner';
 import { mockPatients, mockChartSessions } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
+import { Button } from '@/components/base/buttons/button';
 import { History, Mic, MicOff, Star, User } from 'lucide-react';
-
-const { Text } = Typography;
+import { cx } from '@/utils/cx';
 
 const SOAPIER_SECTIONS = [
   {
@@ -62,7 +62,6 @@ const GENERIC_STUB = {
 export default function NewChartPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { message: messageApi } = App.useApp();
   const patient = mockPatients.find((p) => p.id === id);
   const sessions = mockChartSessions[id] ?? [];
   const sessionNumber = sessions.length + 1;
@@ -105,7 +104,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
 
   const handleSave = () => {
     router.push(`/patients/${id}/chart`);
-    messageApi.success('Chart saved successfully.');
+    toast.success('Chart saved successfully.');
   };
 
   if (!patient) return null;
@@ -115,87 +114,111 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const sexLabel = patient.metrics?.sexAssignedAtBirth ?? '';
 
   return (
-    <div style={{ maxWidth: 820 }}>
+    <div className="max-w-[820px]">
       {/* Session header bar */}
-      <div style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid #E0E0E0', borderRadius: 8, padding: '12px 20px', marginBottom: 24, display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-        <Text strong>{patient.firstName} {patient.lastName}</Text>
-        {ageLabel && <Text type="secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</Text>}
-        <Text type="secondary">{sessionDate}</Text>
-        <div style={{ marginLeft: 'auto' }}>
-          <Tag style={{ background: '#6750A4', color: 'white', border: 'none', fontWeight: 600 }}>{`Session ${sessionNumber}`}</Tag>
+      <div className="bg-black/4 border border-secondary rounded-lg px-5 py-3 mb-6 flex flex-wrap gap-4 items-center">
+        <span className="font-semibold text-sm text-primary">{patient.firstName} {patient.lastName}</span>
+        {ageLabel && (
+          <span className="text-secondary text-sm">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</span>
+        )}
+        <span className="text-secondary text-sm">{sessionDate}</span>
+        <div className="ml-auto">
+          <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-brand-600 text-white">
+            {`Session ${sessionNumber}`}
+          </span>
         </div>
       </div>
 
       {/* Dictation + notes */}
-      <Card style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text strong>Session Notes</Text>
+      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <span className="font-semibold text-sm text-primary">Session Notes</span>
           {viewMode === 'full' && (
             <Button
-              size="small"
-              type={dictating ? 'primary' : 'default'}
-              danger={dictating}
-              icon={dictating ? <MicOff size={14} /> : <Mic size={14} />}
-              onClick={dictating ? stopDictation : startDictation}
-              style={dictating ? { animation: 'pulse 1.5s ease-in-out infinite' } : undefined}
+              size="xs"
+              color={dictating ? 'primary-destructive' : 'secondary'}
+              iconLeading={dictating ? MicOff : Mic}
+              onPress={dictating ? stopDictation : startDictation}
             >
-              {dictating ? `Stop  ${Math.floor(dictSecs / 60)}:${String(dictSecs % 60).padStart(2, '0')}` : 'Dictate'}
+              {dictating
+                ? `Stop  ${Math.floor(dictSecs / 60)}:${String(dictSecs % 60).padStart(2, '0')}`
+                : 'Dictate'}
             </Button>
           )}
         </div>
-        <Input.TextArea
+        <textarea
           rows={4}
           placeholder={dictating ? 'Listening…' : 'Type or dictate session notes…'}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          style={dictating ? { borderColor: '#f5222d', background: '#fff1f0' } : undefined}
+          className={cx(
+            'w-full resize-none rounded-lg border px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 min-h-[96px]',
+            dictating ? 'border-red-400 bg-red-50' : 'border-secondary bg-primary',
+          )}
         />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <Tag icon={<User />} style={{ fontSize: '0.72rem', color: '#49454F' }}>Patient profile</Tag>
-            <Tag icon={<History />} style={{ fontSize: '0.72rem', color: '#49454F' }}>{`${sessions.length} previous session${sessions.length !== 1 ? 's' : ''}`}</Tag>
+        <div className="flex justify-between items-center mt-3 flex-wrap gap-2">
+          <div className="flex gap-1.5 flex-wrap">
+            <span className="inline-flex items-center gap-1 rounded-full border border-secondary bg-secondary_alt px-2 py-0.5 text-[0.72rem] text-secondary">
+              <User size={11} /> Patient profile
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-secondary bg-secondary_alt px-2 py-0.5 text-[0.72rem] text-secondary">
+              <History size={11} /> {`${sessions.length} previous session${sessions.length !== 1 ? 's' : ''}`}
+            </span>
           </div>
           <Button
-            size="small"
-            icon={loading ? <Spin size="small" /> : <Star size={14} />}
-            onClick={handlePopulate}
-            disabled={!notes.trim() || loading}
+            size="xs"
+            color="secondary"
+            iconLeading={Star}
+            onPress={handlePopulate}
+            isDisabled={!notes.trim() || loading}
+            isLoading={loading}
           >
             {loading ? `Reading ${sessions.length} sessions…` : 'Add to Chart'}
           </Button>
         </div>
-      </Card>
+      </div>
 
       {/* H-SOAPIER sections */}
-      <Text strong style={{ display: 'block', marginBottom: 16 }}>H-SOAPIER Chart</Text>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <p className="font-semibold text-sm text-primary mb-4">H-SOAPIER Chart</p>
+      <div className="flex flex-col gap-4">
         {SOAPIER_SECTIONS.map(({ key, letter, label, placeholder, rows }) => {
           const isEmpty = populated && !soapie[key];
           return (
-            <Card key={key} style={isEmpty ? { border: '2px solid #FB8C00' } : undefined}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#6750A4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ color: 'white', fontWeight: 700, fontSize: '0.8rem', lineHeight: 1 }}>{letter}</span>
+            <div
+              key={key}
+              className={cx(
+                'rounded-xl border bg-primary shadow-xs p-5',
+                isEmpty ? 'border-2 border-orange-400' : 'border-secondary',
+              )}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-[30px] h-[30px] rounded-full bg-brand-600 flex items-center justify-center shrink-0">
+                  <span className="text-white font-bold text-[0.8rem] leading-none">{letter}</span>
                 </div>
-                <Text strong>{label}</Text>
+                <span className="font-semibold text-sm text-primary">{label}</span>
               </div>
-              <Input.TextArea
+              <textarea
                 rows={rows}
                 placeholder={placeholder}
                 value={soapie[key] || ''}
                 onChange={(e) => setSoapie((prev) => ({ ...prev, [key]: e.target.value }))}
+                className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 min-h-[120px] bg-primary"
               />
               {isEmpty && (
-                <Text style={{ color: '#FB8C00', marginTop: 4, display: 'block', fontSize: 12 }}>This section may be important to fill in</Text>
+                <span className="text-orange-500 mt-1 block text-xs">This section may be important to fill in</span>
               )}
-            </Card>
+            </div>
           );
         })}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, marginTop: 32 }}>
-        <Button onClick={() => router.push(`/patients/${id}/chart`)}>Cancel</Button>
-        <Button type="primary" onClick={handleSave}>Save New Chart</Button>
+      <div className="flex justify-end gap-4 mt-8">
+        <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart`)}>
+          Cancel
+        </Button>
+        <Button color="primary" size="sm" onPress={handleSave}>
+          Save New Chart
+        </Button>
       </div>
 
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>

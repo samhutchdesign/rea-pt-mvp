@@ -1,12 +1,11 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Tag, Divider } from 'antd';
 import TopBar from '@/components/layout/TopBar';
+import { Button } from '@/components/base/buttons/button';
+import { Divider } from '@/components/ui/divider';
 import { mockExercises, mockPrograms } from '@/lib/mock-data';
 import { ChevronRight, Heart, Pencil, Zap } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 export default function ExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -14,12 +13,18 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   const ex = mockExercises.find((e) => e.id === id);
   const [isFavorite, setIsFavorite] = useState(ex?.isFavorite ?? false);
 
-  if (!ex) return <div style={{ padding: 32 }}><Text>Exercise not found.</Text></div>;
+  if (!ex) return (
+    <div className="p-8">
+      <p className="text-secondary">Exercise not found.</p>
+    </div>
+  );
 
   const allTags = [...new Set([...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart])];
 
   const prescriptionTag = (label: string) => (
-    <Tag key={label} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 600 }}>{label}</Tag>
+    <span key={label} className="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">
+      {label}
+    </span>
   );
 
   const usedInPrograms = mockPrograms.filter((prog) => prog.exercises.some((pe) => pe.exerciseId === id));
@@ -27,11 +32,11 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: ex.name }]} />
-      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 820 }}>
+      <div className="p-8 max-w-[820px]">
 
         {/* Video */}
         {ex.videoUrl ? (
-          <div style={{ width: '100%', height: 360, borderRadius: 8, overflow: 'hidden', marginBottom: 24, background: '#0f0f0f' }}>
+          <div className="mb-6 w-full h-[360px] rounded-lg overflow-hidden bg-[#0f0f0f]">
             <iframe
               src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`}
               width="100%"
@@ -42,35 +47,37 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             />
           </div>
         ) : (
-          <div style={{ width: '100%', height: 300, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
-            <div style={{ textAlign: 'center' }}>
+          <div className="mb-6 w-full h-[300px] rounded-lg bg-[#EDE7F6] flex items-center justify-center">
+            <div className="text-center">
               <Zap size={64} color="#6750A4" />
-              <div style={{ marginTop: 8 }}>
-                <Button type="primary" icon={<ChevronRight size={14} />}>Play Video</Button>
+              <div className="mt-2">
+                <Button color="primary" size="sm" iconLeading={ChevronRight}>Play Video</Button>
               </div>
             </div>
           </div>
         )}
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+        <div className="mb-4 flex justify-between items-start">
           <div>
-            <Title level={2} style={{ marginTop: 0, marginBottom: 4 }}>{ex.name}</Title>
-            <Text type="secondary">{ex.description}</Text>
+            <h2 className="mt-0 mb-1 text-2xl font-bold text-primary">{ex.name}</h2>
+            <p className="text-sm text-secondary">{ex.description}</p>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <Button
-              type="text"
-              shape="circle"
+          <div className="flex gap-2 ml-4 shrink-0">
+            <button
               onClick={() => setIsFavorite(!isFavorite)}
-              icon={isFavorite ? <Heart size={16} fill="#E91E63" color="#E91E63" /> : <Heart size={16} />}
-            />
-            <Button icon={<Pencil size={14} />} onClick={() => router.push(`/exercises/new?edit=${id}`)}>Edit</Button>
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-secondary bg-primary shadow-xs hover:bg-secondary transition-colors"
+            >
+              {isFavorite
+                ? <Heart size={16} fill="#E91E63" color="#E91E63" />
+                : <Heart size={16} className="text-secondary" />}
+            </button>
+            <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => router.push(`/exercises/new?edit=${id}`)}>Edit</Button>
           </div>
         </div>
 
         {/* Prescription chips */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        <div className="mb-5 flex flex-wrap gap-2">
           {prescriptionTag(`${ex.defaultSets} Sets`)}
           {prescriptionTag(`${ex.defaultReps} Reps`)}
           {ex.defaultHoldSecs > 0 && prescriptionTag(`${ex.defaultHoldSecs}s Hold`)}
@@ -78,50 +85,50 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         </div>
 
         {/* Tags */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
-          {allTags.map((tag) => <Tag key={tag} style={{ fontSize: 12 }}>{tag}</Tag>)}
+        <div className="mb-6 flex flex-wrap gap-1.5">
+          {allTags.map((tag) => (
+            <span key={tag} className="inline-flex items-center rounded-md border border-secondary bg-secondary px-2.5 py-1 text-xs text-secondary">
+              {tag}
+            </span>
+          ))}
         </div>
 
-        <Divider style={{ marginBottom: 24 }} />
+        <Divider className="mb-6" />
 
         {/* Programs using this exercise */}
         {usedInPrograms.length > 0 && (
           <>
-            <Title level={3} style={{ marginTop: 0, marginBottom: 12 }}>Used in Programs</Title>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+            <h3 className="mt-0 mb-3 text-lg font-semibold text-primary">Used in Programs</h3>
+            <div className="mb-6 flex flex-wrap gap-2">
               {usedInPrograms.map((prog) => (
-                <Tag
+                <button
                   key={prog.id}
                   onClick={() => router.push(`/programs/${prog.id}`)}
-                  style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 500, cursor: 'pointer' }}
+                  className="inline-flex items-center rounded-md bg-[#EDE7F6] px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-[#DDD6F3] transition-colors"
                 >
                   {prog.name}
-                </Tag>
+                </button>
               ))}
             </div>
-            <Divider style={{ marginBottom: 24 }} />
+            <Divider className="mb-6" />
           </>
         )}
 
         {/* Instructions */}
-        <Title level={3} style={{ marginTop: 0, marginBottom: 16 }}>Instructions</Title>
-        <ol style={{ paddingLeft: 24, marginBottom: 24 }}>
+        <h3 className="mt-0 mb-4 text-lg font-semibold text-primary">Instructions</h3>
+        <ol className="mb-6 pl-6">
           {ex.instructions.map((step, i) => (
-            <li key={i} style={{ marginBottom: 8 }}>
-              <Text>{step}</Text>
-            </li>
+            <li key={i} className="mb-2 text-sm text-primary">{step}</li>
           ))}
         </ol>
 
-        <Divider style={{ marginBottom: 24 }} />
+        <Divider className="mb-6" />
 
         {/* Common mistakes */}
-        <Title level={3} style={{ marginTop: 0, marginBottom: 16, color: '#FB8C00' }}>Common Mistakes</Title>
-        <ul style={{ paddingLeft: 24 }}>
+        <h3 className="mt-0 mb-4 text-lg font-semibold" style={{ color: '#FB8C00' }}>Common Mistakes</h3>
+        <ul className="pl-6">
           {ex.commonMistakes.map((m, i) => (
-            <li key={i} style={{ marginBottom: 8 }}>
-              <Text>{m}</Text>
-            </li>
+            <li key={i} className="mb-2 text-sm text-primary">{m}</li>
           ))}
         </ul>
       </div>

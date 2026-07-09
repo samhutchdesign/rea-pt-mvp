@@ -1,8 +1,7 @@
 'use client';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Avatar, Dropdown, Breadcrumb } from 'antd';
-import type { MenuProps } from 'antd';
 import { mockPhysio } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -10,6 +9,7 @@ import { useRole } from '@/lib/roleStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useYourEmpId } from '@/lib/locationScope';
 import { ChevronRight } from 'lucide-react';
+import { cx } from '@/utils/cx';
 
 interface TopBarProps {
   breadcrumbs: { label: string; href?: string }[];
@@ -23,111 +23,92 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
   const yourEmpId = useYourEmpId();
   void yourEmpId;
 
-  const menuItems: MenuProps['items'] = [
-    {
-      key: 'header',
-      disabled: true,
-      label: (
-        <div style={{ paddingTop: 4, paddingBottom: 4 }}>
-          <div style={{ fontWeight: 600, color: '#1C1B1F' }}>
-            {mockPhysio.firstName} {mockPhysio.lastName}
-          </div>
-          <div style={{ fontSize: 12, color: '#6750A4', fontWeight: 500 }}>{roleLabel(role)}</div>
-          <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.45)' }}>{mockPhysio.email}</div>
-        </div>
-      ),
-    },
-    { type: 'divider' },
-    ...(can.canManageClinic
-      ? [{ key: 'org', label: 'Organization Profile', onClick: () => router.push('/clinic') }]
-      : []),
-    ...(can.canManageLocation
-      ? [{ key: 'clinic', label: 'Clinic Profile', onClick: () => router.push(`/clinic/${mockPhysio.locationId}`) }]
-      : []),
-    ...(can.canManageBilling
-      ? [{ key: 'billing', label: 'Billing', onClick: () => router.push('/billing') }]
-      : []),
-    { key: 'profile', label: 'Your Profile', onClick: () => router.push('/account/profile') },
-    { key: 'settings', label: 'Settings', onClick: () => router.push('/account/settings') },
-    { key: 'email', label: 'Email Change', onClick: () => router.push('/account/email') },
-    { key: 'password', label: 'Password Reset', onClick: () => router.push('/account/password') },
-    { type: 'divider' },
-    { key: 'logout', label: <span style={{ color: '#49454F' }}>Log Out</span> },
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const menuItems = [
+    ...(can.canManageClinic ? [{ key: 'org', label: 'Organization Profile', href: '/clinic' }] : []),
+    ...(can.canManageLocation ? [{ key: 'clinic', label: 'Clinic Profile', href: `/clinic/${mockPhysio.locationId}` }] : []),
+    ...(can.canManageBilling ? [{ key: 'billing', label: 'Billing', href: '/billing' }] : []),
+    { key: 'profile', label: 'Your Profile', href: '/account/profile' },
+    { key: 'settings', label: 'Settings', href: '/account/settings' },
+    { key: 'email', label: 'Email Change', href: '/account/email' },
+    { key: 'password', label: 'Password Reset', href: '/account/password' },
   ];
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 40,
-        left: 80,
-        width: 'calc(100% - 80px)',
-        background: '#FFFFFF',
-        borderBottom: '1px solid #E0E0E0',
-        color: '#1C1B1F',
-        zIndex: 99,
-        height: 56,
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 24px',
-      }}
-    >
+    <div className="fixed top-10 left-20 z-[99] flex h-14 w-[calc(100%-80px)] items-center border-b border-secondary bg-primary px-6">
       {viewMode === 'mvp' && (
-        <span style={{
-          marginRight: 12,
-          padding: '2px 8px',
-          background: '#1E4D2B',
-          color: '#A8D5A2',
-          borderRadius: 999,
-          fontSize: 11,
-          fontWeight: 600,
-          letterSpacing: 0.4,
-          flexShrink: 0,
-        }}>
+        <span className="mr-3 shrink-0 rounded-full bg-[#1E4D2B] px-2 py-0.5 text-[11px] font-semibold tracking-wide text-[#A8D5A2]">
           MVP
         </span>
       )}
-      <Breadcrumb
-        style={{ flexGrow: 1 }}
-        separator={<ChevronRight size={10} />}
-        items={breadcrumbs.map((crumb, i) => {
-          const isLast = i === breadcrumbs.length - 1;
-          if (crumb.href && !isLast) {
-            return {
-              title: (
-                <Link href={crumb.href}>
-                  <span style={{ color: '#49454F', textDecoration: 'underline', cursor: 'pointer', fontSize: 14 }}>
-                    {crumb.label}
-                  </span>
-                </Link>
-              ),
-            };
-          }
-          return {
-            title: (
-              <span style={{ color: isLast ? '#1C1B1F' : '#49454F', fontWeight: isLast ? 500 : 400, fontSize: 14 }}>
-                {crumb.label}
-              </span>
-            ),
-          };
-        })}
-      />
 
-      <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
-        <Avatar
-          style={{
-            width: 36,
-            height: 36,
-            background: '#EDE7F6',
-            color: '#6750A4',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
+      {/* Breadcrumbs */}
+      <nav className="flex flex-1 items-center gap-1 min-w-0">
+        {breadcrumbs.map((crumb, i) => {
+          const isLast = i === breadcrumbs.length - 1;
+          return (
+            <span key={i} className="flex items-center gap-1 min-w-0">
+              {i > 0 && <ChevronRight size={10} className="shrink-0 text-quaternary" />}
+              {crumb.href && !isLast ? (
+                <Link href={crumb.href} className="truncate text-sm text-tertiary underline hover:text-secondary">
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span className={cx('truncate text-sm', isLast ? 'font-medium text-primary' : 'text-tertiary')}>
+                  {crumb.label}
+                </span>
+              )}
+            </span>
+          );
+        })}
+      </nav>
+
+      {/* Avatar + dropdown */}
+      <div className="relative shrink-0" ref={menuRef}>
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="flex size-9 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700 hover:bg-brand-100 transition-colors cursor-pointer"
         >
           {mockPhysio.avatarInitials}
-        </Avatar>
-      </Dropdown>
+        </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-secondary bg-primary shadow-lg py-1">
+            {/* Header */}
+            <div className="px-4 py-3 border-b border-secondary">
+              <p className="text-sm font-semibold text-primary">{mockPhysio.firstName} {mockPhysio.lastName}</p>
+              <p className="text-xs font-medium text-brand-600 mt-0.5">{roleLabel(role)}</p>
+              <p className="text-xs text-tertiary mt-0.5">{mockPhysio.email}</p>
+            </div>
+            <div className="py-1">
+              {menuItems.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => { setMenuOpen(false); router.push(item.href); }}
+                  className="w-full px-4 py-2 text-left text-sm text-secondary hover:bg-secondary transition-colors"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <div className="border-t border-secondary py-1">
+              <button className="w-full px-4 py-2 text-left text-sm text-tertiary hover:bg-secondary transition-colors">
+                Log Out
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

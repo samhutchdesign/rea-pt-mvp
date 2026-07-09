@@ -1,10 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { Typography, Tabs, Card, Button, Tag, Divider, Progress, Table } from 'antd';
+import { Button } from '@/components/base/buttons/button';
+import { Divider } from '@/components/ui/divider';
+import { Progress } from '@/components/ui/progress';
 import TopBar from '@/components/layout/TopBar';
+import { cx } from '@/utils/cx';
 import { Check, CreditCard, Download } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 const PLAN = {
   name: 'Clinic Pro',
@@ -44,140 +45,140 @@ const USAGE = [
 
 function SubscriptionTab() {
   return (
-    <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-      <Card style={{ flex: 2, minWidth: 300 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+    <div className="flex gap-6 flex-wrap">
+      <div className="flex-[2] min-w-[300px] rounded-xl border border-secondary bg-primary shadow-xs p-6">
+        <div className="flex justify-between items-start mb-4">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <Title level={3} style={{ margin: 0 }}>{PLAN.name}</Title>
-              <Tag style={{ background: '#E8F5E9', color: '#2E7D32', fontWeight: 600, fontSize: 11, border: 'none' }}>Active</Tag>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-lg font-semibold text-primary m-0">{PLAN.name}</h3>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-utility-green-50 text-utility-green-700">Active</span>
             </div>
             <div>
-              <Text style={{ fontSize: 30, fontWeight: 700, color: '#6750A4' }}>{PLAN.price}</Text>
-              <Text type="secondary">/{PLAN.interval}</Text>
+              <span className="text-3xl font-bold text-brand-700">{PLAN.price}</span>
+              <span className="text-tertiary text-sm">/{PLAN.interval}</span>
             </div>
           </div>
-          <Button size="small">Change Plan</Button>
+          <Button color="secondary" size="xs" onPress={() => {}}>Change Plan</Button>
         </div>
 
-        <Divider style={{ marginBottom: 16 }} />
+        <Divider className="mb-4" />
 
-        <Text type="secondary" style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 12 }}>
-          What&apos;s included
-        </Text>
-        <ul style={{ paddingLeft: 0, marginTop: 12, marginBottom: 16, listStyle: 'none' }}>
+        <span className="text-tertiary font-semibold uppercase tracking-wide text-xs">What&apos;s included</span>
+        <ul className="mt-3 mb-4 list-none p-0 flex flex-col gap-1.5">
           {PLAN.features.map((f) => (
-            <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Check size={16} />
-              <Text>{f}</Text>
+            <li key={f} className="flex items-center gap-2">
+              <Check size={16} className="text-utility-green-600 shrink-0" />
+              <span className="text-sm text-primary">{f}</span>
             </li>
           ))}
         </ul>
 
-        <Divider style={{ marginBottom: 16 }} />
+        <Divider className="mb-4" />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="flex justify-between items-center">
           <div>
-            <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>Renews on</Text>
-            <Text strong>{PLAN.renewsOn}</Text>
+            <span className="block text-tertiary text-xs mb-0.5">Renews on</span>
+            <span className="font-semibold text-primary text-sm">{PLAN.renewsOn}</span>
           </div>
-          <Button size="small" danger type="text">Cancel Subscription</Button>
+          <Button color="tertiary-destructive" size="xs" onPress={() => {}}>Cancel Subscription</Button>
         </div>
-      </Card>
+      </div>
 
-      <Card style={{ flex: 1, minWidth: 240, alignSelf: 'flex-start' }}>
-        <Text strong style={{ display: 'block', marginBottom: 16 }}>Seats</Text>
-        <Title level={2} style={{ margin: 0 }}>{PLAN.usedSeats} / {PLAN.seats}</Title>
-        <Text type="secondary" style={{ fontSize: 12 }}>practitioners on your plan</Text>
-        <Progress
-          percent={(PLAN.usedSeats / PLAN.seats) * 100}
-          showInfo={false}
-          strokeColor="#6750A4"
-          style={{ marginTop: 12 }}
-        />
-        <Button size="small" block style={{ marginTop: 16 }}>
-          Add Practitioner
-        </Button>
-      </Card>
+      <div className="flex-1 min-w-[240px] rounded-xl border border-secondary bg-primary shadow-xs p-6 self-start">
+        <span className="block font-semibold text-primary mb-4">Seats</span>
+        <h2 className="text-3xl font-bold text-primary mt-0 mb-0.5">{PLAN.usedSeats} / {PLAN.seats}</h2>
+        <span className="text-tertiary text-xs">practitioners on your plan</span>
+        <Progress value={(PLAN.usedSeats / PLAN.seats) * 100} className="mt-3" />
+        <div className="mt-4">
+          <Button color="secondary" size="xs" onPress={() => {}}>Add Practitioner</Button>
+        </div>
+      </div>
     </div>
   );
 }
 
 function PaymentMethodTab() {
   return (
-    <div style={{ maxWidth: 560 }}>
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <CreditCard size={24} />
+    <div className="max-w-[560px]">
+      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6 mb-4">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
+            <CreditCard size={24} className="text-brand-700" />
           </div>
-          <div style={{ flexGrow: 1 }}>
-            <Text strong style={{ display: 'block' }}>Visa ending in 4242</Text>
-            <Text type="secondary" style={{ fontSize: 12 }}>Expires 08 / 2028</Text>
+          <div className="grow">
+            <span className="block font-semibold text-primary text-sm">Visa ending in 4242</span>
+            <span className="text-tertiary text-xs">Expires 08 / 2028</span>
           </div>
-          <Tag style={{ background: '#EDE7F6', color: '#6750A4', fontSize: 11, border: 'none' }}>Default</Tag>
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#EDE7F6', color: '#6750A4' }}>Default</span>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Button size="small">Update Card</Button>
-          <Button size="small" danger type="text">Remove</Button>
+        <div className="flex gap-2">
+          <Button color="secondary" size="xs" onPress={() => {}}>Update Card</Button>
+          <Button color="tertiary-destructive" size="xs" onPress={() => {}}>Remove</Button>
         </div>
-      </Card>
-      <Button type="primary" icon={<CreditCard />}>
+      </div>
+      <Button color="primary" size="sm" iconLeading={CreditCard} onPress={() => {}}>
         Add Payment Method
       </Button>
-      <Text type="secondary" style={{ display: 'block', marginTop: 12, fontSize: 12 }}>
+      <p className="text-tertiary text-xs mt-3">
         Payment processing is secured and encrypted. Your card details are never stored on our servers.
-      </Text>
+      </p>
     </div>
   );
 }
 
 function InvoiceHistoryTab() {
   return (
-    <div style={{ maxWidth: 720 }}>
-      <Card styles={{ body: { padding: 0 } }}>
-        <Table
-          dataSource={INVOICES}
-          rowKey="id"
-          pagination={false}
-          columns={[
-            { title: 'Invoice', dataIndex: 'id', render: (v) => <Text strong>{v}</Text> },
-            { title: 'Date', dataIndex: 'date', render: (v) => <Text type="secondary">{v}</Text> },
-            { title: 'Amount', dataIndex: 'amount', render: (v) => <Text>{v}</Text> },
-            { title: 'Status', dataIndex: 'status', render: (v) => <Tag style={{ background: '#E8F5E9', color: '#2E7D32', fontWeight: 500, fontSize: 11, border: 'none' }}>{v}</Tag> },
-            { title: 'Receipt', align: 'right', render: () => <Button type="text" size="small" icon={<Download />} style={{ fontSize: 12 }}>PDF</Button> },
-          ]}
-        />
-      </Card>
+    <div className="max-w-[720px]">
+      <div className="overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs">
+        <div className="grid grid-cols-5 gap-0 border-b border-secondary px-4 py-3 bg-secondary_alt">
+          <span className="text-xs font-semibold text-tertiary uppercase tracking-wide">Invoice</span>
+          <span className="text-xs font-semibold text-tertiary uppercase tracking-wide">Date</span>
+          <span className="text-xs font-semibold text-tertiary uppercase tracking-wide">Amount</span>
+          <span className="text-xs font-semibold text-tertiary uppercase tracking-wide">Status</span>
+          <span className="text-xs font-semibold text-tertiary uppercase tracking-wide text-right">Receipt</span>
+        </div>
+        {INVOICES.map((inv) => (
+          <div key={inv.id} className="grid grid-cols-5 gap-0 px-4 py-4 border-b border-secondary last:border-0 items-center">
+            <span className="font-semibold text-primary text-sm">{inv.id}</span>
+            <span className="text-tertiary text-sm">{inv.date}</span>
+            <span className="text-primary text-sm">{inv.amount}</span>
+            <span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-utility-green-50 text-utility-green-700">{inv.status}</span>
+            </span>
+            <div className="flex justify-end">
+              <Button color="tertiary" size="xs" iconLeading={Download} onPress={() => {}}>PDF</Button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 function UsageStatsTab() {
   return (
-    <div style={{ maxWidth: 600 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="max-w-[600px]">
+      <div className="flex flex-col gap-4">
         {USAGE.map(({ label, used, limit, unit }) => (
-          <Card key={label} styles={{ body: { padding: 14 } }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: limit ? 8 : 0 }}>
-              <Text strong>{label}</Text>
-              <Text type="secondary">
+          <div key={label} className="rounded-xl border border-secondary bg-primary shadow-xs px-4 py-3.5">
+            <div className={cx('flex justify-between items-center', limit ? 'mb-2' : '')}>
+              <span className="font-semibold text-primary text-sm">{label}</span>
+              <span className="text-tertiary text-sm">
                 {limit ? `${used} / ${limit} ${unit}` : `${used} ${unit}`}
-              </Text>
+              </span>
             </div>
             {limit && (
               <Progress
-                percent={Math.min((used / limit) * 100, 100)}
-                showInfo={false}
-                strokeColor={used / limit > 0.85 ? '#F57C00' : '#6750A4'}
+                value={Math.min((used / limit) * 100, 100)}
+                color={used / limit > 0.85 ? 'warning' : 'brand'}
               />
             )}
-          </Card>
+          </div>
         ))}
       </div>
-      <Text type="secondary" style={{ display: 'block', marginTop: 16, fontSize: 12 }}>
+      <p className="text-tertiary text-xs mt-4">
         Usage resets on the 1st of each month. AI extractions included with Clinic Pro plan.
-      </Text>
+      </p>
     </div>
   );
 }
@@ -190,15 +191,25 @@ export default function BillingPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Billing' }]} />
-      <div style={{ paddingTop: 56, padding: '32px' }}>
-        <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>Billing</Title>
+      <div className="p-8">
+        <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Billing</h2>
 
-        <Tabs
-          activeKey={tab}
-          onChange={setTab}
-          style={{ marginBottom: 24 }}
-          items={TABS.map((t, i) => ({ key: String(i), label: t }))}
-        />
+        <div className="flex border-b border-secondary mb-6">
+          {TABS.map((label, i) => (
+            <button
+              key={i}
+              onClick={() => setTab(String(i))}
+              className={cx(
+                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                tab === String(i)
+                  ? 'border-brand-600 text-brand-700'
+                  : 'border-transparent text-tertiary hover:text-secondary'
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
         {tab === '0' && <SubscriptionTab />}
         {tab === '1' && <PaymentMethodTab />}

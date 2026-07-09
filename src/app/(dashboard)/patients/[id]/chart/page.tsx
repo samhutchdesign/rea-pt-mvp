@@ -1,18 +1,17 @@
 'use client';
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Card, Button, Tag } from 'antd';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
+import { Button } from '@/components/base/buttons/button';
 import { Pencil, Plus } from 'lucide-react';
+import { cx } from '@/utils/cx';
 
-const ADHERENCE_STYLE: Record<string, { bg: string; color: string }> = {
-  'High Adherence':     { bg: '#E8F5E9', color: '#2E7D32' },
-  'Moderate Adherence': { bg: '#FFF8E1', color: '#F57F17' },
-  'Low Adherence':      { bg: '#FFEBEE', color: '#C62828' },
+const ADHERENCE_STYLE: Record<string, { bg: string; text: string }> = {
+  'High Adherence':     { bg: 'bg-green-50',  text: 'text-green-800' },
+  'Moderate Adherence': { bg: 'bg-amber-50',  text: 'text-amber-800' },
+  'Low Adherence':      { bg: 'bg-red-50',    text: 'text-red-800' },
 };
-
-const { Text } = Typography;
 
 export default function PatientChartPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -22,43 +21,48 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
-        <Button type="primary" icon={<Plus size={16} />} onClick={() => router.push(`/patients/${id}/chart/new`)}>
+      <div className="flex justify-end mb-6">
+        <Button
+          color="primary"
+          size="sm"
+          iconLeading={Plus}
+          onPress={() => router.push(`/patients/${id}/chart/new`)}
+        >
           Add to Chart
         </Button>
       </div>
 
       {sessions.length === 0 ? (
-        <Text type="secondary">No sessions recorded yet.</Text>
+        <span className="text-secondary text-sm">No sessions recorded yet.</span>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {sessions.map((session) => (
-            <Card key={session.id} styles={{ body: { padding: 20 } }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  <Text strong>
+            <div key={session.id} className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+              <div className="flex justify-between items-start">
+                <div className="flex-1 flex items-center gap-2 flex-wrap">
+                  <span className="font-semibold text-sm text-primary">
                     {session.isIntakeSession
                       ? `Intake Session – ${new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
                       : `Session – ${new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`}
-                  </Text>
+                  </span>
                   {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
                     const s = ADHERENCE_STYLE[session.adherenceLevel];
                     return (
-                      <Tag style={{ fontSize: 11, border: 'none', background: s.bg, color: s.color, fontWeight: 600 }}>
+                      <span className={cx('inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold', s?.bg, s?.text)}>
                         {session.adherenceLevel}
-                      </Tag>
+                      </span>
                     );
                   })()}
                 </div>
                 <Button
-                  type="text"
-                  size="small"
-                  icon={<Pencil size={14} />}
-                  onClick={() => router.push(`/patients/${id}/chart/${session.id}`)}
-                  style={{ marginLeft: 8 }}
+                  color="tertiary"
+                  size="xs"
+                  iconLeading={Pencil}
+                  onPress={() => router.push(`/patients/${id}/chart/${session.id}`)}
+                  className="ml-2"
                 />
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}

@@ -1,13 +1,15 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Tag, Select, Tooltip, Checkbox } from 'antd';
 import type { ComponentType } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
 import { mockExercises } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import type { Exercise } from '@/lib/types';
+import { cx } from '@/utils/cx';
 import { ArrowLeft, Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
 
 type IconType = ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>;
@@ -79,8 +81,6 @@ const GROUP_NAMES: Record<string, string> = {
   'perineal-massage': 'Perineal Massage',
 };
 
-const { Title, Text } = Typography;
-
 function expandSearch(q: string) { return SEARCH_ALIASES[q.toLowerCase().trim()] ?? q; }
 
 // ── Specialty landing ─────────────────────────────────────────────────────────
@@ -88,22 +88,27 @@ function expandSearch(q: string) { return SEARCH_ALIASES[q.toLowerCase().trim()]
 function SpecialtyGrid({ onSelect }: { onSelect: (id: string) => void }) {
   return (
     <div>
-      <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>Select a specialty to browse exercises.</Text>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <p className="mb-6 text-sm text-secondary">Select a specialty to browse exercises.</p>
+      <div className="grid grid-cols-3 gap-4">
         {SPECIALTIES.map((sp) => {
           const Icon = sp.icon;
           return (
-            <div key={sp.id} onClick={() => onSelect(sp.id)} style={{ border: `1px solid ${sp.available ? sp.color + '44' : '#E0E0E0'}`, borderRadius: 8, padding: 20, cursor: 'pointer', background: '#FFFFFF', transition: 'all 0.15s' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 12, background: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div
+              key={sp.id}
+              onClick={() => onSelect(sp.id)}
+              className="cursor-pointer rounded-lg border bg-primary p-5 transition-all hover:shadow-sm"
+              style={{ borderColor: sp.available ? sp.color + '44' : '#E0E0E0' }}
+            >
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: sp.bg }}>
                   <Icon size={20} color={sp.color} />
                 </div>
                 {sp.available
-                  ? <Tag style={{ fontSize: 11, background: sp.bg, color: sp.color, fontWeight: 600, border: 'none' }}>{`${sp.count} exercises`}</Tag>
-                  : <Tag style={{ fontSize: 11, color: '#BDBDBD', background: 'rgba(0,0,0,0.04)', border: 'none' }}>Coming soon</Tag>}
+                  ? <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold" style={{ background: sp.bg, color: sp.color }}>{`${sp.count} exercises`}</span>
+                  : <span className="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[11px] text-quaternary">Coming soon</span>}
               </div>
-              <Text strong style={{ display: 'block', marginBottom: 4 }}>{sp.name}</Text>
-              <Text type="secondary" style={{ display: 'block', lineHeight: 1.4, fontSize: 12 }}>{sp.description}</Text>
+              <p className="mb-1 text-sm font-semibold text-primary">{sp.name}</p>
+              <p className="text-xs leading-snug text-secondary">{sp.description}</p>
             </div>
           );
         })}
@@ -115,14 +120,14 @@ function SpecialtyGrid({ onSelect }: { onSelect: (id: string) => void }) {
 function ComingSoonState({ sp }: { sp: typeof SPECIALTIES[0] }) {
   const Icon = sp.icon;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 0', borderRadius: 8, border: '2px dashed #E0E0E0', background: sp.bg + '44' }}>
-      <div style={{ width: 60, height: 60, borderRadius: '50%', background: sp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+    <div className="flex flex-col items-center rounded-lg border-2 border-dashed border-secondary py-20" style={{ background: sp.bg + '44' }}>
+      <div className="mb-4 flex h-15 w-15 items-center justify-center rounded-full" style={{ background: sp.bg }}>
         <Icon size={28} color={sp.color} />
       </div>
-      <Title level={3} style={{ marginTop: 0, marginBottom: 4 }}>{sp.name}</Title>
-      <Text type="secondary" style={{ maxWidth: 380, textAlign: 'center', marginBottom: 16 }}>{sp.description}</Text>
-      <Tag style={{ background: sp.bg, color: sp.color, fontWeight: 600, marginBottom: 8, border: 'none' }}>Coming Soon</Tag>
-      <Text type="secondary" style={{ fontSize: 12 }}>APTA: {sp.apta}</Text>
+      <h3 className="mt-0 mb-1 text-lg font-semibold text-primary">{sp.name}</h3>
+      <p className="mb-4 max-w-sm text-center text-sm text-secondary">{sp.description}</p>
+      <span className="mb-2 inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold" style={{ background: sp.bg, color: sp.color }}>Coming Soon</span>
+      <p className="text-xs text-tertiary">APTA: {sp.apta}</p>
     </div>
   );
 }
@@ -131,11 +136,11 @@ function ComingSoonState({ sp }: { sp: typeof SPECIALTIES[0] }) {
 
 function FilterSection({ title, activeCount, onClear, children }: { title: string; activeCount: number; onClear: () => void; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #F0F0F0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <Text strong style={{ fontSize: 13 }}>{title}</Text>
+    <div className="mb-5 pb-5 border-b border-secondary">
+      <div className="mb-3 flex justify-between items-center">
+        <span className="text-sm font-semibold text-primary">{title}</span>
         {activeCount > 0 && (
-          <button onClick={onClear} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#BDBDBD', display: 'flex', lineHeight: 1 }}>
+          <button onClick={onClear} className="flex items-center p-0.5 text-quaternary hover:text-secondary transition-colors">
             <X size={13} />
           </button>
         )}
@@ -147,9 +152,18 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
 
 function CheckRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }} onClick={onChange}>
-      <Checkbox checked={checked} onChange={onChange} onClick={(e) => e.stopPropagation()} />
-      <Text style={{ fontSize: 13, lineHeight: 1.3 }}>{label}</Text>
+    <div className="mb-2 flex cursor-pointer items-center gap-2" onClick={onChange}>
+      <div className={cx(
+        'h-4 w-4 shrink-0 rounded border transition-colors',
+        checked ? 'border-brand-600 bg-brand-600' : 'border-secondary bg-primary'
+      )}>
+        {checked && (
+          <svg viewBox="0 0 12 12" fill="none" className="h-full w-full p-0.5">
+            <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </div>
+      <span className="text-xs leading-snug text-primary">{label}</span>
     </div>
   );
 }
@@ -238,39 +252,43 @@ export default function ExercisesPage() {
   return (
     <>
       <TopBar breadcrumbs={breadcrumbs} />
-      <div style={{ padding: '32px' }}>
+      <div className="p-8">
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {specialty && viewMode === 'full' && <Button type="text" size="small" onClick={goBack} icon={<ArrowLeft />} style={{ color: '#49454F' }} />}
+        <div className="mb-6 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            {specialty && viewMode === 'full' && (
+              <button onClick={goBack} className="flex items-center justify-center h-8 w-8 rounded-lg text-secondary hover:bg-secondary transition-colors">
+                <ArrowLeft size={16} />
+              </button>
+            )}
             <div>
-              <Title level={2} style={{ margin: 0 }}>{viewMode === 'mvp' ? 'Exercises' : (specialty ? specialty.name : 'Exercises')}</Title>
-              {specialty && viewMode === 'full' && <Text type="secondary" style={{ fontSize: 12 }}>{specialty.apta}</Text>}
+              <h2 className="m-0 text-2xl font-bold text-primary">{viewMode === 'mvp' ? 'Exercises' : (specialty ? specialty.name : 'Exercises')}</h2>
+              {specialty && viewMode === 'full' && <p className="text-xs text-secondary">{specialty.apta}</p>}
             </div>
           </div>
-          <Button type="primary" icon={<Plus />} onClick={() => router.push('/exercises/new')}>Create New</Button>
+          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => router.push('/exercises/new')}>Create New</Button>
         </div>
 
         {!specialty && viewMode === 'full' && <SpecialtyGrid onSelect={selectSpecialty} />}
         {specialty && !specialty.available && <ComingSoonState sp={specialty} />}
 
         {specialty && specialty.available && (
-          <div style={{ display: 'flex', gap: 0, alignItems: 'flex-start' }}>
+          <div className="flex gap-0 items-start">
 
             {/* ── Left filter panel ── */}
-            <div style={{ width: 232, flexShrink: 0, paddingRight: 24, borderRight: '1px solid #E0E0E0', marginRight: 28 }}>
+            <div className="w-[232px] shrink-0 pr-6 border-r border-secondary mr-7">
 
               {/* Panel header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid #F0F0F0' }}>
-                <Text strong style={{ fontSize: 14 }}>Filters</Text>
+              <div className="mb-5 pb-4 border-b border-secondary flex justify-between items-center">
+                <span className="text-sm font-semibold text-primary">Filters</span>
                 {hasFilters && (
-                  <Button type="text" size="small" onClick={clearFilters} style={{ fontSize: 12, color: '#6750A4', padding: '0 4px' }}>Clear all</Button>
+                  <button onClick={clearFilters} className="text-xs text-brand-700 hover:text-brand-600 px-1">Clear all</button>
                 )}
               </div>
 
               {/* Favourites */}
-              <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #F0F0F0' }}>
+              <div className="mb-5 pb-5 border-b border-secondary">
                 <CheckRow label="Favourites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
               </div>
 
@@ -281,9 +299,9 @@ export default function ExercisesPage() {
                     <CheckRow key={c} label={c} checked={filterConditions.includes(c)} onChange={() => toggleArr(filterConditions, c, setFilterConditions)} />
                   ))}
                   {filterConfig.conditions.length > 7 && (
-                    <Button type="link" size="small" onClick={() => setShowMoreConditions((v) => !v)} style={{ padding: 0, fontSize: 12, height: 'auto' }}>
+                    <button onClick={() => setShowMoreConditions((v) => !v)} className="mt-1 text-xs text-brand-700 hover:text-brand-600">
                       {showMoreConditions ? 'Show less' : `+${filterConfig.conditions.length - 7} more`}
-                    </Button>
+                    </button>
                   )}
                 </FilterSection>
               )}
@@ -313,92 +331,124 @@ export default function ExercisesPage() {
             </div>
 
             {/* ── Right content ── */}
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="flex-1 min-w-0">
 
               {/* Top bar */}
-              <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center' }}>
-                <Input
-                  placeholder="Search exercises, SUI, OAB…"
-                  style={{ flex: 1 }}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  prefix={<Search size={14} style={{ color: '#9E9E9E' }} />}
-                  allowClear
-                />
-                <Select value={sortBy} onChange={setSortBy} style={{ minWidth: 140 }} options={SORT_OPTIONS.map((o) => ({ value: o, label: o }))} />
+              <div className="mb-4 flex gap-2.5 items-center">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Search exercises, SUI, OAB…"
+                    value={search}
+                    onChange={(val) => setSearch(val)}
+                    icon={Search}
+                  />
+                </div>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                >
+                  {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
               </div>
 
-              <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 12 }}>
+              <p className="mb-4 text-xs text-secondary">
                 {filtered.length} exercise{filtered.length !== 1 ? 's' : ''} · {displayItems.length} card{displayItems.length !== 1 ? 's' : ''} shown
-              </Text>
+              </p>
 
               {/* Grid */}
               {displayItems.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '64px 0' }}>
-                  <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>No exercises match your filters.</Text>
-                  <Button size="small" onClick={clearFilters}>Clear filters</Button>
+                <div className="py-16 text-center">
+                  <p className="mb-3 text-sm text-secondary">No exercises match your filters.</p>
+                  <Button color="secondary" size="xs" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                <div className="grid grid-cols-3 gap-4">
                   {displayItems.map((item) => {
                     if (item.kind === 'single') {
                       const ex = item.ex;
                       const lc = levelColor(ex.level);
                       return (
-                        <Card key={ex.id} hoverable styles={{ body: { padding: 0 } }} style={{ overflow: 'hidden' }} onClick={() => router.push(`/exercises/${ex.id}`)}>
-                          <div style={{ height: 130, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                        <div
+                          key={ex.id}
+                          className="cursor-pointer rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-sm transition-shadow overflow-hidden"
+                          onClick={() => router.push(`/exercises/${ex.id}`)}
+                        >
+                          <div className="relative flex h-[130px] items-center justify-center bg-[#EDE7F6]">
                             <Zap size={36} color="#6750A4" />
-                            <div style={{ position: 'absolute', top: 8, right: 8 }} onClick={(e) => e.stopPropagation()}>
-                              <Tooltip title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}>
-                                <Button type="text" size="small" style={{ background: 'rgba(255,255,255,0.85)', borderRadius: 6 }} icon={favorites.has(ex.id) ? <Heart size={14} style={{ color: '#E91E63' }} fill="#E91E63" /> : <Heart size={14} />} onClick={() => toggleFavorite(ex.id)} />
-                              </Tooltip>
+                            <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
+                              <button
+                                title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}
+                                onClick={() => toggleFavorite(ex.id)}
+                                className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
+                              >
+                                {favorites.has(ex.id)
+                                  ? <Heart size={14} style={{ color: '#E91E63' }} fill="#E91E63" />
+                                  : <Heart size={14} className="text-secondary" />}
+                              </button>
                             </div>
                           </div>
-                          <div style={{ padding: '12px 14px 14px' }}>
-                            <Text strong style={{ display: 'block', marginBottom: 8, fontSize: 13, lineHeight: 1.3 }}>{ex.name}</Text>
-                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
-                              <Tag style={{ fontSize: 11, border: 'none', background: lc.bg, color: lc.color, margin: 0 }}>{ex.level}</Tag>
-                              {ex.equipment !== 'None' && <Tag style={{ fontSize: 11, margin: 0 }}>{ex.equipment}</Tag>}
+                          <div className="px-3.5 pt-3 pb-3.5">
+                            <p className="mb-2 text-xs font-semibold leading-snug text-primary">{ex.name}</p>
+                            <div className="mb-2.5 flex flex-wrap gap-1">
+                              <span className="rounded-md px-2 py-0.5 text-[11px]" style={{ background: lc.bg, color: lc.color }}>{ex.level}</span>
+                              {ex.equipment !== 'None' && <span className="rounded-md border border-secondary px-2 py-0.5 text-[11px] text-secondary">{ex.equipment}</span>}
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <Text type="secondary" style={{ fontSize: 11 }}>{ex.category}</Text>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] text-secondary">{ex.category}</span>
                               <div onClick={(e) => e.stopPropagation()}>
-                                <Tooltip title="Preview"><Button type="text" size="small" icon={<Eye size={14} />} onClick={() => setPreviewExercise(ex)} /></Tooltip>
+                                <button
+                                  title="Preview"
+                                  onClick={() => setPreviewExercise(ex)}
+                                  className="flex h-7 w-7 items-center justify-center rounded text-secondary hover:bg-secondary hover:text-primary transition-colors"
+                                >
+                                  <Eye size={14} />
+                                </button>
                               </div>
                             </div>
                           </div>
-                        </Card>
+                        </div>
                       );
                     }
 
                     // Group card
                     const { representative: rep, groupName: gName, totalCount } = item;
                     return (
-                      <Card key={item.groupId} hoverable styles={{ body: { padding: 0 } }} style={{ overflow: 'hidden' }} onClick={() => router.push(`/exercises/${rep.id}`)}>
+                      <div
+                        key={item.groupId}
+                        className="cursor-pointer rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-sm transition-shadow overflow-hidden"
+                        onClick={() => router.push(`/exercises/${rep.id}`)}
+                      >
                         {/* Stacked thumbnail effect */}
-                        <div style={{ height: 130, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                          <div style={{ position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 28px)', height: '100%', background: '#DDD6F3', borderRadius: '6px 6px 0 0', zIndex: 0 }} />
-                          <div style={{ position: 'absolute', bottom: 3, left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 16px)', height: '100%', background: '#E8E2F8', borderRadius: '6px 6px 0 0', zIndex: 1 }} />
-                          <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                        <div className="relative flex h-[130px] items-center justify-center bg-[#EDE7F6]">
+                          <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 h-full w-[calc(100%-28px)] rounded-t-md bg-[#DDD6F3] z-0" />
+                          <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-full w-[calc(100%-16px)] rounded-t-md bg-[#E8E2F8] z-[1]" />
+                          <div className="relative z-[2] flex h-full w-full items-center justify-center">
                             <Zap size={36} color="#6750A4" />
                           </div>
-                          <Tag style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 3, background: '#6750A4', color: 'white', border: 'none', fontWeight: 600, fontSize: 11, margin: 0 }}>
+                          <span className="absolute bottom-2 left-2 z-[3] rounded-md bg-[#6750A4] px-2 py-0.5 text-[11px] font-semibold text-white">
                             {totalCount} variations
-                          </Tag>
-                          <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 4 }} onClick={(e) => e.stopPropagation()}>
-                            <Tooltip title={favorites.has(rep.id) ? 'Unfavourite' : 'Favourite'}>
-                              <Button type="text" size="small" style={{ background: 'rgba(255,255,255,0.85)', borderRadius: 6 }} icon={favorites.has(rep.id) ? <Heart size={14} style={{ color: '#E91E63' }} fill="#E91E63" /> : <Heart size={14} />} onClick={() => toggleFavorite(rep.id)} />
-                            </Tooltip>
+                          </span>
+                          <div className="absolute top-2 right-2 z-[4]" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              title={favorites.has(rep.id) ? 'Unfavourite' : 'Favourite'}
+                              onClick={() => toggleFavorite(rep.id)}
+                              className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
+                            >
+                              {favorites.has(rep.id)
+                                ? <Heart size={14} style={{ color: '#E91E63' }} fill="#E91E63" />
+                                : <Heart size={14} className="text-secondary" />}
+                            </button>
                           </div>
                         </div>
-                        <div style={{ padding: '12px 14px 14px' }}>
-                          <Text strong style={{ display: 'block', marginBottom: 8, fontSize: 13, lineHeight: 1.3 }}>{gName}</Text>
-                          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
-                            <Tag style={{ fontSize: 11, margin: 0 }}>{rep.category}</Tag>
+                        <div className="px-3.5 pt-3 pb-3.5">
+                          <p className="mb-2 text-xs font-semibold leading-snug text-primary">{gName}</p>
+                          <div className="mb-2.5 flex flex-wrap gap-1">
+                            <span className="rounded-md border border-secondary px-2 py-0.5 text-[11px] text-secondary">{rep.category}</span>
                           </div>
-                          <Text type="secondary" style={{ fontSize: 11 }}>Select a variation on the detail page</Text>
+                          <p className="text-[11px] text-secondary">Select a variation on the detail page</p>
                         </div>
-                      </Card>
+                      </div>
                     );
                   })}
                 </div>

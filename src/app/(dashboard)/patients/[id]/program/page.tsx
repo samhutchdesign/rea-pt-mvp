@@ -1,14 +1,12 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Card, Button, Tag, Tooltip } from 'antd';
+import { Button } from '@/components/base/buttons/button';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { mockPatients, mockPrograms, mockExercises, mockChartSessions } from '@/lib/mock-data';
 import type { Exercise, ProgramExercise } from '@/lib/types';
 import { useViewMode } from '@/lib/viewModeStore';
 import { Eye, Pencil, Send, Zap } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 export default function PatientProgramPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -26,31 +24,39 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
   if (!program) {
     return (
       <div>
-        <Title level={3} style={{ marginTop: 0, marginBottom: 8 }}>Program</Title>
-        <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
+        <h3 className="text-lg font-semibold text-primary mt-0 mb-2">Program</h3>
+        <p className="text-sm text-secondary mb-6">
           No program assigned yet. Choose a recommended template or start from scratch.
-        </Text>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        </p>
+        <div className="flex flex-col gap-4">
           {mockPrograms.map((prog) => (
-            <Card
+            <div
               key={prog.id}
-              hoverable
-              styles={{ body: { padding: 20 } }}
+              className="rounded-xl border border-secondary bg-primary shadow-xs p-5 cursor-pointer hover:border-brand-600 transition-colors"
               onClick={() => router.push(`/patients/${id}/program/edit`)}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div className="flex justify-between items-start">
                 <div>
-                  <Text strong style={{ display: 'block' }}>{prog.name}</Text>
-                  <Text type="secondary" style={{ fontSize: 12 }}>{prog.description}</Text>
-                  <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
-                    {prog.tags.map((t) => <Tag key={t}>{t}</Tag>)}
+                  <p className="text-sm font-semibold text-primary">{prog.name}</p>
+                  <p className="text-xs text-secondary mt-0.5">{prog.description}</p>
+                  <div className="flex gap-1.5 mt-2 flex-wrap">
+                    {prog.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700"
+                      >
+                        {t}
+                      </span>
+                    ))}
                   </div>
                 </div>
-                <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none' }}>{`${prog.exercises.length} exercises`}</Tag>
+                <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700 shrink-0">
+                  {prog.exercises.length} exercises
+                </span>
               </div>
-            </Card>
+            </div>
           ))}
-          <Button onClick={() => router.push(`/patients/${id}/program/edit`)}>
+          <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program/edit`)}>
             Create Program from Scratch
           </Button>
         </div>
@@ -60,64 +66,75 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <Title level={3} style={{ margin: 0 }}>{program.name}</Title>
-          <Text type="secondary">{completedSessions} out of {totalSessions} total sessions</Text>
+          <h3 className="text-lg font-semibold text-primary m-0">{program.name}</h3>
+          <p className="text-sm text-secondary mt-0.5">{completedSessions} out of {totalSessions} total sessions</p>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <Button icon={<Pencil size={16} />} onClick={() => router.push(`/patients/${id}/program/edit`)}>
+        <div className="flex gap-3">
+          <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => router.push(`/patients/${id}/program/edit`)}>
             Modify
           </Button>
-          <Button type="primary" icon={<Send size={16} />} onClick={() => router.push(`/patients/${id}/program/send`)}>
+          <Button color="primary" size="sm" iconLeading={Send} onPress={() => router.push(`/patients/${id}/program/send`)}>
             Send Program to Patient
           </Button>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {program.exercises.map((pe) => {
           const ex = mockExercises.find((e) => e.id === pe.exerciseId);
           if (!ex) return null;
           return (
-            <Card key={pe.exerciseId} styles={{ body: { padding: 16 } }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                <div style={{ width: 80, height: 64, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div key={pe.exerciseId} className="rounded-xl border border-secondary bg-primary shadow-xs p-4">
+              <div className="flex items-center gap-5">
+                <div className="w-20 h-16 rounded-lg bg-[#EDE7F6] flex items-center justify-center shrink-0">
                   <Zap size={28} />
                 </div>
-                <div style={{ flexGrow: 1 }}>
-                  <Text strong style={{ display: 'block', marginBottom: 2 }}>{ex.name}</Text>
-                  <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8 }}>{ex.description}</Text>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    <Tag>{`${pe.sets} Sets`}</Tag>
-                    <Tag>{`${pe.reps} Reps`}</Tag>
-                    {pe.holdSecs > 0 && <Tag>{`${pe.holdSecs} Sec Hold`}</Tag>}
-                    <Tag>{pe.frequency}</Tag>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-primary mb-0.5">{ex.name}</p>
+                  <p className="text-xs text-secondary mb-2">{ex.description}</p>
+                  <div className="flex gap-1.5 flex-wrap">
+                    <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                      {pe.sets} Sets
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                      {pe.reps} Reps
+                    </span>
+                    {pe.holdSecs > 0 && (
+                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                        {pe.holdSecs} Sec Hold
+                      </span>
+                    )}
+                    <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                      {pe.frequency}
+                    </span>
                   </div>
                 </div>
                 {viewMode === 'full' && pe.adherence != null && (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 64 }}>
-                    <Text style={{
-                      fontSize: 18, fontWeight: 700, lineHeight: 1,
-                      color: pe.adherence >= 80 ? '#2E7D32' : pe.adherence >= 60 ? '#F57F17' : '#C62828',
-                    }}>
+                  <div className="flex flex-col items-center gap-1 min-w-[64px]">
+                    <span
+                      className="text-lg font-bold leading-none"
+                      style={{
+                        color: pe.adherence >= 80 ? '#2E7D32' : pe.adherence >= 60 ? '#F57F17' : '#C62828',
+                      }}
+                    >
                       {pe.adherence}%
-                    </Text>
-                    <Text type="secondary" style={{ fontSize: 10, whiteSpace: 'nowrap' }}>adherence</Text>
+                    </span>
+                    <span className="text-[10px] text-secondary whitespace-nowrap">adherence</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-                  <Tooltip title="Preview exercise">
-                    <Button
-                      type="text"
-                      size="small"
-                      onClick={() => { setPreviewExercise(ex); setPreviewPE(pe); }}
-                      icon={<Eye size={14} />}
-                    />
-                  </Tooltip>
+                <div className="flex flex-col gap-1 items-center">
+                  <button
+                    title="Preview exercise"
+                    className="p-1.5 rounded-lg text-secondary hover:bg-secondary hover:text-primary transition-colors"
+                    onClick={() => { setPreviewExercise(ex); setPreviewPE(pe); }}
+                  >
+                    <Eye size={14} />
+                  </button>
                 </div>
               </div>
-            </Card>
+            </div>
           );
         })}
       </div>

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { App } from 'antd';
+import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { Button } from '@/components/base/buttons/button';
@@ -58,7 +58,6 @@ const SORT_OPTIONS = [
 
 export default function PatientsPage() {
   const router = useRouter();
-  const { message: messageApi } = App.useApp();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
   const [sort, setSort] = useState('newest');
@@ -112,7 +111,7 @@ export default function PatientsPage() {
 
   const restore = (patient: Patient) => {
     setLocalPatients((prev) => ({ ...prev, [patient.id]: false }));
-    messageApi.success(`${patient.firstName} ${patient.lastName} restored to active.`);
+    toast.success(`${patient.firstName} ${patient.lastName} restored to active.`);
   };
 
   const searchPlaceholders = showYoursTab

@@ -1,16 +1,14 @@
 'use client';
 import { use, useState } from 'react';
-import { Typography, Card, Input, Button, App } from 'antd';
+import { toast } from 'sonner';
+import { Button } from '@/components/base/buttons/button';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
 import { Pencil } from 'lucide-react';
 
-const { Text } = Typography;
-
 export default function PatientContactPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { message: messageApi } = App.useApp();
   const patient = mockPatients.find((p) => p.id === id);
   const uploaded = getUploadedData(id);
 
@@ -47,7 +45,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const handleSaveContact = () => {
     setSavedContact({ ...contactDraft });
     setEditingContact(false);
-    messageApi.success('Contact information updated.');
+    toast.success('Contact information updated.');
   };
 
   const handleEditEmergency = () => {
@@ -58,66 +56,70 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const handleSaveEmergency = () => {
     setSavedEmergency({ ...emergencyDraft });
     setEditingEmergency(false);
-    messageApi.success('Emergency contact updated.');
+    toast.success('Emergency contact updated.');
   };
 
-  const readonlyStyle = { background: 'rgba(0,0,0,0.04)' };
-
   const field = (label: string, value: string, editing: boolean, onChange: (v: string) => void) => (
-    <div style={{ flex: 1 }}>
-      <Text type="secondary" style={{ display: 'block', marginBottom: 4, fontSize: 12 }}>{label}</Text>
-      <Input
-        value={value}
-        readOnly={!editing}
-        onChange={(e) => onChange(e.target.value)}
-        style={editing ? undefined : readonlyStyle}
-      />
+    <div className="flex-1">
+      <span className="block mb-1 text-xs text-secondary">{label}</span>
+      {editing ? (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-lg bg-primary shadow-xs ring-1 ring-inset ring-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600"
+        />
+      ) : (
+        <div className="rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-sm text-primary min-h-[38px]">
+          {value || <span className="text-tertiary">—</span>}
+        </div>
+      )}
     </div>
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="flex flex-col gap-6">
       {/* Contact Information */}
-      <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <Text strong>Contact Information</Text>
+      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+        <div className="flex justify-between items-center mb-5">
+          <span className="text-sm font-semibold text-primary">Contact Information</span>
           {can.canEditContactInfo && !editingContact && (
-            <Button type="text" size="small" onClick={handleEditContact} icon={<Pencil />} />
+            <Button color="tertiary" size="xs" onPress={handleEditContact} iconLeading={Pencil} />
           )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', gap: 16 }}>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4">
             {field('First Name', editingContact ? contactDraft.firstName : savedContact.firstName, editingContact, (v) => setContactDraft((d) => ({ ...d, firstName: v })))}
             {field('Last Name', editingContact ? contactDraft.lastName : savedContact.lastName, editingContact, (v) => setContactDraft((d) => ({ ...d, lastName: v })))}
           </div>
-          <div style={{ display: 'flex', gap: 16 }}>
+          <div className="flex gap-4">
             {field('Phone Number', editingContact ? contactDraft.phone : savedContact.phone, editingContact, (v) => setContactDraft((d) => ({ ...d, phone: v })))}
             {field('Email Address', editingContact ? contactDraft.email : savedContact.email, editingContact, (v) => setContactDraft((d) => ({ ...d, email: v })))}
           </div>
           {field('Home Address', editingContact ? contactDraft.address : savedContact.address, editingContact, (v) => setContactDraft((d) => ({ ...d, address: v })))}
         </div>
         {editingContact && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-            <Button size="small" onClick={() => setEditingContact(false)}>Cancel</Button>
-            <Button size="small" type="primary" onClick={handleSaveContact}>Save Changes</Button>
+          <div className="flex justify-end gap-3 mt-5">
+            <Button color="secondary" size="sm" onPress={() => setEditingContact(false)}>Cancel</Button>
+            <Button color="primary" size="sm" onPress={handleSaveContact}>Save Changes</Button>
           </div>
         )}
-      </Card>
+      </div>
 
       {/* Emergency Contact */}
-      <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <Text strong>Emergency Contact</Text>
+      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+        <div className="flex justify-between items-center mb-5">
+          <span className="text-sm font-semibold text-primary">Emergency Contact</span>
           {can.canEditContactInfo && !editingEmergency && (
-            <Button type="text" size="small" onClick={handleEditEmergency} icon={<Pencil />} />
+            <Button color="tertiary" size="xs" onPress={handleEditEmergency} iconLeading={Pencil} />
           )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', gap: 16 }}>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4">
             {field('First Name', editingEmergency ? emergencyDraft.firstName : savedEmergency.firstName, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, firstName: v })))}
             {field('Last Name', editingEmergency ? emergencyDraft.lastName : savedEmergency.lastName, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, lastName: v })))}
           </div>
-          <div style={{ display: 'flex', gap: 16 }}>
+          <div className="flex gap-4">
             {field('Phone Number', editingEmergency ? emergencyDraft.phone : savedEmergency.phone, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, phone: v })))}
             {field('Email Address', editingEmergency ? emergencyDraft.email : savedEmergency.email, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, email: v })))}
           </div>
@@ -125,12 +127,12 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
           {field('Relationship', editingEmergency ? emergencyDraft.relationship : savedEmergency.relationship, editingEmergency, (v) => setEmergencyDraft((d) => ({ ...d, relationship: v })))}
         </div>
         {editingEmergency && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-            <Button size="small" onClick={() => setEditingEmergency(false)}>Cancel</Button>
-            <Button size="small" type="primary" onClick={handleSaveEmergency}>Save Changes</Button>
+          <div className="flex justify-end gap-3 mt-5">
+            <Button color="secondary" size="sm" onPress={() => setEditingEmergency(false)}>Cancel</Button>
+            <Button color="primary" size="sm" onPress={handleSaveEmergency}>Save Changes</Button>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

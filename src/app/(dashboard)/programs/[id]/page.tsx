@@ -1,28 +1,27 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Card, Tag, Modal, Select, App } from 'antd';
+import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
+import { Button } from '@/components/base/buttons/button';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { mockPrograms, mockExercises, mockPatients } from '@/lib/mock-data';
 import type { Patient } from '@/lib/types';
 import { Heart, Pencil, UserPlus, Zap } from 'lucide-react';
 
-const { Title, Text } = Typography;
-
 export default function ProgramDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { message: messageApi } = App.useApp();
   const prog = mockPrograms.find((p) => p.id === id);
   const [isFavorite, setIsFavorite] = useState(prog?.isFavorite ?? false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
-  if (!prog) return <div style={{ padding: 32 }}><Text>Program not found.</Text></div>;
+  if (!prog) return <div className="p-8"><span className="text-secondary">Program not found.</span></div>;
 
   const handleAssign = () => {
     if (selectedPatient) {
-      messageApi.success(`Program assigned to ${selectedPatient.firstName} ${selectedPatient.lastName}!`);
+      toast.success(`Program assigned to ${selectedPatient.firstName} ${selectedPatient.lastName}!`);
     }
     setAssignOpen(false);
     setSelectedPatient(null);
@@ -31,82 +30,98 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Programs', href: '/programs' }, { label: prog.name }]} />
-      <div style={{ padding: '32px', maxWidth: 700 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+      <div className="px-8 py-8 max-w-[700px]">
+        <div className="flex justify-between items-start mb-6">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <Title level={2} style={{ margin: 0 }}>{prog.name}</Title>
-              <Button
-                type="text"
-                shape="circle"
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-2xl font-semibold text-primary m-0">{prog.name}</h2>
+              <button
                 onClick={() => setIsFavorite(!isFavorite)}
-                icon={isFavorite ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />}
-              />
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-transparent border-0 cursor-pointer hover:bg-secondary transition-colors"
+              >
+                {isFavorite
+                  ? <Heart className="text-pink-500" fill="#E91E63" size={18} />
+                  : <Heart className="text-tertiary" size={18} />}
+              </button>
             </div>
-            <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>{prog.description}</Text>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {prog.tags.map((t) => <Tag key={t}>{t}</Tag>)}
+            <p className="text-secondary mb-2">{prog.description}</p>
+            <div className="flex gap-1.5 flex-wrap">
+              {prog.tags.map((t) => (
+                <span key={t} className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                  {t}
+                </span>
+              ))}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <Button icon={<UserPlus />} onClick={() => setAssignOpen(true)}>
+          <div className="flex gap-2 shrink-0">
+            <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => setAssignOpen(true)}>
               Assign to Patient
             </Button>
-            <Button icon={<Pencil />} onClick={() => router.push('/programs/new')}>Edit</Button>
+            <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => router.push('/programs/new')}>
+              Edit
+            </Button>
           </div>
         </div>
 
-        <Text strong style={{ display: 'block', marginBottom: 16, color: '#49454F' }}>{prog.exercises.length} exercises</Text>
+        <span className="block mb-4 font-semibold text-tertiary">{prog.exercises.length} exercises</span>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {prog.exercises.map((pe) => {
             const ex = mockExercises.find((e) => e.id === pe.exerciseId);
             if (!ex) return null;
             return (
-              <Card key={pe.exerciseId} styles={{ body: { padding: 0 } }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px' }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Zap size={22} />
+              <div key={pe.exerciseId} className="overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs">
+                <div className="flex items-center gap-4 px-5 py-4">
+                  <div className="w-12 h-12 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
+                    <Zap size={22} className="text-brand-600" />
                   </div>
-                  <div style={{ flexGrow: 1 }}>
-                    <Text strong style={{ display: 'block', marginBottom: 4 }}>{ex.name}</Text>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <Tag>{`${pe.sets} Sets`}</Tag>
-                      <Tag>{`${pe.reps} Reps`}</Tag>
-                      {pe.holdSecs > 0 && <Tag>{`${pe.holdSecs}s Hold`}</Tag>}
-                      <Tag>{pe.frequency}</Tag>
+                  <div className="flex-1">
+                    <span className="block font-semibold text-primary mb-1">{ex.name}</span>
+                    <div className="flex gap-1.5 flex-wrap">
+                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{`${pe.sets} Sets`}</span>
+                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{`${pe.reps} Reps`}</span>
+                      {pe.holdSecs > 0 && (
+                        <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{`${pe.holdSecs}s Hold`}</span>
+                      )}
+                      <span className="inline-flex items-center rounded-full bg-secondary_alt px-2.5 py-0.5 text-xs font-medium text-tertiary">{pe.frequency}</span>
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
       </div>
 
       {/* Assign to Patient Dialog */}
-      <Modal
-        open={assignOpen}
-        onCancel={() => setAssignOpen(false)}
-        title="Assign to Patient"
-        footer={[
-          <Button key="cancel" onClick={() => setAssignOpen(false)}>Cancel</Button>,
-          <Button key="assign" type="primary" disabled={!selectedPatient} onClick={handleAssign}>Assign Program</Button>,
-        ]}
-      >
-        <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-          Select a patient to assign <strong>{prog.name}</strong> to.
-        </Text>
-        <Select
-          showSearch
-          placeholder="Search patients"
-          style={{ width: '100%' }}
-          value={selectedPatient?.id}
-          onChange={(val) => setSelectedPatient(mockPatients.find((p) => p.id === val) ?? null)}
-          filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-          options={mockPatients.map((p) => ({ value: p.id, label: `${p.firstName} ${p.lastName}` }))}
-        />
-      </Modal>
+      <ModalOverlay isOpen={assignOpen} onOpenChange={setAssignOpen}>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-full max-w-md">
+              <h3 className="text-lg font-semibold text-primary mb-1">Assign to Patient</h3>
+              <p className="text-sm text-secondary mb-4">
+                Select a patient to assign <strong>{prog.name}</strong> to.
+              </p>
+              <select
+                className="w-full rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary mb-6"
+                value={selectedPatient?.id ?? ''}
+                onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}
+              >
+                <option value="">Search patients…</option>
+                {mockPatients.map((p) => (
+                  <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
+                ))}
+              </select>
+              <div className="flex justify-end gap-3">
+                <Button color="secondary" size="md" onPress={() => setAssignOpen(false)}>Cancel</Button>
+                <Button color="primary" size="md" onPress={handleAssign}>
+                  Assign Program
+                </Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </>
   );
 }

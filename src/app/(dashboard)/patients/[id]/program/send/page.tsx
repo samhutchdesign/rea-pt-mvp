@@ -1,16 +1,15 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Tag, Divider, App } from 'antd';
+import { toast } from 'sonner';
+import { Button } from '@/components/base/buttons/button';
+import { Divider } from '@/components/ui/divider';
 import { mockPatients, mockPrograms, mockExercises } from '@/lib/mock-data';
 import { Send, Zap } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 export default function SendProgramPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { message: messageApi } = App.useApp();
   const patient = mockPatients.find((p) => p.id === id);
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
 
@@ -21,54 +20,63 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
   const [message, setMessage] = useState(templateMessage);
 
   const handleSend = () => {
-    messageApi.success('New Program has successfully been emailed to the Patient!');
+    toast.success('New Program has successfully been emailed to the Patient!');
     setTimeout(() => router.push(`/patients/${id}/program`), 1500);
   };
 
-  if (!patient || !program) return <Text style={{ padding: 32, display: 'block' }}>No program to send.</Text>;
+  if (!patient || !program) return (
+    <p className="block p-8 text-secondary">No program to send.</p>
+  );
 
   return (
-    <div style={{ maxWidth: 700 }}>
-      <Title level={3} style={{ marginTop: 0, marginBottom: 4 }}>Send Program to Patient</Title>
-      <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>{patient.firstName} {patient.lastName} · {patient.email}</Text>
+    <div className="max-w-[700px]">
+      <h3 className="mt-0 mb-1 text-xl font-semibold text-primary">Send Program to Patient</h3>
+      <p className="mb-6 text-sm text-secondary">{patient.firstName} {patient.lastName} · {patient.email}</p>
 
-      <Card style={{ marginBottom: 24 }}>
-        <Text strong style={{ display: 'block', marginBottom: 12 }}>Message</Text>
-        <Input.TextArea rows={8} value={message} onChange={(e) => setMessage(e.target.value)} />
-      </Card>
+      {/* Message */}
+      <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+        <span className="mb-3 block text-sm font-semibold text-primary">Message</span>
+        <textarea
+          rows={8}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+        />
+      </div>
 
-      <Card style={{ marginBottom: 24 }}>
-        <Text strong style={{ display: 'block', marginBottom: 16 }}>{program.name}</Text>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* Program preview */}
+      <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+        <span className="mb-4 block text-sm font-semibold text-primary">{program.name}</span>
+        <div className="flex flex-col gap-3">
           {program.exercises.map((pe) => {
             const ex = mockExercises.find((e) => e.id === pe.exerciseId);
             if (!ex) return null;
             return (
               <div key={pe.exerciseId}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EDE7F6]">
                     <Zap size={18} />
                   </div>
-                  <div style={{ flexGrow: 1 }}>
-                    <Text strong>{ex.name}</Text>
-                    <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
-                      <Tag style={{ fontSize: 11 }}>{`${pe.sets} Sets`}</Tag>
-                      <Tag style={{ fontSize: 11 }}>{`${pe.reps} Reps`}</Tag>
-                      {pe.holdSecs > 0 && <Tag style={{ fontSize: 11 }}>{`${pe.holdSecs}s Hold`}</Tag>}
-                      <Tag style={{ fontSize: 11 }}>{pe.frequency}</Tag>
+                  <div className="flex-1">
+                    <span className="text-sm font-semibold text-primary">{ex.name}</span>
+                    <div className="mt-0.5 flex flex-wrap gap-1">
+                      <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.sets} Sets`}</span>
+                      <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.reps} Reps`}</span>
+                      {pe.holdSecs > 0 && <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.holdSecs}s Hold`}</span>}
+                      <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{pe.frequency}</span>
                     </div>
                   </div>
                 </div>
-                <Divider style={{ marginTop: 12, marginBottom: 0 }} />
+                <Divider className="mt-3" />
               </div>
             );
           })}
         </div>
-      </Card>
+      </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
-        <Button onClick={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-        <Button type="primary" icon={<Send />} onClick={handleSend}>Send to Patient</Button>
+      <div className="flex justify-end gap-4">
+        <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
+        <Button color="primary" size="sm" iconLeading={Send} onPress={handleSend}>Send to Patient</Button>
       </div>
     </div>
   );

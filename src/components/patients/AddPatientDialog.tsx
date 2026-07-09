@@ -1,11 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Modal, Button, Input, Typography, Steps, Divider, Select } from 'antd';
+import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Divider } from '@/components/ui/divider';
 import { mockClinicLocations } from '@/lib/mock-data';
 import { useRole } from '@/lib/roleStore';
-
-const { Title, Text } = Typography;
+import { cx } from '@/utils/cx';
 
 interface Props {
   open: boolean;
@@ -75,102 +77,111 @@ export default function AddPatientDialog({ open, onClose }: Props) {
 
   const isLastStep = isOwner ? activeStep === steps.length - 1 : true;
 
-  const fieldLabel = (label: string, required?: boolean) => (
-    <div style={{ marginBottom: 4, fontSize: 13 }}>
-      {label}{required && <span style={{ color: '#D32F2F' }}> *</span>}
-    </div>
-  );
-
   return (
-    <Modal
-      open={open}
-      onCancel={handleClose}
-      width={560}
-      title={<Title level={3} style={{ margin: 0 }}>Add New Patient</Title>}
-      footer={
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Button type="text" onClick={handleClose} style={{ color: '#49454F' }}>Cancel</Button>
-          <div style={{ flexGrow: 1 }} />
-          {isOwner && activeStep > 0 && <Button onClick={handleBack} style={{ marginRight: 8 }}>Back</Button>}
-          {isOwner ? (
-            isLastStep
-              ? <Button type="primary" onClick={handleConfirm}>Create Patient</Button>
-              : <Button type="primary" onClick={handleNext}>Next</Button>
-          ) : (
-            <Button type="primary" onClick={handleCreate}>Create Patient</Button>
-          )}
-        </div>
-      }
-    >
-      <Divider style={{ marginTop: 0 }} />
+    <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+      <Modal className="w-full max-w-lg">
+        <Dialog>
+          <div className="p-6">
+            <h2 className="text-xl font-semibold text-primary mb-5">Add New Patient</h2>
+            <Divider className="mb-5" />
 
-      <div style={{ paddingTop: 8 }}>
-        {isOwner && (
-          <Steps
-            current={activeStep}
-            style={{ marginBottom: 32 }}
-            items={steps.map((label) => ({ title: label }))}
-          />
-        )}
+            {/* Stepper */}
+            {isOwner && (
+              <div className="flex items-center gap-0 mb-6">
+                {steps.map((label, i) => (
+                  <div key={i} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className={cx(
+                        'flex size-7 items-center justify-center rounded-full text-xs font-semibold',
+                        i < activeStep ? 'bg-brand-600 text-white' :
+                        i === activeStep ? 'border-2 border-brand-600 text-brand-700' :
+                        'border-2 border-secondary text-tertiary'
+                      )}>
+                        {i < activeStep ? '✓' : i + 1}
+                      </div>
+                      <span className={cx('text-xs whitespace-nowrap', i === activeStep ? 'font-semibold text-brand-700' : 'text-tertiary')}>
+                        {label}
+                      </span>
+                    </div>
+                    {i < steps.length - 1 && (
+                      <div className={cx('flex-1 h-px mx-3 mb-5', i < activeStep ? 'bg-brand-600' : 'bg-secondary')} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
-        {activeStep === 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ display: 'flex', gap: 16 }}>
-              <div style={{ flex: 1 }}>
-                {fieldLabel('First Name', true)}
+            {activeStep === 0 && (
+              <div className="flex flex-col gap-5">
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <Input
+                      label="First Name"
+                      value={firstName}
+                      onChange={setFirstName}
+                      hint={errors.firstName}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Input
+                      label="Last Name"
+                      value={lastName}
+                      onChange={setLastName}
+                      hint={errors.lastName}
+                    />
+                  </div>
+                </div>
                 <Input
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  status={errors.firstName ? 'error' : undefined}
+                  label="Email Address"
+                  value={email}
+                  onChange={setEmail}
+                  hint={errors.email}
                 />
-                {errors.firstName && <Text type="danger" style={{ fontSize: 12 }}>{errors.firstName}</Text>}
               </div>
-              <div style={{ flex: 1 }}>
-                {fieldLabel('Last Name', true)}
-                <Input
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  status={errors.lastName ? 'error' : undefined}
-                />
-                {errors.lastName && <Text type="danger" style={{ fontSize: 12 }}>{errors.lastName}</Text>}
+            )}
+
+            {isOwner && activeStep === 1 && (
+              <div className="flex flex-col gap-4">
+                <p className="text-sm text-secondary">Which clinic location will {firstName} be seen at?</p>
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-1.5">Location</label>
+                  <select
+                    value={locationId}
+                    onChange={(e) => setLocationId(e.target.value)}
+                    className={cx(
+                      'w-full rounded-lg border bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300',
+                      errors.location ? 'border-error-300' : 'border-secondary'
+                    )}
+                  >
+                    <option value="">Select a location</option>
+                    {mockClinicLocations.map((loc) => (
+                      <option key={loc.id} value={loc.id}>{loc.name} — {loc.city}, {loc.regionCountry}</option>
+                    ))}
+                  </select>
+                  {errors.location && <p className="mt-1 text-xs text-error-600">{errors.location}</p>}
+                </div>
               </div>
-            </div>
-            <div>
-              {fieldLabel('Email Address', true)}
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                status={errors.email ? 'error' : undefined}
-              />
-              {errors.email && <Text type="danger" style={{ fontSize: 12 }}>{errors.email}</Text>}
+            )}
+
+            <div className="flex items-center mt-6">
+              <button onClick={handleClose} className="text-sm text-tertiary hover:text-secondary transition-colors">
+                Cancel
+              </button>
+              <div className="flex-1" />
+              {isOwner && activeStep > 0 && (
+                <Button color="secondary" onPress={handleBack} className="mr-3">Back</Button>
+              )}
+              {isOwner ? (
+                isLastStep
+                  ? <Button color="primary" onPress={handleConfirm}>Create Patient</Button>
+                  : <Button color="primary" onPress={handleNext}>Next</Button>
+              ) : (
+                <Button color="primary" onPress={handleCreate}>Create Patient</Button>
+              )}
             </div>
           </div>
-        )}
-
-        {isOwner && activeStep === 1 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <Text type="secondary">
-              Which clinic location will {firstName} be seen at?
-            </Text>
-            <div>
-              {fieldLabel('Location')}
-              <Select
-                style={{ width: '100%' }}
-                placeholder="Select a location"
-                value={locationId || undefined}
-                onChange={(val) => setLocationId(val)}
-                status={errors.location ? 'error' : undefined}
-                options={mockClinicLocations.map((loc) => ({
-                  value: loc.id,
-                  label: `${loc.name} — ${loc.city}, ${loc.regionCountry}`,
-                }))}
-              />
-              {errors.location && <Text type="danger" style={{ fontSize: 12 }}>{errors.location}</Text>}
-            </div>
-          </div>
-        )}
-      </div>
-    </Modal>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
-import { AntdRegistry } from '@ant-design/nextjs-registry';
 import Providers from './providers';
 import './globals.css';
 
@@ -20,9 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={poppins.variable}>
       <body>
-        <AntdRegistry>
-          <Providers>{children}</Providers>
-        </AntdRegistry>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

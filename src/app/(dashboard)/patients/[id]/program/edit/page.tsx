@@ -1,14 +1,14 @@
 'use client';
 import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Tag, Select, Divider, Tooltip, InputNumber, ConfigProvider } from 'antd';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Divider } from '@/components/ui/divider';
 import { Eye, GripVertical, Heart, MinusCircle, PlusCircle, Search, Zap } from 'lucide-react';
-
-const { Text } = Typography;
 
 const ALL_CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
 const ALL_SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
@@ -105,85 +105,105 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     setProgramRows((prev) => prev.map((r) => r.exerciseId === exId ? { ...r, [field]: value } : r));
 
   return (
-    <div style={{ display: 'flex', gap: 24, height: 'calc(100vh - 290px)', overflow: 'hidden' }}>
+    <div className="flex gap-6" style={{ height: 'calc(100vh - 290px)', overflow: 'hidden' }}>
       {/* Left: Exercise Library */}
-      <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
-        <Text strong>Exercise Library</Text>
+      <div className="flex flex-col gap-4 min-h-0" style={{ width: '45%' }}>
+        <span className="text-sm font-semibold text-primary">Exercise Library</span>
 
         <Input
           placeholder="Search exercises…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          prefix={<Search style={{ color: '#9E9E9E' }} />}
+          onChange={(val) => setSearch(val)}
+          icon={Search}
         />
 
         {/* Filters */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Tag color="purple" style={{ margin: 0 }}>Pelvic Floor</Tag>
-          <Tag.CheckableTag
-            checked={showFavoritesOnly}
-            onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
-            style={{ border: '1px solid #E0E0E0', padding: '2px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="inline-flex items-center rounded-md bg-[#EDE7F6] px-2.5 py-1 text-xs font-semibold text-brand-700">Pelvic Floor</span>
+          <button
+            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs transition-colors ${showFavoritesOnly ? 'border-brand-600 bg-brand-600 text-white' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
           >
             <Heart size={14} fill="currentColor" /> Favorites
-          </Tag.CheckableTag>
+          </button>
           <FilterMenu label="Condition" options={ALL_CONDITIONS} selected={filterConditions} onChange={setFilterConditions} />
           <FilterMenu label="Surgery" options={ALL_SURGERIES} selected={filterSurgeries} onChange={setFilterSurgeries} />
           <FilterMenu label="Muscle" options={ALL_MUSCLES} selected={filterMuscles} onChange={setFilterMuscles} />
           <FilterMenu label="Body Part" options={ALL_BODY_PARTS} selected={filterBodyParts} onChange={setFilterBodyParts} />
         </div>
 
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Text type="secondary" style={{ fontSize: 12 }}>Sort:</Text>
-          <Select value={sortBy} onChange={setSortBy} style={{ minWidth: 140 }} options={SORT_OPTIONS.map((o) => ({ value: o, label: o }))} />
+        <div className="flex gap-2 items-center">
+          <span className="text-xs text-secondary">Sort:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="rounded-lg border border-secondary bg-primary px-3 py-1.5 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+          >
+            {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
         </div>
 
-        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 0 }}>
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2">
           {filteredExercises.map((ex) => (
-            <Card key={ex.id} hoverable styles={{ body: { padding: 12 } }} style={{ flexShrink: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div key={ex.id} className="shrink-0 rounded-xl border border-secondary bg-primary shadow-xs p-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#EDE7F6]">
                   <Zap size={20} />
                 </div>
-                <div style={{ flexGrow: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Text strong ellipsis>{ex.name}</Text>
-                    {favorites.has(ex.id) && <Heart size={12} fill="currentColor" />}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1">
+                    <span className="truncate text-sm font-semibold text-primary">{ex.name}</span>
+                    {favorites.has(ex.id) && <Heart size={12} fill="currentColor" className="text-[#E91E63] shrink-0" />}
                   </div>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
-                    {ex.tags.specialty.slice(0, 2).map((t) => <Tag key={t} style={{ fontSize: 10 }}>{t}</Tag>)}
+                  <div className="mt-0.5 flex flex-wrap gap-1">
+                    {ex.tags.specialty.slice(0, 2).map((t) => (
+                      <span key={t} className="rounded border border-secondary px-1.5 py-0.5 text-[10px] text-secondary">{t}</span>
+                    ))}
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 4 }}>
-                  <Tooltip title="Preview">
-                    <Button type="text" size="small" onClick={() => setPreviewExercise(ex)} icon={<Eye />} />
-                  </Tooltip>
-                  <Tooltip title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}>
-                    <Button type="text" size="small" onClick={() => toggleFavorite(ex.id)} icon={favorites.has(ex.id) ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />} />
-                  </Tooltip>
-                  <Tooltip title="Add to program">
-                    <Button type="text" size="small" onClick={() => addExercise(ex)} disabled={programRows.some((r) => r.exerciseId === ex.id)} icon={<PlusCircle style={{ color: '#6750A4' }} />} />
-                  </Tooltip>
+                <div className="flex gap-1">
+                  <button
+                    title="Preview"
+                    onClick={() => setPreviewExercise(ex)}
+                    className="flex h-7 w-7 items-center justify-center rounded text-secondary hover:bg-secondary transition-colors"
+                  >
+                    <Eye size={14} />
+                  </button>
+                  <button
+                    title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
+                    onClick={() => toggleFavorite(ex.id)}
+                    className="flex h-7 w-7 items-center justify-center rounded text-secondary hover:bg-secondary transition-colors"
+                  >
+                    {favorites.has(ex.id) ? <Heart size={14} style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart size={14} />}
+                  </button>
+                  <button
+                    title="Add to program"
+                    onClick={() => addExercise(ex)}
+                    disabled={programRows.some((r) => r.exerciseId === ex.id)}
+                    className="flex h-7 w-7 items-center justify-center rounded text-brand-700 hover:bg-secondary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <PlusCircle size={14} />
+                  </button>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </div>
 
-      <Divider type="vertical" style={{ height: 'auto' }} />
+      <Divider vertical />
 
       {/* Right: Patient's Program */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text strong>{patient?.firstName}&apos;s Program</Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>{programRows.length} exercise{programRows.length !== 1 ? 's' : ''}</Text>
+      <div className="flex flex-1 flex-col gap-4 min-h-0">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-primary">{patient?.firstName}&apos;s Program</span>
+          <span className="text-xs text-secondary">{programRows.length} exercise{programRows.length !== 1 ? 's' : ''}</span>
         </div>
 
-        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 8, minHeight: 0 }}>
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2">
           {programRows.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <Text type="secondary">Add exercises from the library</Text>
+            <div className="py-12 text-center">
+              <span className="text-sm text-secondary">Add exercises from the library</span>
             </div>
           ) : programRows.map((row, idx) => {
             const ex = mockExercises.find((e) => e.id === row.exerciseId);
@@ -191,14 +211,11 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             const isDragging = dragIndex === idx;
             const isDropTarget = dragOverIndex === idx && dragIndex !== idx;
             return (
-              <Card
+              <div
                 key={row.exerciseId}
-                styles={{ body: { padding: 16 } }}
+                className={`shrink-0 rounded-xl bg-primary p-4 transition-opacity ${isDragging ? 'opacity-40' : 'opacity-100'}`}
                 style={{
-                  flexShrink: 0,
-                  opacity: isDragging ? 0.4 : 1,
-                  border: isDropTarget ? '2px dashed #6750A4' : undefined,
-                  transition: 'opacity 0.15s',
+                  border: isDropTarget ? '2px dashed #6750A4' : '1px solid var(--color-border-secondary, #E0E0E0)',
                 }}
                 draggable
                 onDragStart={() => handleDragStart(idx)}
@@ -206,39 +223,54 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                 onDrop={(e) => handleDrop(e, idx)}
                 onDragEnd={handleDragEnd}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <GripVertical size={16} style={{ color: '#BDBDBD', cursor: 'grab', flexShrink: 0 }} />
-                    <Text strong>{ex.name}</Text>
+                <div className="mb-3 flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" />
+                    <span className="text-sm font-semibold text-primary">{ex.name}</span>
                   </div>
-                  <Button type="text" size="small" onClick={() => removeExercise(row.exerciseId)} icon={<MinusCircle />} style={{ color: '#9E9E9E' }} />
+                  <button
+                    onClick={() => removeExercise(row.exerciseId)}
+                    className="flex h-7 w-7 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+                  >
+                    <MinusCircle size={16} />
+                  </button>
                 </div>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <ConfigProvider theme={{ components: { InputNumber: { handleVisible: true } } }}>
-                    {([
-                      { label: 'Sets', field: 'sets' as const, value: row.sets },
-                      { label: 'Reps', field: 'reps' as const, value: row.reps },
-                      { label: 'Hold (sec)', field: 'holdSecs' as const, value: row.holdSecs },
-                    ]).map(({ label, field, value }) => (
-                      <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Text type="secondary" style={{ fontSize: 12 }}>{label}:</Text>
-                        <InputNumber size="small" min={0} value={value} onChange={(v) => updateRow(row.exerciseId, field, v ?? 0)} style={{ width: 72 }} />
-                      </div>
-                    ))}
-                  </ConfigProvider>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Text type="secondary" style={{ fontSize: 12 }}>Freq:</Text>
-                    <Select value={row.frequency} onChange={(v) => updateRow(row.exerciseId, 'frequency', v)} size="small" style={{ minWidth: 130 }} options={FREQUENCIES.map((f) => ({ value: f, label: f }))} />
+                <div className="flex flex-wrap gap-3 items-center">
+                  {([
+                    { label: 'Sets', field: 'sets' as const, value: row.sets },
+                    { label: 'Reps', field: 'reps' as const, value: row.reps },
+                    { label: 'Hold (sec)', field: 'holdSecs' as const, value: row.holdSecs },
+                  ]).map(({ label, field, value }) => (
+                    <div key={field} className="flex items-center gap-1">
+                      <span className="text-xs text-secondary">{label}:</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={value}
+                        onChange={(e) => updateRow(row.exerciseId, field, Number(e.target.value))}
+                        className="w-16 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                      />
+                    </div>
+                  ))}
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-secondary">Freq:</span>
+                    <select
+                      value={row.frequency}
+                      onChange={(e) => updateRow(row.exerciseId, 'frequency', e.target.value)}
+                      className="rounded-lg border border-secondary bg-primary px-2 py-1.5 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                    >
+                      {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+                    </select>
                   </div>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, paddingTop: 16, borderTop: '1px solid #E0E0E0' }}>
-          <Button onClick={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-          <Button type="primary" onClick={() => router.push(`/patients/${id}/program`)}>Save Program Updates</Button>
+        <div className="flex justify-end gap-4 border-t border-secondary pt-4">
+          <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
+          <Button color="primary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Save Program Updates</Button>
         </div>
       </div>
 

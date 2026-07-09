@@ -1,71 +1,101 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Card, Tag, Button, Tooltip } from 'antd';
 import TopBar from '@/components/layout/TopBar';
 import { mockDocuments } from '@/lib/mock-data';
+import { cx } from '@/utils/cx';
 import { Folder, Heart } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 export default function DocumentsPage() {
   const router = useRouter();
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set(mockDocuments.filter((d) => d.isFavorite).map((d) => d.id)));
+  const [favorites, setFavorites] = useState<Set<string>>(
+    new Set(mockDocuments.filter((d) => d.isFavorite).map((d) => d.id))
+  );
 
-  const toggleFavorite = (id: string) => setFavorites((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
-  const filtered = showFavoritesOnly ? mockDocuments.filter((d) => favorites.has(d.id)) : mockDocuments;
+  const toggleFavorite = (id: string) =>
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const filtered = showFavoritesOnly
+    ? mockDocuments.filter((d) => favorites.has(d.id))
+    : mockDocuments;
 
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Documents' }]} />
-      <div style={{ paddingTop: 56, padding: '32px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <Title level={2} style={{ margin: 0 }}>Documents</Title>
+      <div className="p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-primary m-0">Documents</h2>
         </div>
 
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          <Tag.CheckableTag
-            checked={showFavoritesOnly}
-            onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
-            style={{ border: '1px solid #E0E0E0', padding: '2px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            className={cx(
+              'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm font-medium transition-colors',
+              showFavoritesOnly
+                ? 'border-brand-600 bg-brand-50 text-brand-700'
+                : 'border-secondary bg-primary text-secondary hover:bg-secondary_alt'
+            )}
           >
-            <Heart size={14} fill="currentColor" /> Favorites
-          </Tag.CheckableTag>
+            <Heart size={14} fill={showFavoritesOnly ? 'currentColor' : 'none'} />
+            Favorites
+          </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {filtered.map((doc) => (
-            <Card
+            <div
               key={doc.id}
-              hoverable
-              styles={{ body: { padding: 0 } }}
+              className="rounded-xl border border-secondary bg-primary shadow-xs cursor-pointer hover:bg-secondary_alt transition-colors"
               onClick={() => router.push(`/documents/${doc.id}`)}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px' }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Folder size={22} />
+              <div className="flex items-center gap-5 px-6 py-5">
+                <div className="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center shrink-0">
+                  <Folder size={22} className="text-yellow-600" />
                 </div>
-                <div style={{ flexGrow: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                    <Text strong>{doc.name}</Text>
-                    {favorites.has(doc.id) && <Heart size={14} fill="currentColor" />}
-                    {doc.isDefault && <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontSize: 10 }}>Default</Tag>}
+                <div className="grow">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-semibold text-primary text-sm">{doc.name}</span>
+                    {favorites.has(doc.id) && (
+                      <Heart size={14} fill="currentColor" className="text-pink-500" />
+                    )}
+                    {doc.isDefault && (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
+                        Default
+                      </span>
+                    )}
                   </div>
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    Updated {new Date(doc.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · {doc.fields.length} fields
-                  </Text>
+                  <span className="text-tertiary text-xs">
+                    Updated{' '}
+                    {new Date(doc.updatedAt).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}{' '}
+                    · {doc.fields.length} fields
+                  </span>
                 </div>
-                <Tooltip title={favorites.has(doc.id) ? 'Unfavorite' : 'Favorite'}>
-                  <Button
-                    type="text"
-                    size="small"
-                    onClick={(e) => { e.stopPropagation(); toggleFavorite(doc.id); }}
-                    icon={favorites.has(doc.id) ? <Heart style={{ color: '#E91E63' }} fill="currentColor" /> : <Heart />}
-                  />
-                </Tooltip>
+                <button
+                  title={favorites.has(doc.id) ? 'Unfavorite' : 'Favorite'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(doc.id);
+                  }}
+                  className="p-1.5 rounded-lg text-tertiary hover:bg-secondary transition-colors"
+                >
+                  {favorites.has(doc.id) ? (
+                    <Heart size={16} fill="currentColor" className="text-pink-500" />
+                  ) : (
+                    <Heart size={16} />
+                  )}
+                </button>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </div>

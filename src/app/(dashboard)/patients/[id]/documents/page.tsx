@@ -1,12 +1,12 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Card, Tag, Modal, Progress } from 'antd';
+import { Button } from '@/components/base/buttons/button';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
+import { Progress } from '@/components/ui/progress';
 import { mockPatients, mockDocuments } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import { CheckCircle, FileText, Star, Upload, X } from 'lucide-react';
-
-const { Text } = Typography;
 
 type UploadPhase = 'idle' | 'uploading' | 'processing' | 'done';
 
@@ -253,118 +253,149 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <Text strong style={{ fontSize: 18 }}>Documents</Text>
+      <div className="flex justify-between items-center mb-6">
+        <span className="text-lg font-semibold text-primary">Documents</span>
         {viewMode === 'full' && (
-          <Button type="primary" icon={<Upload size={16} />} onClick={openUpload}>
+          <Button color="primary" size="sm" iconLeading={Upload} onPress={openUpload}>
             Upload Patient PDF
           </Button>
         )}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {docCards.map((doc) => (
-          <Card
+          <div
             key={doc.id}
-            hoverable={doc.linkable}
-            styles={{ body: { padding: 0 } }}
-            style={{ cursor: doc.linkable ? 'pointer' : 'default' }}
+            className={`rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden ${doc.linkable ? 'cursor-pointer hover:border-brand-600 transition-colors' : ''}`}
             onClick={doc.linkable ? () => setPdfOpen(true) : undefined}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px' }}>
-              <div style={{ width: 44, height: 44, background: '#FFF3E0', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div className="flex items-center gap-4 px-5 py-4">
+              <div className="w-11 h-11 bg-[#FFF3E0] rounded-xl flex items-center justify-center shrink-0">
                 <FileText size={24} />
               </div>
-              <div style={{ flexGrow: 1 }}>
-                <Text strong style={{ display: 'block' }}>{doc.name}</Text>
-                <Text type="secondary" style={{ fontSize: 12 }}>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-primary">{doc.name}</p>
+                <p className="text-xs text-secondary mt-0.5">
                   {doc.date !== '—'
                     ? `Submitted ${new Date(doc.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
                     : 'Not yet submitted'}
-                </Text>
+                </p>
               </div>
-              <Tag style={{ background: '#FFF3E0', color: '#E65100', fontWeight: 600, fontSize: '0.72rem', border: 'none' }}>PDF</Tag>
+              <span className="inline-flex items-center rounded-full bg-[#FFF3E0] px-2.5 py-0.5 text-xs font-semibold text-[#E65100]">
+                PDF
+              </span>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
 
       {/* Upload dialog */}
-      <Modal
-        open={uploadOpen}
-        onCancel={closeUpload}
-        title="Upload Patient PDF"
-        footer={[
-          <Button key="close" onClick={closeUpload} disabled={uploadPhase === 'processing'}>{uploadPhase === 'done' ? 'Close' : 'Cancel'}</Button>,
-          ...(uploadPhase === 'done' ? [<Button key="review" type="primary" onClick={handleReview}>Review Extracted Information</Button>] : []),
-        ]}
-      >
-        {uploadPhase === 'idle' && (
-          <>
-            <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-              Upload a patient intake form, referral letter, or medical history PDF. Our AI will extract the information and let you review it before saving.
-            </Text>
-            <div
-              onClick={handleBrowseClick}
-              style={{ border: '2px dashed #E0E0E0', borderRadius: 8, padding: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, cursor: 'pointer', transition: 'border-color 0.15s' }}
-            >
-              <Upload size={40} />
-              <Text strong>Drag & drop a PDF here</Text>
-              <Text type="secondary" style={{ fontSize: 12 }}>or click to browse</Text>
-            </div>
-          </>
-        )}
-        {(uploadPhase === 'uploading' || uploadPhase === 'processing') && (
-          <div style={{ padding: '24px 0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              {uploadPhase === 'uploading' ? <Upload style={{ color: '#6750A4' }} /> : <Star style={{ color: '#F57C00' }} />}
-              <div style={{ flexGrow: 1 }}>
-                <Text strong style={{ display: 'block', marginBottom: 2 }}>{uploadPhase === 'uploading' ? `Uploading ${FAKE_FILENAME}…` : 'AI is reading your document…'}</Text>
-                <Text type="secondary" style={{ fontSize: 12 }}>{uploadPhase === 'uploading' ? 'Uploading file' : 'Extracting patient information'}</Text>
+      <ModalOverlay isOpen={uploadOpen} onOpenChange={(open) => { if (!open) closeUpload(); }}>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-full min-w-[400px] max-w-lg">
+              <h2 className="text-lg font-semibold text-primary mb-4">Upload Patient PDF</h2>
+
+              {uploadPhase === 'idle' && (
+                <>
+                  <p className="text-sm text-secondary mb-4">
+                    Upload a patient intake form, referral letter, or medical history PDF. Our AI will extract the information and let you review it before saving.
+                  </p>
+                  <div
+                    onClick={handleBrowseClick}
+                    className="border-2 border-dashed border-secondary rounded-lg p-10 flex flex-col items-center gap-3 cursor-pointer hover:border-brand-600 transition-colors"
+                  >
+                    <Upload size={40} className="text-secondary" />
+                    <p className="text-sm font-semibold text-primary">Drag & drop a PDF here</p>
+                    <p className="text-xs text-secondary">or click to browse</p>
+                  </div>
+                </>
+              )}
+
+              {(uploadPhase === 'uploading' || uploadPhase === 'processing') && (
+                <div className="py-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    {uploadPhase === 'uploading'
+                      ? <Upload className="text-brand-600" size={20} />
+                      : <Star className="text-[#F57C00]" size={20} />
+                    }
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-primary mb-0.5">
+                        {uploadPhase === 'uploading' ? `Uploading ${FAKE_FILENAME}…` : 'AI is reading your document…'}
+                      </p>
+                      <p className="text-xs text-secondary">
+                        {uploadPhase === 'uploading' ? 'Uploading file' : 'Extracting patient information'}
+                      </p>
+                    </div>
+                  </div>
+                  <Progress value={uploadPhase === 'processing' ? 100 : 60} color="brand" />
+                </div>
+              )}
+
+              {uploadPhase === 'done' && (
+                <div className="py-2">
+                  <div className="flex items-center gap-3 mb-4 p-4 bg-[#F1F8E9] rounded-lg border border-[#C5E1A5]">
+                    <CheckCircle size={22} className="text-[#2E7D32]" fill="currentColor" />
+                    <div>
+                      <p className="text-sm font-semibold text-[#2E7D32]">PDF successfully uploaded</p>
+                      <p className="text-xs text-secondary">{FAKE_FILENAME}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-semibold text-primary mb-2">Fields extracted:</p>
+                  <ul className="pl-5 m-0 list-disc">
+                    {['First & last name', 'Date of birth', 'Chief complaint', 'Symptom duration', 'Medical history', 'Current medications', 'Treatment goals'].map((f) => (
+                      <li key={f} className="text-sm text-secondary">{f}</li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-secondary mt-3">Review and edit the extracted information before confirming.</p>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 mt-6">
+                <Button
+                  color="secondary"
+                  size="sm"
+                  isDisabled={uploadPhase === 'processing'}
+                  onPress={closeUpload}
+                >
+                  {uploadPhase === 'done' ? 'Close' : 'Cancel'}
+                </Button>
+                {uploadPhase === 'done' && (
+                  <Button color="primary" size="sm" onPress={handleReview}>
+                    Review Extracted Information
+                  </Button>
+                )}
               </div>
             </div>
-            <Progress percent={uploadPhase === 'processing' ? 100 : 60} status="active" showInfo={false} />
-          </div>
-        )}
-        {uploadPhase === 'done' && (
-          <div style={{ padding: '16px 0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, padding: 16, background: '#F1F8E9', borderRadius: 8, border: '1px solid #C5E1A5' }}>
-              <CheckCircle size={22} fill="currentColor" />
-              <div>
-                <Text strong style={{ color: '#2E7D32', display: 'block' }}>PDF successfully uploaded</Text>
-                <Text type="secondary" style={{ fontSize: 12 }}>{FAKE_FILENAME}</Text>
-              </div>
-            </div>
-            <Text strong style={{ display: 'block', marginBottom: 8 }}>Fields extracted:</Text>
-            <ul style={{ paddingLeft: 20, margin: 0 }}>
-              {['First & last name', 'Date of birth', 'Chief complaint', 'Symptom duration', 'Medical history', 'Current medications', 'Treatment goals'].map((f) => (
-                <li key={f}><Text type="secondary">{f}</Text></li>
-              ))}
-            </ul>
-            <Text type="secondary" style={{ display: 'block', marginTop: 12, fontSize: 12 }}>Review and edit the extracted information before confirming.</Text>
-          </div>
-        )}
-      </Modal>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
 
       {/* PDF viewer dialog */}
-      <Modal
-        open={pdfOpen}
-        onCancel={() => setPdfOpen(false)}
-        width={800}
-        closable={false}
-        footer={null}
-        title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <FileText size={18} />
-            <Text strong style={{ flexGrow: 1 }}>Patient_Intake_Form.pdf</Text>
-            <Tag style={{ background: '#FFEBEE', color: '#C62828', fontSize: '0.7rem', border: 'none' }}>Original (patient voice)</Tag>
-            <Button type="text" size="small" onClick={() => setPdfOpen(false)} icon={<X />} />
-          </div>
-        }
-        styles={{ body: { background: '#EEEEEE', padding: 16 } }}
-      >
-        <PdfViewer />
-      </Modal>
+      <ModalOverlay isOpen={pdfOpen} onOpenChange={setPdfOpen}>
+        <Modal className="w-full max-w-3xl">
+          <Dialog>
+            <div className="p-4">
+              <div className="flex items-center gap-3 mb-4 pb-3 border-b border-secondary">
+                <FileText size={18} className="text-secondary shrink-0" />
+                <span className="text-sm font-semibold text-primary flex-1">Patient_Intake_Form.pdf</span>
+                <span className="inline-flex items-center rounded-full bg-[#FFEBEE] px-2.5 py-0.5 text-xs font-medium text-[#C62828]">
+                  Original (patient voice)
+                </span>
+                <button
+                  className="p-1 rounded-lg text-secondary hover:bg-secondary hover:text-primary transition-colors"
+                  onClick={() => setPdfOpen(false)}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="bg-[#EEEEEE] p-4 rounded-lg overflow-y-auto max-h-[70vh]">
+                <PdfViewer />
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </div>
   );
 }

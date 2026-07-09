@@ -1,14 +1,15 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Input, Alert, Divider, Tag } from 'antd';
 import TopBar from '@/components/layout/TopBar';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Alert } from '@/components/ui/alert';
+import { Divider } from '@/components/ui/divider';
 import { mockPatients } from '@/lib/mock-data';
 import { saveUploadedData } from '@/lib/uploadStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { ArrowLeft, FileText, Languages, Star } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 const FAKE_FILENAME = 'Patient_Intake_Form.pdf';
 
@@ -213,111 +214,105 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
         ]}
       />
 
-      <div style={{ paddingTop: 56, display: 'flex', gap: 32, alignItems: 'flex-start', padding: '32px' }}>
+      <div className="flex gap-8 items-start p-8">
 
         {/* ── Left: editable clinical form (full mode only) ── */}
-        {viewMode === 'full' && <div style={{ flex: 1, minWidth: 0 }}>
-          <Button
-            type="text"
-            icon={<ArrowLeft />}
-            onClick={() => router.back()}
-            style={{ marginBottom: 16, color: '#49454F', fontSize: 13, paddingLeft: 0 }}
-          >
-            Back to Documents
-          </Button>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <Star size={22} />
-            <Title level={2} style={{ margin: 0 }}>Review Extracted Information</Title>
-          </div>
-          <Text type="secondary" style={{ display: 'block', marginBottom: 6 }}>
-            AI extracted and translated responses from <strong>{FAKE_FILENAME}</strong>. Compare against the original on the right, edit if needed, then confirm.
-          </Text>
-
-          <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
-            <Tag icon={<Star />} style={{ background: '#FFF8E1', color: '#F57F17', fontWeight: 500, border: 'none' }}>
-              {`${TOTAL_FIELDS} fields extracted`}
-            </Tag>
-            <Tag icon={<Languages />} style={{ background: '#F3E5F5', color: '#6A1B9A', fontWeight: 500, border: 'none' }}>
-              Patient language → clinical notes
-            </Tag>
-            {editCount > 0 && (
-              <Tag style={{ background: '#E8F5E9', color: '#2E7D32', fontWeight: 500, border: 'none' }}>
-                {`${editCount} field${editCount > 1 ? 's' : ''} edited`}
-              </Tag>
-            )}
-          </div>
-
-          <Alert
-            type="info"
-            showIcon
-            style={{ marginBottom: 24, fontSize: 13 }}
-            message="Patient responses have been translated to clinical terminology. The original patient-filled form is shown on the right. Fields highlighted in yellow have been edited from the AI translation."
-          />
-
-          {FORM_SECTIONS.map((section, si) => (
-            <div key={section.title}>
-              {si > 0 && <Divider style={{ margin: '24px 0' }} />}
-              <Text type="secondary" strong style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16, display: 'block' }}>
-                {section.title}
-              </Text>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {section.fields.map(({ key, label, multiline, rows }) => (
-                  <div key={key}>
-                    <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>
-                    {multiline ? (
-                      <Input.TextArea
-                        rows={rows}
-                        value={fields[key]}
-                        onChange={(e) => set(key, e.target.value)}
-                        style={isEdited(key) ? { background: '#FFFDE7' } : undefined}
-                      />
-                    ) : (
-                      <Input
-                        value={fields[key]}
-                        onChange={(e) => set(key, e.target.value)}
-                        style={isEdited(key) ? { background: '#FFFDE7' } : undefined}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          <Divider style={{ margin: '32px 0' }} />
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-            <Button onClick={() => router.back()}>Cancel</Button>
-            <Button type="primary" onClick={handleConfirm} style={{ padding: '0 24px' }}>
-              Confirm New Information
+        {viewMode === 'full' && (
+          <div className="flex-1 min-w-0">
+            <Button
+              color="tertiary"
+              size="sm"
+              iconLeading={ArrowLeft}
+              onPress={() => router.back()}
+              className="mb-4"
+            >
+              Back to Documents
             </Button>
+
+            <div className="mb-2 flex items-center gap-3">
+              <Star size={22} className="text-primary" />
+              <h2 className="m-0 text-2xl font-bold text-primary">Review Extracted Information</h2>
+            </div>
+            <p className="mb-1.5 text-sm text-secondary">
+              AI extracted and translated responses from <strong>{FAKE_FILENAME}</strong>. Compare against the original on the right, edit if needed, then confirm.
+            </p>
+
+            <div className="mb-6 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1 rounded-md bg-[#FFF8E1] px-2.5 py-1 text-xs font-medium text-[#F57F17]">
+                <Star size={12} /> {`${TOTAL_FIELDS} fields extracted`}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-md bg-[#F3E5F5] px-2.5 py-1 text-xs font-medium text-[#6A1B9A]">
+                <Languages size={12} /> Patient language → clinical notes
+              </span>
+              {editCount > 0 && (
+                <span className="inline-flex items-center rounded-md bg-[#E8F5E9] px-2.5 py-1 text-xs font-medium text-[#2E7D32]">
+                  {`${editCount} field${editCount > 1 ? 's' : ''} edited`}
+                </span>
+              )}
+            </div>
+
+            <Alert type="info" className="mb-6 text-sm">
+              Patient responses have been translated to clinical terminology. The original patient-filled form is shown on the right. Fields highlighted in yellow have been edited from the AI translation.
+            </Alert>
+
+            {FORM_SECTIONS.map((section, si) => (
+              <div key={section.title}>
+                {si > 0 && <Divider className="my-6" />}
+                <p className="mb-4 block text-xs font-semibold uppercase tracking-wide text-secondary">
+                  {section.title}
+                </p>
+                <div className="flex flex-col gap-5">
+                  {section.fields.map(({ key, label, multiline, rows }) => (
+                    <div key={key}>
+                      <div className="mb-1 text-xs text-secondary">{label}</div>
+                      {multiline ? (
+                        <textarea
+                          rows={rows}
+                          value={fields[key]}
+                          onChange={(e) => set(key, e.target.value)}
+                          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                          style={isEdited(key) ? { background: '#FFFDE7' } : undefined}
+                        />
+                      ) : (
+                        <Input
+                          value={fields[key]}
+                          onChange={(val) => set(key, val)}
+                          inputClassName={isEdited(key) ? '!bg-[#FFFDE7]' : undefined}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <Divider className="my-8" />
+
+            <div className="flex justify-end gap-3">
+              <Button color="secondary" size="sm" onPress={() => router.back()}>Cancel</Button>
+              <Button color="primary" size="sm" onPress={handleConfirm} className="px-6">
+                Confirm New Information
+              </Button>
+            </div>
           </div>
-        </div>}
+        )}
 
         {/* ── Right: sticky PDF (original patient voice) ── */}
         <div
+          className="flex-1 min-w-0 overflow-y-auto rounded-lg bg-[#EEEEEE] p-3"
           style={{
-            flex: 1,
-            minWidth: 0,
             position: 'sticky',
             top: 72,
             maxHeight: 'calc(100vh - 88px)',
-            overflowY: 'auto',
-            borderRadius: 8,
-            background: '#EEEEEE',
-            padding: 12,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingLeft: 4 }}>
-            <FileText size={16} />
-            <Text type="secondary" strong style={{ fontSize: 11 }}>
-              {FAKE_FILENAME}
-            </Text>
-            <Tag style={{ marginLeft: 'auto', fontSize: 10, background: '#FFEBEE', color: '#C62828', border: 'none' }}>Original (patient voice)</Tag>
+          <div className="mb-3 flex items-center gap-2 pl-1">
+            <FileText size={16} className="text-secondary" />
+            <span className="text-xs font-semibold text-secondary">{FAKE_FILENAME}</span>
+            <span className="ml-auto inline-flex items-center rounded bg-[#FFEBEE] px-2 py-0.5 text-[10px] text-[#C62828]">Original (patient voice)</span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="flex flex-col gap-4">
 
             {/* ── Page 1: Demographics & Referral ── */}
             <div style={pageStyle}>

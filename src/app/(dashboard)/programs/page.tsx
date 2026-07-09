@@ -1,23 +1,23 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Tag, Select, Tooltip, Checkbox } from 'antd';
 import TopBar from '@/components/layout/TopBar';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { cx } from '@/utils/cx';
 import { mockPrograms } from '@/lib/mock-data';
 import { Heart, Plus, Search, X, Zap } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 const ALL_TAGS = ['Pelvic Floor', 'Postpartum', 'Incontinence', 'Pelvic Pain', 'Beginner', 'Intermediate', 'Relaxation'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Exercises', 'Newest Added'];
 
 function FilterSection({ title, activeCount, onClear, children }: { title: string; activeCount: number; onClear: () => void; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #F0F0F0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <Text strong style={{ fontSize: 13 }}>{title}</Text>
+    <div className="mb-5 pb-5 border-b border-secondary">
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-sm font-semibold text-primary">{title}</span>
         {activeCount > 0 && (
-          <button onClick={onClear} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#BDBDBD', display: 'flex', lineHeight: 1 }}>
+          <button onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary cursor-pointer bg-transparent border-0 leading-none flex">
             <X size={13} />
           </button>
         )}
@@ -29,9 +29,18 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
 
 function CheckRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }} onClick={onChange}>
-      <Checkbox checked={checked} onChange={onChange} onClick={(e) => e.stopPropagation()} />
-      <Text style={{ fontSize: 13 }}>{label}</Text>
+    <div className="flex items-center gap-2 mb-2 cursor-pointer" onClick={onChange}>
+      <div className={cx(
+        'w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors',
+        checked ? 'bg-brand-600 border-brand-600' : 'border-secondary bg-primary',
+      )}>
+        {checked && (
+          <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </div>
+      <span className="text-sm text-secondary">{label}</span>
     </div>
   );
 }
@@ -70,29 +79,36 @@ export default function ProgramsPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Programs' }]} />
-      <div style={{ padding: '32px' }}>
+      <div className="px-8 py-8">
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <Title level={2} style={{ margin: 0 }}>Programs</Title>
-          <Button type="primary" icon={<Plus />} onClick={() => router.push('/programs/new')}>Create New Program</Button>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-primary m-0">Programs</h2>
+          <Button color="primary" size="md" iconLeading={Plus} onPress={() => router.push('/programs/new')}>
+            Create New Program
+          </Button>
         </div>
 
-        <div style={{ display: 'flex', gap: 0, alignItems: 'flex-start' }}>
+        <div className="flex gap-0 items-start">
 
-          {/* ── Left filter panel ── */}
-          <div style={{ width: 232, flexShrink: 0, paddingRight: 24, borderRight: '1px solid #E0E0E0', marginRight: 28 }}>
+          {/* Left filter panel */}
+          <div className="w-56 shrink-0 pr-6 border-r border-secondary mr-7">
 
             {/* Panel header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid #F0F0F0' }}>
-              <Text strong style={{ fontSize: 14 }}>Filters</Text>
+            <div className="flex justify-between items-center mb-5 pb-4 border-b border-secondary">
+              <span className="text-sm font-semibold text-primary">Filters</span>
               {hasFilters && (
-                <Button type="text" size="small" onClick={clearFilters} style={{ fontSize: 12, color: '#6750A4', padding: '0 4px' }}>Clear all</Button>
+                <button
+                  onClick={clearFilters}
+                  className="text-xs text-brand-700 cursor-pointer bg-transparent border-0 p-0 font-medium hover:opacity-80"
+                >
+                  Clear all
+                </button>
               )}
             </div>
 
             {/* Favourites */}
-            <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #F0F0F0' }}>
+            <div className="mb-5 pb-5 border-b border-secondary">
               <CheckRow label="Favourites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
             </div>
 
@@ -104,70 +120,79 @@ export default function ProgramsPage() {
             </FilterSection>
           </div>
 
-          {/* ── Right content ── */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Right content */}
+          <div className="flex-1 min-w-0">
 
             {/* Top bar */}
-            <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center' }}>
-              <Input
-                placeholder="Search programs…"
-                style={{ flex: 1 }}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                prefix={<Search size={14} style={{ color: '#9E9E9E' }} />}
-                allowClear
-              />
-              <Select value={sortBy} onChange={setSortBy} style={{ minWidth: 150 }} options={SORT_OPTIONS.map((o) => ({ value: o, label: o }))} />
+            <div className="flex gap-2.5 mb-4 items-center">
+              <div className="flex-1">
+                <Input
+                  placeholder="Search programs…"
+                  value={search}
+                  onChange={setSearch}
+                  icon={Search}
+                  size="sm"
+                />
+              </div>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary min-w-[150px]"
+              >
+                {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+              </select>
             </div>
 
-            <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 12 }}>
+            <span className="block mb-4 text-xs text-tertiary">
               {filtered.length} of {mockPrograms.length} programs
-            </Text>
+            </span>
 
             {/* Grid */}
             {filtered.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '64px 0' }}>
-                <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>No programs match your filters.</Text>
-                <Button size="small" onClick={clearFilters}>Clear filters</Button>
+              <div className="text-center py-16">
+                <span className="block text-secondary mb-3">No programs match your filters.</span>
+                <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              <div className="grid grid-cols-3 gap-4">
                 {filtered.map((prog) => (
-                  <Card
+                  <div
                     key={prog.id}
-                    hoverable
-                    styles={{ body: { padding: 0 } }}
-                    style={{ overflow: 'hidden' }}
+                    className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
                     onClick={() => router.push(`/programs/${prog.id}`)}
                   >
                     {/* Thumbnail */}
-                    <div style={{ height: 110, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      <Zap size={32} color="#6750A4" />
-                      <div style={{ position: 'absolute', top: 8, right: 8 }} onClick={(e) => e.stopPropagation()}>
-                        <Tooltip title={favorites.has(prog.id) ? 'Unfavourite' : 'Favourite'}>
-                          <Button
-                            type="text"
-                            size="small"
-                            style={{ background: 'rgba(255,255,255,0.85)', borderRadius: 6 }}
-                            icon={favorites.has(prog.id) ? <Heart size={14} style={{ color: '#E91E63' }} fill="#E91E63" /> : <Heart size={14} />}
-                            onClick={() => toggleFavorite(prog.id)}
-                          />
-                        </Tooltip>
+                    <div className="relative flex h-28 items-center justify-center bg-brand-50">
+                      <Zap size={32} className="text-brand-600" />
+                      <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          title={favorites.has(prog.id) ? 'Unfavourite' : 'Favourite'}
+                          className="flex items-center justify-center w-7 h-7 rounded-md bg-white/85 border-0 cursor-pointer hover:bg-white transition-colors"
+                          onClick={() => toggleFavorite(prog.id)}
+                        >
+                          {favorites.has(prog.id)
+                            ? <Heart size={14} className="text-pink-500" fill="#E91E63" />
+                            : <Heart size={14} className="text-tertiary" />}
+                        </button>
                       </div>
-                      <Tag style={{ position: 'absolute', bottom: 8, left: 8, background: '#6750A4', color: 'white', border: 'none', fontWeight: 500, fontSize: 11, margin: 0 }}>
+                      <span className="absolute bottom-2 left-2 inline-flex items-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-medium text-white">
                         {prog.exercises.length} exercises
-                      </Tag>
+                      </span>
                     </div>
 
                     {/* Info */}
-                    <div style={{ padding: '12px 14px 14px' }}>
-                      <Text strong style={{ display: 'block', marginBottom: 4, fontSize: 13, lineHeight: 1.3 }}>{prog.name}</Text>
-                      <Text type="secondary" style={{ display: 'block', fontSize: 12, marginBottom: 10, lineHeight: 1.4 }}>{prog.description}</Text>
-                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        {prog.tags.map((t) => <Tag key={t} style={{ fontSize: 11, margin: 0 }}>{t}</Tag>)}
+                    <div className="px-3.5 py-3">
+                      <span className="block mb-1 text-sm font-semibold text-primary leading-snug">{prog.name}</span>
+                      <span className="block text-xs text-secondary mb-2.5 leading-snug">{prog.description}</span>
+                      <div className="flex gap-1 flex-wrap">
+                        {prog.tags.map((t) => (
+                          <span key={t} className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                            {t}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             )}

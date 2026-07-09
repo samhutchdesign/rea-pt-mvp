@@ -1,15 +1,16 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Button, Tag, Divider, Select, Modal, App } from 'antd';
+import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import type { Patient } from '@/lib/types';
+import { Button } from '@/components/base/buttons/button';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
+import { Divider } from '@/components/ui/divider';
 import { ChevronRight, Heart, ListPlus, Mic, Pencil, UserPlus, Zap } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 function variationLabel(name: string): string {
   const idx = name.indexOf(':');
@@ -20,7 +21,6 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   const { id } = use(params);
   const router = useRouter();
   const viewMode = useViewMode();
-  const { message: messageApi } = App.useApp();
 
   const sourceArray = id.startsWith('fx-') ? mockExercisesFull : mockExercises;
   const ex = sourceArray.find((e) => e.id === id);
@@ -33,20 +33,24 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
   const handleAddToProgram = () => {
     const prog = mockPrograms.find((p) => p.id === selectedProgramId);
-    if (prog) messageApi.success(`Exercise added to "${prog.name}"!`);
+    if (prog) toast.success(`Exercise added to "${prog.name}"!`);
     setProgramOpen(false);
     setSelectedProgramId(null);
   };
 
   const handleAssign = () => {
     if (selectedPatient) {
-      messageApi.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program!`);
+      toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program!`);
     }
     setAssignOpen(false);
     setSelectedPatient(null);
   };
 
-  if (!ex) return <div style={{ padding: 32 }}><Text>Exercise not found.</Text></div>;
+  if (!ex) return (
+    <div className="p-8">
+      <p className="text-secondary">Exercise not found.</p>
+    </div>
+  );
 
   const siblings = ex.variationGroup
     ? sourceArray.filter((e) => e.variationGroup === ex.variationGroup).sort((a, b) => b.usageCount - a.usageCount)
@@ -57,7 +61,9 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   const allTags = [...new Set([...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart])];
 
   const prescriptionTag = (label: string) => (
-    <Tag key={label} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 600 }}>{label}</Tag>
+    <span key={label} className="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">
+      {label}
+    </span>
   );
 
   const usedInPrograms = mockPrograms.filter((prog) => prog.exercises.some((pe) => pe.exerciseId === id));
@@ -69,29 +75,30 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   return (
     <>
       <TopBar breadcrumbs={breadcrumbs} />
-      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 820 }}>
+      <div className="p-8 pt-8 max-w-[820px]">
 
         {/* Variation selector */}
         {siblings.length > 1 && (
-          <div style={{ background: '#F5F3FF', border: '1px solid #D0BCFF', borderRadius: 8, padding: '12px 16px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <Text style={{ color: '#6750A4', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>
-              {groupName}
-            </Text>
-            <Select
+          <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-[#D0BCFF] bg-[#F5F3FF] px-4 py-3">
+            <span className="whitespace-nowrap text-xs font-semibold text-brand-700">{groupName}</span>
+            <select
               value={id}
-              onChange={(val) => router.push(`/exercises/${val}`)}
-              style={{ flex: 1, minWidth: 200 }}
-              options={siblings.map((s) => ({ value: s.id, label: variationLabel(s.name) }))}
-            />
-            <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 600, margin: 0 }}>
+              onChange={(e) => router.push(`/exercises/${e.target.value}`)}
+              className="flex-1 min-w-[200px] rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+            >
+              {siblings.map((s) => (
+                <option key={s.id} value={s.id}>{variationLabel(s.name)}</option>
+              ))}
+            </select>
+            <span className="inline-flex items-center rounded-md bg-[#EDE7F6] px-2.5 py-1 text-xs font-semibold text-brand-700">
               {siblings.length} variations
-            </Tag>
+            </span>
           </div>
         )}
 
         {/* Video */}
         {ex.videoUrl ? (
-          <div style={{ width: '100%', height: 360, borderRadius: 8, overflow: 'hidden', marginBottom: 24, background: '#0f0f0f' }}>
+          <div className="mb-6 w-full h-[360px] rounded-lg overflow-hidden bg-[#0f0f0f]">
             <iframe
               src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`}
               width="100%"
@@ -102,40 +109,42 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
             />
           </div>
         ) : (
-          <div style={{ width: '100%', height: 300, borderRadius: 8, background: '#EDE7F6', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
-            <div style={{ textAlign: 'center' }}>
+          <div className="mb-6 w-full h-[300px] rounded-lg bg-[#EDE7F6] flex items-center justify-center">
+            <div className="text-center">
               <Zap size={64} color="#6750A4" />
-              <div style={{ marginTop: 8 }}>
-                <Button type="primary" icon={<ChevronRight size={14} />}>Play Video</Button>
+              <div className="mt-2">
+                <Button color="primary" size="sm" iconLeading={ChevronRight}>Play Video</Button>
               </div>
             </div>
           </div>
         )}
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+        <div className="mb-4 flex justify-between items-start">
           <div>
-            <Title level={2} style={{ marginTop: 0, marginBottom: 4 }}>{ex.name}</Title>
-            <Text type="secondary">{ex.description}</Text>
+            <h2 className="mt-0 mb-1 text-2xl font-bold text-primary">{ex.name}</h2>
+            <p className="text-secondary text-sm">{ex.description}</p>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="flex gap-2 ml-4 shrink-0">
             {viewMode === 'full' && (
-              <Button icon={<Mic size={14} />} onClick={() => setAudioOpen(true)}>Record Audio Cue</Button>
+              <Button color="secondary" size="sm" iconLeading={Mic} onPress={() => setAudioOpen(true)}>Record Audio Cue</Button>
             )}
-            <Button icon={<ListPlus size={14} />} onClick={() => setProgramOpen(true)}>Add to Program</Button>
-            <Button icon={<UserPlus size={14} />} onClick={() => setAssignOpen(true)}>Add to Patient</Button>
-            <Button
-              type="text"
-              shape="circle"
+            <Button color="secondary" size="sm" iconLeading={ListPlus} onPress={() => setProgramOpen(true)}>Add to Program</Button>
+            <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => setAssignOpen(true)}>Add to Patient</Button>
+            <button
               onClick={() => setIsFavorite(!isFavorite)}
-              icon={isFavorite ? <Heart size={16} fill="#E91E63" color="#E91E63" /> : <Heart size={16} />}
-            />
-            <Button icon={<Pencil size={14} />} onClick={() => router.push(`/exercises/new?edit=${id}`)}>Edit</Button>
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-secondary bg-primary shadow-xs hover:bg-secondary transition-colors"
+            >
+              {isFavorite
+                ? <Heart size={16} fill="#E91E63" color="#E91E63" />
+                : <Heart size={16} className="text-secondary" />}
+            </button>
+            <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => router.push(`/exercises/new?edit=${id}`)}>Edit</Button>
           </div>
         </div>
 
         {/* Prescription chips */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        <div className="mb-5 flex flex-wrap gap-2">
           {prescriptionTag(`${ex.defaultSets} Sets`)}
           {prescriptionTag(`${ex.defaultReps} Reps`)}
           {ex.defaultHoldSecs > 0 && prescriptionTag(`${ex.defaultHoldSecs}s Hold`)}
@@ -143,42 +152,50 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         </div>
 
         {/* Tags */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
-          {allTags.map((tag) => <Tag key={tag} style={{ fontSize: 12 }}>{tag}</Tag>)}
+        <div className="mb-6 flex flex-wrap gap-1.5">
+          {allTags.map((tag) => (
+            <span key={tag} className="inline-flex items-center rounded-md border border-secondary bg-secondary px-2.5 py-1 text-xs text-secondary">
+              {tag}
+            </span>
+          ))}
         </div>
 
-        <Divider style={{ marginBottom: 24 }} />
+        <Divider className="mb-6" />
 
         {/* Programs using this exercise */}
         {usedInPrograms.length > 0 && (
           <>
-            <Title level={3} style={{ marginTop: 0, marginBottom: 12 }}>Used in Programs</Title>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+            <h3 className="mt-0 mb-3 text-lg font-semibold text-primary">Used in Programs</h3>
+            <div className="mb-6 flex flex-wrap gap-2">
               {usedInPrograms.map((prog) => (
-                <Tag key={prog.id} onClick={() => router.push(`/programs/${prog.id}`)} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontWeight: 500, cursor: 'pointer' }}>
+                <button
+                  key={prog.id}
+                  onClick={() => router.push(`/programs/${prog.id}`)}
+                  className="inline-flex items-center rounded-md bg-[#EDE7F6] px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-[#DDD6F3] transition-colors"
+                >
                   {prog.name}
-                </Tag>
+                </button>
               ))}
             </div>
-            <Divider style={{ marginBottom: 24 }} />
+            <Divider className="mb-6" />
           </>
         )}
 
         {/* Instructions */}
-        <Title level={3} style={{ marginTop: 0, marginBottom: 16 }}>Instructions</Title>
-        <ol style={{ paddingLeft: 24, marginBottom: 24 }}>
+        <h3 className="mt-0 mb-4 text-lg font-semibold text-primary">Instructions</h3>
+        <ol className="mb-6 pl-6">
           {ex.instructions.map((step, i) => (
-            <li key={i} style={{ marginBottom: 8 }}><Text>{step}</Text></li>
+            <li key={i} className="mb-2 text-sm text-primary">{step}</li>
           ))}
         </ol>
 
-        <Divider style={{ marginBottom: 24 }} />
+        <Divider className="mb-6" />
 
         {/* Common mistakes */}
-        <Title level={3} style={{ marginTop: 0, marginBottom: 16, color: '#FB8C00' }}>Common Mistakes</Title>
-        <ul style={{ paddingLeft: 24 }}>
+        <h3 className="mt-0 mb-4 text-lg font-semibold" style={{ color: '#FB8C00' }}>Common Mistakes</h3>
+        <ul className="pl-6">
           {ex.commonMistakes.map((m, i) => (
-            <li key={i} style={{ marginBottom: 8 }}><Text>{m}</Text></li>
+            <li key={i} className="mb-2 text-sm text-primary">{m}</li>
           ))}
         </ul>
       </div>
@@ -191,57 +208,68 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         onSave={(_blobUrl, _dur) => setAudioOpen(false)}
       />
 
-      <Modal
-        open={programOpen}
-        onCancel={() => { setProgramOpen(false); setSelectedProgramId(null); }}
-        title="Add to Program"
-        footer={[
-          <Button key="cancel" onClick={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>,
-          <Button key="add" type="primary" disabled={!selectedProgramId} onClick={handleAddToProgram}>Add to Program</Button>,
-        ]}
-      >
-        <div style={{ padding: '16px 0' }}>
-          <Select
-            placeholder="Select a program…"
-            style={{ width: '100%' }}
-            value={selectedProgramId}
-            onChange={(val) => {
-              if (val === '__new__') {
-                router.push('/programs/new');
-                setProgramOpen(false);
-                return;
-              }
-              setSelectedProgramId(val);
-            }}
-            options={[
-              { value: '__new__', label: '+ Create new program' },
-              ...mockPrograms.map((p) => ({ value: p.id, label: p.name })),
-            ]}
-          />
-        </div>
-      </Modal>
+      {/* Add to Program modal */}
+      <ModalOverlay isOpen={programOpen} onOpenChange={(open) => { if (!open) { setProgramOpen(false); setSelectedProgramId(null); } }}>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-[440px]">
+              <h3 className="mb-4 text-lg font-semibold text-primary">Add to Program</h3>
+              <div className="py-2">
+                <select
+                  value={selectedProgramId ?? ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '__new__') {
+                      router.push('/programs/new');
+                      setProgramOpen(false);
+                      return;
+                    }
+                    setSelectedProgramId(val || null);
+                  }}
+                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                >
+                  <option value="">Select a program…</option>
+                  <option value="__new__">+ Create new program</option>
+                  {mockPrograms.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button color="secondary" size="sm" onPress={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>
+                <Button color="primary" size="sm" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
 
-      <Modal
-        open={assignOpen}
-        onCancel={() => { setAssignOpen(false); setSelectedPatient(null); }}
-        title="Add to Patient's Program"
-        footer={[
-          <Button key="cancel" onClick={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>,
-          <Button key="add" type="primary" disabled={!selectedPatient} onClick={handleAssign}>Add to Program</Button>,
-        ]}
-      >
-        <div style={{ padding: '16px 0' }}>
-          <Select
-            placeholder="Select a patient…"
-            style={{ width: '100%' }}
-            value={selectedPatient?.id ?? null}
-            onChange={(val) => setSelectedPatient(mockPatients.find((p) => p.id === val) ?? null)}
-            options={mockPatients.filter((p) => !p.archived).map((p) => ({ value: p.id, label: `${p.firstName} ${p.lastName}` }))}
-            showSearch
-            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-          />
-        </div>
-      </Modal>
+      {/* Add to Patient modal */}
+      <ModalOverlay isOpen={assignOpen} onOpenChange={(open) => { if (!open) { setAssignOpen(false); setSelectedPatient(null); } }}>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-[440px]">
+              <h3 className="mb-4 text-lg font-semibold text-primary">Add to Patient's Program</h3>
+              <div className="py-2">
+                <select
+                  value={selectedPatient?.id ?? ''}
+                  onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}
+                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                >
+                  <option value="">Select a patient…</option>
+                  {mockPatients.filter((p) => !p.archived).map((p) => (
+                    <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button color="secondary" size="sm" onPress={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>
+                <Button color="primary" size="sm" isDisabled={!selectedPatient} onPress={handleAssign}>Add to Program</Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </>
   );
 }

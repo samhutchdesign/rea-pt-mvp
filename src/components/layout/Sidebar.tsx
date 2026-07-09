@@ -1,13 +1,13 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Tooltip } from 'antd';
 import type { ComponentType } from 'react';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useViewMode } from '@/lib/viewModeStore';
 import { List, Users, Zap } from 'lucide-react';
+import { cx } from '@/utils/cx';
 
-type NavItem = { label: string; href: string; mvpHref?: string; icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }> };
+type NavItem = { label: string; href: string; mvpHref?: string; icon: ComponentType<{ className?: string }> };
 
 const baseNavItems: NavItem[] = [
   { label: 'Patients', href: '/patients', icon: Users },
@@ -29,41 +29,10 @@ export default function Sidebar() {
   const navItems = can.canManageStaff ? ownerNavItems : baseNavItems;
 
   return (
-    <nav
-      style={{
-        width: 80,
-        flexShrink: 0,
-        background: '#FFFFFF',
-        borderRight: '1px solid #E0E0E0',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingTop: 16,
-        paddingBottom: 16,
-        position: 'fixed',
-        top: 40,
-        left: 0,
-        height: 'calc(100vh - 40px)',
-        zIndex: 100,
-      }}
-    >
+    <nav className="fixed top-10 left-0 z-[100] flex h-[calc(100vh-40px)] w-20 shrink-0 flex-col items-center border-r border-secondary bg-primary py-4">
       {/* Logo */}
-      <div style={{ marginBottom: 24, marginTop: 8 }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            background: '#6750A4',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: 16,
-            letterSpacing: '-0.5px',
-          }}
-        >
+      <div className="mb-6 mt-2">
+        <div className="flex size-9 items-center justify-center rounded-full bg-brand-600 text-base font-bold text-white" style={{ letterSpacing: '-0.5px' }}>
           R
         </div>
       </div>
@@ -72,38 +41,17 @@ export default function Sidebar() {
         const resolvedHref = viewMode === 'mvp' && mvpHref ? mvpHref : href;
         const isActive = resolvedHref === '/' ? pathname === '/' : pathname.startsWith(resolvedHref);
         return (
-          <Tooltip key={href} title={label} placement="right">
-            <Link href={resolvedHref} style={{ textDecoration: 'none', width: '100%' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '8px 4px',
-                  margin: '0 8px 4px',
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  background: isActive ? '#EDE7F6' : 'transparent',
-                  transition: 'background-color 0.15s',
-                }}
-              >
-                <Icon size={20} color={isActive ? '#6750A4' : '#49454F'} />
-                <span
-                  style={{
-                    fontSize: 10,
-                    marginTop: 3,
-                    color: isActive ? '#6750A4' : '#49454F',
-                    fontWeight: isActive ? 600 : 400,
-                    lineHeight: 1,
-                    textAlign: 'center',
-                  }}
-                >
-                  {label}
-                </span>
-              </div>
-            </Link>
-          </Tooltip>
+          <Link key={href} href={resolvedHref} title={label} className="mb-1 w-full px-2">
+            <div className={cx(
+              'flex flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 transition-colors duration-150 cursor-pointer',
+              isActive ? 'bg-brand-50' : 'hover:bg-secondary'
+            )}>
+              <Icon className={cx('size-5', isActive ? 'text-brand-600' : 'text-quaternary')} />
+              <span className={cx('text-[10px] font-medium leading-none text-center', isActive ? 'text-brand-700 font-semibold' : 'text-quaternary')}>
+                {label}
+              </span>
+            </div>
+          </Link>
         );
       })}
     </nav>

@@ -37,10 +37,3 @@ html, body {
 
 a { color: inherit; text-decoration: none; }
 
-/* Poppins for antd headings */
-h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography, h5.ant-typography,
-.ant-typography h1, .ant-typography h2, .ant-typography h3, .ant-typography h4, .ant-typography h5 {
-  font-family: var(--font-poppins), sans-serif !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.01em !important;
-}

@@ -1,11 +1,8 @@
 'use client';
-import { Typography } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
 import { useRole, setRole } from '@/lib/roleStore';
 import { useViewMode, setViewMode, type ViewMode } from '@/lib/viewModeStore';
 import type { UserRole } from '@/lib/types';
-
-const { Text } = Typography;
 
 const ROLES: { value: UserRole; label: string }[] = [
   { value: 'owner', label: 'Owner' },
@@ -18,7 +15,6 @@ const VIEW_MODES = [
   { value: 'mvp' as const, label: 'MVP' },
 ];
 
-// full path → mvp path
 const ROUTE_MAP: Record<string, string> = {
   '/exercises': '/exercises-mvp',
 };
@@ -57,9 +53,9 @@ export default function DemoRoleBar() {
         borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}
     >
-      <Text style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
+      <span style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
         Viewing as:
-      </Text>
+      </span>
       {ROLES.map(({ value, label }) => {
         const active = current === value;
         return (
@@ -87,9 +83,9 @@ export default function DemoRoleBar() {
 
       <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.15)', margin: '0 4px' }} />
 
-      <Text style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
+      <span style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
         Version:
-      </Text>
+      </span>
       {VIEW_MODES.map(({ value, label }) => {
         const active = viewMode === value;
         return (

@@ -1,13 +1,15 @@
 'use client';
 import { useState } from 'react';
-import { Drawer, Typography, Tag, Button, Divider, Modal, Select } from 'antd';
+import { Button } from '@/components/base/buttons/button';
+import { Badge } from '@/components/base/badges/badges';
+import { Divider } from '@/components/ui/divider';
+import { Drawer } from '@/components/ui/drawer';
+import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
 import { mockPrograms } from '@/lib/mock-data';
 import type { Exercise, Program } from '@/lib/types';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { useViewMode } from '@/lib/viewModeStore';
 import { List, Mic, X, Zap } from 'lucide-react';
-
-const { Title, Text, Paragraph } = Typography;
 
 interface PatientPrescription {
   sets: number;
@@ -45,22 +47,17 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
     setSelectedProgram(null);
   };
 
-  const prescriptionTag = (label: string) => (
-    <Tag key={label} style={{ background: '#EDE7F6', color: '#6750A4', border: 'none' }}>{label}</Tag>
+  const PrescriptionTag = ({ label }: { label: string }) => (
+    <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+      {label}
+    </span>
   );
 
   return (
     <>
-      <Drawer
-        placement="right"
-        open={open}
-        onClose={onClose}
-        width={480}
-        closable={false}
-        styles={{ body: { padding: 0, display: 'flex', flexDirection: 'column' } }}
-      >
+      <Drawer open={open} onClose={onClose} width={480}>
         {/* Video Area */}
-        <div style={{ width: '100%', height: 240, background: exercise.videoUrl ? '#0f0f0f' : '#F0EDF6', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+        <div className="relative shrink-0 h-60 w-full overflow-hidden" style={{ background: exercise.videoUrl ? '#0f0f0f' : '#F0EDF6' }}>
           {exercise.videoUrl ? (
             <iframe
               src={`https://www.youtube.com/embed/${exercise.videoUrl}?rel=0&modestbranding=1`}
@@ -68,91 +65,88 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
               height="100%"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              style={{ border: 'none', display: 'block' }}
+              className="border-0 block"
             />
           ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={52} />
+            <div className="flex h-full w-full items-center justify-center">
+              <Zap size={52} className="text-brand-300" />
             </div>
           )}
-          <Button
+          <button
             onClick={onClose}
-            size="small"
-            shape="circle"
-            icon={<X />}
-            style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.9)' }}
-          />
+            className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-white/90 shadow-sm hover:bg-white transition-colors"
+          >
+            <X size={14} />
+          </button>
         </div>
 
-        <div style={{ padding: 24, overflowY: 'auto', flex: 1 }}>
-          <Title level={3} style={{ marginTop: 0, marginBottom: 4, fontWeight: 700 }}>{exercise.name}</Title>
-          <Paragraph>{exercise.description}</Paragraph>
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          <h2 className="text-xl font-bold text-primary mb-1">{exercise.name}</h2>
+          <p className="text-sm text-secondary mb-4">{exercise.description}</p>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
-            {allTags.map((tag) => <Tag key={tag} style={{ fontSize: 11 }}>{tag}</Tag>)}
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {allTags.map((tag) => (
+              <Badge key={tag} type="pill-color" color="gray" size="sm">{tag}</Badge>
+            ))}
           </div>
 
           {patientPrescription ? (
-            <div style={{ marginBottom: 20, padding: 12, background: '#EDE7F6', border: '1px solid #6750A4', borderRadius: 8 }}>
-              <Text style={{ fontWeight: 600, color: '#6750A4', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: 8, fontSize: 12 }}>
-                Patient Prescription
-              </Text>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {prescriptionTag(`${patientPrescription.sets} Sets`)}
-                {prescriptionTag(`${patientPrescription.reps} Reps`)}
-                {patientPrescription.holdSecs > 0 && prescriptionTag(`${patientPrescription.holdSecs}s Hold`)}
-                {prescriptionTag(patientPrescription.frequency)}
+            <div className="mb-5 rounded-lg border border-brand-200 bg-brand-50 p-3">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-600">Patient Prescription</p>
+              <div className="flex flex-wrap gap-2">
+                <PrescriptionTag label={`${patientPrescription.sets} Sets`} />
+                <PrescriptionTag label={`${patientPrescription.reps} Reps`} />
+                {patientPrescription.holdSecs > 0 && <PrescriptionTag label={`${patientPrescription.holdSecs}s Hold`} />}
+                <PrescriptionTag label={patientPrescription.frequency} />
               </div>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-              {prescriptionTag(`${exercise.defaultSets} Sets`)}
-              {prescriptionTag(`${exercise.defaultReps} Reps`)}
-              {exercise.defaultHoldSecs > 0 && prescriptionTag(`${exercise.defaultHoldSecs}s Hold`)}
-              {prescriptionTag(exercise.defaultFrequency)}
+            <div className="mb-5 flex flex-wrap gap-2">
+              <PrescriptionTag label={`${exercise.defaultSets} Sets`} />
+              <PrescriptionTag label={`${exercise.defaultReps} Reps`} />
+              {exercise.defaultHoldSecs > 0 && <PrescriptionTag label={`${exercise.defaultHoldSecs}s Hold`} />}
+              <PrescriptionTag label={exercise.defaultFrequency} />
             </div>
           )}
 
-          <Divider style={{ marginBottom: 20 }} />
+          <Divider className="mb-5" />
 
-          <Text strong style={{ display: 'block', marginBottom: 12 }}>Instructions</Text>
-          <ol style={{ paddingLeft: 20, margin: 0, marginBottom: 20 }}>
+          <p className="mb-3 text-sm font-semibold text-primary">Instructions</p>
+          <ol className="pl-5 mb-5 space-y-1.5 list-decimal">
             {exercise.instructions.map((step, i) => (
-              <li key={i} style={{ marginBottom: 6 }}>
-                <Text>{step}</Text>
-              </li>
+              <li key={i} className="text-sm text-secondary">{step}</li>
             ))}
           </ol>
 
-          <Divider style={{ marginBottom: 20 }} />
+          <Divider className="mb-5" />
 
-          <Text strong style={{ display: 'block', marginBottom: 12, color: '#FB8C00' }}>Common Mistakes</Text>
-          <ul style={{ paddingLeft: 20, margin: 0, marginBottom: 8 }}>
+          <p className="mb-3 text-sm font-semibold text-warning-600">Common Mistakes</p>
+          <ul className="pl-5 space-y-1.5 list-disc">
             {exercise.commonMistakes.map((m, i) => (
-              <li key={i} style={{ marginBottom: 6 }}>
-                <Text>{m}</Text>
-              </li>
+              <li key={i} className="text-sm text-secondary">{m}</li>
             ))}
           </ul>
         </div>
 
         {/* Action bar */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E0E0E0', display: 'flex', gap: 12, flexShrink: 0 }}>
+        <div className="shrink-0 border-t border-secondary px-6 py-4 flex gap-3">
           {viewMode === 'full' && (
-            <Button icon={<Mic size={14} />} onClick={() => setAudioOpen(true)}>
+            <Button size="sm" color="secondary" iconLeading={Mic} onPress={() => setAudioOpen(true)}>
               Record Audio Cue
             </Button>
           )}
           {onAddToCurrentProgram && (
-            <Button type="primary" onClick={() => { onAddToCurrentProgram(); onClose(); }} style={{ flex: 1 }}>
+            <Button size="sm" color="primary" onPress={() => { onAddToCurrentProgram(); onClose(); }} className="flex-1">
               Add to This Program
             </Button>
           )}
           <Button
-            type={onAddToCurrentProgram ? 'default' : 'primary'}
-            icon={<List />}
-            onClick={() => setProgramSelectorOpen(true)}
-            style={{ flex: 1 }}
+            size="sm"
+            color={onAddToCurrentProgram ? 'secondary' : 'primary'}
+            iconLeading={List}
+            onPress={() => setProgramSelectorOpen(true)}
+            className="flex-1"
           >
             Add to a Program
           </Button>
@@ -167,31 +161,33 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
         onSave={(_blobUrl, _dur) => setAudioOpen(false)}
       />
 
-      {/* Program Selector Dialog */}
-      <Modal
-        open={programSelectorOpen}
-        onCancel={() => setProgramSelectorOpen(false)}
-        title="Add to a Program"
-        footer={[
-          <Button key="cancel" onClick={() => setProgramSelectorOpen(false)}>Cancel</Button>,
-          <Button key="add" type="primary" disabled={!selectedProgram} onClick={handleAddToProgram}>
-            Add to Program
-          </Button>,
-        ]}
-      >
-        <Paragraph type="secondary">
-          Select a program to add <strong>{exercise.name}</strong> to.
-        </Paragraph>
-        <Select
-          showSearch
-          placeholder="Search programs"
-          style={{ width: '100%' }}
-          value={selectedProgram?.id}
-          onChange={(val) => setSelectedProgram(mockPrograms.find((p) => p.id === val) ?? null)}
-          filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-          options={mockPrograms.map((p) => ({ value: p.id, label: p.name }))}
-        />
-      </Modal>
+      {/* Program Selector Modal */}
+      <ModalOverlay isOpen={programSelectorOpen} onOpenChange={(v) => { if (!v) { setProgramSelectorOpen(false); setSelectedProgram(null); } }}>
+        <Modal className="w-full max-w-sm">
+          <Dialog>
+            <div className="p-6">
+              <h2 className="text-lg font-semibold text-primary mb-1">Add to a Program</h2>
+              <p className="text-sm text-secondary mb-4">
+                Select a program to add <strong>{exercise.name}</strong> to.
+              </p>
+              <select
+                value={selectedProgram?.id ?? ''}
+                onChange={(e) => setSelectedProgram(mockPrograms.find((p) => p.id === e.target.value) ?? null)}
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 mb-5"
+              >
+                <option value="">Search programs…</option>
+                {mockPrograms.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+              <div className="flex justify-end gap-3">
+                <Button color="secondary" onPress={() => { setProgramSelectorOpen(false); setSelectedProgram(null); }}>Cancel</Button>
+                <Button color="primary" isDisabled={!selectedProgram} onPress={handleAddToProgram}>Add to Program</Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </>
   );
 }

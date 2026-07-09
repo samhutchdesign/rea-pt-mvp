@@ -1,14 +1,17 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Avatar, Button, Card, Input, Tag, Divider, Modal, App } from 'antd';
 import type { ComponentType } from 'react';
+import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { mockClinic, mockClinicLocations, mockEmployees, mockPatients } from '@/lib/mock-data';
 import type { ClinicLocation } from '@/lib/types';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
+import { Divider } from '@/components/ui/divider';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Building2, ChevronRight, Globe, Mail, MapPin, Pencil, Phone, Plus } from 'lucide-react';
-
-const { Title, Text } = Typography;
 
 const AVATAR_COLORS: Record<string, string> = {
   emp1: '#6750A4',
@@ -19,11 +22,8 @@ const AVATAR_COLORS: Record<string, string> = {
 
 const INITIAL_LOCATIONS: ClinicLocation[] = mockClinicLocations;
 
-const fieldLabel = (label: string) => <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>;
-
 export default function ClinicPage() {
   const router = useRouter();
-  const { message: messageApi } = App.useApp();
   const [editing, setEditing] = useState(false);
 
   const [form, setForm] = useState({
@@ -41,7 +41,7 @@ export default function ClinicPage() {
 
   const handleSave = () => {
     setEditing(false);
-    messageApi.success('Organization profile updated successfully!');
+    toast.success('Organization profile updated successfully!');
   };
 
   const handleAddLocation = () => {
@@ -66,10 +66,10 @@ export default function ClinicPage() {
     ]);
     setNewLocation('');
     setAddLocationOpen(false);
-    messageApi.success('Location added.');
+    toast.success('Location added.');
   };
 
-  const contactItems: { icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; label: string }[] = [
+  const contactItems: { icon: ComponentType<{ size?: number; className?: string }>; label: string }[] = [
     { icon: Phone, label: mockClinic.phone },
     { icon: Mail, label: mockClinic.email },
     { icon: Globe, label: mockClinic.website },
@@ -79,157 +79,212 @@ export default function ClinicPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Organization Profile' }]} />
-      <div style={{ padding: '32px', maxWidth: 900 }}>
+      <div className="p-8 max-w-[900px]">
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 32 }}>
-          <Avatar style={{ width: 72, height: 72, background: '#6750A4', color: '#fff', fontWeight: 700, fontSize: 24, flexShrink: 0 }}>
-            {mockClinic.logoInitials}
-          </Avatar>
-          <div style={{ flexGrow: 1 }}>
-            <Title level={2} style={{ marginTop: 0, marginBottom: 4 }}>{mockClinic.name}</Title>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <MapPin size={15} />
-                <Text type="secondary">{locations.length} location{locations.length !== 1 ? 's' : ''}</Text>
+        <div className="flex items-center gap-6 mb-8">
+          <Avatar initials={mockClinic.logoInitials} size="xl" className="shrink-0" />
+          <div className="grow">
+            <h2 className="text-xl font-semibold text-primary mt-0 mb-1">{mockClinic.name}</h2>
+            <div className="flex gap-4 flex-wrap">
+              <div className="flex items-center gap-1">
+                <MapPin size={15} className="text-tertiary" />
+                <span className="text-tertiary text-sm">{locations.length} location{locations.length !== 1 ? 's' : ''}</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Building2 size={15} />
-                <Text type="secondary">{mockEmployees.length} physiotherapists</Text>
+              <div className="flex items-center gap-1">
+                <Building2 size={15} className="text-tertiary" />
+                <span className="text-tertiary text-sm">{mockEmployees.length} physiotherapists</span>
               </div>
             </div>
           </div>
           {!editing ? (
-            <Button icon={<Pencil />} onClick={() => setEditing(true)}>Edit Organization</Button>
+            <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => setEditing(true)}>
+              Edit Organization
+            </Button>
           ) : (
-            <div style={{ display: 'flex', gap: 8 }}>
-              <Button onClick={() => setEditing(false)}>Cancel</Button>
-              <Button type="primary" onClick={handleSave}>Save Changes</Button>
+            <div className="flex gap-2">
+              <Button color="secondary" size="sm" onPress={() => setEditing(false)}>Cancel</Button>
+              <Button color="primary" size="sm" onPress={handleSave}>Save Changes</Button>
             </div>
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: 24 }}>
+        <div className="flex gap-6">
           {/* Left column */}
-          <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <Card>
-              <Text strong style={{ display: 'block', marginBottom: 16 }}>Organization Information</Text>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div>{fieldLabel('Organization Name')}<Input value={form.name} readOnly={!editing} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-                <div>{fieldLabel('Primary Address')}<Input value={form.address} readOnly={!editing} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
-                <div style={{ display: 'flex', gap: 16 }}>
-                  <div style={{ flex: 1 }}>{fieldLabel('Phone')}<Input value={form.phone} readOnly={!editing} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-                  <div style={{ flex: 1 }}>{fieldLabel('Email')}<Input value={form.email} readOnly={!editing} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+          <div className="flex-[3] flex flex-col gap-4">
+            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+              <span className="block font-semibold text-primary mb-4">Organization Information</span>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <div className="mb-1 text-sm text-secondary">Organization Name</div>
+                  <Input value={form.name} isReadOnly={!editing} onChange={(v) => setForm({ ...form, name: v })} />
                 </div>
-                <div>{fieldLabel('Website')}<Input value={form.website} readOnly={!editing} onChange={(e) => setForm({ ...form, website: e.target.value })} /></div>
-                <div>{fieldLabel('About the Organization')}<Input.TextArea rows={4} value={form.description} readOnly={!editing} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+                <div>
+                  <div className="mb-1 text-sm text-secondary">Primary Address</div>
+                  <Input value={form.address} isReadOnly={!editing} onChange={(v) => setForm({ ...form, address: v })} />
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <div className="mb-1 text-sm text-secondary">Phone</div>
+                    <Input value={form.phone} isReadOnly={!editing} onChange={(v) => setForm({ ...form, phone: v })} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="mb-1 text-sm text-secondary">Email</div>
+                    <Input value={form.email} isReadOnly={!editing} onChange={(v) => setForm({ ...form, email: v })} />
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-1 text-sm text-secondary">Website</div>
+                  <Input value={form.website} isReadOnly={!editing} onChange={(v) => setForm({ ...form, website: v })} />
+                </div>
+                <div>
+                  <div className="mb-1 text-sm text-secondary">About the Organization</div>
+                  <textarea
+                    rows={4}
+                    value={form.description}
+                    readOnly={!editing}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary placeholder:text-placeholder outline-none resize-none focus:ring-2 focus:ring-brand"
+                  />
+                </div>
               </div>
-            </Card>
+            </div>
 
             {/* Locations */}
-            <Card>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Text strong>Locations</Text>
-                <Button type="text" size="small" icon={<Plus />} onClick={() => setAddLocationOpen(true)}>
+            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+              <div className="flex justify-between items-center mb-4">
+                <span className="font-semibold text-primary">Locations</span>
+                <Button color="tertiary" size="xs" iconLeading={Plus} onPress={() => setAddLocationOpen(true)}>
                   Add Location
                 </Button>
               </div>
               {locations.length === 0 ? (
-                <Text type="secondary">No locations added yet.</Text>
+                <span className="text-tertiary text-sm">No locations added yet.</span>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div className="flex flex-col">
                   {locations.map((loc, i) => (
                     <div key={loc.id}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
-                        <MapPin size={18} />
+                      <div className="flex items-center gap-3 py-2.5">
+                        <MapPin size={18} className="text-tertiary shrink-0" />
                         <div
-                          style={{ flexGrow: 1, cursor: 'pointer' }}
+                          className="grow cursor-pointer"
                           onClick={() => router.push(`/clinic/${loc.id}`)}
                         >
-                          <Text strong style={{ display: 'block' }}>{loc.name}</Text>
+                          <span className="block font-semibold text-primary text-sm">{loc.name}</span>
                           {loc.regionCountry && (
-                            <Text type="secondary" style={{ fontSize: 12 }}>{loc.city}, {loc.regionCountry}</Text>
+                            <span className="text-tertiary text-xs">{loc.city}, {loc.regionCountry}</span>
                           )}
                         </div>
                         <ChevronRight
-                          style={{ fontSize: 14, color: '#49454F', cursor: 'pointer' }}
+                          size={14}
+                          className="text-tertiary cursor-pointer"
                           onClick={() => router.push(`/clinic/${loc.id}`)}
                         />
                       </div>
-                      {i < locations.length - 1 && <Divider style={{ margin: 0 }} />}
+                      {i < locations.length - 1 && <Divider />}
                     </div>
                   ))}
                 </div>
               )}
-            </Card>
+            </div>
 
             {/* Contact summary */}
             {!editing && (
-              <Card>
-                <Text strong style={{ display: 'block', marginBottom: 16 }}>Contact</Text>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+                <span className="block font-semibold text-primary mb-4">Contact</span>
+                <div className="flex flex-col gap-3">
                   {contactItems.map(({ icon: Icon, label }) => (
-                    <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <Icon size={16} color="#49454F" style={{ marginTop: 2, flexShrink: 0 }} />
-                      <Text type="secondary">{label}</Text>
+                    <div key={label} className="flex items-start gap-3">
+                      <Icon size={16} className="text-tertiary mt-0.5 shrink-0" />
+                      <span className="text-tertiary text-sm">{label}</span>
                     </div>
                   ))}
                 </div>
-              </Card>
+              </div>
             )}
           </div>
 
           {/* Right: Team */}
-          <div style={{ flex: 2 }}>
-            <Card style={{ height: '100%' }}>
-              <Text strong style={{ display: 'block', marginBottom: 16 }}>Team ({mockEmployees.length} employees)</Text>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="flex-[2]">
+            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6 h-full">
+              <span className="block font-semibold text-primary mb-4">Team ({mockEmployees.length} employees)</span>
+              <div className="flex flex-col">
                 {mockEmployees.map((emp, i) => {
                   const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
                   const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
                   return (
                     <div key={emp.id}>
                       <div
-                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 4px', cursor: 'pointer', borderRadius: 8 }}
+                        className="flex items-center gap-3 py-3 px-1 cursor-pointer rounded-lg hover:bg-secondary_alt transition-colors"
                         onClick={() => router.push(`/employees/${emp.id}`)}
                       >
-                        <Avatar style={{ width: 40, height: 40, background: bgColor + '18', color: bgColor, fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
+                          style={{ background: bgColor + '18', color: bgColor }}
+                        >
                           {emp.avatarInitials}
-                        </Avatar>
-                        <div style={{ flexGrow: 1, minWidth: 0 }}>
-                          <Text strong ellipsis style={{ display: 'block' }}>{emp.firstName} {emp.lastName}</Text>
-                          <Text type="secondary" ellipsis style={{ fontSize: 12 }}>{emp.credentials} · {emp.title}</Text>
                         </div>
-                        <Tag style={{ background: '#EDE7F6', color: '#6750A4', fontSize: 11, fontWeight: 600, border: 'none' }}>{`${patientCount}p`}</Tag>
+                        <div className="grow min-w-0">
+                          <span className="block font-semibold text-primary text-sm truncate">{emp.firstName} {emp.lastName}</span>
+                          <span className="text-tertiary text-xs truncate">{emp.credentials} · {emp.title}</span>
+                        </div>
+                        <span
+                          className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
+                          style={{ background: '#EDE7F6', color: '#6750A4' }}
+                        >
+                          {`${patientCount}p`}
+                        </span>
                       </div>
-                      {i < mockEmployees.length - 1 && <Divider style={{ margin: 0 }} />}
+                      {i < mockEmployees.length - 1 && <Divider />}
                     </div>
                   );
                 })}
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Add Location Dialog */}
-      <Modal
-        open={addLocationOpen}
-        onCancel={() => { setAddLocationOpen(false); setNewLocation(''); }}
-        title="Add Location"
-        footer={[
-          <Button key="cancel" onClick={() => { setAddLocationOpen(false); setNewLocation(''); }}>Cancel</Button>,
-          <Button key="add" type="primary" disabled={!newLocation.trim()} onClick={handleAddLocation}>Add Location</Button>,
-        ]}
+      <ModalOverlay
+        isOpen={addLocationOpen}
+        onOpenChange={(open) => { if (!open) { setAddLocationOpen(false); setNewLocation(''); } }}
       >
-        {fieldLabel('Location')}
-        <Input
-          placeholder="e.g. Toronto, ON, Canada"
-          autoFocus
-          value={newLocation}
-          onChange={(e) => setNewLocation(e.target.value)}
-          onPressEnter={handleAddLocation}
-        />
-      </Modal>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-full min-w-[400px]">
+              <h3 className="text-lg font-semibold text-primary mb-4">Add Location</h3>
+              <div
+                className="mb-4"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleAddLocation(); }}
+              >
+                <div className="mb-1 text-sm text-secondary">Location</div>
+                <Input
+                  placeholder="e.g. Toronto, ON, Canada"
+                  value={newLocation}
+                  onChange={(v) => setNewLocation(v)}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  color="secondary"
+                  size="sm"
+                  onPress={() => { setAddLocationOpen(false); setNewLocation(''); }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  size="sm"
+                  isDisabled={!newLocation.trim()}
+                  onPress={handleAddLocation}
+                >
+                  Add Location
+                </Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </>
   );
 }

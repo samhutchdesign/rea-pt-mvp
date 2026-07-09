@@ -1,10 +1,9 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Select, Card, InputNumber } from 'antd';
 import TopBar from '@/components/layout/TopBar';
+import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
 import { useState } from 'react';
-
-const { Title, Text } = Typography;
 
 const CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
 const SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
@@ -13,7 +12,31 @@ const MUSCLES = ['Levator Ani', 'Coccygeus', 'Transverse Abdominis', 'Glutes', '
 const BODY_PARTS = ['Pelvis', 'Core', 'Hip', 'Spine', 'Knee'];
 const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
 
-const fieldLabel = (label: string) => <div style={{ marginBottom: 4, fontSize: 13 }}>{label}</div>;
+const fieldLabel = (label: string) => <div className="mb-1 text-xs text-secondary">{label}</div>;
+
+function MultiSelect({ options, selected, onChange }: { options: string[]; selected: string[]; onChange: (vals: string[]) => void }) {
+  const toggle = (val: string) => {
+    onChange(selected.includes(val) ? selected.filter((x) => x !== val) : [...selected, val]);
+  };
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => (
+        <button
+          key={opt}
+          type="button"
+          onClick={() => toggle(opt)}
+          className={`rounded-md px-2.5 py-1 text-xs font-medium border transition-colors ${
+            selected.includes(opt)
+              ? 'bg-brand-600 text-white border-brand-600'
+              : 'bg-primary text-secondary border-secondary hover:bg-secondary'
+          }`}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function NewExercisePage() {
   const router = useRouter();
@@ -43,70 +66,128 @@ export default function NewExercisePage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: 'New Exercise' }]} />
-      <div style={{ paddingTop: 56, padding: '32px', maxWidth: 700 }}>
-        <Title level={2} style={{ marginTop: 0, marginBottom: 24 }}>New Exercise</Title>
+      <div className="p-8 max-w-[700px]">
+        <h2 className="mt-0 mb-6 text-2xl font-bold text-primary">New Exercise</h2>
 
-        <Card style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <Text strong>Basic Info</Text>
-            <div>{fieldLabel('Exercise Name')}<Input value={name} onChange={(e) => setName(e.target.value)} /></div>
-            <div>{fieldLabel('Description')}<Input.TextArea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} /></div>
-            <div>{fieldLabel('Instructions (one step per line)')}<Input.TextArea rows={4} value={instructions} onChange={(e) => setInstructions(e.target.value)} /></div>
-            <div>{fieldLabel('Common Mistakes (one per line)')}<Input.TextArea rows={3} value={mistakes} onChange={(e) => setMistakes(e.target.value)} /></div>
-          </div>
-        </Card>
-
-        <Card style={{ marginBottom: 24 }}>
-          <Text strong style={{ display: 'block', marginBottom: 16 }}>Defaults</Text>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <div>{fieldLabel('Sets')}<InputNumber min={0} value={sets} onChange={(v) => setSets(v ?? 0)} style={{ width: 100 }} /></div>
-            <div>{fieldLabel('Reps')}<InputNumber min={0} value={reps} onChange={(v) => setReps(v ?? 0)} style={{ width: 100 }} /></div>
-            <div>{fieldLabel('Hold (sec)')}<InputNumber min={0} value={hold} onChange={(v) => setHold(v ?? 0)} style={{ width: 100 }} /></div>
+        {/* Basic Info */}
+        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+          <div className="flex flex-col gap-5">
+            <span className="text-sm font-semibold text-primary">Basic Info</span>
             <div>
-              {fieldLabel('Frequency')}
-              <Select value={frequency} onChange={setFrequency} style={{ minWidth: 160 }} options={FREQUENCIES.map((f) => ({ value: f, label: f }))} />
+              {fieldLabel('Exercise Name')}
+              <Input value={name} onChange={(val) => setName(val)} placeholder="Exercise name" />
+            </div>
+            <div>
+              {fieldLabel('Description')}
+              <textarea
+                rows={2}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+              />
+            </div>
+            <div>
+              {fieldLabel('Instructions (one step per line)')}
+              <textarea
+                rows={4}
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+              />
+            </div>
+            <div>
+              {fieldLabel('Common Mistakes (one per line)')}
+              <textarea
+                rows={3}
+                value={mistakes}
+                onChange={(e) => setMistakes(e.target.value)}
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+              />
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <Text strong>Tags</Text>
+        {/* Defaults */}
+        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+          <span className="mb-4 block text-sm font-semibold text-primary">Defaults</span>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div>
+              {fieldLabel('Sets')}
+              <input
+                type="number"
+                min={0}
+                value={sets}
+                onChange={(e) => setSets(Number(e.target.value))}
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+              />
+            </div>
+            <div>
+              {fieldLabel('Reps')}
+              <input
+                type="number"
+                min={0}
+                value={reps}
+                onChange={(e) => setReps(Number(e.target.value))}
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+              />
+            </div>
+            <div>
+              {fieldLabel('Hold (sec)')}
+              <input
+                type="number"
+                min={0}
+                value={hold}
+                onChange={(e) => setHold(Number(e.target.value))}
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+              />
+            </div>
+            <div>
+              {fieldLabel('Frequency')}
+              <select
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+              >
+                {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+          <div className="flex flex-col gap-5">
+            <span className="text-sm font-semibold text-primary">Tags</span>
             {tagFields.map(({ label, options, selected, set }) => (
               <div key={label}>
                 {fieldLabel(label)}
-                <Select
-                  mode="multiple"
-                  style={{ width: '100%' }}
-                  value={selected}
-                  onChange={(vals) => set(vals)}
-                  options={options.map((o) => ({ value: o, label: o }))}
-                />
+                <MultiSelect options={options} selected={selected} onChange={set} />
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
-        <Card style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <Text strong>Media</Text>
+        {/* Media */}
+        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+          <div className="flex flex-col gap-5">
+            <span className="text-sm font-semibold text-primary">Media</span>
             <div>
               {fieldLabel('YouTube URL')}
               <Input
                 placeholder="https://www.youtube.com/watch?v=..."
                 value={youtubeUrl}
-                onChange={(e) => setYoutubeUrl(e.target.value)}
+                onChange={(val) => setYoutubeUrl(val)}
               />
             </div>
-            <div style={{ display: 'flex', gap: 16 }}>
-              <Button size="small">Upload Video / Image</Button>
+            <div className="flex gap-4">
+              <Button color="secondary" size="xs">Upload Video / Image</Button>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
-          <Button onClick={() => router.push('/exercises')}>Cancel</Button>
-          <Button type="primary" onClick={() => router.push('/exercises')}>Save Exercise</Button>
+        <div className="flex justify-end gap-4">
+          <Button color="secondary" size="sm" onPress={() => router.push('/exercises')}>Cancel</Button>
+          <Button color="primary" size="sm" onPress={() => router.push('/exercises')}>Save Exercise</Button>
         </div>
       </div>
     </>
