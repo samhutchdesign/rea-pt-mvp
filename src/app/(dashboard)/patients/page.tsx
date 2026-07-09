@@ -138,9 +138,7 @@ export default function PatientsPage() {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-display-xs font-semibold text-primary" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
-            Patients
-          </h1>
+          <h1 className="text-xl font-semibold text-primary m-0">Patients</h1>
           <Button color="primary" iconLeading={Plus} onPress={() => setAddOpen(true)}>
             Add New Patient
           </Button>

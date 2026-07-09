@@ -83,7 +83,7 @@ export default function ProgramsPage() {
 
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-primary m-0">Programs</h2>
+          <h2 className="text-xl font-semibold text-primary m-0">Programs</h2>
           <Button color="primary" size="md" iconLeading={Plus} onPress={() => router.push('/programs/new')}>
             Create New Program
           </Button>

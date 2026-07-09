@@ -263,7 +263,7 @@ export default function ExercisesPage() {
               </button>
             )}
             <div>
-              <h2 className="m-0 text-2xl font-bold text-primary">{viewMode === 'mvp' ? 'Exercises' : (specialty ? specialty.name : 'Exercises')}</h2>
+              <h2 className="m-0 text-xl font-semibold text-primary">{viewMode === 'mvp' ? 'Exercises' : (specialty ? specialty.name : 'Exercises')}</h2>
               {specialty && viewMode === 'full' && <p className="text-xs text-secondary">{specialty.apta}</p>}
             </div>
           </div>
