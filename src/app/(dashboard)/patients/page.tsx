@@ -1,17 +1,19 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Input, Button, Card, Tag, Avatar, Tabs, Select, App } from 'antd';
-import type { ComponentType } from 'react';
+import { App } from 'antd';
 import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
+import { Button } from '@/components/base/buttons/button';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { Badge } from '@/components/base/badges/badges';
+import { Input } from '@/components/base/input/input';
+import { cx } from '@/utils/cx';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
 import { useViewMode } from '@/lib/viewModeStore';
 import type { Patient } from '@/lib/types';
-import { Calendar, MapPin, Plus, RefreshCw, RotateCcw, Search, User } from 'lucide-react';
-
-const { Title, Text } = Typography;
+import { Calendar, Map01, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
 
 function computeEstimatedNext(patientId: string): number {
   const sessions = mockChartSessions[patientId] ?? [];
@@ -67,7 +69,6 @@ export default function PatientsPage() {
   const yourEmpId = useYourEmpId();
   const viewMode = useViewMode();
 
-  // Apply local archived overrides; hide demo-only profiles in MVP mode
   const MVP_HIDDEN = new Set(['pat8', 'pat1']);
   const patients = scopedPatients
     .filter((p) => !(viewMode === 'mvp' && MVP_HIDDEN.has(p.id)))
@@ -82,7 +83,6 @@ export default function PatientsPage() {
   const showYoursTab = yourEmpId !== null;
   const tabList = showYoursTab ? [yourPatients, allActive, archived] : [allActive, archived];
 
-  // Reset to tab 0 when role changes and tab count changes to avoid out-of-range index
   useEffect(() => { setTab(0); }, [showYoursTab]);
   const currentList = tabList[tab] ?? allActive;
 
@@ -118,114 +118,149 @@ export default function PatientsPage() {
   const searchPlaceholders = showYoursTab
     ? ['Search your patients…', 'Search all patients…', 'Search archived patients…']
     : ['Search all patients…', 'Search archived patients…'];
-  const empty = displayed.length === 0;
+
   const emptyMessages = showYoursTab
     ? ['No patients assigned to you yet', 'No active patients found', 'No archived patients found']
     : ['No active patients found', 'No archived patients found'];
 
   const tabItems = [
-    ...(showYoursTab ? [{ key: '0', label: `Your Patients (${yourPatients.length})` }] : []),
-    { key: showYoursTab ? '1' : '0', label: `All (${allActive.length})` },
-    { key: showYoursTab ? '2' : '1', label: `Archived (${archived.length})` },
+    ...(showYoursTab ? [{ key: 0, label: `Your Patients`, count: yourPatients.length }] : []),
+    { key: showYoursTab ? 1 : 0, label: 'All', count: allActive.length },
+    { key: showYoursTab ? 2 : 1, label: 'Archived', count: archived.length },
   ];
 
   const archivedTabIndex = showYoursTab ? 2 : 1;
+  const empty = displayed.length === 0;
 
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Patients' }]} />
-      <div style={{ padding: '32px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <Title level={2} style={{ margin: 0 }}>Patients</Title>
-          <Button type="primary" icon={<Plus />} onClick={() => setAddOpen(true)}>
+      <div className="px-8 py-8">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-display-xs font-semibold text-primary" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
+            Patients
+          </h1>
+          <Button color="primary" iconLeading={Plus} onPress={() => setAddOpen(true)}>
             Add New Patient
           </Button>
         </div>
 
-        <Tabs
-          activeKey={String(tab)}
-          onChange={(k) => { setTab(Number(k)); setSearch(''); }}
-          style={{ marginBottom: 24 }}
-          items={tabItems}
-        />
+        {/* Tabs */}
+        <div className="flex gap-0 border-b border-secondary mb-6">
+          {tabItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => { setTab(item.key); setSearch(''); }}
+              className={cx(
+                'flex items-center gap-2 px-1 pb-3 pt-0 mr-6 text-sm font-semibold border-b-2 -mb-px transition-colors duration-100',
+                tab === item.key
+                  ? 'border-brand-600 text-brand-700'
+                  : 'border-transparent text-tertiary hover:text-secondary hover:border-secondary'
+              )}
+            >
+              {item.label}
+              <span className={cx(
+                'inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
+                tab === item.key
+                  ? 'bg-utility-brand-50 text-utility-brand-700 ring-utility-brand-200'
+                  : 'bg-utility-neutral-50 text-utility-neutral-600 ring-utility-neutral-200'
+              )}>
+                {item.count}
+              </span>
+            </button>
+          ))}
+        </div>
 
-        <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+        {/* Search + Sort */}
+        <div className="flex gap-3 mb-6">
           <Input
+            icon={SearchMd}
             placeholder={searchPlaceholders[tab]}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 340 }}
-            prefix={<Search style={{ color: '#9E9E9E' }} />}
+            onChange={setSearch}
+            size="sm"
+            wrapperClassName="max-w-xs"
           />
           {tab !== archivedTabIndex && (
-            <Select
+            <select
               value={sort}
-              onChange={setSort}
-              style={{ minWidth: 140 }}
-              options={SORT_OPTIONS}
-            />
+              onChange={(e) => setSort(e.target.value)}
+              className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-medium text-secondary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 transition-shadow"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
           )}
         </div>
 
+        {/* Patient list */}
         {empty ? (
-          <div style={{ textAlign: 'center', padding: '64px 0' }}>
-            <User size={48} />
-            <div><Text type="secondary">{emptyMessages[tab]}</Text></div>
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <div className="flex items-center justify-center size-14 rounded-full bg-secondary">
+              <User01 className="size-7 text-quaternary" />
+            </div>
+            <p className="text-sm text-secondary">{emptyMessages[tab]}</p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {displayed.map((patient) => (
-              <Card
-                key={patient.id}
-                hoverable
-                styles={{ body: { padding: 0 } }}
-                style={{ opacity: patient.archived ? 0.75 : 1 }}
-                onClick={() => router.push(`/patients/${patient.id}/overview`)}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px' }}>
-                  <Avatar style={{ background: '#EDE7F6', color: '#6750A4', fontWeight: 600, width: 44, height: 44 }}>
-                    {patient.avatarInitials}
-                  </Avatar>
-                  <div style={{ flexGrow: 1, minWidth: 0 }}>
-                    <Text strong style={{ display: 'block' }}>{patient.firstName} {patient.lastName}</Text>
-                    <Text type="secondary">{patient.email}</Text>
-                    {conditionChip(patient) && (
-                      <div style={{ marginTop: 6 }}>
-                        <Tag style={{ background: '#EDE7F6', color: '#6750A4', border: 'none', fontSize: '0.72rem', fontWeight: 500 }}>
-                          {conditionChip(patient)}
-                        </Tag>
+          <div className="flex flex-col gap-3">
+            {displayed.map((patient) => {
+              const { lastSeen, count } = sessionInfo(patient);
+              const condition = conditionChip(patient);
+              return (
+                <div
+                  key={patient.id}
+                  onClick={() => router.push(`/patients/${patient.id}/overview`)}
+                  className={cx(
+                    'flex items-center gap-5 px-6 py-5 bg-primary rounded-xl border border-secondary shadow-xs cursor-pointer',
+                    'hover:bg-primary_hover transition-colors duration-100',
+                    patient.archived && 'opacity-60'
+                  )}
+                >
+                  <Avatar initials={patient.avatarInitials} size="md" />
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-primary">
+                      {patient.firstName} {patient.lastName}
+                    </p>
+                    <p className="text-sm text-tertiary mt-0.5">{patient.email}</p>
+                    {condition && (
+                      <div className="mt-2">
+                        <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
                       </div>
                     )}
                   </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                    {(() => {
-                      const { lastSeen, count } = sessionInfo(patient);
-                      const rows: { icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; text: string }[] = [
-                        { icon: MapPin, text: patient.location },
-                        { icon: Calendar, text: lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet' },
-                        { icon: RefreshCw, text: count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—' },
-                      ];
-                      return rows.map(({ icon: Icon, text }) => (
-                        <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Icon size={12} color={'#BDBDBD'} />
-                          <Text type="secondary" style={{ fontSize: 12 }}>{text}</Text>
-                        </div>
-                      ));
-                    })()}
+
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <Map01 className="size-3.5 text-quaternary" />
+                      <span className="text-xs text-tertiary">{patient.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="size-3.5 text-quaternary" />
+                      <span className="text-xs text-tertiary">
+                        {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <RefreshCw01 className="size-3.5 text-quaternary" />
+                      <span className="text-xs text-tertiary">
+                        {count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—'}
+                      </span>
+                    </div>
                     {tab === archivedTabIndex && (
-                      <Button
-                        size="small"
-                        icon={<RotateCcw />}
-                        onClick={(e) => { e.stopPropagation(); restore(patient); }}
-                        style={{ marginTop: 4 }}
-                      >
-                        Restore
-                      </Button>
+                      <div onClick={(e) => e.stopPropagation()} className="mt-1">
+                        <Button size="xs" color="secondary" iconLeading={RefreshCcw01} onPress={() => restore(patient)}>
+                          Restore
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>
-              </Card>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
