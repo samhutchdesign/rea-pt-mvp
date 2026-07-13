@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <DemoRoleBar />
       <div className="flex min-h-screen pt-10">
         <Sidebar />
-        <main className="ml-20 flex-1 min-h-screen pt-14 bg-secondary_alt">
+        <main className="ml-20 flex-1 min-w-0 min-h-screen pt-14 bg-secondary_alt overflow-x-hidden">
           {children}
         </main>
       </div>
