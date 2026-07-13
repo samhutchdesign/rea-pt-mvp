@@ -12,6 +12,8 @@ import { cx } from '@/utils/cx';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
 import { useViewMode } from '@/lib/viewModeStore';
+import { useDataState } from '@/lib/dataStateStore';
+import { EmptyState } from '@/components/ui/empty-state';
 import type { Patient } from '@/lib/types';
 import { Calendar, Map01, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
 
@@ -58,6 +60,7 @@ const SORT_OPTIONS = [
 
 export default function PatientsPage() {
   const router = useRouter();
+  const dataState = useDataState();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
   const [sort, setSort] = useState('newest');
@@ -130,6 +133,19 @@ export default function PatientsPage() {
 
   const archivedTabIndex = showYoursTab ? 2 : 1;
   const empty = displayed.length === 0;
+
+  if (dataState === 'empty') {
+    return (
+      <>
+        <TopBar breadcrumbs={[{ label: 'All Patients' }]} />
+        <EmptyState
+          icon={User01}
+          title="No patients yet"
+          description="Create your organization to start managing patients and tracking their care."
+        />
+      </>
+    );
+  }
 
   return (
     <>

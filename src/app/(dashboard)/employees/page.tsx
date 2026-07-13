@@ -9,6 +9,8 @@ import type { Employee } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
+import { useDataState } from '@/lib/dataStateStore';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -20,6 +22,7 @@ const AVATAR_COLORS: Record<string, string> = {
 
 export default function EmployeesPage() {
   const router = useRouter();
+  const dataState = useDataState();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('0');
   const { employees: scopedEmployees } = useLocationScope();
@@ -48,6 +51,19 @@ export default function EmployeesPage() {
 
   const empty = displayed.length === 0;
 
+  if (dataState === 'empty') {
+    return (
+      <>
+        <TopBar breadcrumbs={[{ label: 'Employees' }]} />
+        <EmptyState
+          icon={Users}
+          title="No team members yet"
+          description="Create your organization to start building your team and managing staff access."
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Employees' }]} />
@@ -59,20 +75,28 @@ export default function EmployeesPage() {
 
         <div className="flex border-b border-secondary mb-6">
           {[
-            { key: '0', label: `Active (${activeEmployees.length})` },
-            { key: '1', label: `Archived (${archivedEmployees.length})` },
-          ].map(({ key, label }) => (
+            { key: '0', label: 'Active', count: activeEmployees.length },
+            { key: '1', label: 'Archived', count: archivedEmployees.length },
+          ].map(({ key, label, count }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
               className={cx(
-                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                'flex items-center gap-2 px-1 pb-3 pt-0 mr-6 text-sm font-semibold border-b-2 -mb-px transition-colors duration-100',
                 tab === key
                   ? 'border-brand-600 text-brand-700'
-                  : 'border-transparent text-tertiary hover:text-secondary'
+                  : 'border-transparent text-tertiary hover:text-secondary hover:border-secondary'
               )}
             >
               {label}
+              <span className={cx(
+                'inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
+                tab === key
+                  ? 'bg-utility-brand-50 text-utility-brand-700 ring-utility-brand-200'
+                  : 'bg-utility-neutral-50 text-utility-neutral-600 ring-utility-neutral-200'
+              )}>
+                {count}
+              </span>
             </button>
           ))}
         </div>

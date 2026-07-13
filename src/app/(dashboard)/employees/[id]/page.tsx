@@ -310,21 +310,31 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         {/* Tabs */}
         <div className="flex border-b border-secondary mb-6">
           {[
-            { key: '0', label: 'Overview' },
-            { key: '1', label: `Patients (${assignedPatients.length})` },
-            { key: '2', label: 'Details' },
-          ].map(({ key, label }) => (
+            { key: '0', label: 'Overview', count: null },
+            { key: '1', label: 'Patients', count: assignedPatients.length },
+            { key: '2', label: 'Details', count: null },
+          ].map(({ key, label, count }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
               className={cx(
-                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                'flex items-center gap-2 px-1 pb-3 pt-0 mr-6 text-sm font-semibold border-b-2 -mb-px transition-colors duration-100',
                 tab === key
                   ? 'border-brand-600 text-brand-700'
-                  : 'border-transparent text-tertiary hover:text-secondary'
+                  : 'border-transparent text-tertiary hover:text-secondary hover:border-secondary'
               )}
             >
               {label}
+              {count !== null && (
+                <span className={cx(
+                  'inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
+                  tab === key
+                    ? 'bg-utility-brand-50 text-utility-brand-700 ring-utility-brand-200'
+                    : 'bg-utility-neutral-50 text-utility-neutral-600 ring-utility-neutral-200'
+                )}>
+                  {count}
+                </span>
+              )}
             </button>
           ))}
         </div>
