@@ -162,7 +162,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           <h3 className="text-lg font-semibold text-primary m-0">{program.name}</h3>
           <p className="text-sm text-secondary mt-0.5">
             {completedSessions} of {totalSessions} sessions
-            {hep.programAssignedAt && (
+            {viewMode === 'full' && hep.programAssignedAt && (
               <span className="ml-3 text-xs text-tertiary">Assigned {formatDate(hep.programAssignedAt)}</span>
             )}
           </p>
@@ -190,7 +190,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
       </div>
 
       {/* HEP History */}
-      {hep.hepHistory.length > 0 && (
+      {viewMode === 'full' && hep.hepHistory.length > 0 && (
         <div className="mt-10">
           <h4 className="text-sm font-semibold text-primary mb-3">Previous Programs</h4>
           <div className="flex flex-col gap-2">
