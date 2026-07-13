@@ -1,4 +1,4 @@
-import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic, ClinicLocation, HepHistoryEntry } from './types';
+import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic, ClinicLocation, HepHistoryEntry, ExerciseComment } from './types';
 
 export const mockPhysio: Physio = {
   id: 'p1',
@@ -3374,7 +3374,7 @@ export const mockNotifications: Notification[] = [
   },
 ];
 
-// unused export kept for reference
+// patient-level comments — Full version only
 const _mockPatientComments = {
   pat1: [
     { id: 'p1c1', patientId: 'pat1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Progress letter sent to GP Dr. Patel. Margaret is on track for discharge at session 6 — anticipate no extension needed.', createdAt: '2026-05-22T09:15:00', pinned: true },
@@ -3471,7 +3471,7 @@ const _mockPatientComments = {
   ],
 };
 
-const _mockExerciseComments = {
+export const mockExerciseComments: Record<string, ExerciseComment[]> = {
   ex1: [
     { id: 'e1c1', exerciseId: 'ex1', authorId: 'emp1', authorName: 'Emily Chen', authorInitials: 'EC', content: 'Cue patients to place one hand on chest and one on belly — if the chest hand rises first, they\'re compensating. The belly should lead.', createdAt: '2026-04-15T10:00:00', pinned: true },
     { id: 'e1c2', exerciseId: 'ex1', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Great as a session opener for anxious patients. I do 5 rounds together before starting any manual work — noticeably lowers tone.', createdAt: '2026-04-22T09:30:00', pinned: false },

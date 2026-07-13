@@ -112,6 +112,17 @@ export interface Program {
   createdAt: string;
 }
 
+export interface ExerciseComment {
+  id: string;
+  exerciseId: string;
+  authorId: string;
+  authorName: string;
+  authorInitials: string;
+  content: string;
+  createdAt: string;
+  pinned: boolean;
+}
+
 export interface HepHistoryEntry {
   id: string;
   programId: string;

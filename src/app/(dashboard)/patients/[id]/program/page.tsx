@@ -3,11 +3,12 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/base/buttons/button';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
-import { mockPatients, mockExercises, mockPrograms, mockChartSessions } from '@/lib/mock-data';
+import { mockPatients, mockExercises, mockPrograms, mockChartSessions, mockExerciseComments } from '@/lib/mock-data';
 import { useHepState } from '@/lib/patientHepStore';
 import type { Exercise, ProgramExercise, HepHistoryEntry, Program } from '@/lib/types';
 import { useViewMode } from '@/lib/viewModeStore';
-import { ChevronDown, ChevronUp, Eye, Pencil, Send, Zap } from 'lucide-react';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { ChevronDown, ChevronUp, Eye, Pencil, Pin, Send, Zap } from 'lucide-react';
 
 function formatDate(iso: string): string {
   return new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -24,43 +25,69 @@ function ExerciseCard({
 }) {
   const ex = mockExercises.find((e) => e.id === pe.exerciseId);
   if (!ex) return null;
+
+  const comments = mockExerciseComments[pe.exerciseId] ?? [];
+  const sorted = [...comments].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
   return (
-    <div className="rounded-xl border border-secondary bg-primary shadow-xs p-4">
-      <div className="flex items-center gap-5">
-        <div className="w-20 h-16 rounded-lg bg-[#EDE7F6] flex items-center justify-center shrink-0">
-          <Zap size={28} />
-        </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-primary mb-0.5">{ex.name}</p>
-          <p className="text-xs text-secondary mb-2">{ex.description}</p>
-          <div className="flex gap-1.5 flex-wrap">
-            <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.sets} Sets</span>
-            <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.reps} Reps</span>
-            {pe.holdSecs > 0 && (
-              <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.holdSecs} Sec Hold</span>
-            )}
-            <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.frequency}</span>
+    <div className="rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden">
+      <div className="p-4">
+        <div className="flex items-center gap-5">
+          <div className="w-20 h-16 rounded-lg bg-[#EDE7F6] flex items-center justify-center shrink-0">
+            <Zap size={28} />
           </div>
-        </div>
-        {viewMode === 'full' && pe.adherence != null && (
-          <div className="flex flex-col items-center gap-1 min-w-[64px]">
-            <span
-              className="text-lg font-bold leading-none"
-              style={{ color: pe.adherence >= 80 ? '#2E7D32' : pe.adherence >= 60 ? '#F57F17' : '#C62828' }}
-            >
-              {pe.adherence}%
-            </span>
-            <span className="text-[10px] text-secondary whitespace-nowrap">adherence</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-primary mb-0.5">{ex.name}</p>
+            <p className="text-xs text-secondary mb-2">{ex.description}</p>
+            <div className="flex gap-1.5 flex-wrap">
+              <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.sets} Sets</span>
+              <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.reps} Reps</span>
+              {pe.holdSecs > 0 && (
+                <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.holdSecs} Sec Hold</span>
+              )}
+              <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.frequency}</span>
+            </div>
           </div>
-        )}
-        <button
-          title="Preview exercise"
-          className="p-1.5 rounded-lg text-secondary hover:bg-secondary hover:text-primary transition-colors"
-          onClick={() => onPreview(ex, pe)}
-        >
-          <Eye size={14} />
-        </button>
+          {viewMode === 'full' && pe.adherence != null && (
+            <div className="flex flex-col items-center gap-1 min-w-[64px]">
+              <span
+                className="text-lg font-bold leading-none"
+                style={{ color: pe.adherence >= 80 ? '#2E7D32' : pe.adherence >= 60 ? '#F57F17' : '#C62828' }}
+              >
+                {pe.adherence}%
+              </span>
+              <span className="text-[10px] text-secondary whitespace-nowrap">adherence</span>
+            </div>
+          )}
+          <button
+            title="Preview exercise"
+            className="p-1.5 rounded-lg text-secondary hover:bg-secondary hover:text-primary transition-colors"
+            onClick={() => onPreview(ex, pe)}
+          >
+            <Eye size={14} />
+          </button>
+        </div>
       </div>
+
+      {viewMode === 'full' && sorted.length > 0 && (
+        <div className="border-t border-secondary bg-secondary_alt px-4 py-3 flex flex-col gap-3">
+          {sorted.map((c) => (
+            <div key={c.id} className="flex gap-3">
+              <Avatar initials={c.authorInitials} size="xs" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="text-xs font-semibold text-primary">{c.authorName}</span>
+                  {c.pinned && <Pin size={10} className="text-brand-500 shrink-0" />}
+                  <span className="text-[11px] text-tertiary ml-auto shrink-0">
+                    {new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                <p className="text-xs text-secondary leading-relaxed">{c.content}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
