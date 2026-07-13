@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { mockPhysio, mockClinicLocations } from '@/lib/mock-data';
+import { mockPhysio, mockClinicLocations, mockNotifications, mockEmployees } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
@@ -10,8 +10,7 @@ import { useViewMode } from '@/lib/viewModeStore';
 import { useLocationId, setLocationId } from '@/lib/locationStore';
 import { useStaffPersona } from '@/lib/staffPersonaStore';
 import { useOrgId } from '@/lib/orgStore';
-import { mockEmployees } from '@/lib/mock-data';
-import { ChevronRight, ChevronDown, MapPin } from 'lucide-react';
+import { Bell, ChevronRight, ChevronDown, MapPin } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 interface TopBarProps {
@@ -137,6 +136,24 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           </div>
         )}
       </div>
+
+      {/* Notification bell */}
+      {viewMode === 'full' && (
+        <div className="relative shrink-0 mr-1">
+          <button
+            onClick={() => router.push('/notifications')}
+            className="relative flex size-9 items-center justify-center rounded-full text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+          >
+            <Bell size={18} />
+            {mockNotifications.filter((n) => !n.read).length > 0 && (
+              <span className="absolute top-1.5 right-1.5 flex size-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping" />
+                <span className="relative inline-flex size-2 rounded-full bg-brand-600" />
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Avatar + dropdown */}
       <div className="relative shrink-0" ref={menuRef}>
