@@ -8,6 +8,7 @@ export interface Physio {
   phone: string;
   clinicName: string;
   credentials: string;
+  specialty?: string;
   title: string;
   bio: string;
   avatarInitials: string;
@@ -29,6 +30,7 @@ export interface Employee {
   avatarInitials: string;
   patientIds: string[];
   clinicId: string;
+  locationIds: string[];
   joinedAt: string;
   specialties: string[];
   archived: boolean;
@@ -88,6 +90,7 @@ export interface Exercise {
   usageCount: number;
   createdAt: string;
   variationGroup?: string;
+  userUploaded?: boolean;
 }
 
 export interface ProgramExercise {
@@ -233,6 +236,7 @@ export interface Patient {
   location: string;
   avatarInitials: string;
   status: 'new' | 'active' | 'inactive';
+  createdAt: string;
   lastModified: string;
   programId?: string;
   assignedEmployeeIds: string[];
