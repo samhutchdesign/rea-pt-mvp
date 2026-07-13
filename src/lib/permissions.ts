@@ -32,8 +32,8 @@ const PERMISSIONS: Record<string, Permissions> = {
   },
   staff: {
     canEditPatientProfile: true,
-    canArchivePatient: false,
-    canTransferPatient: false,
+    canArchivePatient: true,
+    canTransferPatient: true,
     canEditContactInfo: true,
     canManageStaff: false,
     canManageBilling: false,
@@ -49,6 +49,6 @@ export function getPermissions(role: string): Permissions {
 export function roleLabel(role: string): string {
   if (role === 'owner') return 'Clinic Owner';
   if (role === 'admin') return 'Admin';
-  return 'Staff';
+  return 'User';
 }
 

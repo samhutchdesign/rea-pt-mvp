@@ -96,7 +96,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
             <Button color="secondary" size="xs" iconLeading={ArrowLeft} onPress={() => router.push('/clinic')}>
               Organization
             </Button>
-            {can.canManageClinic && !editing && (
+            {(can.canManageClinic || can.canManageLocation) && !editing && (
               <Button color="secondary" size="xs" iconLeading={Pencil} onPress={() => setEditing(true)}>
                 Edit Clinic
               </Button>

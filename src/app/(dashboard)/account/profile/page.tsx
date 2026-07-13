@@ -72,6 +72,10 @@ export default function ProfilePage() {
               <Input defaultValue={mockPhysio.credentials} />
             </div>
             <div>
+              <div className="mb-1 text-xs text-secondary">Specialty</div>
+              <Input defaultValue={mockPhysio.specialty ?? ''} />
+            </div>
+            <div>
               <div className="mb-1 text-xs text-secondary">Bio</div>
               <textarea
                 rows={3}

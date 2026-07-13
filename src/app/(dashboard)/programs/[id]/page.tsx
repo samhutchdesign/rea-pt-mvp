@@ -6,6 +6,8 @@ import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { mockPrograms, mockExercises, mockPatients } from '@/lib/mock-data';
+import { useDataState } from '@/lib/dataStateStore';
+import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import type { Patient } from '@/lib/types';
 import { Heart, Pencil, UserPlus, Zap } from 'lucide-react';
 
@@ -14,6 +16,8 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const prog = mockPrograms.find((p) => p.id === id);
   const [isFavorite, setIsFavorite] = useState(prog?.isFavorite ?? false);
+  const dataState = useDataState();
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
@@ -54,10 +58,10 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
-            <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => setAssignOpen(true)}>
+            <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : setAssignOpen(true)}>
               Assign to Patient
             </Button>
-            <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => router.push('/programs/new')}>
+            <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
               Edit
             </Button>
           </div>
@@ -70,7 +74,7 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
             const ex = mockExercises.find((e) => e.id === pe.exerciseId);
             if (!ex) return null;
             return (
-              <div key={pe.exerciseId} className="overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs">
+              <div key={pe.exerciseId} className="overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push(`/exercises/${pe.exerciseId}`)}>
                 <div className="flex items-center gap-4 px-5 py-4">
                   <div className="w-12 h-12 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
                     <Zap size={22} className="text-brand-600" />
@@ -92,6 +96,8 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
           })}
         </div>
       </div>
+
+      <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="assign or edit programs" />
 
       {/* Assign to Patient Dialog */}
       <ModalOverlay isOpen={assignOpen} onOpenChange={setAssignOpen}>

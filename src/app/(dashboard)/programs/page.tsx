@@ -6,7 +6,9 @@ import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
 import { mockPrograms } from '@/lib/mock-data';
-import { Heart, Plus, Search, X, Zap } from 'lucide-react';
+import { useDataState } from '@/lib/dataStateStore';
+import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
+import { Heart, List, Plus, Search, X, Zap } from 'lucide-react';
 
 const ALL_TAGS = ['Pelvic Floor', 'Postpartum', 'Incontinence', 'Pelvic Pain', 'Beginner', 'Intermediate', 'Relaxation'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Exercises', 'Newest Added'];
@@ -47,6 +49,8 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
 
 export default function ProgramsPage() {
   const router = useRouter();
+  const dataState = useDataState();
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('A → Z');
   const [filterTags, setFilterTags] = useState<string[]>([]);
@@ -84,7 +88,7 @@ export default function ProgramsPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-primary m-0">Programs</h2>
-          <Button color="primary" size="md" iconLeading={Plus} onPress={() => router.push('/programs/new')}>
+          <Button color="primary" size="md" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
             Create New Program
           </Button>
         </div>
@@ -154,7 +158,7 @@ export default function ProgramsPage() {
                 <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
                 {filtered.map((prog) => (
                   <div
                     key={prog.id}
@@ -199,6 +203,7 @@ export default function ProgramsPage() {
           </div>
         </div>
       </div>
+      <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or edit programs" />
     </>
   );
 }
