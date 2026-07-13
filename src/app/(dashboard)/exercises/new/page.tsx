@@ -1,9 +1,11 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { useState } from 'react';
+import { mockExercises, mockExercisesFull } from '@/lib/mock-data';
 
 const CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
 const SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
@@ -38,9 +40,16 @@ function MultiSelect({ options, selected, onChange }: { options: string[]; selec
   );
 }
 
-export default function NewExercisePage() {
+function NewExerciseForm() {
   const router = useRouter();
-  const [name, setName] = useState('');
+  const searchParams = useSearchParams();
+  const duplicateId = searchParams.get('duplicate');
+
+  const sourceExercise = duplicateId
+    ? ([...mockExercises, ...mockExercisesFull].find((e) => e.id === duplicateId) ?? null)
+    : null;
+
+  const [name, setName] = useState(sourceExercise ? `${sourceExercise.name} (Copy)` : '');
   const [description, setDescription] = useState('');
   const [instructions, setInstructions] = useState('');
   const [mistakes, setMistakes] = useState('');
@@ -53,7 +62,11 @@ export default function NewExercisePage() {
   const [selectedSurgeries, setSelectedSurgeries] = useState<string[]>([]);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
   const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>([]);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
+
+  const lockedVideoUrl = sourceExercise?.videoUrl ?? '';
+
+  const isDuplicate = !!sourceExercise;
+  const pageTitle = isDuplicate ? 'Duplicate Exercise' : 'New Exercise';
 
   const tagFields = [
     { label: 'Specialty', options: SPECIALTIES, selected: selectedSpecialties, set: setSelectedSpecialties },
@@ -65,9 +78,9 @@ export default function NewExercisePage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: 'New Exercise' }]} />
+      <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: pageTitle }]} />
       <div className="p-8 max-w-[700px]">
-        <h2 className="mt-0 mb-6 text-2xl font-bold text-primary">New Exercise</h2>
+        <h2 className="mt-0 mb-6 text-2xl font-bold text-primary">{pageTitle}</h2>
 
         {/* Basic Info */}
         <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
@@ -171,17 +184,28 @@ export default function NewExercisePage() {
         <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
           <div className="flex flex-col gap-5">
             <span className="text-sm font-semibold text-primary">Media</span>
-            <div>
-              {fieldLabel('YouTube URL')}
-              <Input
-                placeholder="https://www.youtube.com/watch?v=..."
-                value={youtubeUrl}
-                onChange={(val) => setYoutubeUrl(val)}
-              />
-            </div>
-            <div className="flex gap-4">
-              <Button color="secondary" size="xs">Upload Video / Image</Button>
-            </div>
+            {isDuplicate ? (
+              <div>
+                {fieldLabel('URL')}
+                <div className="flex items-center gap-2 rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-sm text-secondary">
+                  <span className="flex-1 truncate">{lockedVideoUrl || 'No video'}</span>
+                  <span className="text-xs text-tertiary shrink-0">Locked to original</span>
+                </div>
+              </div>
+            ) : (
+              <div>
+                {fieldLabel('URL')}
+                <Input
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  onChange={() => {}}
+                />
+              </div>
+            )}
+            {!isDuplicate && (
+              <div className="flex gap-4">
+                <Button color="secondary" size="xs">Upload Video / Image</Button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -191,5 +215,13 @@ export default function NewExercisePage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function NewExercisePage() {
+  return (
+    <Suspense>
+      <NewExerciseForm />
+    </Suspense>
   );
 }

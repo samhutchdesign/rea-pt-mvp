@@ -24,9 +24,10 @@ interface Props {
   onClose: () => void;
   onAddToCurrentProgram?: () => void;
   patientPrescription?: PatientPrescription;
+  onActionBlocked?: () => void;
 }
 
-export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram, patientPrescription }: Props) {
+export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram, patientPrescription, onActionBlocked }: Props) {
   const [programSelectorOpen, setProgramSelectorOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [audioOpen, setAudioOpen] = useState(false);
@@ -57,7 +58,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
     <>
       <Drawer open={open} onClose={onClose} width={480}>
         {/* Video Area */}
-        <div className="relative shrink-0 h-60 w-full overflow-hidden" style={{ background: exercise.videoUrl ? '#0f0f0f' : '#F0EDF6' }}>
+        <div className="relative w-full aspect-video overflow-hidden" style={{ background: exercise.videoUrl ? '#0f0f0f' : '#F0EDF6' }}>
           {exercise.videoUrl ? (
             <iframe
               src={`https://www.youtube.com/embed/${exercise.videoUrl}?rel=0&modestbranding=1`}
@@ -85,13 +86,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           <h2 className="text-xl font-bold text-primary mb-1">{exercise.name}</h2>
           <p className="text-sm text-secondary mb-4">{exercise.description}</p>
 
-          <div className="flex flex-wrap gap-1.5 mb-5">
-            {allTags.map((tag) => (
-              <Badge key={tag} type="pill-color" color="gray" size="sm">{tag}</Badge>
-            ))}
-          </div>
-
-          {patientPrescription ? (
+          {patientPrescription && (
             <div className="mb-5 rounded-lg border border-brand-200 bg-brand-50 p-3">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-600">Patient Prescription</p>
               <div className="flex flex-wrap gap-2">
@@ -100,13 +95,6 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
                 {patientPrescription.holdSecs > 0 && <PrescriptionTag label={`${patientPrescription.holdSecs}s Hold`} />}
                 <PrescriptionTag label={patientPrescription.frequency} />
               </div>
-            </div>
-          ) : (
-            <div className="mb-5 flex flex-wrap gap-2">
-              <PrescriptionTag label={`${exercise.defaultSets} Sets`} />
-              <PrescriptionTag label={`${exercise.defaultReps} Reps`} />
-              {exercise.defaultHoldSecs > 0 && <PrescriptionTag label={`${exercise.defaultHoldSecs}s Hold`} />}
-              <PrescriptionTag label={exercise.defaultFrequency} />
             </div>
           )}
 
@@ -132,12 +120,17 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
         {/* Action bar */}
         <div className="shrink-0 border-t border-secondary px-6 py-4 flex gap-3">
           {viewMode === 'full' && (
-            <Button size="sm" color="secondary" iconLeading={Mic} onPress={() => setAudioOpen(true)}>
+            <Button size="sm" color="secondary" iconLeading={Mic} onPress={() => onActionBlocked ? onActionBlocked() : setAudioOpen(true)}>
               Record Audio Cue
             </Button>
           )}
           {onAddToCurrentProgram && (
-            <Button size="sm" color="primary" onPress={() => { onAddToCurrentProgram(); onClose(); }} className="flex-1">
+            <Button
+              size="sm"
+              color="primary"
+              onPress={() => onActionBlocked ? onActionBlocked() : (onAddToCurrentProgram(), onClose())}
+              className="flex-1"
+            >
               Add to This Program
             </Button>
           )}
@@ -145,7 +138,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             size="sm"
             color={onAddToCurrentProgram ? 'secondary' : 'primary'}
             iconLeading={List}
-            onPress={() => setProgramSelectorOpen(true)}
+            onPress={() => onActionBlocked ? onActionBlocked() : setProgramSelectorOpen(true)}
             className="flex-1"
           >
             Add to a Program

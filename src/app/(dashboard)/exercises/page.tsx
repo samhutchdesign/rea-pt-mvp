@@ -1,12 +1,14 @@
 'use client';
-import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { ComponentType } from 'react';
-import { ArrowLeft, Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
+import { Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { mockExercises, mockExercisesFull } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
+import { useDataState } from '@/lib/dataStateStore';
+import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import type { Exercise } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
@@ -86,36 +88,51 @@ const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
 
 function expandSearch(q: string) { return SEARCH_ALIASES[q.toLowerCase().trim()] ?? q; }
 
-// ── Specialty landing ─────────────────────────────────────────────────────────
+// ── Specialty horizontal scroll ───────────────────────────────────────────────
 
-function SpecialtyGrid({ onSelect }: { onSelect: (id: string) => void }) {
+function SpecialtyScroll({ selectedId, onSelect, totalCount }: { selectedId: string; onSelect: (id: string) => void; totalCount: number }) {
+  const isAllSelected = selectedId === 'all';
   return (
-    <div>
-      <p className="block mb-6 text-sm text-tertiary">Select a specialty to browse exercises.</p>
-      <div className="grid grid-cols-3 gap-4">
-        {SPECIALTIES.map((sp) => {
-          const Icon = sp.icon;
-          return (
-            <div
-              key={sp.id}
-              onClick={() => onSelect(sp.id)}
-              className="rounded-lg bg-primary p-5 cursor-pointer transition-shadow hover:shadow-md"
-              style={{ border: `1px solid ${sp.available ? sp.color + '44' : '#E0E0E0'}` }}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: sp.bg }}>
-                  <Icon size={20} color={sp.color} />
-                </div>
-                {sp.available
-                  ? <span className="rounded px-2 py-0.5 font-semibold text-xs" style={{ background: sp.bg, color: sp.color }}>{`${sp.count} exercises`}</span>
-                  : <span className="rounded px-2 py-0.5 text-xs text-quaternary bg-secondary_alt">Coming soon</span>}
-              </div>
-              <p className="block font-semibold text-sm text-primary mb-1">{sp.name}</p>
-              <p className="block text-xs text-tertiary leading-snug">{sp.description}</p>
+    <div className="flex gap-2.5 overflow-x-auto pb-1 mb-6 scrollbar-hide">
+      {/* All Exercises card */}
+      <button
+        type="button"
+        onClick={() => onSelect('all')}
+        className={cx(
+          'flex-shrink-0 flex flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 w-[120px] border transition-colors',
+          isAllSelected ? 'border-brand-600 bg-brand-50' : 'border-secondary bg-primary hover:bg-secondary cursor-pointer'
+        )}
+      >
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-secondary_alt">
+          <Zap size={16} className={isAllSelected ? 'text-brand-600' : 'text-tertiary'} />
+        </div>
+        <span className={cx('text-xs font-medium text-center leading-tight', isAllSelected ? 'text-brand-700' : 'text-primary')}>All Exercises</span>
+        <span className={cx('text-[10px] font-medium', isAllSelected ? 'text-brand-600' : 'text-tertiary')}>{totalCount} exercises</span>
+      </button>
+
+      {SPECIALTIES.map((sp) => {
+        const Icon = sp.icon;
+        const isSelected = selectedId === sp.id;
+        return (
+          <button
+            key={sp.id}
+            type="button"
+            onClick={() => onSelect(sp.id)}
+            className={cx(
+              'flex-shrink-0 flex flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 w-[120px] border transition-colors',
+              isSelected ? 'border-brand-600 bg-brand-50' : 'border-secondary bg-primary hover:bg-secondary cursor-pointer'
+            )}
+          >
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: sp.bg }}>
+              <Icon size={16} color={sp.color} />
             </div>
-          );
-        })}
-      </div>
+            <span className={cx('text-xs font-medium text-center leading-tight', isSelected ? 'text-brand-700' : 'text-primary')}>{sp.name}</span>
+            {sp.available
+              ? <span className={cx('text-[10px] font-medium', isSelected ? 'text-brand-600' : 'text-tertiary')}>{sp.count} exercises</span>
+              : <span className="text-[10px] text-quaternary">Coming soon</span>}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -191,33 +208,52 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
-export default function ExercisesPage() {
+function ExercisesPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get('category');
+  const dataState = useDataState();
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const viewMode = useViewMode();
   const exercises = viewMode === 'full' ? mockExercisesFull : mockExercises;
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string>(
+    searchParams.get('specialty') ?? (initialCategory ? 'pelvic-health' : 'all')
+  );
   const effectiveSelectedId = viewMode === 'mvp' ? 'pelvic-health' : selectedId;
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('A → Z');
-  const [filterConditions, setFilterConditions] = useState<string[]>([]);
-  const [filterCategories, setFilterCategories] = useState<string[]>([]);
-  const [filterLevels, setFilterLevels] = useState<string[]>([]);
-  const [filterEquipment, setFilterEquipment] = useState<string[]>([]);
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const isAllMode = effectiveSelectedId === 'all';
+  const [search, setSearch] = useState(searchParams.get('q') ?? '');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'A → Z');
+  const [filterConditions, setFilterConditions] = useState<string[]>(
+    searchParams.get('conds')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterCategories, setFilterCategories] = useState<string[]>(
+    searchParams.get('cats')?.split(',').filter(Boolean) ?? (initialCategory ? [initialCategory] : [])
+  );
+  const [filterLevels, setFilterLevels] = useState<string[]>(
+    searchParams.get('levels')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterEquipment, setFilterEquipment] = useState<string[]>(
+    searchParams.get('equip')?.split(',').filter(Boolean) ?? []
+  );
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('fav') === '1');
   const [showMoreConditions, setShowMoreConditions] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
 
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
 
   const specialty = SPECIALTIES.find((s) => s.id === effectiveSelectedId) ?? null;
-  const filterConfig = effectiveSelectedId
-    ? (viewMode === 'full' ? SPECIALTY_FILTER_CONFIG_FULL[effectiveSelectedId] : SPECIALTY_FILTER_CONFIG[effectiveSelectedId])
-    : null;
+  const allModeFilterConfig: SpecialtyFilters = useMemo(() => ({
+    conditionLabel: 'Condition',
+    conditions: [...new Set(exercises.flatMap((e) => e.tags.condition))].sort(),
+    categories: [...new Set(exercises.map((e) => e.category))].sort(),
+  }), [exercises]);
+  const filterConfig = isAllMode
+    ? allModeFilterConfig
+    : (effectiveSelectedId ? (viewMode === 'full' ? SPECIALTY_FILTER_CONFIG_FULL[effectiveSelectedId] : SPECIALTY_FILTER_CONFIG[effectiveSelectedId]) : null);
 
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
 
-  const goBack = () => { setSelectedId(null); setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setShowFavoritesOnly(false); };
   const selectSpecialty = (id: string) => { setSelectedId(id); setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setShowFavoritesOnly(false); };
   const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setShowFavoritesOnly(false); };
 
@@ -225,7 +261,7 @@ export default function ExercisesPage() {
   const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || showFavoritesOnly;
 
   const filtered = useMemo(() => {
-    if (!specialty?.available) return [];
+    if (!isAllMode && !specialty?.available) return [];
     return exercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
       if (effectiveSearch) {
@@ -245,34 +281,15 @@ export default function ExercisesPage() {
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, showFavoritesOnly, favorites, exercises]);
+  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, showFavoritesOnly, favorites, exercises]);
 
   const levelClasses = (l: string) =>
     l === 'Beginner' ? 'bg-success-50 text-success-700' :
     l === 'Intermediate' ? 'bg-warning-50 text-warning-700' :
     'bg-error-50 text-error-700';
 
-  type DisplayItem =
-    | { kind: 'single'; ex: Exercise }
-    | { kind: 'group'; groupId: string; groupName: string; representative: Exercise; totalCount: number };
 
-  const displayItems = useMemo((): DisplayItem[] => {
-    const seenGroups = new Set<string>();
-    const items: DisplayItem[] = [];
-    for (const ex of filtered) {
-      if (!ex.variationGroup) {
-        items.push({ kind: 'single', ex });
-      } else if (!seenGroups.has(ex.variationGroup)) {
-        seenGroups.add(ex.variationGroup);
-        const totalCount = exercises.filter((e) => e.variationGroup === ex.variationGroup).length;
-        const gName = ex.defaultName ?? ex.name.split(':')[0].trim();
-        items.push({ kind: 'group', groupId: ex.variationGroup, groupName: gName, representative: ex, totalCount });
-      }
-    }
-    return items;
-  }, [filtered, exercises]);
-
-  const breadcrumbs = specialty ? [{ label: 'All Exercises' }, { label: specialty.name }] : [{ label: 'All Exercises' }];
+  const breadcrumbs = [{ label: 'Exercises' }];
 
   const visibleConditions = filterConfig
     ? (showMoreConditions ? filterConfig.conditions : filterConfig.conditions.slice(0, 7))
@@ -284,25 +301,17 @@ export default function ExercisesPage() {
       <div className="p-8">
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            {specialty && viewMode === 'full' && (
-              <Button color="tertiary" size="sm" iconLeading={ArrowLeft} onPress={goBack} />
-            )}
-            <div>
-              <h2 className="m-0 text-xl font-semibold text-primary">
-                {viewMode === 'mvp' ? 'Exercises' : (specialty ? specialty.name : 'Exercises')}
-              </h2>
-              {specialty && viewMode === 'full' && <p className="text-xs text-tertiary mt-0 mb-0">{specialty.apta}</p>}
-            </div>
-          </div>
-          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => router.push('/exercises/new')}>Create New</Button>
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="m-0 text-xl font-semibold text-primary">Exercises</h2>
+          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/exercises/new')}>Create New</Button>
         </div>
 
-        {!specialty && viewMode === 'full' && <SpecialtyGrid onSelect={selectSpecialty} />}
+        {/* Specialty horizontal scroll */}
+        {viewMode === 'full' && <SpecialtyScroll selectedId={effectiveSelectedId} onSelect={selectSpecialty} totalCount={exercises.length} />}
+
         {specialty && !specialty.available && <ComingSoonState sp={specialty} />}
 
-        {specialty && specialty.available && (
+        {(isAllMode || (specialty && specialty.available)) && (
           <div className="flex items-start">
 
             {/* ── Left filter panel ── */}
@@ -405,108 +414,75 @@ export default function ExercisesPage() {
               )}
 
               <p className="block mb-4 text-xs text-tertiary">
-                {filtered.length} exercise{filtered.length !== 1 ? 's' : ''} · {displayItems.length} card{displayItems.length !== 1 ? 's' : ''} shown
+                {filtered.length} exercise{filtered.length !== 1 ? 's' : ''} shown
               </p>
 
               {/* Grid */}
-              {displayItems.length === 0 ? (
+              {filtered.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-sm text-tertiary mb-3">No exercises match your filters.</p>
                   <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 gap-4">
-                  {displayItems.map((item) => {
-                    if (item.kind === 'single') {
-                      const ex = item.ex;
-                      return (
-                        <div
-                          key={ex.id}
-                          className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
-                          onClick={() => router.push(`/exercises/${ex.id}`)}
-                        >
-                          <div className="relative h-32 flex items-center justify-center bg-brand-50">
-                            <Zap size={36} className="text-brand-600" />
-                            <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}
-                                className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
-                                onClick={() => toggleFavorite(ex.id)}
-                              >
-                                {favorites.has(ex.id)
-                                  ? <Heart size={14} className="text-pink-500" fill="currentColor" />
-                                  : <Heart size={14} className="text-tertiary" />}
-                              </button>
-                            </div>
-                          </div>
-                          <div className="px-3.5 py-3">
-                            <p className="font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
-                            <div className="flex gap-1 flex-wrap mb-2.5">
-                              <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
-                              {ex.equipment !== 'None' && (
-                                <span className="text-xs rounded px-1.5 py-0.5 bg-secondary text-secondary">{ex.equipment}</span>
-                              )}
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs text-tertiary">{ex.category}</span>
-                              <div onClick={(e) => e.stopPropagation()}>
-                                <button
-                                  type="button"
-                                  title="Preview"
-                                  className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary"
-                                  onClick={() => setPreviewExercise(ex)}
-                                >
-                                  <Eye size={14} />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
+                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+                  {filtered.map((ex) => (
+                    <div
+                      key={ex.id}
+                      className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
+                      onClick={() => {
+                        const p = new URLSearchParams();
+                        if (effectiveSelectedId !== 'all') p.set('specialty', effectiveSelectedId);
+                        if (search) p.set('q', search);
+                        if (filterCategories.length) p.set('cats', filterCategories.join(','));
+                        if (filterConditions.length) p.set('conds', filterConditions.join(','));
+                        if (filterLevels.length) p.set('levels', filterLevels.join(','));
+                        if (filterEquipment.length) p.set('equip', filterEquipment.join(','));
+                        if (showFavoritesOnly) p.set('fav', '1');
+                        if (sortBy !== 'A → Z') p.set('sort', sortBy);
+                        const qs = p.toString();
+                        const back = encodeURIComponent(qs ? `/exercises?${qs}` : '/exercises');
+                        router.push(`/exercises/${ex.id}?back=${back}`);
+                      }}
+                    >
+                      <div className="relative h-32 flex items-center justify-center bg-brand-50">
+                        <Zap size={36} className="text-brand-600" />
+                        <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}
+                            className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
+                            onClick={() => toggleFavorite(ex.id)}
+                          >
+                            {favorites.has(ex.id)
+                              ? <Heart size={14} className="text-pink-500" fill="currentColor" />
+                              : <Heart size={14} className="text-tertiary" />}
+                          </button>
                         </div>
-                      );
-                    }
-
-                    // Group card
-                    const { representative: rep, groupName: gName, totalCount } = item;
-                    return (
-                      <div
-                        key={item.groupId}
-                        className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
-                        onClick={() => router.push(`/exercises/${rep.id}`)}
-                      >
-                        {/* Stacked thumbnail effect */}
-                        <div className="relative h-32 flex items-center justify-center bg-brand-50">
-                          <div style={{ position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 28px)', height: '100%', background: '#DDD6F3', borderRadius: '6px 6px 0 0', zIndex: 0 }} />
-                          <div style={{ position: 'absolute', bottom: 3, left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 16px)', height: '100%', background: '#E8E2F8', borderRadius: '6px 6px 0 0', zIndex: 1 }} />
-                          <div className="relative flex items-center justify-center w-full h-full" style={{ zIndex: 2 }}>
-                            <Zap size={36} className="text-brand-600" />
-                          </div>
-                          <span className="absolute bottom-2 left-2 rounded px-1.5 py-0.5 bg-brand-600 text-white text-xs font-semibold" style={{ zIndex: 3 }}>
-                            {totalCount} variations
-                          </span>
-                          <div className="absolute top-2 right-2" style={{ zIndex: 4 }} onClick={(e) => e.stopPropagation()}>
+                      </div>
+                      <div className="px-3.5 py-3">
+                        <p className="font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
+                        <div className="flex gap-1 flex-wrap mb-2.5">
+                          <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
+                          {ex.equipment !== 'None' && (
+                            <span className="text-xs rounded px-1.5 py-0.5 bg-secondary text-secondary">{ex.equipment}</span>
+                          )}
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-tertiary">{ex.category}</span>
+                          <div onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
-                              title={favorites.has(rep.id) ? 'Unfavourite' : 'Favourite'}
-                              className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
-                              onClick={() => toggleFavorite(rep.id)}
+                              title="Preview"
+                              className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary"
+                              onClick={() => setPreviewExercise(ex)}
                             >
-                              {favorites.has(rep.id)
-                                ? <Heart size={14} className="text-pink-500" fill="currentColor" />
-                                : <Heart size={14} className="text-tertiary" />}
+                              <Eye size={14} />
                             </button>
                           </div>
                         </div>
-                        <div className="px-3.5 py-3">
-                          <p className="font-semibold text-sm text-primary leading-tight mb-2">{gName}</p>
-                          <div className="flex gap-1 flex-wrap mb-2.5">
-                            <span className="text-xs rounded px-1.5 py-0.5 bg-secondary text-secondary">{rep.category}</span>
-                          </div>
-                          <span className="text-xs text-tertiary">Select a variation on the detail page</span>
-                        </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -514,7 +490,17 @@ export default function ExercisesPage() {
         )}
       </div>
 
-      <ExercisePreviewDrawer exercise={previewExercise} open={!!previewExercise} onClose={() => setPreviewExercise(null)} />
+      <ExercisePreviewDrawer
+        exercise={previewExercise}
+        open={!!previewExercise}
+        onClose={() => setPreviewExercise(null)}
+        onActionBlocked={dataState === 'empty' ? () => { setPreviewExercise(null); setShowSignUpModal(true); } : undefined}
+      />
+      <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or assign exercises" />
     </>
   );
+}
+
+export default function ExercisesPage() {
+  return <Suspense><ExercisesPageContent /></Suspense>;
 }
