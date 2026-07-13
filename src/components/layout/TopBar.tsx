@@ -137,24 +137,6 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
         )}
       </div>
 
-      {/* Notification bell */}
-      {viewMode === 'full' && (
-        <div className="relative shrink-0 mr-1">
-          <button
-            onClick={() => router.push('/notifications')}
-            className="relative flex size-9 items-center justify-center rounded-full text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
-          >
-            <Bell size={18} />
-            {mockNotifications.filter((n) => !n.read).length > 0 && (
-              <span className="absolute top-1.5 right-1.5 flex size-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping" />
-                <span className="relative inline-flex size-2 rounded-full bg-brand-600" />
-              </span>
-            )}
-          </button>
-        </div>
-      )}
-
       {/* Avatar + dropdown */}
       <div className="relative shrink-0" ref={menuRef}>
         <button
@@ -193,6 +175,24 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
           </div>
         )}
       </div>
+
+      {/* Notification bell */}
+      {viewMode === 'full' && (
+        <div className="relative shrink-0 ml-1">
+          <button
+            onClick={() => router.push('/notifications')}
+            className="relative flex size-9 items-center justify-center rounded-full text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+          >
+            <Bell size={18} />
+            {mockNotifications.filter((n) => !n.read).length > 0 && (
+              <span className="absolute top-1.5 right-1.5 flex size-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping" />
+                <span className="relative inline-flex size-2 rounded-full bg-brand-600" />
+              </span>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
