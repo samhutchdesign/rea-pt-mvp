@@ -2,6 +2,8 @@
 import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
+import { getHepState, saveNewProgram } from '@/lib/patientHepStore';
+import { toast } from 'sonner';
 import type { Exercise } from '@/lib/types';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
@@ -270,7 +272,30 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
 
         <div className="flex justify-end gap-4 border-t border-secondary pt-4">
           <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-          <Button color="primary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Save Program Updates</Button>
+          <Button
+            color="primary"
+            size="sm"
+            onPress={() => {
+              const current = getHepState(id);
+              const currentProgram = current.programId ? mockPrograms.find((p) => p.id === current.programId) : null;
+              const oldSnapshot = currentProgram && current.programAssignedAt
+                ? {
+                    programId: currentProgram.id,
+                    programName: currentProgram.name,
+                    exercises: currentProgram.exercises,
+                    assignedAt: current.programAssignedAt,
+                  }
+                : null;
+              const newProgramId = current.programId ?? 'prog1';
+              const newProgramName = currentProgram?.name ?? 'Custom Program';
+              const newExercises = programRows.map((r) => ({ ...r, adherence: 0 }));
+              saveNewProgram(id, newProgramId, newProgramName, newExercises, oldSnapshot);
+              toast.success('Program updated');
+              router.push(`/patients/${id}/program`);
+            }}
+          >
+            Save Program Updates
+          </Button>
         </div>
       </div>
 

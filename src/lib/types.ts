@@ -112,6 +112,15 @@ export interface Program {
   createdAt: string;
 }
 
+export interface HepHistoryEntry {
+  id: string;
+  programId: string;
+  programName: string;
+  exercises: ProgramExercise[];
+  assignedAt: string;
+  endedAt: string;
+}
+
 export type PainLevel = 'No Pain' | 'Low Pain' | 'Moderate Pain' | 'High Pain';
 export type AdherenceLevel = 'High Adherence' | 'Moderate Adherence' | 'Low Adherence';
 export type ImprovementLevel = 'Significant Improvement' | 'Some Improvement' | 'No Improvement' | 'Worsening';
@@ -239,6 +248,8 @@ export interface Patient {
   createdAt: string;
   lastModified: string;
   programId?: string;
+  programAssignedAt?: string;
+  hepHistory?: HepHistoryEntry[];
   assignedEmployeeIds: string[];
   clinicId: string;
   archived: boolean;

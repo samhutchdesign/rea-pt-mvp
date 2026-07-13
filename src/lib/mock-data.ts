@@ -1,4 +1,4 @@
-import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic, ClinicLocation } from './types';
+import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic, ClinicLocation, HepHistoryEntry } from './types';
 
 export const mockPhysio: Physio = {
   id: 'p1',
@@ -1860,6 +1860,32 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-22',
     createdAt: '2025-03-15',
     programId: 'prog1',
+    programAssignedAt: '2026-04-10',
+    hepHistory: [
+      {
+        id: 'hep_pat1_1',
+        programId: 'prog3',
+        programName: 'Pelvic Pain Relief',
+        exercises: [
+          { exerciseId: 'ex1', sets: 1, reps: 10, holdSecs: 0, frequency: 'Daily', adherence: 80 },
+          { exerciseId: 'ex5', sets: 2, reps: 15, holdSecs: 0, frequency: 'Daily', adherence: 70 },
+        ],
+        assignedAt: '2025-03-15',
+        endedAt: '2025-07-01',
+      },
+      {
+        id: 'hep_pat1_2',
+        programId: 'prog2',
+        programName: 'Incontinence Recovery',
+        exercises: [
+          { exerciseId: 'ex2', sets: 3, reps: 10, holdSecs: 1, frequency: 'Daily', adherence: 60 },
+          { exerciseId: 'ex3', sets: 3, reps: 8, holdSecs: 10, frequency: 'Daily', adherence: 55 },
+          { exerciseId: 'ex1', sets: 1, reps: 10, holdSecs: 0, frequency: 'Daily', adherence: 78 },
+        ],
+        assignedAt: '2025-07-01',
+        endedAt: '2026-04-10',
+      },
+    ],
     assignedEmployeeIds: ['emp1'],
     archived: false,
     sessionsPerWeek: 2,
@@ -1899,6 +1925,21 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-20',
     createdAt: '2025-07-22',
     programId: 'prog2',
+    programAssignedAt: '2026-02-15',
+    hepHistory: [
+      {
+        id: 'hep_pat2_1',
+        programId: 'prog1',
+        programName: 'Postpartum Foundation',
+        exercises: [
+          { exerciseId: 'ex1', sets: 1, reps: 10, holdSecs: 0, frequency: 'Daily', adherence: 85 },
+          { exerciseId: 'ex11', sets: 3, reps: 10, holdSecs: 10, frequency: 'Daily', adherence: 72 },
+          { exerciseId: 'ex3', sets: 3, reps: 8, holdSecs: 10, frequency: 'Daily', adherence: 68 },
+        ],
+        assignedAt: '2025-07-22',
+        endedAt: '2026-02-15',
+      },
+    ],
     assignedEmployeeIds: ['emp1'],
     archived: false,
     sessionsPerWeek: 1,
@@ -1937,6 +1978,20 @@ export const mockPatients: Patient[] = [
     lastModified: '2026-05-18',
     createdAt: '2025-09-10',
     programId: 'prog3',
+    programAssignedAt: '2026-03-20',
+    hepHistory: [
+      {
+        id: 'hep_pat3_1',
+        programId: 'prog1',
+        programName: 'Postpartum Foundation',
+        exercises: [
+          { exerciseId: 'ex1', sets: 1, reps: 10, holdSecs: 0, frequency: 'Daily', adherence: 90 },
+          { exerciseId: 'ex5', sets: 2, reps: 15, holdSecs: 0, frequency: 'Daily', adherence: 65 },
+        ],
+        assignedAt: '2025-09-10',
+        endedAt: '2026-03-20',
+      },
+    ],
     assignedEmployeeIds: ['emp2'],
     archived: false,
     sessionsPerWeek: 2,
