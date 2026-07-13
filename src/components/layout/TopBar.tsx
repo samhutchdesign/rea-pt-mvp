@@ -28,13 +28,16 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [locMenuOpen, setLocMenuOpen] = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const locMenuRef = useRef<HTMLDivElement>(null);
+  const bellRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
       if (locMenuRef.current && !locMenuRef.current.contains(e.target as Node)) setLocMenuOpen(false);
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) setBellOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -178,9 +181,9 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
 
       {/* Notification bell */}
       {viewMode === 'full' && (
-        <div className="relative shrink-0 ml-1">
+        <div className="relative shrink-0 ml-1" ref={bellRef}>
           <button
-            onClick={() => router.push('/notifications')}
+            onClick={() => setBellOpen((v) => !v)}
             className="relative flex size-9 items-center justify-center rounded-full text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
           >
             <Bell size={18} />
@@ -191,6 +194,52 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
               </span>
             )}
           </button>
+
+          {bellOpen && (
+            <div className="absolute right-0 top-11 z-50 w-80 rounded-xl border border-secondary bg-primary shadow-lg overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-secondary">
+                <p className="text-sm font-semibold text-primary">Notifications</p>
+                {mockNotifications.filter((n) => !n.read).length > 0 && (
+                  <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[11px] font-semibold text-white">
+                    {mockNotifications.filter((n) => !n.read).length} new
+                  </span>
+                )}
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {mockNotifications.slice(0, 5).map((notif) => (
+                  <button
+                    key={notif.id}
+                    onClick={() => { setBellOpen(false); router.push(notif.patientId ? `/patients/${notif.patientId}/documents` : '/notifications'); }}
+                    className={cx(
+                      'w-full flex items-start gap-3 px-4 py-3 text-left border-b border-secondary last:border-0 transition-colors',
+                      !notif.read ? 'bg-secondary_alt hover:bg-secondary' : 'hover:bg-secondary_alt'
+                    )}
+                  >
+                    <div className="w-7 h-7 rounded-full bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
+                      <Bell size={13} className="text-brand-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={cx('text-xs leading-snug', !notif.read ? 'font-semibold text-primary' : 'text-secondary')}>
+                        {notif.message}
+                      </p>
+                      <p className="text-[11px] text-tertiary mt-0.5">
+                        {new Date(notif.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </p>
+                    </div>
+                    {!notif.read && <span className="w-1.5 h-1.5 rounded-full bg-brand-600 shrink-0 mt-1.5" />}
+                  </button>
+                ))}
+              </div>
+              <div className="border-t border-secondary px-4 py-2.5">
+                <button
+                  onClick={() => { setBellOpen(false); router.push('/notifications'); }}
+                  className="text-xs font-medium text-brand-700 hover:text-brand-600 transition-colors"
+                >
+                  View all notifications
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
