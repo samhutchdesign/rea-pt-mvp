@@ -38,8 +38,9 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
         <div className="flex flex-col gap-3">
           {sessions.map((session) => (
             <div key={session.id} className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
-              <div className="flex justify-between items-start">
-                <div className="flex-1 flex items-center gap-2 flex-wrap">
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-semibold text-sm text-primary">
                     {session.isIntakeSession
                       ? `Intake Session – ${new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
@@ -54,12 +55,16 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                     );
                   })()}
                 </div>
+                {viewMode === 'full' && session.summary && (
+                  <p className="text-xs text-tertiary mt-1.5 line-clamp-2">{session.summary}</p>
+                )}
+                </div>
                 <Button
                   color="tertiary"
                   size="xs"
                   iconLeading={Pencil}
                   onPress={() => router.push(`/patients/${id}/chart/${session.id}`)}
-                  className="ml-2"
+                  className="shrink-0"
                 />
               </div>
             </div>
