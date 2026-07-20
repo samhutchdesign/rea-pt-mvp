@@ -11,6 +11,7 @@ import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
 import { useDataState } from '@/lib/dataStateStore';
 import { EmptyState } from '@/components/ui/empty-state';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -25,6 +26,9 @@ export default function EmployeesPage() {
   const dataState = useDataState();
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('0');
+  const [addOpen, setAddOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('Practitioner');
   const { employees: scopedEmployees } = useLocationScope();
   const [overrides, setOverrides] = useState<Record<string, Partial<Employee>>>({});
 
@@ -70,7 +74,7 @@ export default function EmployeesPage() {
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-primary m-0">Employees</h2>
-          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => {}}>Add Employee</Button>
+          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add Employee</Button>
         </div>
 
         <div className="flex border-b border-secondary mb-6">
@@ -186,6 +190,54 @@ export default function EmployeesPage() {
           </div>
         )}
       </div>
+      <ModalOverlay isOpen={addOpen} onOpenChange={(o) => { if (!o) setAddOpen(false); }}>
+        <Modal><Dialog>
+          <div className="p-6 w-[440px]">
+            <h3 className="mb-1 text-lg font-semibold text-primary">Add Employee</h3>
+            <p className="text-sm text-tertiary mb-5">Send an invite link to add a new team member.</p>
+
+            <div className="flex flex-col gap-4">
+              <div>
+                <div className="mb-1 text-xs font-medium text-secondary">Email address <span className="text-error-500">*</span></div>
+                <input
+                  type="email"
+                  placeholder="colleague@example.com"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                />
+              </div>
+              <div>
+                <div className="mb-1 text-xs font-medium text-secondary">Role</div>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                >
+                  <option value="Admin">Admin</option>
+                  <option value="Practitioner">Practitioner</option>
+                  <option value="Staff">Staff</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <Button color="secondary" size="sm" onPress={() => setAddOpen(false)}>Cancel</Button>
+              <Button
+                color="primary"
+                size="sm"
+                isDisabled={!inviteEmail.trim()}
+                onPress={() => {
+                  toast.success(`Invite sent to ${inviteEmail}`);
+                  setAddOpen(false);
+                }}
+              >
+                Send Invite
+              </Button>
+            </div>
+          </div>
+        </Dialog></Modal>
+      </ModalOverlay>
     </>
   );
 }
