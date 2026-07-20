@@ -10,12 +10,14 @@ import type { UserRole } from '@/lib/types';
 
 type ViewingAs = UserRole | 'staff2' | 'staff3';
 
-const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean }[] = [
+const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean; hidden?: boolean }[] = [
   { value: 'owner', label: 'Owner' },
   { value: 'admin', label: 'Admin' },
   { value: 'staff', label: 'User' },
   { value: 'staff2', label: 'User 2' },
-  { value: 'staff3', label: 'User 3', fullOnly: true },
+  // HIDDEN FEATURE: "User 3" persona is intentionally hidden from the DemoRoleBar UI.
+  // Still fully wired up (switchViewingAs, staffPersonaStore) — just flip `hidden` to false to bring it back.
+  { value: 'staff3', label: 'User 3', fullOnly: true, hidden: true },
 ];
 
 const VIEW_MODES = [
@@ -95,7 +97,7 @@ export default function DemoRoleBar() {
       <span style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
         Viewing as:
       </span>
-      {VIEWING_AS.filter((item) => !item.fullOnly || viewMode === 'full').map(({ value, label }) => {
+      {VIEWING_AS.filter((item) => !item.hidden && (!item.fullOnly || viewMode === 'full')).map(({ value, label }) => {
         const active = currentViewingAs === value;
         return (
           <button

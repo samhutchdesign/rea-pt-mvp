@@ -11,6 +11,7 @@ import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import { Button } from '@/components/base/buttons/button';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Divider } from '@/components/ui/divider';
+import { NativeSelect } from '@/components/ui/native-select';
 import type { Exercise, Patient } from '@/lib/types';
 import { ArrowLeft, Copy, Heart, ListPlus, Mic, MoreHorizontal, Pencil, Play, Share2, UserPlus } from 'lucide-react';
 
@@ -178,7 +179,8 @@ function ExerciseDetailContent({ id }: { id: string }) {
               Favorite
             </button>
 
-            {/* More menu */}
+            {/* More menu — full version only */}
+            {viewMode === 'full' && (
             <div className="relative" ref={moreRef}>
               <button
                 onClick={() => setMoreOpen((v) => !v)}
@@ -188,11 +190,9 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </button>
               {moreOpen && (
                 <div className="absolute left-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary shadow-lg z-50 py-1">
-                  {viewMode === 'full' && (
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
-                      <Mic size={15} className="text-tertiary shrink-0" />Record Audio Cue
-                    </button>
-                  )}
+                  <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
+                    <Mic size={15} className="text-tertiary shrink-0" />Record Audio Cue
+                  </button>
                   {ex.userUploaded ? (
                     <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
                       <Pencil size={15} className="text-tertiary shrink-0" />Edit
@@ -211,6 +211,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 </div>
               )}
             </div>
+            )}
           </div>
 
           {/* Transcript */}
@@ -227,14 +228,15 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           <div className="flex items-center justify-between mb-3">
             <h3 className="mt-0 text-base font-bold text-primary">Instructions</h3>
-            <select
+            <NativeSelect
               value={selectedCue}
               onChange={(e) => setSelectedCue(e.target.value)}
-              className="rounded-lg border border-secondary bg-primary px-3 py-1.5 text-xs text-secondary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+              wrapperClassName="w-56 shrink-0"
+              className="py-1.5 text-xs text-secondary"
             >
               <option value="">Add relaxation cue…</option>
               {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-            </select>
+            </NativeSelect>
           </div>
           {selectedCue && (() => {
             const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
@@ -272,7 +274,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </div>
           )}
 
-          {similar.length > 0 && (
+          {viewMode === 'full' && similar.length > 0 && (
             <div>
               <h2 className="text-xl font-bold text-primary mb-4 mt-0">Similar Exercises</h2>
               <div className="flex flex-col gap-4">
@@ -293,11 +295,11 @@ function ExerciseDetailContent({ id }: { id: string }) {
         <Modal><Dialog>
           <div className="p-6 w-[440px]">
             <h3 className="mb-4 text-lg font-semibold text-primary">Add to Program</h3>
-            <select value={selectedProgramId ?? ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') { router.push('/programs/new'); setProgramOpen(false); return; } setSelectedProgramId(v || null); }} className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300">
+            <NativeSelect value={selectedProgramId ?? ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') { router.push('/programs/new'); setProgramOpen(false); return; } setSelectedProgramId(v || null); }}>
               <option value="">Select a program…</option>
               <option value="__new__">+ Create new program</option>
               {mockPrograms.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
+            </NativeSelect>
             <div className="mt-6 flex justify-end gap-3">
               <Button color="secondary" size="sm" onPress={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>
               <Button color="primary" size="sm" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
@@ -310,10 +312,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
         <Modal><Dialog>
           <div className="p-6 w-[440px]">
             <h3 className="mb-4 text-lg font-semibold text-primary">Assign to Patient</h3>
-            <select value={selectedPatient?.id ?? ''} onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)} className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300">
+            <NativeSelect value={selectedPatient?.id ?? ''} onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}>
               <option value="">Select a patient…</option>
               {mockPatients.filter((p) => !p.archived).map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
-            </select>
+            </NativeSelect>
             <div className="mt-6 flex justify-end gap-3">
               <Button color="secondary" size="sm" onPress={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>
               <Button color="primary" size="sm" isDisabled={!selectedPatient} onPress={handleAssign}>Assign</Button>

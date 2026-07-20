@@ -11,9 +11,11 @@ import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
+import { useRole } from '@/lib/roleStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
 import { EmptyState } from '@/components/ui/empty-state';
+import { NativeSelect } from '@/components/ui/native-select';
 import type { Patient } from '@/lib/types';
 import { Calendar, Map01, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
 
@@ -70,6 +72,7 @@ export default function PatientsPage() {
   const { patients: scopedPatients } = useLocationScope();
   const yourEmpId = useYourEmpId();
   const viewMode = useViewMode();
+  const role = useRole();
 
   const MVP_HIDDEN = new Set(['pat8', 'pat1']);
   const patients = scopedPatients
@@ -83,9 +86,18 @@ export default function PatientsPage() {
   const archived = patients.filter((p) => p.archived);
 
   const showYoursTab = yourEmpId !== null;
-  const tabList = showYoursTab ? [yourPatients, allActive, archived] : [allActive, archived];
+  // Practitioners (staff role) only see patients assigned to them — no "All" tab.
+  const showAllTab = role !== 'staff';
 
-  useEffect(() => { setTab(0); }, [showYoursTab]);
+  const sections = [
+    ...(showYoursTab ? [{ list: yourPatients, label: 'Your Patients', searchPlaceholder: 'Search your patients…', emptyMessage: 'No patients assigned to you yet' }] : []),
+    ...(showAllTab ? [{ list: allActive, label: 'All', searchPlaceholder: 'Search all patients…', emptyMessage: 'No active patients found' }] : []),
+    { list: archived, label: 'Archived', searchPlaceholder: 'Search archived patients…', emptyMessage: 'No archived patients found' },
+  ];
+  const tabList = sections.map((s) => s.list);
+
+  useEffect(() => { setTab(0); }, [showYoursTab, showAllTab]);
+  useEffect(() => { if (viewMode === 'mvp' && sort === 'upcoming') setSort('newest'); }, [viewMode, sort]);
   const currentList = tabList[tab] ?? allActive;
 
   const applySearch = (list: Patient[]) => {
@@ -117,21 +129,10 @@ export default function PatientsPage() {
     toast.success(`${patient.firstName} ${patient.lastName} restored to active.`);
   };
 
-  const searchPlaceholders = showYoursTab
-    ? ['Search your patients…', 'Search all patients…', 'Search archived patients…']
-    : ['Search all patients…', 'Search archived patients…'];
-
-  const emptyMessages = showYoursTab
-    ? ['No patients assigned to you yet', 'No active patients found', 'No archived patients found']
-    : ['No active patients found', 'No archived patients found'];
-
-  const tabItems = [
-    ...(showYoursTab ? [{ key: 0, label: `Your Patients`, count: yourPatients.length }] : []),
-    { key: showYoursTab ? 1 : 0, label: 'All', count: allActive.length },
-    { key: showYoursTab ? 2 : 1, label: 'Archived', count: archived.length },
-  ];
-
-  const archivedTabIndex = showYoursTab ? 2 : 1;
+  const searchPlaceholders = sections.map((s) => s.searchPlaceholder);
+  const emptyMessages = sections.map((s) => s.emptyMessage);
+  const tabItems = sections.map((s, i) => ({ key: i, label: s.label, count: s.list.length }));
+  const archivedTabIndex = sections.length - 1;
   const empty = displayed.length === 0;
 
   if (dataState === 'empty') {
@@ -197,15 +198,16 @@ export default function PatientsPage() {
             wrapperClassName="max-w-xs"
           />
           {tab !== archivedTabIndex && (
-            <select
+            <NativeSelect
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-medium text-secondary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 transition-shadow"
+              wrapperClassName="w-36 shrink-0"
+              className="font-medium text-secondary"
             >
-              {SORT_OPTIONS.map((o) => (
+              {SORT_OPTIONS.filter((o) => viewMode === 'full' || o.value !== 'upcoming').map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
-            </select>
+            </NativeSelect>
           )}
         </div>
 
@@ -251,18 +253,22 @@ export default function PatientsPage() {
                       <Map01 className="size-3.5 text-quaternary" />
                       <span className="text-xs text-tertiary">{patient.location}</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="size-3.5 text-quaternary" />
-                      <span className="text-xs text-tertiary">
-                        {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
-                      </span>
-                    </div>
+                    {viewMode === 'full' && (
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="size-3.5 text-quaternary" />
+                        <span className="text-xs text-tertiary">
+                          {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
+                        </span>
+                      </div>
+                    )}
+                    {viewMode === 'full' && (
                     <div className="flex items-center gap-1.5">
                       <RefreshCw01 className="size-3.5 text-quaternary" />
                       <span className="text-xs text-tertiary">
                         {count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—'}
                       </span>
                     </div>
+                    )}
                     {tab === archivedTabIndex && (
                       <div onClick={(e) => e.stopPropagation()} className="mt-1">
                         <Button size="xs" color="secondary" iconLeading={RefreshCcw01} onPress={() => restore(patient)}>
