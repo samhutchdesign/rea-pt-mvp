@@ -68,6 +68,25 @@ export interface ExerciseTags {
   bodyPart: string[];
 }
 
+export const MOVEMENT_TYPES = [
+  'Flexion', 'Extension', 'Hyperextension', 'Lateral Flexion',
+  'Rotation', 'Internal Rotation', 'External Rotation',
+  'Protraction', 'Retraction', 'Elevation', 'Depression',
+  'Upward Rotation', 'Downward Rotation',
+  'Abduction', 'Adduction', 'Horizontal Abduction', 'Horizontal Adduction',
+  'Circumduction', 'Dorsiflexion', 'Plantarflexion',
+  'Pronation', 'Supination', 'Inversion', 'Eversion', 'Opposition',
+] as const;
+
+export type MovementType = typeof MOVEMENT_TYPES[number];
+
+export const EFFORT_TYPES = [
+  'Concentric', 'Eccentric', 'Isometric', 'Isotonic', 'Isokinetic',
+  'Ballistic / Explosive', 'Plyometric', 'Static Hold', 'Assisted', 'Resisted',
+] as const;
+
+export type EffortType = typeof EFFORT_TYPES[number];
+
 export interface Exercise {
   id: string;
   name: string;
@@ -78,6 +97,8 @@ export interface Exercise {
   instructions: string[];
   commonMistakes: string[];
   tags: ExerciseTags;
+  movementTypes: MovementType[];
+  effortTypes: EffortType[];
   defaultSets: number;
   defaultReps: number;
   defaultHoldSecs: number;

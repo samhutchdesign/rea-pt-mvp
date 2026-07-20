@@ -1,4 +1,94 @@
-import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic, ClinicLocation, HepHistoryEntry, ExerciseComment } from './types';
+import type { Exercise, Program, Document, Patient, ChartSession, Notification, Physio, Employee, Clinic, ClinicLocation, HepHistoryEntry, ExerciseComment, MovementType, EffortType } from './types';
+import { MOVEMENT_TYPES, EFFORT_TYPES } from './types';
+
+// Movement/effort tags aren't hand-authored per exercise (300+ entries) — instead they're
+// inferred from each exercise's name/description/instructions/category text. This keeps
+// every exercise tagged consistently and stays in sync if exercise copy changes.
+type ExerciseBase = Omit<Exercise, 'movementTypes' | 'effortTypes'>;
+
+function sortByCanonicalOrder<T extends string>(values: T[], order: readonly T[]): T[] {
+  return order.filter((o) => values.includes(o));
+}
+
+function classifyMovementTypes(ex: ExerciseBase): MovementType[] {
+  // commonMistakes describes what NOT to do ("squeezing the inner thighs instead of..."), so it's
+  // excluded here too — matching a mistake would otherwise tag the exercise with the wrong movement.
+  const text = [
+    ex.name, ex.description, ex.category,
+    ...ex.instructions,
+    ...ex.tags.bodyPart, ...ex.tags.muscle,
+  ].join('\n').toLowerCase();
+
+  const found = new Set<MovementType>();
+
+  // Compound/specific terms first, so e.g. "dorsiflexion" doesn't also fire generic "flexion" logic below.
+  if (/dorsiflex/.test(text)) found.add('Dorsiflexion');
+  if (/plantar ?flex/.test(text)) found.add('Plantarflexion');
+  if (/hyperextend|hyper-extension|hyperextension/.test(text)) found.add('Hyperextension');
+  if (/lateral flexion|side[- ]?bend/.test(text)) found.add('Lateral Flexion');
+  if (/internal rotation|medial rotation/.test(text)) found.add('Internal Rotation');
+  if (/external rotation|lateral rotation/.test(text)) found.add('External Rotation');
+  if (/horizontal abduction/.test(text)) found.add('Horizontal Abduction');
+  if (/horizontal adduction/.test(text)) found.add('Horizontal Adduction');
+  if (/circumduct/.test(text)) found.add('Circumduction');
+  if (/upward rotation/.test(text)) found.add('Upward Rotation');
+  if (/downward rotation/.test(text)) found.add('Downward Rotation');
+  if (/protract|reach.{0,15}forward.{0,15}(shoulder|arm)|push.{0,15}shoulder blades? (forward|apart)/.test(text)) found.add('Protraction');
+  if (/retract|squeeze.{0,15}shoulder blades?|pinch.{0,15}shoulder blades?/.test(text)) found.add('Retraction');
+  if (/pronat/.test(text)) found.add('Pronation');
+  if (/supinat/.test(text)) found.add('Supination');
+  if (/\binvert|inversion\b/.test(text)) found.add('Inversion');
+  if (/\bevert|eversion\b/.test(text)) found.add('Eversion');
+  if (/opposition|thumb to (each )?finger|pincer grasp/.test(text)) found.add('Opposition');
+
+  // Pelvic floor contraction/relaxation maps to elevation/depression of the pelvic floor itself.
+  // Scoped to the actual PFMT category (not just any exercise that lists pelvic floor as a secondary muscle).
+  if (ex.category === 'Pelvic Floor Muscle Training') {
+    if (/reverse kegel|soften|lengthen|bear(ing)? down|descend|\bdrop\b|let.{0,10}(go|release)/.test(text)) found.add('Depression');
+    if (/\blift|draw.{0,15}up|\bcontract|\bsqueeze|\bengage|elevat/.test(text)) found.add('Elevation');
+  }
+
+  if (/\bbridge|hip extension|glute bridge|hip thrust|deadlift|hip hinge|standing.{0,15}extension|straighten/.test(text)) found.add('Extension');
+  if (/squat|lunge|march(ing)?|hip flexion|knee flexion|heel slide|knees? to chest|crunch|curl[- ]?up|sit[- ]?up/.test(text)) found.add('Flexion');
+  if (/\bflex(ion|ing)?\b/.test(text)) found.add('Flexion');
+  if (/\bextend(s|ed|ing)?\b|\bextension\b/.test(text)) found.add('Extension');
+  if (/abduct|clamshell|leg lift.{0,15}side|side[- ]?lying.{0,15}(lift|raise)|hip abduction/.test(text)) found.add('Abduction');
+  if (/adduct|squeeze.{0,20}(a |the )?(ball|pillow|cushion).{0,20}knees?|(ball|pillow|cushion).{0,20}between (your |the )?knees|ball squeeze|pillow squeeze|inner thigh/.test(text)) found.add('Adduction');
+  if (!found.has('Internal Rotation') && !found.has('External Rotation') && /\brotat(e|ion|ing)\b|twist/.test(text)) found.add('Rotation');
+  if (!found.has('Elevation') && /elevat/.test(text)) found.add('Elevation');
+  if (!found.has('Depression') && /depress/.test(text)) found.add('Depression');
+
+  return sortByCanonicalOrder([...found], MOVEMENT_TYPES);
+}
+
+function classifyEffortTypes(ex: ExerciseBase): EffortType[] {
+  // commonMistakes is excluded: it's full of generic boilerplate ("don't hold your breath",
+  // "release fully between reps") that would swamp the signal from the actual exercise description.
+  const text = [ex.name, ex.description, ex.equipment, ...ex.instructions].join('\n').toLowerCase();
+
+  const found = new Set<EffortType>();
+
+  const isBallistic = /quick|flick|fast|rapid|explosive/.test(text);
+  if (isBallistic) { found.add('Ballistic / Explosive'); found.add('Concentric'); }
+  if (/plyo|jump|hop\b|bound/.test(text)) found.add('Plyometric');
+  const isIsometricByKeyword = /sub-?max|endurance|sustained hold|hold the contraction|hold for|isometric|hold at the top|hold this position/.test(text);
+  if (isIsometricByKeyword || (!isBallistic && ex.defaultHoldSecs >= 5)) found.add('Isometric');
+  if (/reverse kegel|pelvic floor drop|soften|lengthen|bear(ing)? down|lower (the|your)|eccentric|lengthening/.test(text)) found.add('Eccentric');
+  if (/\blift|\bcontract|\bsqueeze|\braise|\bpress|\bpush|\bpull|concentric|draw.{0,15}up|\bengage/.test(text)) found.add('Concentric');
+  if ((ex.equipment && ex.equipment !== 'None' && /band|weight|elastic/i.test(ex.equipment)) || /resistance band|theraband|dumbbell|ankle weight/.test(text)) found.add('Resisted');
+  if (/assisted by|with support|gravity[- ]eliminated|passive range|with help from/.test(text)) found.add('Assisted');
+
+  if (found.size === 0) {
+    if (ex.defaultHoldSecs >= 3) found.add('Isometric');
+    else { found.add('Concentric'); found.add('Eccentric'); }
+  }
+
+  return sortByCanonicalOrder([...found], EFFORT_TYPES);
+}
+
+function withMovementEffort(ex: ExerciseBase): Exercise {
+  return { ...ex, movementTypes: classifyMovementTypes(ex), effortTypes: classifyEffortTypes(ex) };
+}
 
 export const mockPhysio: Physio = {
   id: 'p1',
@@ -315,7 +405,7 @@ export const mockEmployees: Employee[] = [
   },
 ];
 
-export const mockExercises: Exercise[] = [
+const mockExercisesRaw: ExerciseBase[] = [
   {
     id: 'ex1',
     name: 'Pelvic Floor: Full Range',
@@ -1768,6 +1858,8 @@ export const mockExercises: Exercise[] = [
   },
 
 ];
+
+export const mockExercises: Exercise[] = mockExercisesRaw.map(withMovementEffort);
 
 export const mockPrograms: Program[] = [
   {
@@ -3521,7 +3613,7 @@ export const mockExerciseComments: Record<string, ExerciseComment[]> = {
     { id: 'e12c2', exerciseId: 'ex12', authorId: 'emp4', authorName: 'Marcus Laine', authorInitials: 'ML', content: 'Be cautious with pelvic pain patients — adductor loading can provoke symptoms. Start at 30% effort, isometric hold only, and build gradually over sessions.', createdAt: '2026-05-06T11:30:00', pinned: false },
   ],
 };
-export const mockExercisesFull: Exercise[] = [
+const mockExercisesFullRaw: ExerciseBase[] = [
   {
     id: 'fx-plank-traditional',
     name: 'Plank: Traditional',
@@ -13031,3 +13123,5 @@ export const mockExercisesFull: Exercise[] = [
     variationGroup: undefined,
   },
 ];
+
+export const mockExercisesFull: Exercise[] = mockExercisesFullRaw.map(withMovementEffort);
