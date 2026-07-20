@@ -21,7 +21,7 @@ function VerifyContent() {
           <div className="size-10 animate-spin rounded-full border-2 border-secondary border-t-brand-600" />
         </div>
         <h1 className="text-xl font-semibold text-primary mb-2">Check your inbox</h1>
-        <p className="text-sm text-tertiary mb-1">We sent a magic link to</p>
+        <p className="text-sm text-tertiary mb-1">We sent a sign-in link to</p>
         <p className="text-sm font-semibold text-primary mb-6 break-all">{email}</p>
         <p className="text-xs text-tertiary">Signing you in automatically…</p>
         <button className="mt-4 text-xs text-brand-600 hover:text-brand-700 transition-colors">

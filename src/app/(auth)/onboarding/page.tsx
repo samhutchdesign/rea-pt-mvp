@@ -31,17 +31,17 @@ function OnboardingContent() {
         <div className="flex flex-col gap-5">
           <div className="flex gap-4">
             <div className="flex-1">
-              <div className="mb-1 text-xs font-medium text-secondary">First Name</div>
+              <div className="mb-1 text-xs font-medium text-secondary">First Name <span className="text-error-500">*</span></div>
               <Input placeholder="First name" />
             </div>
             <div className="flex-1">
-              <div className="mb-1 text-xs font-medium text-secondary">Last Name</div>
+              <div className="mb-1 text-xs font-medium text-secondary">Last Name <span className="text-error-500">*</span></div>
               <Input placeholder="Last name" />
             </div>
           </div>
 
           <div>
-            <div className="mb-1 text-xs font-medium text-secondary">Title</div>
+            <div className="mb-1 text-xs font-medium text-secondary">Title <span className="text-error-500">*</span></div>
             <Input placeholder="e.g. Pelvic Floor Physiotherapist" />
           </div>
 
