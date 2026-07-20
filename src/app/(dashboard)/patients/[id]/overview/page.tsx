@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/base/buttons/button';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Alert } from '@/components/ui/alert';
+import { NativeSelect } from '@/components/ui/native-select';
 import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -44,8 +45,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   })();
 
   const stats: { label: string; value: number | string; icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; color: string }[] = [
-    { label: 'Total Sessions', value: sessions.length, icon: Calendar, color: '#0288D1' },
-    { label: 'Exercises in Program', value: program ? program.exercises.length : '—', icon: Zap, color: '#F57C00' },
+    ...(viewMode === 'full' ? [{ label: 'Total Sessions', value: sessions.length, icon: Calendar, color: '#0288D1' }] : []),
     ...(viewMode === 'full' && avgAdherence != null
       ? [{ label: 'Avg. Adherence', value: `${avgAdherence}%`, icon: Zap, color: avgAdherence >= 80 ? '#2E7D32' : avgAdherence >= 60 ? '#F57F17' : '#C62828' }]
       : []),
@@ -76,6 +76,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         </Alert>
       )}
 
+      {stats.length > 0 && (
       <div className="flex gap-4 mb-6">
         {stats.map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
@@ -94,6 +95,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           </div>
         ))}
       </div>
+      )}
 
       <div className="flex gap-6">
         {/* Recent Session */}
@@ -106,19 +108,26 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           </div>
           {latestSession ? (
             <>
-              <p className="text-sm text-secondary mb-2">
-                {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </p>
-              <div className="flex gap-2 flex-wrap mb-4">
-                {latestSession.painLevel && (
-                  <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
-                    {latestSession.painLevel}
-                  </span>
-                )}
-                {latestSession.improvementLevel && (
-                  <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
-                    {latestSession.improvementLevel}
-                  </span>
+              <div
+                onClick={() => router.push(`/patients/${id}/chart/${latestSession.id}`)}
+                className="rounded-lg border border-secondary p-3 mb-4 cursor-pointer hover:bg-secondary_alt hover:border-brand-300 transition-colors"
+              >
+                <p className="text-sm text-secondary">
+                  {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </p>
+                {viewMode === 'full' && (
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {latestSession.painLevel && (
+                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                        {latestSession.painLevel}
+                      </span>
+                    )}
+                    {latestSession.improvementLevel && (
+                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                        {latestSession.improvementLevel}
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
               <button
@@ -136,15 +145,16 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         {/* Current Program */}
         <div className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-semibold text-primary">Current Program</span>
+            <span className="text-sm font-semibold text-primary">
+              Current Program{program ? ` (${program.exercises.length})` : ''}
+            </span>
             <Button size="xs" color="tertiary" onPress={() => router.push(`/patients/${id}/program`)}>
               View Program
             </Button>
           </div>
           {program ? (
             <>
-              <p className="text-sm font-semibold text-primary mb-1">{program.name}</p>
-              <p className="text-sm text-secondary mb-4">{program.exercises.length} exercises</p>
+              <p className="text-sm font-semibold text-primary mb-4">{program.name}</p>
               <div className="max-h-48 overflow-y-auto">
                 {program.exercises.map((pe) => {
                   const ex = mockExercises.find((e) => e.id === pe.exerciseId);
@@ -219,8 +229,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
               <p className="text-sm text-secondary mb-4">
                 Reassign <strong>{patient.firstName} {patient.lastName}</strong> to another physiotherapist.
               </p>
-              <select
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600"
+              <NativeSelect
                 value={selectedEmployee?.id ?? ''}
                 onChange={(e) => setSelectedEmployee(mockEmployees.find((emp) => emp.id === e.target.value) ?? null)}
               >
@@ -232,7 +241,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                       {e.firstName} {e.lastName} — {e.credentials}
                     </option>
                   ))}
-              </select>
+              </NativeSelect>
               <div className="flex justify-end gap-3 mt-6">
                 <Button
                   color="secondary"
