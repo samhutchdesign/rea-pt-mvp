@@ -10,7 +10,7 @@ import FilterMenu from '@/components/exercises/FilterMenu';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
-import { Eye, GripVertical, Heart, MinusCircle, PlusCircle, Search, Zap } from 'lucide-react';
+import { ArrowLeft, Eye, GripVertical, Heart, MinusCircle, PlusCircle, Search, Zap } from 'lucide-react';
 
 const ALL_CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
 const ALL_SURGERIES = ['Post-THA', 'Post-TKA', 'C-Section', 'Post-Hysterectomy'];
@@ -97,6 +97,20 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     return exs;
   }, [search, sortBy, filterConditions, filterSurgeries, filterMuscles, filterBodyParts, showFavoritesOnly, favorites]);
 
+  const handleSave = () => {
+    const current = getHepState(id);
+    const currentProgram = current.programId ? mockPrograms.find((p) => p.id === current.programId) : null;
+    const oldSnapshot = currentProgram && current.programAssignedAt
+      ? { programId: currentProgram.id, programName: currentProgram.name, exercises: currentProgram.exercises, assignedAt: current.programAssignedAt }
+      : null;
+    const newProgramId = current.programId ?? 'prog1';
+    const newProgramName = currentProgram?.name ?? 'Custom Program';
+    const newExercises = programRows.map((r) => ({ ...r, adherence: 0 }));
+    saveNewProgram(id, newProgramId, newProgramName, newExercises, oldSnapshot);
+    toast.success('Program updated');
+    router.push(`/patients/${id}/program`);
+  };
+
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const addExercise = (ex: Exercise) => {
     if (programRows.some((r) => r.exerciseId === ex.id)) return;
@@ -107,7 +121,29 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     setProgramRows((prev) => prev.map((r) => r.exerciseId === exId ? { ...r, [field]: value } : r));
 
   return (
-    <div className="flex gap-6" style={{ height: 'calc(100vh - 290px)', overflow: 'hidden' }}>
+    <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] bg-primary flex flex-col overflow-hidden">
+
+      {/* Full-screen header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-secondary shrink-0">
+        <button
+          onClick={() => router.push(`/patients/${id}/program`)}
+          className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-primary transition-colors"
+        >
+          <ArrowLeft size={15} />
+          Back
+        </button>
+        <h1 className="text-base font-semibold text-primary m-0">
+          {patient?.firstName} {patient?.lastName}&apos;s Program
+        </h1>
+        <div className="flex gap-2">
+          <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
+          <Button color="primary" size="sm" onPress={handleSave}>Save Program</Button>
+        </div>
+      </div>
+
+      {/* Two-column content */}
+      <div className="flex flex-1 min-h-0 gap-6 px-6 py-4 overflow-hidden">
+
       {/* Left: Exercise Library */}
       <div className="flex flex-col gap-4 min-h-0" style={{ width: '45%' }}>
         <span className="text-sm font-semibold text-primary">Exercise Library</span>
@@ -270,34 +306,9 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           })}
         </div>
 
-        <div className="flex justify-end gap-4 border-t border-secondary pt-4">
-          <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-          <Button
-            color="primary"
-            size="sm"
-            onPress={() => {
-              const current = getHepState(id);
-              const currentProgram = current.programId ? mockPrograms.find((p) => p.id === current.programId) : null;
-              const oldSnapshot = currentProgram && current.programAssignedAt
-                ? {
-                    programId: currentProgram.id,
-                    programName: currentProgram.name,
-                    exercises: currentProgram.exercises,
-                    assignedAt: current.programAssignedAt,
-                  }
-                : null;
-              const newProgramId = current.programId ?? 'prog1';
-              const newProgramName = currentProgram?.name ?? 'Custom Program';
-              const newExercises = programRows.map((r) => ({ ...r, adherence: 0 }));
-              saveNewProgram(id, newProgramId, newProgramName, newExercises, oldSnapshot);
-              toast.success('Program updated');
-              router.push(`/patients/${id}/program`);
-            }}
-          >
-            Save Program Updates
-          </Button>
-        </div>
       </div>
+
+      </div>{/* end two-column */}
 
       <ExercisePreviewDrawer
         exercise={previewExercise}
