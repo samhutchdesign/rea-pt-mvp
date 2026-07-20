@@ -13,17 +13,17 @@ import { mockEmployees, mockClinicLocations, mockClinics } from '@/lib/mock-data
 import { LayoutDashboard, List, Users, Zap, ChevronDown } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
-type NavItem = { label: string; href: string; mvpHref?: string; icon: ComponentType<{ className?: string }> };
+type NavItem = { label: string; href: string; mvpHref?: string; mvpHide?: boolean; icon: ComponentType<{ className?: string }> };
 
 const baseNavItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/dashboard', mvpHide: true, icon: LayoutDashboard },
   { label: 'Patients', href: '/patients', icon: Users },
   { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: Zap },
   { label: 'Programs', href: '/programs', icon: List },
 ];
 
 const ownerNavItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/dashboard', mvpHide: true, icon: LayoutDashboard },
   { label: 'Patients', href: '/patients', icon: Users },
   { label: 'Employees', href: '/employees', icon: Users },
   { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: Zap },
@@ -123,7 +123,7 @@ export default function Sidebar() {
         )}
       </div>
 
-      {navItems.map(({ label, href, mvpHref, icon: Icon }) => {
+      {navItems.filter((item) => !(viewMode === 'mvp' && item.mvpHide)).map(({ label, href, mvpHref, icon: Icon }) => {
         const resolvedHref = viewMode === 'mvp' && mvpHref ? mvpHref : href;
         const isActive = resolvedHref === '/' ? pathname === '/' : pathname.startsWith(resolvedHref);
         return (

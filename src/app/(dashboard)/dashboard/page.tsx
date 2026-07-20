@@ -1,5 +1,5 @@
 'use client';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building2, MapPin, Users, Heart, Zap } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
@@ -7,6 +7,7 @@ import { Avatar } from '@/components/base/avatar/avatar';
 import { mockPatients, mockEmployees, mockClinicLocations, mockPrograms, mockChartSessions } from '@/lib/mock-data';
 import { useRole } from '@/lib/roleStore';
 import { useDataState } from '@/lib/dataStateStore';
+import { useViewMode } from '@/lib/viewModeStore';
 import { useYourEmpId, useLocationScope } from '@/lib/locationScope';
 import { useLocationId } from '@/lib/locationStore';
 import { useOrgId } from '@/lib/orgStore';
@@ -267,6 +268,14 @@ export default function DashboardPage() {
   const role = useRole();
   const empId = useYourEmpId();
   const dataState = useDataState();
+  const viewMode = useViewMode();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (viewMode === 'mvp') router.replace('/patients');
+  }, [viewMode, router]);
+
+  if (viewMode === 'mvp') return null;
 
   if (dataState === 'empty') {
     return (
