@@ -1062,7 +1062,7 @@ export const mockExercises: Exercise[] = [
     ],
     tags: {
       specialty: ['Pelvic health', 'Women`s health', 'Men`s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -1091,7 +1091,7 @@ export const mockExercises: Exercise[] = [
     ],
     tags: {
       specialty: ['Pelvic health', 'Women`s health', 'Men`s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Multifidus', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -1120,7 +1120,7 @@ export const mockExercises: Exercise[] = [
     ],
     tags: {
       specialty: ['Pelvic health', 'Women`s health', 'Men`s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -1149,7 +1149,7 @@ export const mockExercises: Exercise[] = [
     ],
     tags: {
       specialty: ['Pelvic health', 'Women`s health', 'Men`s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Hip adductors', 'Obturator internus', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor'],
       bodyPart: ['Glutes', 'Hip', 'Inner thigh', 'Core', 'Lumbar spine', 'Pelvic floor'],
@@ -8585,7 +8585,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -8621,7 +8621,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -8657,7 +8657,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Multifidus', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis', 'Sacroiliac joint'],
@@ -8693,7 +8693,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Hip flexors', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -8729,7 +8729,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Deltoid', 'Triceps', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Shoulder', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -8765,7 +8765,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Hip adductors', 'Obturator internus', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Inner thigh', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -8801,7 +8801,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -8837,7 +8837,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis'],
@@ -8873,7 +8873,7 @@ export const mockExercisesFull: Exercise[] = [
         ],
     tags: {
       specialty: ['Pelvic health', 'Women\'s health', 'Men\'s health', 'Musculoskeletal', 'Continence & prolapse', 'Post-surgical rehab', 'Post-natal'],
-      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-section recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
+      condition: ['Stress urinary incontinence', 'Mixed urinary incontinence', 'Pelvic organ prolapse', 'Pelvic girdle pain', 'Sacroiliac joint dysfunction', 'Low back pain', 'Hip weakness', 'Gluteal weakness', 'Postpartum recovery', 'C-Section Recovery', 'Pregnancy', 'Diastasis recti abdominis', 'Pressure management dysfunction', 'Post-prostatectomy incontinence', 'Male lower urinary tract symptoms (LUTS)', 'Urge urinary incontinence', 'Urinary urgency', 'Urinary frequency', 'Erectile dysfunction'],
       surgery: ['Caesarean section', 'Hysterectomy', 'Prolapse repair', 'Pelvic floor repair', 'Radical prostatectomy', 'TURP', 'Abdominal hernia repair'],
       muscle: ['Gluteus maximus', 'Gluteus medius', 'Tensor fasciae latae', 'Hamstrings', 'Transversus abdominis', 'Erector spinae', 'Pelvic floor', 'Diaphragm'],
       bodyPart: ['Glutes', 'Hip', 'Core', 'Lumbar spine', 'Pelvic floor', 'Pelvis', 'Sacroiliac joint'],
