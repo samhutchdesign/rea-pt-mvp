@@ -5,11 +5,13 @@ import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
+import { NativeSelect } from '@/components/ui/native-select';
 import { cx } from '@/utils/cx';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import FilterMenu from '@/components/exercises/FilterMenu';
 import { mockExercises } from '@/lib/mock-data';
 import type { Exercise } from '@/lib/types';
+import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import { Eye, GripVertical, Heart, MinusCircle, PlusCircle, Search, Zap } from 'lucide-react';
 
 const ALL_SPECIALTIES = ['Pelvic Floor', 'Orthopedic'];
@@ -32,6 +34,8 @@ export default function NewProgramPage() {
   const [filterSurgeries, setFilterSurgeries] = useState<string[]>([]);
   const [filterMuscles, setFilterMuscles] = useState<string[]>([]);
   const [filterBodyParts, setFilterBodyParts] = useState<string[]>([]);
+  const [filterMovementTypes, setFilterMovementTypes] = useState<string[]>([]);
+  const [filterEffortTypes, setFilterEffortTypes] = useState<string[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
   const [programRows, setProgramRows] = useState<ProgramRow[]>([]);
@@ -62,6 +66,8 @@ export default function NewProgramPage() {
       if (filterSurgeries.length && !filterSurgeries.some((s) => ex.tags.surgery.includes(s))) return false;
       if (filterMuscles.length && !filterMuscles.some((m) => ex.tags.muscle.includes(m))) return false;
       if (filterBodyParts.length && !filterBodyParts.some((b) => ex.tags.bodyPart.includes(b))) return false;
+      if (filterMovementTypes.length && !filterMovementTypes.some((m) => ex.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number]))) return false;
+      if (filterEffortTypes.length && !filterEffortTypes.some((e) => ex.effortTypes.includes(e as (typeof EFFORT_TYPES)[number]))) return false;
       return true;
     });
     exs = exs.sort((a, b) => {
@@ -72,7 +78,7 @@ export default function NewProgramPage() {
       return 0;
     });
     return exs;
-  }, [search, sortBy, filterSpecialties, filterConditions, filterSurgeries, filterMuscles, filterBodyParts, showFavoritesOnly, favorites]);
+  }, [search, sortBy, filterSpecialties, filterConditions, filterSurgeries, filterMuscles, filterBodyParts, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites]);
 
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const addExercise = (ex: Exercise) => {
@@ -129,17 +135,20 @@ export default function NewProgramPage() {
               <FilterMenu label="Surgery" options={ALL_SURGERIES} selected={filterSurgeries} onChange={setFilterSurgeries} />
               <FilterMenu label="Muscle" options={ALL_MUSCLES} selected={filterMuscles} onChange={setFilterMuscles} />
               <FilterMenu label="Body Part" options={ALL_BODY_PARTS} selected={filterBodyParts} onChange={setFilterBodyParts} />
+              <FilterMenu label="Movement Type" options={[...MOVEMENT_TYPES]} selected={filterMovementTypes} onChange={setFilterMovementTypes} />
+              <FilterMenu label="Effort Type" options={[...EFFORT_TYPES]} selected={filterEffortTypes} onChange={setFilterEffortTypes} />
             </div>
 
             <div className="flex gap-2 items-center">
               <span className="text-xs text-tertiary">Sort:</span>
-              <select
+              <NativeSelect
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-lg border border-secondary px-3 py-1.5 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary min-w-[140px]"
+                wrapperClassName="w-40 shrink-0"
+                className="py-1.5"
               >
                 {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-              </select>
+              </NativeSelect>
             </div>
 
             <div className="overflow-y-auto flex-1 flex flex-col gap-2 min-h-0">
@@ -255,13 +264,14 @@ export default function NewProgramPage() {
                         ))}
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs text-tertiary">Freq:</span>
-                          <select
+                          <NativeSelect
                             value={row.frequency}
                             onChange={(e) => updateRow(row.exerciseId, 'frequency', e.target.value)}
-                            className="rounded-lg border border-secondary px-2 py-1.5 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary min-w-[130px]"
+                            wrapperClassName="w-40 shrink-0"
+                            className="py-1.5"
                           >
                             {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
-                          </select>
+                          </NativeSelect>
                         </div>
                       </div>
                     </div>

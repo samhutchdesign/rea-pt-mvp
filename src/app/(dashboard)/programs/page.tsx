@@ -5,14 +5,13 @@ import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
+import { toTitleCase } from '@/utils/text';
+import { NativeSelect } from '@/components/ui/native-select';
 import { mockPrograms, mockExercises } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
+import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import { Heart, Plus, Search, X, Zap } from 'lucide-react';
-
-function toTitleCase(s: string) {
-  return s.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1));
-}
 
 const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
@@ -79,6 +78,8 @@ export default function ProgramsPage() {
   const [filterCategories, setFilterCategories] = useState<string[]>([]);
   const [filterLevels, setFilterLevels] = useState<string[]>([]);
   const [filterEquipment, setFilterEquipment] = useState<string[]>([]);
+  const [filterMovementTypes, setFilterMovementTypes] = useState<string[]>([]);
+  const [filterEffortTypes, setFilterEffortTypes] = useState<string[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [conditionSearch, setConditionSearch] = useState('');
   const [categorySearch, setCategorySearch] = useState('');
@@ -87,8 +88,8 @@ export default function ProgramsPage() {
 
   const toggleFavorite = (id: string) => setFavorites((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
-  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setShowFavoritesOnly(false); };
-  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || showFavoritesOnly;
+  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); };
+  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly;
 
   const filteredConditions = conditionSearch
     ? ALL_CONDITIONS.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase()))
@@ -107,12 +108,14 @@ export default function ProgramsPage() {
         const q = search.toLowerCase();
         if (!p.name.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q) && !p.tags.some((t) => t.toLowerCase().includes(q))) return false;
       }
-      if (filterConditions.length || filterCategories.length || filterLevels.length || filterEquipment.length) {
+      if (filterConditions.length || filterCategories.length || filterLevels.length || filterEquipment.length || filterMovementTypes.length || filterEffortTypes.length) {
         const exs = p.exercises.map((pe) => mockExercises.find((e) => e.id === pe.exerciseId)).filter(Boolean);
         if (filterConditions.length && !filterConditions.some((c) => exs.some((ex) => ex!.tags.condition.some((ec) => toTitleCase(ec) === c)))) return false;
         if (filterCategories.length && !filterCategories.some((c) => exs.some((ex) => ex!.category === c))) return false;
         if (filterLevels.length && !filterLevels.some((l) => exs.some((ex) => ex!.level === l))) return false;
         if (filterEquipment.length && !filterEquipment.some((eq) => exs.some((ex) => toTitleCase(ex!.equipment) === eq))) return false;
+        if (filterMovementTypes.length && !filterMovementTypes.some((m) => exs.some((ex) => ex!.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number])))) return false;
+        if (filterEffortTypes.length && !filterEffortTypes.some((e) => exs.some((ex) => ex!.effortTypes.includes(e as (typeof EFFORT_TYPES)[number])))) return false;
       }
       return true;
     }).sort((a, b) => {
@@ -122,7 +125,7 @@ export default function ProgramsPage() {
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, showFavoritesOnly, favorites]);
+  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites]);
 
   return (
     <>
@@ -206,6 +209,18 @@ export default function ProgramsPage() {
                 <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} onChange={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />
               ))}
             </FilterSection>
+
+            <FilterSection title="Movement Type" activeCount={filterMovementTypes.length} onClear={() => setFilterMovementTypes([])}>
+              {MOVEMENT_TYPES.map((m) => (
+                <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} onChange={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />
+              ))}
+            </FilterSection>
+
+            <FilterSection title="Effort Type" activeCount={filterEffortTypes.length} onClear={() => setFilterEffortTypes([])}>
+              {EFFORT_TYPES.map((e) => (
+                <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} onChange={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />
+              ))}
+            </FilterSection>
           </div>
 
           {/* Right content */}
@@ -221,13 +236,13 @@ export default function ProgramsPage() {
                   size="sm"
                 />
               </div>
-              <select
+              <NativeSelect
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary min-w-[150px]"
+                wrapperClassName="w-40 shrink-0"
               >
                 {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-              </select>
+              </NativeSelect>
             </div>
 
             {hasFilters && (
@@ -238,6 +253,8 @@ export default function ProgramsPage() {
                 {filterCategories.map((c) => <FilterTag key={c} label={c} onRemove={() => toggleArr(filterCategories, c, setFilterCategories)} />)}
                 {filterLevels.map((l) => <FilterTag key={l} label={l} onRemove={() => toggleArr(filterLevels, l, setFilterLevels)} />)}
                 {filterEquipment.map((eq) => <FilterTag key={eq} label={eq} onRemove={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />)}
+                {filterMovementTypes.map((m) => <FilterTag key={m} label={m} onRemove={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />)}
+                {filterEffortTypes.map((e) => <FilterTag key={e} label={e} onRemove={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />)}
               </div>
             )}
 

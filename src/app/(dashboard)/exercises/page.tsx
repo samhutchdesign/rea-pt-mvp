@@ -10,9 +10,12 @@ import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import type { Exercise } from '@/lib/types';
+import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
+import { toTitleCase } from '@/utils/text';
+import { NativeSelect } from '@/components/ui/native-select';
 
 type IconType = ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>;
 
@@ -206,6 +209,21 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
   );
 }
 
+function FilterSearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  return (
+    <div className="relative mb-3">
+      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+      />
+    </div>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 function ExercisesPageContent() {
@@ -235,8 +253,25 @@ function ExercisesPageContent() {
   const [filterEquipment, setFilterEquipment] = useState<string[]>(
     searchParams.get('equip')?.split(',').filter(Boolean) ?? []
   );
+  const [filterMovementTypes, setFilterMovementTypes] = useState<string[]>(
+    searchParams.get('mvt')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterEffortTypes, setFilterEffortTypes] = useState<string[]>(
+    searchParams.get('eft')?.split(',').filter(Boolean) ?? []
+  );
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('fav') === '1');
   const [showMoreConditions, setShowMoreConditions] = useState(false);
+  const [showMoreCategories, setShowMoreCategories] = useState(false);
+  const [showMoreLevels, setShowMoreLevels] = useState(false);
+  const [showMoreEquipment, setShowMoreEquipment] = useState(false);
+  const [showMoreMovementTypes, setShowMoreMovementTypes] = useState(false);
+  const [showMoreEffortTypes, setShowMoreEffortTypes] = useState(false);
+  const [conditionSearch, setConditionSearch] = useState('');
+  const [categorySearch, setCategorySearch] = useState('');
+  const [levelSearch, setLevelSearch] = useState('');
+  const [equipmentSearch, setEquipmentSearch] = useState('');
+  const [movementSearch, setMovementSearch] = useState('');
+  const [effortSearch, setEffortSearch] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
 
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
@@ -244,8 +279,8 @@ function ExercisesPageContent() {
   const specialty = SPECIALTIES.find((s) => s.id === effectiveSelectedId) ?? null;
   const allModeFilterConfig: SpecialtyFilters = useMemo(() => ({
     conditionLabel: 'Condition',
-    conditions: [...new Set(exercises.flatMap((e) => e.tags.condition))].sort(),
-    categories: [...new Set(exercises.map((e) => e.category))].sort(),
+    conditions: [...new Set(exercises.flatMap((e) => e.tags.condition.map(toTitleCase)))].sort(),
+    categories: [...new Set(exercises.map((e) => toTitleCase(e.category)))].sort(),
   }), [exercises]);
   const filterConfig = isAllMode
     ? allModeFilterConfig
@@ -254,11 +289,11 @@ function ExercisesPageContent() {
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
 
-  const selectSpecialty = (id: string) => { setSelectedId(id); setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setShowFavoritesOnly(false); };
-  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setShowFavoritesOnly(false); };
+  const selectSpecialty = (id: string) => { setSelectedId(id); setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); };
+  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); };
 
   const effectiveSearch = expandSearch(search);
-  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || showFavoritesOnly;
+  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly;
 
   const filtered = useMemo(() => {
     if (!isAllMode && !specialty?.available) return [];
@@ -273,6 +308,8 @@ function ExercisesPageContent() {
       if (filterCategories.length && !filterCategories.includes(ex.category)) return false;
       if (filterLevels.length && !filterLevels.includes(ex.level)) return false;
       if (filterEquipment.length && !filterEquipment.includes(ex.equipment)) return false;
+      if (filterMovementTypes.length && !filterMovementTypes.some((m) => ex.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number]))) return false;
+      if (filterEffortTypes.length && !filterEffortTypes.some((e) => ex.effortTypes.includes(e as (typeof EFFORT_TYPES)[number]))) return false;
       return true;
     }).sort((a, b) => {
       if (sortBy === 'A → Z') return a.name.localeCompare(b.name);
@@ -281,7 +318,7 @@ function ExercisesPageContent() {
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, showFavoritesOnly, favorites, exercises]);
+  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, exercises]);
 
   const levelClasses = (l: string) =>
     l === 'Beginner' ? 'bg-success-50 text-success-700' :
@@ -291,9 +328,39 @@ function ExercisesPageContent() {
 
   const breadcrumbs = [{ label: 'Exercises' }];
 
-  const visibleConditions = filterConfig
-    ? (showMoreConditions ? filterConfig.conditions : filterConfig.conditions.slice(0, 7))
+  const filteredConditions = filterConfig
+    ? (conditionSearch ? filterConfig.conditions.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase())) : filterConfig.conditions)
     : [];
+  const visibleConditions = conditionSearch
+    ? filteredConditions
+    : (showMoreConditions ? filteredConditions : filteredConditions.slice(0, 7));
+
+  const filteredCategories = filterConfig
+    ? (categorySearch ? filterConfig.categories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase())) : filterConfig.categories)
+    : [];
+  const visibleCategories = categorySearch
+    ? filteredCategories
+    : (showMoreCategories ? filteredCategories : filteredCategories.slice(0, 7));
+
+  const filteredLevels = levelSearch ? ALL_LEVELS.filter((l) => l.toLowerCase().includes(levelSearch.toLowerCase())) : ALL_LEVELS;
+  const visibleLevels = levelSearch
+    ? filteredLevels
+    : (showMoreLevels ? filteredLevels : filteredLevels.slice(0, 7));
+
+  const filteredEquipment = equipmentSearch ? ALL_EQUIPMENT.filter((eq) => eq.toLowerCase().includes(equipmentSearch.toLowerCase())) : ALL_EQUIPMENT;
+  const visibleEquipment = equipmentSearch
+    ? filteredEquipment
+    : (showMoreEquipment ? filteredEquipment : filteredEquipment.slice(0, 7));
+
+  const filteredMovementTypes = movementSearch ? MOVEMENT_TYPES.filter((m) => m.toLowerCase().includes(movementSearch.toLowerCase())) : MOVEMENT_TYPES;
+  const visibleMovementTypes = movementSearch
+    ? filteredMovementTypes
+    : (showMoreMovementTypes ? filteredMovementTypes : filteredMovementTypes.slice(0, 7));
+
+  const filteredEffortTypes = effortSearch ? EFFORT_TYPES.filter((e) => e.toLowerCase().includes(effortSearch.toLowerCase())) : EFFORT_TYPES;
+  const visibleEffortTypes = effortSearch
+    ? filteredEffortTypes
+    : (showMoreEffortTypes ? filteredEffortTypes : filteredEffortTypes.slice(0, 7));
 
   return (
     <>
@@ -333,13 +400,17 @@ function ExercisesPageContent() {
               {/* Condition */}
               {filterConfig && (
                 <FilterSection title={filterConfig.conditionLabel} activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
+                  <FilterSearchBox value={conditionSearch} onChange={setConditionSearch} placeholder="Search conditions…" />
                   {visibleConditions.map((c) => (
                     <CheckRow key={c} label={c} checked={filterConditions.includes(c)} onChange={() => toggleArr(filterConditions, c, setFilterConditions)} />
                   ))}
-                  {filterConfig.conditions.length > 7 && (
+                  {!conditionSearch && filterConfig.conditions.length > 7 && (
                     <Button color="link-color" size="sm" onPress={() => setShowMoreConditions((v) => !v)}>
                       {showMoreConditions ? 'Show less' : `+${filterConfig.conditions.length - 7} more`}
                     </Button>
+                  )}
+                  {conditionSearch && filteredConditions.length === 0 && (
+                    <p className="text-xs text-tertiary">No conditions found.</p>
                   )}
                 </FilterSection>
               )}
@@ -347,24 +418,83 @@ function ExercisesPageContent() {
               {/* Category */}
               {filterConfig && (
                 <FilterSection title="Category" activeCount={filterCategories.length} onClear={() => setFilterCategories([])}>
-                  {filterConfig.categories.map((c) => (
+                  <FilterSearchBox value={categorySearch} onChange={setCategorySearch} placeholder="Search categories…" />
+                  {visibleCategories.map((c) => (
                     <CheckRow key={c} label={c} checked={filterCategories.includes(c)} onChange={() => toggleArr(filterCategories, c, setFilterCategories)} />
                   ))}
+                  {!categorySearch && filteredCategories.length > 7 && (
+                    <Button color="link-color" size="sm" onPress={() => setShowMoreCategories((v) => !v)}>
+                      {showMoreCategories ? 'Show less' : `+${filteredCategories.length - 7} more`}
+                    </Button>
+                  )}
+                  {categorySearch && filteredCategories.length === 0 && (
+                    <p className="text-xs text-tertiary">No categories found.</p>
+                  )}
                 </FilterSection>
               )}
 
               {/* Level */}
               <FilterSection title="Level" activeCount={filterLevels.length} onClear={() => setFilterLevels([])}>
-                {ALL_LEVELS.map((l) => (
+                <FilterSearchBox value={levelSearch} onChange={setLevelSearch} placeholder="Search levels…" />
+                {visibleLevels.map((l) => (
                   <CheckRow key={l} label={l} checked={filterLevels.includes(l)} onChange={() => toggleArr(filterLevels, l, setFilterLevels)} />
                 ))}
+                {!levelSearch && filteredLevels.length > 7 && (
+                  <Button color="link-color" size="sm" onPress={() => setShowMoreLevels((v) => !v)}>
+                    {showMoreLevels ? 'Show less' : `+${filteredLevels.length - 7} more`}
+                  </Button>
+                )}
+                {levelSearch && filteredLevels.length === 0 && (
+                  <p className="text-xs text-tertiary">No levels found.</p>
+                )}
               </FilterSection>
 
               {/* Equipment */}
               <FilterSection title="Equipment" activeCount={filterEquipment.length} onClear={() => setFilterEquipment([])}>
-                {ALL_EQUIPMENT.map((eq) => (
+                <FilterSearchBox value={equipmentSearch} onChange={setEquipmentSearch} placeholder="Search equipment…" />
+                {visibleEquipment.map((eq) => (
                   <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} onChange={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />
                 ))}
+                {!equipmentSearch && filteredEquipment.length > 7 && (
+                  <Button color="link-color" size="sm" onPress={() => setShowMoreEquipment((v) => !v)}>
+                    {showMoreEquipment ? 'Show less' : `+${filteredEquipment.length - 7} more`}
+                  </Button>
+                )}
+                {equipmentSearch && filteredEquipment.length === 0 && (
+                  <p className="text-xs text-tertiary">No equipment found.</p>
+                )}
+              </FilterSection>
+
+              {/* Movement Type */}
+              <FilterSection title="Movement Type" activeCount={filterMovementTypes.length} onClear={() => setFilterMovementTypes([])}>
+                <FilterSearchBox value={movementSearch} onChange={setMovementSearch} placeholder="Search movement types…" />
+                {visibleMovementTypes.map((m) => (
+                  <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} onChange={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />
+                ))}
+                {!movementSearch && filteredMovementTypes.length > 7 && (
+                  <Button color="link-color" size="sm" onPress={() => setShowMoreMovementTypes((v) => !v)}>
+                    {showMoreMovementTypes ? 'Show less' : `+${filteredMovementTypes.length - 7} more`}
+                  </Button>
+                )}
+                {movementSearch && filteredMovementTypes.length === 0 && (
+                  <p className="text-xs text-tertiary">No movement types found.</p>
+                )}
+              </FilterSection>
+
+              {/* Effort Type */}
+              <FilterSection title="Effort Type" activeCount={filterEffortTypes.length} onClear={() => setFilterEffortTypes([])}>
+                <FilterSearchBox value={effortSearch} onChange={setEffortSearch} placeholder="Search effort types…" />
+                {visibleEffortTypes.map((e) => (
+                  <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} onChange={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />
+                ))}
+                {!effortSearch && filteredEffortTypes.length > 7 && (
+                  <Button color="link-color" size="sm" onPress={() => setShowMoreEffortTypes((v) => !v)}>
+                    {showMoreEffortTypes ? 'Show less' : `+${filteredEffortTypes.length - 7} more`}
+                  </Button>
+                )}
+                {effortSearch && filteredEffortTypes.length === 0 && (
+                  <p className="text-xs text-tertiary">No effort types found.</p>
+                )}
               </FilterSection>
             </div>
 
@@ -382,15 +512,15 @@ function ExercisesPageContent() {
                     size="sm"
                   />
                 </div>
-                <select
+                <NativeSelect
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                  wrapperClassName="w-40 shrink-0"
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o} value={o}>{o}</option>
                   ))}
-                </select>
+                </NativeSelect>
               </div>
 
               {/* Active filter tags */}
@@ -409,6 +539,12 @@ function ExercisesPageContent() {
                   ))}
                   {filterEquipment.map((eq) => (
                     <FilterTag key={eq} label={eq} onRemove={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />
+                  ))}
+                  {filterMovementTypes.map((m) => (
+                    <FilterTag key={m} label={m} onRemove={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />
+                  ))}
+                  {filterEffortTypes.map((e) => (
+                    <FilterTag key={e} label={e} onRemove={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />
                   ))}
                 </div>
               )}
@@ -437,6 +573,8 @@ function ExercisesPageContent() {
                         if (filterConditions.length) p.set('conds', filterConditions.join(','));
                         if (filterLevels.length) p.set('levels', filterLevels.join(','));
                         if (filterEquipment.length) p.set('equip', filterEquipment.join(','));
+                        if (filterMovementTypes.length) p.set('mvt', filterMovementTypes.join(','));
+                        if (filterEffortTypes.length) p.set('eft', filterEffortTypes.join(','));
                         if (showFavoritesOnly) p.set('fav', '1');
                         if (sortBy !== 'A → Z') p.set('sort', sortBy);
                         const qs = p.toString();
