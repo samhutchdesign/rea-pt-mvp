@@ -16,6 +16,12 @@ import { ArrowLeft, Copy, Heart, ListPlus, Mic, MoreHorizontal, Pencil, Play, Sh
 
 const MOCK_TRANSCRIPT = 'This exercise focuses on coordinating diaphragmatic breath with pelvic floor relaxation and engagement. Begin by finding a comfortable, supported position. Inhale slowly through your nose, allowing your ribcage to expand in all directions as your pelvic floor gently descends. Exhale fully, feeling the pelvic floor lift and the deep abdominals gently draw in. Repeat at your own pace, without forcing or straining at any point.';
 
+const RELAXATION_CUES = [
+  { key: 'relaxation', label: 'Relaxation Cue', text: 'Inhale and allow your pelvic floor to lengthen and soften' },
+  { key: 'contraction', label: 'Pelvic Floor Contraction Cue', text: 'Exhale and gently contract your pelvic floor, then fully relax' },
+  { key: 'pressure', label: 'Pressure Management Cue', text: 'Exhale with the effort and avoid holding your breath' },
+];
+
 function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => void }) {
   return (
     <div className="flex gap-3 cursor-pointer group" onClick={onClick}>
@@ -59,6 +65,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
+  const [selectedCue, setSelectedCue] = useState('');
   const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -218,7 +225,26 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           <Divider className="mb-6" />
 
-          <h3 className="mt-0 mb-3 text-base font-bold text-primary">Instructions</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="mt-0 text-base font-bold text-primary">Instructions</h3>
+            <select
+              value={selectedCue}
+              onChange={(e) => setSelectedCue(e.target.value)}
+              className="rounded-lg border border-secondary bg-primary px-3 py-1.5 text-xs text-secondary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+            >
+              <option value="">Add relaxation cue…</option>
+              {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+            </select>
+          </div>
+          {selectedCue && (() => {
+            const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
+            return cue ? (
+              <div className="mb-4 rounded-xl bg-brand-50 border border-brand-200 px-4 py-3">
+                <p className="text-xs font-semibold text-brand-700 mb-1">{cue.label}</p>
+                <p className="text-sm text-brand-900">{cue.text}</p>
+              </div>
+            ) : null;
+          })()}
           <ol className="mb-6 pl-5 space-y-2 list-decimal">
             {ex.instructions.map((step, i) => <li key={i} className="text-sm text-primary">{step}</li>)}
           </ol>
