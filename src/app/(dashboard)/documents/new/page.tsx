@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
+import { NativeSelect } from '@/components/ui/native-select';
 import { Plus, Trash2 } from 'lucide-react';
 
 interface Field {
@@ -62,8 +63,8 @@ export default function NewDocumentPage() {
                   onChange={(v) => updateField(field.id, 'label', v)}
                 />
               </div>
-              <select
-                className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand min-w-[140px]"
+              <NativeSelect
+                wrapperClassName="w-36 shrink-0"
                 value={field.type}
                 onChange={(e) => updateField(field.id, 'type', e.target.value)}
               >
@@ -72,7 +73,7 @@ export default function NewDocumentPage() {
                     {opt.label}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
               <button
                 onClick={() => removeField(field.id)}
                 disabled={fields.length === 1}

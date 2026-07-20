@@ -10,6 +10,7 @@ import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { Alert } from '@/components/ui/alert';
+import { NativeSelect } from '@/components/ui/native-select';
 import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
 import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -228,16 +229,15 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 <Input label="Email" value={editForm.email} onChange={(v) => setEditForm((f) => ({ ...f, email: v }))} />
                 <div>
                   <label className="block text-sm font-medium text-secondary mb-1.5">Location</label>
-                  <select
+                  <NativeSelect
                     value={editForm.locationId}
                     onChange={(e) => setEditForm((f) => ({ ...f, locationId: e.target.value }))}
-                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
                   >
                     <option value="">Select a location</option>
                     {mockClinicLocations.map((loc) => (
                       <option key={loc.id} value={loc.id}>{loc.name} — {loc.city}, {loc.regionCountry}</option>
                     ))}
-                  </select>
+                  </NativeSelect>
                 </div>
 
                 {can.canArchivePatient && (

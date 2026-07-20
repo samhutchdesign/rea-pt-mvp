@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
+import { NativeSelect } from '@/components/ui/native-select';
 import { useState } from 'react';
 
 const CONDITIONS = ['Incontinence', 'Prolapse', 'Pelvic Pain', 'Postpartum', 'Urgency'];
@@ -143,13 +144,13 @@ export default function NewExercisePage() {
             </div>
             <div>
               {fieldLabel('Frequency')}
-              <select
+              <NativeSelect
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value)}
-                className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                wrapperClassName="w-44"
               >
                 {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>

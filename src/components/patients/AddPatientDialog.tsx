@@ -5,6 +5,7 @@ import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/mod
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
+import { NativeSelect } from '@/components/ui/native-select';
 import { mockClinicLocations } from '@/lib/mock-data';
 import { useRole } from '@/lib/roleStore';
 import { cx } from '@/utils/cx';
@@ -145,19 +146,16 @@ export default function AddPatientDialog({ open, onClose }: Props) {
                 <p className="text-sm text-secondary">Which clinic location will {firstName} be seen at?</p>
                 <div>
                   <label className="block text-sm font-medium text-secondary mb-1.5">Location</label>
-                  <select
+                  <NativeSelect
                     value={locationId}
                     onChange={(e) => setLocationId(e.target.value)}
-                    className={cx(
-                      'w-full rounded-lg border bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300',
-                      errors.location ? 'border-error-300' : 'border-secondary'
-                    )}
+                    className={errors.location ? 'border-error-300' : undefined}
                   >
                     <option value="">Select a location</option>
                     {mockClinicLocations.map((loc) => (
                       <option key={loc.id} value={loc.id}>{loc.name} — {loc.city}, {loc.regionCountry}</option>
                     ))}
-                  </select>
+                  </NativeSelect>
                   {errors.location && <p className="mt-1 text-xs text-error-600">{errors.location}</p>}
                 </div>
               </div>

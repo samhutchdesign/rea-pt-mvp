@@ -9,6 +9,7 @@ import type { Patient, Employee } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { Alert } from '@/components/ui/alert';
+import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
 import { ArrowLeftRight, Calendar, Inbox, Mail, Pencil, Phone, User } from 'lucide-react';
@@ -45,8 +46,8 @@ function TransferDialog({
             <p className="text-tertiary text-sm mb-4">
               Transfer <strong className="text-primary">{patient?.firstName} {patient?.lastName}</strong> to another physiotherapist.
             </p>
-            <select
-              className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand mb-6"
+            <NativeSelect
+              wrapperClassName="mb-6"
               value={selected?.id ?? ''}
               onChange={(e) => setSelected(otherEmployees.find((emp) => emp.id === e.target.value) ?? null)}
             >
@@ -54,7 +55,7 @@ function TransferDialog({
               {otherEmployees.map((e) => (
                 <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
               ))}
-            </select>
+            </NativeSelect>
             <div className="flex justify-end gap-2">
               <Button color="secondary" size="sm" onPress={onClose}>Cancel</Button>
               <Button
@@ -128,8 +129,8 @@ function ArchiveEmployeeDialog({
                       <div className="min-w-[130px] shrink-0">
                         <span className="font-semibold text-primary text-sm">{p.firstName} {p.lastName}</span>
                       </div>
-                      <select
-                        className="flex-1 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand"
+                      <NativeSelect
+                        wrapperClassName="flex-1"
                         value={reassignments[p.id]?.id ?? ''}
                         onChange={(e) => setReassignments((r) => ({ ...r, [p.id]: otherEmployees.find((emp) => emp.id === e.target.value) ?? null }))}
                       >
@@ -137,7 +138,7 @@ function ArchiveEmployeeDialog({
                         {otherEmployees.map((e) => (
                           <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
                         ))}
-                      </select>
+                      </NativeSelect>
                     </div>
                   ))}
                 </div>

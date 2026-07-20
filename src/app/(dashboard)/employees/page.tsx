@@ -8,6 +8,7 @@ import { useLocationScope } from '@/lib/locationScope';
 import type { Employee } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
+import { NativeSelect } from '@/components/ui/native-select';
 import { cx } from '@/utils/cx';
 import { useDataState } from '@/lib/dataStateStore';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -209,15 +210,14 @@ export default function EmployeesPage() {
               </div>
               <div>
                 <div className="mb-1 text-xs font-medium text-secondary">Role</div>
-                <select
+                <NativeSelect
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value)}
-                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
                 >
                   <option value="Admin">Admin</option>
                   <option value="Practitioner">Practitioner</option>
                   <option value="Staff">Staff</option>
-                </select>
+                </NativeSelect>
               </div>
             </div>
 

@@ -8,6 +8,7 @@ import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/mod
 import { mockPrograms, mockExercises, mockPatients } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
+import { NativeSelect } from '@/components/ui/native-select';
 import type { Patient } from '@/lib/types';
 import { Heart, Pencil, UserPlus, Zap } from 'lucide-react';
 
@@ -108,8 +109,8 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
               <p className="text-sm text-secondary mb-4">
                 Select a patient to assign <strong>{prog.name}</strong> to.
               </p>
-              <select
-                className="w-full rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary mb-6"
+              <NativeSelect
+                wrapperClassName="mb-6"
                 value={selectedPatient?.id ?? ''}
                 onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}
               >
@@ -117,7 +118,7 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
                 {mockPatients.map((p) => (
                   <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
                 ))}
-              </select>
+              </NativeSelect>
               <div className="flex justify-end gap-3">
                 <Button color="secondary" size="md" onPress={() => setAssignOpen(false)}>Cancel</Button>
                 <Button color="primary" size="md" onPress={handleAssign}>
