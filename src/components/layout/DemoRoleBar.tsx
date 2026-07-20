@@ -32,13 +32,17 @@ const ROUTE_MAP: Record<string, string> = {
   '/exercises': '/exercises-mvp',
 };
 
+function matchesRoute(pathname: string, route: string) {
+  return pathname === route || pathname.startsWith(route + '/');
+}
+
 function switchVersion(mode: ViewMode, pathname: string, router: ReturnType<typeof useRouter>) {
   setViewMode(mode);
   if (mode === 'mvp') {
-    const mvp = Object.entries(ROUTE_MAP).find(([full]) => pathname.startsWith(full));
+    const mvp = Object.entries(ROUTE_MAP).find(([full]) => matchesRoute(pathname, full));
     if (mvp) router.push(pathname.replace(mvp[0], mvp[1]));
   } else {
-    const full = Object.entries(ROUTE_MAP).find(([, mvp]) => pathname.startsWith(mvp));
+    const full = Object.entries(ROUTE_MAP).find(([, mvp]) => matchesRoute(pathname, mvp));
     if (full) router.push(pathname.replace(full[1], full[0]));
   }
 }
