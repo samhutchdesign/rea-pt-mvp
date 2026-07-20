@@ -1,15 +1,32 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/base/buttons/button';
 import { Badge } from '@/components/base/badges/badges';
 import { Divider } from '@/components/ui/divider';
+import { NativeSelect } from '@/components/ui/native-select';
 import { Drawer } from '@/components/ui/drawer';
 import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
 import { mockPrograms } from '@/lib/mock-data';
 import type { Exercise, Program } from '@/lib/types';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { useViewMode } from '@/lib/viewModeStore';
-import { List, Mic, X, Zap } from 'lucide-react';
+import { ChevronDown, List, Mic, X, Zap } from 'lucide-react';
+
+function CollapsibleSection({ title, titleClassName, open, onToggle, children }: { title: string; titleClassName?: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between mb-3 bg-transparent border-none p-0 cursor-pointer"
+      >
+        <span className={titleClassName ?? 'text-sm font-semibold text-primary'}>{title}</span>
+        <ChevronDown size={16} className={`text-tertiary transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && children}
+    </div>
+  );
+}
 
 interface PatientPrescription {
   sets: number;
@@ -31,7 +48,15 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
   const [programSelectorOpen, setProgramSelectorOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [audioOpen, setAudioOpen] = useState(false);
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
+  const [mistakesOpen, setMistakesOpen] = useState(false);
   const viewMode = useViewMode();
+
+  // Collapse both sections again each time a new exercise is previewed.
+  useEffect(() => {
+    setInstructionsOpen(false);
+    setMistakesOpen(false);
+  }, [exercise?.id]);
 
   if (!exercise) return null;
 
@@ -100,21 +125,28 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
 
           <Divider className="mb-5" />
 
-          <p className="mb-3 text-sm font-semibold text-primary">Instructions</p>
-          <ol className="pl-5 mb-5 space-y-1.5 list-decimal">
-            {exercise.instructions.map((step, i) => (
-              <li key={i} className="text-sm text-secondary">{step}</li>
-            ))}
-          </ol>
+          <CollapsibleSection title="Instructions" open={instructionsOpen} onToggle={() => setInstructionsOpen((v) => !v)}>
+            <ol className="pl-5 mb-2 space-y-1.5 list-decimal">
+              {exercise.instructions.map((step, i) => (
+                <li key={i} className="text-sm text-secondary">{step}</li>
+              ))}
+            </ol>
+          </CollapsibleSection>
 
-          <Divider className="mb-5" />
+          <Divider className="my-5" />
 
-          <p className="mb-3 text-sm font-semibold text-warning-600">Common Mistakes</p>
-          <ul className="pl-5 space-y-1.5 list-disc">
-            {exercise.commonMistakes.map((m, i) => (
-              <li key={i} className="text-sm text-secondary">{m}</li>
-            ))}
-          </ul>
+          <CollapsibleSection
+            title="Common Mistakes"
+            titleClassName="text-sm font-semibold text-warning-600"
+            open={mistakesOpen}
+            onToggle={() => setMistakesOpen((v) => !v)}
+          >
+            <ul className="pl-5 space-y-1.5 list-disc">
+              {exercise.commonMistakes.map((m, i) => (
+                <li key={i} className="text-sm text-secondary">{m}</li>
+              ))}
+            </ul>
+          </CollapsibleSection>
         </div>
 
         {/* Action bar */}
@@ -163,16 +195,16 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
               <p className="text-sm text-secondary mb-4">
                 Select a program to add <strong>{exercise.name}</strong> to.
               </p>
-              <select
+              <NativeSelect
                 value={selectedProgram?.id ?? ''}
                 onChange={(e) => setSelectedProgram(mockPrograms.find((p) => p.id === e.target.value) ?? null)}
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 mb-5"
+                wrapperClassName="mb-5"
               >
                 <option value="">Search programs…</option>
                 {mockPrograms.map((p) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
-              </select>
+              </NativeSelect>
               <div className="flex justify-end gap-3">
                 <Button color="secondary" onPress={() => { setProgramSelectorOpen(false); setSelectedProgram(null); }}>Cancel</Button>
                 <Button color="primary" isDisabled={!selectedProgram} onPress={handleAddToProgram}>Add to Program</Button>

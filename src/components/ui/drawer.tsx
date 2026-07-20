@@ -16,6 +16,7 @@ export const Drawer = ({ open, onClose, children, width = 480, className }: Draw
   return (
     <AriaModalOverlay
       isOpen={open}
+      isDismissable
       onOpenChange={(v) => { if (!v) onClose(); }}
       className="fixed inset-0 z-50 flex items-stretch justify-end bg-overlay/50 backdrop-blur-sm data-[entering]:animate-in data-[entering]:fade-in data-[exiting]:animate-out data-[exiting]:fade-out duration-200"
     >
