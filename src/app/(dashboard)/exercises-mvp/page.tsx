@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, Heart, Plus, Search, X, Zap } from 'lucide-react';
+import { Eye, Heart, Search, X, Zap } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { mockExercises } from '@/lib/mock-data';
@@ -23,7 +23,10 @@ const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
 
-const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition))].sort();
+function toTitleCase(s: string) {
+  return s.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1));
+}
+const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
 
 function expandSearch(q: string) { return SEARCH_ALIASES[q.toLowerCase().trim()] ?? q; }
@@ -98,6 +101,8 @@ function ExercisesPageContent() {
   );
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('fav') === '1');
   const [showMoreConditions, setShowMoreConditions] = useState(false);
+  const [conditionSearch, setConditionSearch] = useState('');
+  const [categorySearch, setCategorySearch] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
 
@@ -119,7 +124,7 @@ function ExercisesPageContent() {
       if (filterConditions.length && !filterConditions.some((c) => ex.tags.condition.some((ec) => ec.toLowerCase().includes(c.toLowerCase())))) return false;
       if (filterCategories.length && !filterCategories.includes(ex.category)) return false;
       if (filterLevels.length && !filterLevels.includes(ex.level)) return false;
-      if (filterEquipment.length && !filterEquipment.includes(ex.equipment)) return false;
+      if (filterEquipment.length && !filterEquipment.includes(toTitleCase(ex.equipment))) return false;
       return true;
     }).sort((a, b) => {
       if (sortBy === 'A → Z') return a.name.localeCompare(b.name);
@@ -135,7 +140,15 @@ function ExercisesPageContent() {
     l === 'Intermediate' ? 'bg-warning-50 text-warning-700' :
     'bg-error-50 text-error-700';
 
-  const visibleConditions = showMoreConditions ? ALL_CONDITIONS : ALL_CONDITIONS.slice(0, 7);
+  const filteredConditions = conditionSearch
+    ? ALL_CONDITIONS.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase()))
+    : ALL_CONDITIONS;
+  const filteredCategories = categorySearch
+    ? ALL_CATEGORIES.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))
+    : ALL_CATEGORIES;
+  const visibleConditions = conditionSearch
+    ? filteredConditions
+    : showMoreConditions ? ALL_CONDITIONS : ALL_CONDITIONS.slice(0, 7);
 
   return (
     <>
@@ -145,7 +158,6 @@ function ExercisesPageContent() {
         {/* Header */}
         <div className="flex justify-between items-center mb-5">
           <h2 className="m-0 text-xl font-semibold text-primary">Exercises</h2>
-          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/exercises/new')}>Create New</Button>
         </div>
 
         <div className="flex items-start">
@@ -165,20 +177,46 @@ function ExercisesPageContent() {
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
+              <div className="relative mb-3">
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search conditions…"
+                  value={conditionSearch}
+                  onChange={(e) => setConditionSearch(e.target.value)}
+                  className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                />
+              </div>
               {visibleConditions.map((c) => (
                 <CheckRow key={c} label={c} checked={filterConditions.includes(c)} onChange={() => toggleArr(filterConditions, c, setFilterConditions)} />
               ))}
-              {ALL_CONDITIONS.length > 7 && (
+              {!conditionSearch && ALL_CONDITIONS.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreConditions((v) => !v)}>
                   {showMoreConditions ? 'Show less' : `+${ALL_CONDITIONS.length - 7} more`}
                 </Button>
               )}
+              {conditionSearch && filteredConditions.length === 0 && (
+                <p className="text-xs text-tertiary">No conditions found.</p>
+              )}
             </FilterSection>
 
             <FilterSection title="Category" activeCount={filterCategories.length} onClear={() => setFilterCategories([])}>
-              {ALL_CATEGORIES.map((c) => (
+              <div className="relative mb-3">
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search categories…"
+                  value={categorySearch}
+                  onChange={(e) => setCategorySearch(e.target.value)}
+                  className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                />
+              </div>
+              {filteredCategories.map((c) => (
                 <CheckRow key={c} label={c} checked={filterCategories.includes(c)} onChange={() => toggleArr(filterCategories, c, setFilterCategories)} />
               ))}
+              {categorySearch && filteredCategories.length === 0 && (
+                <p className="text-xs text-tertiary">No categories found.</p>
+              )}
             </FilterSection>
 
             <FilterSection title="Level" activeCount={filterLevels.length} onClear={() => setFilterLevels([])}>
