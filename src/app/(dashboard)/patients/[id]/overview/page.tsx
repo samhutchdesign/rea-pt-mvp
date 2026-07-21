@@ -7,10 +7,10 @@ import { Button } from '@/components/base/buttons/button';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
-import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic } from '@/lib/mock-data';
+import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic, mockClinicLocations } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
-import type { Employee } from '@/lib/types';
+import { useLocationState, transferPatient } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { ArrowLeftRight, Building2, Calendar, Plus, X, Zap } from 'lucide-react';
 
@@ -25,7 +25,8 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   }, [searchParams]);
 
   const [transferOpen, setTransferOpen] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState('');
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
 
   const patient = mockPatients.find((p) => p.id === id);
   const showUploadBanner = searchParams.get('uploaded') === 'true' && !uploadBannerDismissed;
@@ -33,9 +34,41 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const sessions = mockChartSessions[id] ?? [];
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
-  const assignedEmployees = patient ? mockEmployees.filter((e) => patient.assignedEmployeeIds.includes(e.id)) : [];
+  const locationState = useLocationState(id);
+  const assignedEmployees = mockEmployees.filter((e) => locationState.assignedEmployeeIds.includes(e.id));
   const can = usePermissions();
   const viewMode = useViewMode();
+
+  const otherLocations = patient
+    ? mockClinicLocations.filter((l) => l.orgId === patient.clinicId && l.id !== locationState.locationId)
+    : [];
+  const destinationLocation = mockClinicLocations.find((l) => l.id === selectedLocationId) ?? null;
+  const physiosAtDestination = destinationLocation
+    ? mockEmployees.filter((e) => destinationLocation.employeeIds.includes(e.id) && !e.archived)
+    : [];
+  const currentPhysioStillValid = assignedEmployees.some((e) => physiosAtDestination.some((p) => p.id === e.id));
+
+  const closeTransfer = () => { setTransferOpen(false); setSelectedLocationId(''); setSelectedEmployeeId(''); };
+
+  const handleSelectLocation = (locationId: string) => {
+    setSelectedLocationId(locationId);
+    const location = mockClinicLocations.find((l) => l.id === locationId);
+    const physios = location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && !e.archived) : [];
+    const keptPhysio = assignedEmployees.find((e) => physios.some((p) => p.id === e.id));
+    setSelectedEmployeeId(keptPhysio?.id ?? '');
+  };
+
+  const handleTransfer = () => {
+    if (!patient || !destinationLocation) return;
+    transferPatient(patient.id, destinationLocation.id, selectedEmployeeId || null);
+    const physioName = mockEmployees.find((e) => e.id === selectedEmployeeId);
+    closeTransfer();
+    toast.success(
+      physioName
+        ? `${patient.firstName} ${patient.lastName} transferred to ${destinationLocation.name} with ${physioName.firstName} ${physioName.lastName}.`
+        : `${patient.firstName} ${patient.lastName} transferred to ${destinationLocation.name}.`
+    );
+  };
 
   const avgAdherence = (() => {
     if (!program) return null;
@@ -221,44 +254,71 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Transfer Patient Dialog */}
-      <ModalOverlay isOpen={transferOpen} onOpenChange={setTransferOpen}>
+      <ModalOverlay isOpen={transferOpen} onOpenChange={(open) => { if (!open) closeTransfer(); }}>
         <Modal>
           <Dialog>
             <div className="p-6 w-full min-w-[400px] max-w-md">
               <h2 className="text-lg font-semibold text-primary mb-1">Transfer Patient</h2>
               <p className="text-sm text-secondary mb-4">
-                Reassign <strong>{patient.firstName} {patient.lastName}</strong> to another physiotherapist.
+                Move <strong>{patient.firstName} {patient.lastName}</strong> to a different clinic location and care team.
               </p>
-              <NativeSelect
-                value={selectedEmployee?.id ?? ''}
-                onChange={(e) => setSelectedEmployee(mockEmployees.find((emp) => emp.id === e.target.value) ?? null)}
-              >
-                <option value="">Select physiotherapist</option>
-                {mockEmployees
-                  .filter((e) => !patient.assignedEmployeeIds.includes(e.id))
-                  .map((e) => (
-                    <option key={e.id} value={e.id}>
-                      {e.firstName} {e.lastName} — {e.credentials}
-                    </option>
-                  ))}
-              </NativeSelect>
+
+              {otherLocations.length === 0 ? (
+                <p className="text-sm text-tertiary">No other locations are available in this organization.</p>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <div className="mb-1 text-xs font-medium text-secondary">Destination Location</div>
+                    <NativeSelect
+                      value={selectedLocationId}
+                      onChange={(e) => handleSelectLocation(e.target.value)}
+                    >
+                      <option value="">Select a location</option>
+                      {otherLocations.map((l) => (
+                        <option key={l.id} value={l.id}>{l.name} — {l.city}, {l.regionCountry}</option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+
+                  {destinationLocation && (
+                    <div>
+                      <div className="mb-1 text-xs font-medium text-secondary">Physiotherapist</div>
+                      {physiosAtDestination.length === 0 ? (
+                        <p className="text-sm text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                      ) : (
+                        <>
+                          <NativeSelect
+                            value={selectedEmployeeId}
+                            onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                          >
+                            <option value="">Select physiotherapist</option>
+                            {physiosAtDestination.map((e) => (
+                              <option key={e.id} value={e.id}>
+                                {e.firstName} {e.lastName} — {e.credentials}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                          {currentPhysioStillValid && (
+                            <p className="mt-1.5 text-xs text-tertiary">
+                              {patient.firstName}&apos;s current physiotherapist already sees patients at this location and will stay assigned unless you pick someone else.
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 mt-6">
-                <Button
-                  color="secondary"
-                  size="sm"
-                  onPress={() => { setTransferOpen(false); setSelectedEmployee(null); }}
-                >
+                <Button color="secondary" size="sm" onPress={closeTransfer}>
                   Cancel
                 </Button>
                 <Button
                   color="primary"
                   size="sm"
-                  isDisabled={!selectedEmployee}
-                  onPress={() => {
-                    setTransferOpen(false);
-                    setSelectedEmployee(null);
-                    toast.success('Success! The patient has been transferred.');
-                  }}
+                  isDisabled={!destinationLocation || !selectedEmployeeId}
+                  onPress={handleTransfer}
                 >
                   Transfer
                 </Button>

@@ -11,6 +11,7 @@ import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
 import { mockChartSessions } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds } from '@/lib/patientLocationStore';
 import { useRole } from '@/lib/roleStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -73,6 +74,7 @@ export default function PatientsPage() {
   const yourEmpId = useYourEmpId();
   const viewMode = useViewMode();
   const role = useRole();
+  const locationOverrides = useLocationOverrides();
 
   const MVP_HIDDEN = new Set(['pat8', 'pat1']);
   const patients = scopedPatients
@@ -80,7 +82,7 @@ export default function PatientsPage() {
     .map((p) => p.id in localPatients ? { ...p, archived: localPatients[p.id] } : p);
 
   const yourPatients = yourEmpId
-    ? patients.filter((p) => !p.archived && p.assignedEmployeeIds.includes(yourEmpId))
+    ? patients.filter((p) => !p.archived && getEffectiveAssignedEmployeeIds(p, locationOverrides).includes(yourEmpId))
     : [];
   const allActive = patients.filter((p) => !p.archived);
   const archived = patients.filter((p) => p.archived);
@@ -107,7 +109,7 @@ export default function PatientsPage() {
       p.firstName.toLowerCase().includes(q) ||
       p.lastName.toLowerCase().includes(q) ||
       p.email.toLowerCase().includes(q) ||
-      p.location.toLowerCase().includes(q)
+      getEffectiveLocationString(p, locationOverrides).toLowerCase().includes(q)
     );
   };
 
@@ -116,7 +118,7 @@ export default function PatientsPage() {
     if (sort === 'upcoming') sorted.sort((a, b) => computeEstimatedNext(a.id) - computeEstimatedNext(b.id));
     else if (sort === 'a-z') sorted.sort((a, b) => a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName));
     else if (sort === 'z-a') sorted.sort((a, b) => b.firstName.localeCompare(a.firstName) || b.lastName.localeCompare(a.lastName));
-    else if (sort === 'location') sorted.sort((a, b) => a.location.localeCompare(b.location));
+    else if (sort === 'location') sorted.sort((a, b) => getEffectiveLocationString(a, locationOverrides).localeCompare(getEffectiveLocationString(b, locationOverrides)));
     else if (sort === 'oldest') sorted.sort((a, b) => a.id.localeCompare(b.id));
     else sorted.sort((a, b) => b.id.localeCompare(a.id));
     return sorted;
@@ -251,7 +253,7 @@ export default function PatientsPage() {
                   <div className="flex flex-col items-end gap-1.5 shrink-0">
                     <div className="flex items-center gap-1.5">
                       <Map01 className="size-3.5 text-quaternary" />
-                      <span className="text-xs text-tertiary">{patient.location}</span>
+                      <span className="text-xs text-tertiary">{getEffectiveLocationString(patient, locationOverrides)}</span>
                     </div>
                     {viewMode === 'full' && (
                       <div className="flex items-center gap-1.5">

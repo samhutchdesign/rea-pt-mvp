@@ -3,8 +3,9 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
-import { mockClinicLocations, mockClinic, mockEmployees, mockPatients } from '@/lib/mock-data';
+import { mockClinicLocations, mockClinic, mockEmployees } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
+import { useLocationOverrides, getEffectivePatientIdsForEmployee } from '@/lib/patientLocationStore';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
@@ -39,6 +40,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
     description: location?.description ?? '',
   });
   const [saved, setSaved] = useState({ ...form });
+  const locationOverrides = useLocationOverrides();
 
   if (!location) return null;
 
@@ -191,7 +193,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                 <div className="flex flex-col">
                   {teamMembers.map((emp, i) => {
                     const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
-                    const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
+                    const patientCount = getEffectivePatientIdsForEmployee(emp, locationOverrides).length;
                     return (
                       <div key={emp.id}>
                         <div

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { mockEmployees, mockPatients } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
+import { useLocationOverrides, getEffectivePatientIdsForEmployee } from '@/lib/patientLocationStore';
 import type { Patient, Employee } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
@@ -194,10 +195,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [professionalDraft, setProfessionalDraft] = useState({ ...savedProfessional });
   const can = usePermissions();
+  const locationOverrides = useLocationOverrides();
 
   if (!emp) return <div className="p-8"><span className="text-tertiary text-sm">Employee not found.</span></div>;
 
-  const assignedPatients = mockPatients.filter((p) => emp.patientIds.includes(p.id));
+  const assignedPatientIds = getEffectivePatientIdsForEmployee(emp, locationOverrides);
+  const assignedPatients = mockPatients.filter((p) => assignedPatientIds.includes(p.id));
   const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
 
   const handleTransfer = (toEmployee: Employee) => {

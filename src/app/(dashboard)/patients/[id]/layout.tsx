@@ -15,6 +15,7 @@ import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/mod
 import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useYourEmpId } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { clearUploadedData } from '@/lib/uploadStore';
 import { cx } from '@/utils/cx';
@@ -61,6 +62,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const router = useRouter();
   const patient = mockPatients.find((p) => p.id === id);
+  const locationOverrides = useLocationOverrides();
 
   const [archived, setArchived] = useState(patient?.archived ?? false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
@@ -70,7 +72,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     firstName: patient?.firstName ?? '',
     lastName: patient?.lastName ?? '',
     email: patient?.email ?? '',
-    locationId: mockClinicLocations.find((l) => patient?.location.includes(l.city))?.id ?? '',
+    locationId: locationOverrides.get(id)?.locationId ?? '',
   });
 
   const can = usePermissions();
@@ -83,7 +85,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   }, [viewMode, id, router]);
 
   const patientTabs = ALL_TABS.filter((t) => !(t.fullOnly && viewMode === 'mvp'));
-  const isYourPatient = yourEmpId !== null && (patient?.assignedEmployeeIds ?? []).includes(yourEmpId);
+  const isYourPatient = yourEmpId !== null && !!patient && getEffectiveAssignedEmployeeIds(patient, locationOverrides).includes(yourEmpId);
   const canEdit = can.canArchivePatient || isYourPatient;
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
   const currentTab = patientTabs[activeTab] ?? patientTabs[0];
@@ -156,7 +158,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 </div>
                 <div className="flex items-center gap-1.5">
                   <MapPin size={14} className="text-quaternary" />
-                  <span className="text-sm text-tertiary">{patient.location}</span>
+                  <span className="text-sm text-tertiary">{getEffectiveLocationString(patient, locationOverrides)}</span>
                 </div>
               </div>
               {chip && (
@@ -182,7 +184,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 color="secondary"
                 iconLeading={Pencil}
                 onPress={() => {
-                  setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, locationId: mockClinicLocations.find((l) => patient.location.includes(l.city))?.id ?? '' });
+                  setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, locationId: locationOverrides.get(id)?.locationId ?? '' });
                   setEditOpen(true);
                 }}
               >
