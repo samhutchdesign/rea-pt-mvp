@@ -15,9 +15,7 @@ const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean; hidden?
   { value: 'admin', label: 'Admin' },
   { value: 'staff', label: 'User' },
   { value: 'staff2', label: 'User 2' },
-  // HIDDEN FEATURE: "User 3" persona is intentionally hidden from the DemoRoleBar UI.
-  // Still fully wired up (switchViewingAs, staffPersonaStore) — just flip `hidden` to false to bring it back.
-  { value: 'staff3', label: 'User 3', fullOnly: true, hidden: true },
+  { value: 'staff3', label: 'User 3', fullOnly: true },
 ];
 
 const VIEW_MODES = [
