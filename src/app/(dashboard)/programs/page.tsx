@@ -11,7 +11,8 @@ import { mockPrograms, mockExercises } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
-import { Heart, Plus, Search, X, Zap } from 'lucide-react';
+import { Heart, Plus, Search, X } from 'lucide-react';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 
 const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
@@ -269,14 +270,16 @@ export default function ProgramsPage() {
               </div>
             ) : (
               <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
-                {filtered.map((prog) => (
+                {filtered.map((prog) => {
+                  const firstEx = mockExercises.find((e) => e.id === prog.exercises[0]?.exerciseId);
+                  return (
                   <div
                     key={prog.id}
                     className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
                     onClick={() => router.push(`/programs/${prog.id}`)}
                   >
-                    <div className="relative flex h-28 items-center justify-center bg-brand-50">
-                      <Zap size={32} className="text-brand-600" />
+                    <div className="relative h-28 overflow-hidden bg-brand-50">
+                      <ExerciseThumbnail src={firstEx?.imageUrl} alt={prog.name} iconSize={32} />
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           title={favorites.has(prog.id) ? 'Unfavourite' : 'Favourite'}
@@ -304,7 +307,8 @@ export default function ProgramsPage() {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

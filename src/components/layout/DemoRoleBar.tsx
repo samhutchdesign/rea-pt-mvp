@@ -15,7 +15,7 @@ const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean; hidden?
   { value: 'admin', label: 'Admin' },
   { value: 'staff', label: 'User' },
   { value: 'staff2', label: 'User 2' },
-  { value: 'staff3', label: 'User 3', fullOnly: true },
+  { value: 'staff3', label: 'User 3' },
 ];
 
 const VIEW_MODES = [

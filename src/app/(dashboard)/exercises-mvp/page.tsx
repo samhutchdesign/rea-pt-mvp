@@ -1,9 +1,10 @@
 'use client';
 import { useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, Heart, Search, X, Zap } from 'lucide-react';
+import { Eye, Heart, Search, X } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { mockExercises } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
@@ -367,8 +368,8 @@ function ExercisesPageContent() {
                       router.push(`/exercises/${ex.id}?back=${back}`);
                     }}
                   >
-                    <div className="relative h-32 flex items-center justify-center bg-brand-50">
-                      <Zap size={36} className="text-brand-600" />
+                    <div className="relative h-32 overflow-hidden bg-brand-50">
+                      <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"

@@ -5,6 +5,7 @@ import type { ComponentType } from 'react';
 import { Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { mockExercises, mockExercisesFull } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -582,8 +583,8 @@ function ExercisesPageContent() {
                         router.push(`/exercises/${ex.id}?back=${back}`);
                       }}
                     >
-                      <div className="relative h-32 flex items-center justify-center bg-brand-50">
-                        <Zap size={36} className="text-brand-600" />
+                      <div className="relative h-32 overflow-hidden bg-brand-50">
+                        <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                         <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"

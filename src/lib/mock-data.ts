@@ -408,6 +408,7 @@ export const mockEmployees: Employee[] = [
 const mockExercisesRaw: ExerciseBase[] = [
   {
     id: 'ex1',
+    imageUrl: 'https://media.post.rvohealth.io/wp-content/uploads/2020/08/kegel-exercises_thumb.jpg',
     name: 'Pelvic Floor: Full Range',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -437,6 +438,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex2',
+    imageUrl: 'https://live.staticflickr.com/65535/54568800170_54c9354e2b_b.jpg',
     name: 'Pelvic Floor: Quick contraction',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -466,6 +468,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex3',
+    imageUrl: 'https://live.staticflickr.com/65535/54578527407_00460f70cd_b.jpg',
     name: 'Pelvic Floor: Sub-max/Endurance',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -495,6 +498,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex4',
+    imageUrl: 'https://physiotutors.com/wp-content/uploads/2021/05/Reverse-Kegels.jpg',
     name: 'Pelvic Floor: Reverse Kegels',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -524,6 +528,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex5',
+    imageUrl: 'https://live.staticflickr.com/65535/48441561106_e9c815b6d0_b.jpg',
     name: 'Pelvic Floor: Pelvic Floor Drop',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -553,6 +558,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex6',
+    imageUrl: 'https://live.staticflickr.com/65535/48441588776_ddd32b681b_b.jpg',
     name: 'Pelvic Floor: Knack',
     description: 'Pelvic Floor Muscle Training. Starting position: Standing / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -582,6 +588,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex7',
+    imageUrl: 'https://live.staticflickr.com/65535/48317616552_7eca12dabd_b.jpg',
     name: 'Pelvic Floor: Urge suppression sequence/bladder reeducation',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -611,6 +618,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex8',
+    imageUrl: 'https://live.staticflickr.com/65535/48441743462_ccbe5e827c_b.jpg',
     name: 'Pelvic Floor: Holds + Quick',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -640,6 +648,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex9',
+    imageUrl: 'https://live.staticflickr.com/65535/48317668827_bce5a378cd_b.jpg',
     name: 'Pelvic Floor: Wave',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -669,6 +678,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex10',
+    imageUrl: 'https://live.staticflickr.com/65535/48317501986_24b76716a1_b.jpg',
     name: 'Pelvic Floor: Elevator',
     description: 'Pelvic Floor Muscle Training. Starting position: Supine / Any.',
     category: 'Pelvic Floor Muscle Training',
@@ -698,6 +708,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex11',
+    imageUrl: 'https://live.staticflickr.com/65535/48441730562_d3265d75a2_b.jpg',
     name: 'Core breathing: Supine',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -727,6 +738,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex12',
+    imageUrl: 'https://live.staticflickr.com/65535/48834218836_ec79343ef4_b.jpg',
     name: 'Diaphragmatic breathing',
     description: 'Core / Transversus. Starting position: Supine / Any.',
     category: 'Core / Transversus',
@@ -756,6 +768,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex13',
+    imageUrl: 'https://live.staticflickr.com/65535/48834212681_6d602ef92e_b.jpg',
     name: '90-90 Breathing',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -785,6 +798,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex14',
+    imageUrl: 'https://live.staticflickr.com/65535/48834377862_749edf11e8_b.jpg',
     name: 'Belly breathing',
     description: 'Core / Transversus. Starting position: Supine / Any.',
     category: 'Core / Transversus',
@@ -814,6 +828,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex15',
+    imageUrl: 'https://live.staticflickr.com/65535/48317476921_8edefdd177_b.jpg',
     name: 'Core breathing: Standing',
     description: 'Core / Transversus. Starting position: Standing.',
     category: 'Core / Transversus',
@@ -843,6 +858,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex16',
+    imageUrl: 'http://static1.squarespace.com/static/5f5e8592d2b0854b18af6975/5fb7c850d4788b5df8d8af32/654171e5a814b304679e49f1/1699020051794/heel+taps.jpg?format=1500w',
     name: 'Transverse heel slides',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -872,6 +888,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex17',
+    imageUrl: 'https://live.staticflickr.com/65535/48833838933_15838a6f39_b.jpg',
     name: 'Transverse: Bent knee fallouts',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -901,6 +918,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex18',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/02/march-in-place-exercise-illustration.jpg',
     name: 'Transversus: Tabletop march',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -930,6 +948,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex19',
+    imageUrl: 'https://live.staticflickr.com/65535/48834392537_e7d3db9474_b.jpg',
     name: 'Deadbug: Isometric holds',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -959,6 +978,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex20',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/05/dead-bug-exercise-illustration.jpg',
     name: 'Deadbug',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -988,6 +1008,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex21',
+    imageUrl: 'http://static1.squarespace.com/static/5f5e8592d2b0854b18af6975/5fb7c850d4788b5df8d8af32/60cde5953838956a5ac55029/1687727727370/Supine%2BPelvic%2BTilt.jpg?format=1500w',
     name: 'Pelvic tilt: Supine',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -1017,6 +1038,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex22',
+    imageUrl: 'http://static1.squarespace.com/static/5f5e8592d2b0854b18af6975/5fb7c850d4788b5df8d8af32/60cde6fa0de6511b6ffa748e/1687727736322/Standing%2BPelvic%2BTilt.jpg?format=1500w',
     name: 'Pelvic tilt: Standing',
     description: 'Core / Transversus. Starting position: Standing.',
     category: 'Core / Transversus',
@@ -1046,6 +1068,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex23',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2014/10/bird-dogs-exercise-illustration.jpg',
     name: 'Bird dog',
     description: 'Core / Transversus. Starting position: Quadruped.',
     category: 'Core / Transversus',
@@ -1075,6 +1098,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex24',
+    imageUrl: 'https://live.staticflickr.com/65535/54567600352_72b4b0799d_b.jpg',
     name: 'Plank: Kneeling',
     description: 'Core / Transversus. Starting position: Prone kneeling.',
     category: 'Core / Transversus',
@@ -1104,6 +1128,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex25',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2014/10/plank-exercise-illustration.jpg',
     name: 'Plank: Traditional',
     description: 'Core / Transversus. Starting position: Prone.',
     category: 'Core / Transversus',
@@ -1133,6 +1158,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex26',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/01/glute-bridge-exercise-illustration.jpg',
     name: 'Glute bridge',
     description: 'Glute / Hip Strength. Starting position: Supine.',
     category: 'Glute / Hip Strength',
@@ -1162,6 +1188,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex27',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/01/single-leg-bridge-exercise-illustration.jpg',
     name: 'Glute bridge: single leg',
     description: 'Glute / Hip Strength. Starting position: Supine.',
     category: 'Glute / Hip Strength',
@@ -1191,6 +1218,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex28',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2016/04/wall-bridge-exercise-illustration-spotebi.jpg',
     name: 'Glute bridge: mini',
     description: 'Glute / Hip Strength. Starting position: Supine.',
     category: 'Glute / Hip Strength',
@@ -1220,6 +1248,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex29',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2016/07/frog-bridge-exercise-illustration-spotebi.jpg',
     name: 'Glute bridge: with ball squeeze',
     description: 'Glute / Hip Strength. Starting position: Supine.',
     category: 'Glute / Hip Strength',
@@ -1249,6 +1278,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex30',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/05/clamshell-exercise-illustration.jpg',
     name: 'Clamshells: neutral spine',
     description: 'Glute / Hip Strength. Starting position: Sidelying.',
     category: 'Glute / Hip Strength',
@@ -1278,6 +1308,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex31',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2014/10/cat-back-stretch-exercise-illustration.jpg',
     name: 'Cat-Cow: Traditional',
     description: 'Core / Transversus. Starting position: Quadruped.',
     category: 'Core / Transversus',
@@ -1307,6 +1338,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex32',
+    imageUrl: 'https://cdn.yogajournal.com/wp-content/uploads/2021/10/Childs-Pose_Andrew-Clark_1.jpg',
     name: 'Child\'s pose',
     description: 'Hip & Pelvic Mobility. Starting position: Kneeling.',
     category: 'Hip & Pelvic Mobility',
@@ -1336,6 +1368,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex33',
+    imageUrl: 'https://live.staticflickr.com/8262/8618289359_63e9b5bc57_b.jpg',
     name: 'Child\'s Pose with Diaphragmatic Breath Focus',
     description: 'Hip & Pelvic Mobility. Starting position: Kneeling.',
     category: 'Hip & Pelvic Mobility',
@@ -1365,6 +1398,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex34',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/01/hip-circles-exercise-illustration.jpg',
     name: 'Hip rockbacks: quadruped with neutral spine',
     description: 'Hip & Pelvic Mobility. Starting position: Quadruped.',
     category: 'Hip & Pelvic Mobility',
@@ -1394,6 +1428,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex35',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2017/08/pigeon-glute-stretch-exercise-illustration-spotebi.jpg',
     name: 'Figure 4 stretch',
     description: 'Hip & Pelvic Mobility. Starting position: Supine.',
     category: 'Hip & Pelvic Mobility',
@@ -1423,6 +1458,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex36',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/03/hip-flexor-stretch-exercise-illustration.jpg',
     name: 'Hip flexor stretch: semi-kneeling',
     description: 'Hip & Pelvic Mobility. Starting position: Half-kneeling.',
     category: 'Hip & Pelvic Mobility',
@@ -1452,6 +1488,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex37',
+    imageUrl: 'https://cdn.yogajournal.com/wp-content/uploads/2014/03/yoga-woman-in-squat-malasana-pose.jpg',
     name: 'Deep Squats: holding',
     description: 'Hip & Pelvic Mobility. Starting position: Standing.',
     category: 'Hip & Pelvic Mobility',
@@ -1481,6 +1518,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex38',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2014/10/windshield-wipers-exercise-illustration.jpg',
     name: 'Windshield wipers',
     description: 'Core / Transversus. Starting position: Supine.',
     category: 'Core / Transversus',
@@ -1510,6 +1548,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex39',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
     name: 'Squat',
     description: 'Functional / Lower Extremity. Starting position: Standing.',
     category: 'Functional / Lower Extremity',
@@ -1539,6 +1578,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex40',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/05/wall-sit-exercise-illustration.jpg',
     name: 'Squat: mini',
     description: 'Functional / Lower Extremity. Starting position: Standing.',
     category: 'Functional / Lower Extremity',
@@ -1568,6 +1608,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex41',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2014/10/lunges-exercise-illustration.jpg',
     name: 'Lunge',
     description: 'Functional / Lower Extremity. Starting position: Standing.',
     category: 'Functional / Lower Extremity',
@@ -1597,6 +1638,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex42',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/05/romanian-deadlift-exercise-illustration.jpg',
     name: 'Dead lift',
     description: 'Functional / Lower Extremity. Starting position: Standing.',
     category: 'Functional / Lower Extremity',
@@ -1626,6 +1668,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex43',
+    imageUrl: 'https://spotebi.com/wp-content/uploads/2015/04/single-leg-deadlift-exercise-illustration.jpg',
     name: 'Learning to hinge with wall',
     description: 'Functional / Lower Extremity. Starting position: Standing.',
     category: 'Functional / Lower Extremity',
@@ -1655,6 +1698,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex44',
+    imageUrl: 'https://www.bladderandbowel.org/wp-content/uploads/2017/07/jan-antonin-kolar-xXc7zUKIhRw-unsplash.jpg',
     name: 'Bowel: Toilet positioning',
     description: 'Bowel & Anorectal. Starting position: Seated.',
     category: 'Bowel & Anorectal',
@@ -1684,6 +1728,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex45',
+    imageUrl: 'https://static.wixstatic.com/media/72ce7d_c1bb2b7b46004d0c9ebc03174f606b03~mv2.jpg/v1/fill/w_1000,h_669,al_c,q_85,usm_0.66_1.00_0.01/72ce7d_c1bb2b7b46004d0c9ebc03174f606b03~mv2.jpg',
     name: 'Bowel: I L U massage',
     description: 'Bowel & Anorectal. Starting position: Supine.',
     category: 'Bowel & Anorectal',
@@ -1713,6 +1758,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex46',
+    imageUrl: 'https://live.staticflickr.com/65535/48441579891_67c6e12f5d_b.jpg',
     name: 'Bowel: Bulge and relax',
     description: 'Bowel & Anorectal. Starting position: Seated.',
     category: 'Bowel & Anorectal',
@@ -1742,6 +1788,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex47',
+    imageUrl: 'https://pelvicpainrehab.com/wp-content/uploads/2017/09/C_Section_Problems_01-scaled.jpg',
     name: 'C-section massage: circles',
     description: 'Scar Tissue & Post-Surgical. Starting position: Supine.',
     category: 'Scar Tissue & Post-Surgical',
@@ -1771,6 +1818,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex48',
+    imageUrl: 'https://live.staticflickr.com/65535/48441668177_bf3cb0d3d3_b.jpg',
     name: 'C-section massage: skin rolling',
     description: 'Scar Tissue & Post-Surgical. Starting position: Supine.',
     category: 'Scar Tissue & Post-Surgical',
@@ -1800,6 +1848,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex49',
+    imageUrl: 'https://thevagwhisperer.com/wp-content/uploads/2021/12/Copy-of-96-sbp_nolapelvicoffice3344.jpg',
     name: 'Perineal scar massage: U',
     description: 'Scar Tissue & Post-Surgical. Starting position: Supine / Sidelying.',
     category: 'Scar Tissue & Post-Surgical',
@@ -1829,6 +1878,7 @@ const mockExercisesRaw: ExerciseBase[] = [
   },
   {
     id: 'ex50',
+    imageUrl: 'https://live.staticflickr.com/65535/48441562036_a57e933d7a_b.jpg',
     name: 'Perineal labour prep massage: J holds',
     description: 'Scar Tissue & Post-Surgical. Starting position: Supine / Sidelying.',
     category: 'Scar Tissue & Post-Surgical',
