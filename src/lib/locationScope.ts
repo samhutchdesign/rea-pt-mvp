@@ -16,6 +16,14 @@ export function useYourEmpId(): string | null {
 
 export const YOUR_EMP_ID = 'emp1';
 
+/** The employee record that represents whoever is currently "logged in" for display purposes (avatar, name, account pages) — unlike useYourEmpId, this always resolves to someone, including Owner. */
+export function useCurrentIdentity(): Employee {
+  const role = useRole();
+  const persona = useStaffPersona();
+  const empId = role === 'owner' ? 'emp_sarah' : role === 'admin' ? 'emp1' : persona;
+  return mockEmployees.find((e) => e.id === empId) ?? mockEmployees[0];
+}
+
 function employeesAtLoc(locId: string): Employee[] {
   const loc = mockClinicLocations.find((l) => l.id === locId);
   const ids = new Set(loc?.employeeIds ?? []);

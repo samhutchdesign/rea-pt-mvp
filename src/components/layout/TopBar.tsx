@@ -2,14 +2,16 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { mockPhysio, mockClinicLocations, mockNotifications, mockEmployees } from '@/lib/mock-data';
+import { mockClinicLocations, mockNotifications, mockEmployees } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useLocationId, setLocationId } from '@/lib/locationStore';
 import { useStaffPersona } from '@/lib/staffPersonaStore';
 import { useOrgId } from '@/lib/orgStore';
+import { Avatar } from '@/components/base/avatar/avatar';
 import { Bell, ChevronRight, ChevronDown, MapPin } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
@@ -25,6 +27,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
   const activeOrgId = useOrgId();
   const viewMode = useViewMode();
   const selectedLocId = useLocationId();
+  const identity = useCurrentIdentity();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [locMenuOpen, setLocMenuOpen] = useState(false);
@@ -56,7 +59,7 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
 
   const menuItems = [
     ...(can.canManageClinic ? [{ key: 'org', label: 'Organization Profile', href: '/clinic' }] : []),
-    ...(can.canManageLocation ? [{ key: 'clinic', label: 'Clinic Profile', href: `/clinic/${mockPhysio.locationId}` }] : []),
+    ...(can.canManageLocation ? [{ key: 'clinic', label: 'Clinic Profile', href: `/clinic/${identity.locationIds[0] ?? 'loc1'}` }] : []),
     ...(can.canManageBilling ? [{ key: 'billing', label: 'Billing', href: '/billing' }] : []),
     { key: 'profile', label: 'Your Profile', href: '/account/profile' },
     { key: 'settings', label: 'Settings', href: '/account/settings' },
@@ -144,17 +147,22 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
       <div className="relative shrink-0" ref={menuRef}>
         <button
           onClick={() => setMenuOpen((v) => !v)}
-          className="flex size-9 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700 hover:bg-brand-100 transition-colors cursor-pointer"
+          className="cursor-pointer rounded-full transition-opacity hover:opacity-80"
         >
-          {mockPhysio.avatarInitials}
+          <Avatar
+            size="sm"
+            src={identity.avatarUrl}
+            alt={`${identity.firstName} ${identity.lastName}`}
+            initials={identity.avatarInitials}
+          />
         </button>
 
         {menuOpen && (
           <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-secondary bg-primary shadow-lg py-1">
             <div className="px-4 py-3 border-b border-secondary">
-              <p className="text-sm font-semibold text-primary">{mockPhysio.firstName} {mockPhysio.lastName}</p>
+              <p className="text-sm font-semibold text-primary">{identity.firstName} {identity.lastName}</p>
               <p className="text-xs font-medium text-brand-600 mt-0.5">{roleLabel(role)}</p>
-              <p className="text-xs text-tertiary mt-0.5">{mockPhysio.email}</p>
+              <p className="text-xs text-tertiary mt-0.5">{identity.email}</p>
             </div>
             <div className="py-1">
               {menuItems.map((item) => (

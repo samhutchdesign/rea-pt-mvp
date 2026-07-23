@@ -3,10 +3,11 @@ import { useRouter } from 'next/navigation';
 import TopBar from '@/components/layout/TopBar';
 import { Input } from '@/components/base/input/input';
 import { Button } from '@/components/base/buttons/button';
-import { mockPhysio } from '@/lib/mock-data';
+import { useCurrentIdentity } from '@/lib/locationScope';
 
 export default function EmailChangePage() {
   const router = useRouter();
+  const identity = useCurrentIdentity();
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Account' }, { label: 'Email Change' }]} />
@@ -16,7 +17,7 @@ export default function EmailChangePage() {
           <div className="flex flex-col gap-5">
             <div>
               <div className="mb-1 text-xs text-secondary">Current Email</div>
-              <Input defaultValue={mockPhysio.email} isDisabled />
+              <Input key={identity.id} defaultValue={identity.email} isDisabled />
             </div>
             <div>
               <div className="mb-1 text-xs text-secondary">New Email</div>
