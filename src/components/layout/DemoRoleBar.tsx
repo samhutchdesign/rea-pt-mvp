@@ -8,18 +8,19 @@ import { setLocationId } from '@/lib/locationStore';
 import { setOrgId } from '@/lib/orgStore';
 import type { UserRole } from '@/lib/types';
 
-type ViewingAs = UserRole | 'staff2' | 'staff3';
+type ViewingAs = UserRole | 'staff2' | 'staff3' | 'staff4';
 
 const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean; hidden?: boolean }[] = [
-  { value: 'owner', label: 'Owner' },
-  { value: 'admin', label: 'Admin' },
-  { value: 'staff', label: 'User' },
-  { value: 'staff2', label: 'User 2' },
-  { value: 'staff3', label: 'User 3' },
+  { value: 'owner', label: 'Owner: Org' },
+  { value: 'admin', label: 'Admin: Clinic' },
+  { value: 'staff', label: 'User: PT' },
+  { value: 'staff2', label: 'User: PT Multi Locations' },
+  { value: 'staff3', label: 'User: PT Multi Org', fullOnly: true },
+  { value: 'staff4', label: 'User: Staff' },
 ];
 
 const VIEW_MODES = [
-  { value: 'full' as const, label: 'Full' },
+  { value: 'full' as const, label: 'Full', disabled: true },
   { value: 'mvp' as const, label: 'MVP' },
 ];
 
@@ -54,6 +55,9 @@ function switchViewingAs(value: ViewingAs) {
   } else if (value === 'staff3') {
     setRole('staff');
     setStaffPersona('emp_user3');
+  } else if (value === 'staff4') {
+    setRole('staff');
+    setStaffPersona('emp_staff');
   } else {
     setRole(value as UserRole);
     setStaffPersona('emp2');
@@ -73,6 +77,7 @@ export default function DemoRoleBar() {
   const currentViewingAs: ViewingAs =
     currentRole === 'staff' && persona === 'emp_user2' ? 'staff2' :
     currentRole === 'staff' && persona === 'emp_user3' ? 'staff3' :
+    currentRole === 'staff' && persona === 'emp_staff' ? 'staff4' :
     currentRole;
 
   return (
@@ -95,90 +100,87 @@ export default function DemoRoleBar() {
       <span style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
         Viewing as:
       </span>
-      {VIEWING_AS.filter((item) => !item.hidden && (!item.fullOnly || viewMode === 'full')).map(({ value, label }) => {
-        const active = currentViewingAs === value;
-        return (
-          <button
-            key={value}
-            onClick={() => switchViewingAs(value)}
-            style={{
-              cursor: 'pointer',
-              border: active ? '1px solid #D0BCFF' : '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 999,
-              padding: '2px 12px',
-              background: active ? '#4A3780' : 'transparent',
-              color: active ? '#D0BCFF' : 'rgba(255,255,255,0.55)',
-              fontSize: 12,
-              fontWeight: active ? 600 : 400,
-              fontFamily: 'inherit',
-              lineHeight: '20px',
-              transition: 'all 0.15s',
-            }}
-          >
-            {label}
-          </button>
-        );
-      })}
+      <select
+        value={currentViewingAs}
+        onChange={(e) => switchViewingAs(e.target.value as ViewingAs)}
+        style={{
+          cursor: 'pointer',
+          border: '1px solid #D0BCFF',
+          borderRadius: 6,
+          padding: '3px 10px',
+          background: '#3A2E5C',
+          color: '#D0BCFF',
+          fontSize: 12,
+          fontWeight: 600,
+          fontFamily: 'inherit',
+          lineHeight: '18px',
+          outline: 'none',
+        }}
+      >
+        {VIEWING_AS.filter((item) => !item.hidden && (!item.fullOnly || viewMode === 'full')).map(({ value, label }) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
+      </select>
 
       <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.15)', margin: '0 4px' }} />
 
       <span style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
         Version:
       </span>
-      {VIEW_MODES.map(({ value, label }) => {
-        const active = viewMode === value;
-        return (
-          <button
-            key={value}
-            onClick={() => switchVersion(value, pathname, router)}
-            style={{
-              cursor: 'pointer',
-              border: active ? '1px solid #A8D5A2' : '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 999,
-              padding: '2px 12px',
-              background: active ? '#1E4D2B' : 'transparent',
-              color: active ? '#A8D5A2' : 'rgba(255,255,255,0.55)',
-              fontSize: 12,
-              fontWeight: active ? 600 : 400,
-              fontFamily: 'inherit',
-              lineHeight: '20px',
-              transition: 'all 0.15s',
-            }}
-          >
-            {label}
-          </button>
-        );
-      })}
+      <select
+        value={viewMode}
+        onChange={(e) => {
+          const mode = e.target.value as ViewMode;
+          if (mode === 'full') return;
+          switchVersion(mode, pathname, router);
+        }}
+        style={{
+          cursor: 'pointer',
+          border: '1px solid #A8D5A2',
+          borderRadius: 6,
+          padding: '3px 10px',
+          background: '#1E4D2B',
+          color: '#A8D5A2',
+          fontSize: 12,
+          fontWeight: 600,
+          fontFamily: 'inherit',
+          lineHeight: '18px',
+          outline: 'none',
+        }}
+      >
+        {VIEW_MODES.map(({ value, label, disabled }) => (
+          <option key={value} value={value} disabled={disabled}>
+            {label}{disabled ? ' (disabled)' : ''}
+          </option>
+        ))}
+      </select>
 
       <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.15)', margin: '0 4px' }} />
 
       <span style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: 0.3, marginRight: 4, whiteSpace: 'nowrap', fontSize: 12 }}>
         Data:
       </span>
-      {DATA_STATES.map(({ value, label }) => {
-        const active = dataState === value;
-        return (
-          <button
-            key={value}
-            onClick={() => setDataState(value)}
-            style={{
-              cursor: 'pointer',
-              border: active ? '1px solid #93C5FD' : '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 999,
-              padding: '2px 12px',
-              background: active ? '#1E3A5F' : 'transparent',
-              color: active ? '#93C5FD' : 'rgba(255,255,255,0.55)',
-              fontSize: 12,
-              fontWeight: active ? 600 : 400,
-              fontFamily: 'inherit',
-              lineHeight: '20px',
-              transition: 'all 0.15s',
-            }}
-          >
-            {label}
-          </button>
-        );
-      })}
+      <select
+        value={dataState}
+        onChange={(e) => setDataState(e.target.value as DataState)}
+        style={{
+          cursor: 'pointer',
+          border: '1px solid #93C5FD',
+          borderRadius: 6,
+          padding: '3px 10px',
+          background: '#1E3A5F',
+          color: '#93C5FD',
+          fontSize: 12,
+          fontWeight: 600,
+          fontFamily: 'inherit',
+          lineHeight: '18px',
+          outline: 'none',
+        }}
+      >
+        {DATA_STATES.map(({ value, label }) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
+      </select>
     </div>
   );
 }
