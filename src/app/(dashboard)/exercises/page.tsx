@@ -1,11 +1,12 @@
 'use client';
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { ComponentType } from 'react';
 import { Eye, Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
 import { mockExercises, mockExercisesFull } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -19,6 +20,8 @@ import { toTitleCase } from '@/utils/text';
 import { NativeSelect } from '@/components/ui/native-select';
 
 type IconType = ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>;
+
+const PAGE_SIZE = 24;
 
 const SPECIALTIES: {
   id: string; name: string; apta: string; description: string;
@@ -274,8 +277,11 @@ function ExercisesPageContent() {
   const [movementSearch, setMovementSearch] = useState('');
   const [effortSearch, setEffortSearch] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
+  const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
 
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
+
+  useScrollMemory();
 
   const specialty = SPECIALTIES.find((s) => s.id === effectiveSelectedId) ?? null;
   const allModeFilterConfig: SpecialtyFilters = useMemo(() => ({
@@ -320,6 +326,12 @@ function ExercisesPageContent() {
       return 0;
     });
   }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, exercises]);
+
+  const isFirstFilterRender = useRef(true);
+  useEffect(() => {
+    if (isFirstFilterRender.current) { isFirstFilterRender.current = false; return; }
+    setVisibleCount(PAGE_SIZE);
+  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly]);
 
   const levelClasses = (l: string) =>
     l === 'Beginner' ? 'bg-success-50 text-success-700' :
@@ -562,7 +574,7 @@ function ExercisesPageContent() {
                 </div>
               ) : (
                 <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
-                  {filtered.map((ex) => (
+                  {filtered.slice(0, visibleCount).map((ex) => (
                     <div
                       key={ex.id}
                       className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
@@ -578,8 +590,10 @@ function ExercisesPageContent() {
                         if (filterEffortTypes.length) p.set('eft', filterEffortTypes.join(','));
                         if (showFavoritesOnly) p.set('fav', '1');
                         if (sortBy !== 'A → Z') p.set('sort', sortBy);
+                        if (visibleCount !== PAGE_SIZE) p.set('show', String(visibleCount));
                         const qs = p.toString();
                         const back = encodeURIComponent(qs ? `/exercises?${qs}` : '/exercises');
+                        saveScrollPosition();
                         router.push(`/exercises/${ex.id}?back=${back}`);
                       }}
                     >
@@ -622,6 +636,14 @@ function ExercisesPageContent() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {filtered.length > visibleCount && (
+                <div className="flex justify-center mt-6">
+                  <Button color="secondary" size="md" onPress={() => setVisibleCount((v) => v + PAGE_SIZE)}>
+                    See more
+                  </Button>
                 </div>
               )}
             </div>

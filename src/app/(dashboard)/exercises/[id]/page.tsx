@@ -157,7 +157,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
           <h1 className="text-3xl font-bold text-primary mb-4 mt-0">{ex.name}</h1>
 
           {/* Action row */}
-          <div className="flex items-center gap-2.5 mb-5 flex-wrap">
+          <div className="flex items-center justify-between gap-2.5 mb-5 flex-wrap">
             <div className="flex items-center gap-2 mr-1">
               <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {ex.userUploaded ? 'Me' : 'RH'}
@@ -165,53 +165,55 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <span className="text-sm font-medium text-secondary">{ex.userUploaded ? 'You' : 'Rea Health'}</span>
             </div>
 
-            <Button color="secondary" size="sm" iconLeading={ListPlus} onPress={() => block(() => setProgramOpen(true))}>
-              Add to Program
-            </Button>
-            <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => block(() => setAssignOpen(true))}>
-              Assign
-            </Button>
-            <button
-              onClick={() => block(() => setIsFavorite((v) => !v))}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${isFavorite ? 'border-pink-200 bg-pink-50 text-pink-600' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
-            >
-              <Heart size={14} fill={isFavorite ? '#E91E63' : 'none'} color={isFavorite ? '#E91E63' : 'currentColor'} />
-              Favorite
-            </button>
-
-            {/* More menu — full version only */}
-            {viewMode === 'full' && (
-            <div className="relative" ref={moreRef}>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <Button color="secondary" size="sm" iconLeading={ListPlus} onPress={() => block(() => setProgramOpen(true))}>
+                Add to Program
+              </Button>
+              <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => block(() => setAssignOpen(true))}>
+                Assign
+              </Button>
               <button
-                onClick={() => setMoreOpen((v) => !v)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-secondary bg-primary text-secondary hover:bg-secondary transition-colors"
+                onClick={() => block(() => setIsFavorite((v) => !v))}
+                className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${isFavorite ? 'border-pink-200 bg-pink-50 text-pink-600' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
               >
-                <MoreHorizontal size={16} />
+                <Heart size={14} fill={isFavorite ? '#E91E63' : 'none'} color={isFavorite ? '#E91E63' : 'currentColor'} />
+                Favorite
               </button>
-              {moreOpen && (
-                <div className="absolute left-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary shadow-lg z-50 py-1">
-                  <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
-                    <Mic size={15} className="text-tertiary shrink-0" />Record Audio Cue
-                  </button>
-                  {ex.userUploaded ? (
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
-                      <Pencil size={15} className="text-tertiary shrink-0" />Edit
+
+              {/* More menu — full version only */}
+              {viewMode === 'full' && (
+              <div className="relative" ref={moreRef}>
+                <button
+                  onClick={() => setMoreOpen((v) => !v)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-secondary bg-primary text-secondary hover:bg-secondary transition-colors"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+                {moreOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary shadow-lg z-50 py-1">
+                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
+                      <Mic size={15} className="text-tertiary shrink-0" />Record Audio Cue
                     </button>
-                  ) : (
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?duplicate=${id}`)); }}>
-                      <Copy size={15} className="text-tertiary shrink-0" />Duplicate
+                    {ex.userUploaded ? (
+                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
+                        <Pencil size={15} className="text-tertiary shrink-0" />Edit
+                      </button>
+                    ) : (
+                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?duplicate=${id}`)); }}>
+                        <Copy size={15} className="text-tertiary shrink-0" />Duplicate
+                      </button>
+                    )}
+                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
+                      <Share2 size={15} className="text-tertiary shrink-0" />Share
                     </button>
-                  )}
-                  <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
-                    <Share2 size={15} className="text-tertiary shrink-0" />Share
-                  </button>
-                  <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
-                    Report an issue
-                  </button>
-                </div>
+                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
+                      Report an issue
+                    </button>
+                  </div>
+                )}
+              </div>
               )}
             </div>
-            )}
           </div>
 
           {/* Transcript */}
@@ -226,18 +228,16 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           <Divider className="mb-6" />
 
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="mt-0 text-base font-bold text-primary">Instructions</h3>
-            <NativeSelect
-              value={selectedCue}
-              onChange={(e) => setSelectedCue(e.target.value)}
-              wrapperClassName="w-56 shrink-0"
-              className="py-1.5 text-xs text-secondary"
-            >
-              <option value="">Add relaxation cue…</option>
-              {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-            </NativeSelect>
-          </div>
+          <h3 className="mt-0 mb-3 text-base font-bold text-primary">Instructions</h3>
+          <NativeSelect
+            value={selectedCue}
+            onChange={(e) => setSelectedCue(e.target.value)}
+            wrapperClassName="w-56 mb-3"
+            className="py-1.5 text-xs text-secondary"
+          >
+            <option value="">Add relaxation cue…</option>
+            {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+          </NativeSelect>
           {selectedCue && (() => {
             const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
             return cue ? (

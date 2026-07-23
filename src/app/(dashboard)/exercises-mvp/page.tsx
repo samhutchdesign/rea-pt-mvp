@@ -1,10 +1,11 @@
 'use client';
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, Heart, Search, X } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
 import { mockExercises } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
@@ -15,6 +16,8 @@ import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
 import { NativeSelect } from '@/components/ui/native-select';
+
+const PAGE_SIZE = 24;
 
 const SEARCH_ALIASES: Record<string, string> = {
   sui: 'Stress Urinary Incontinence', uui: 'Urge Urinary Incontinence',
@@ -48,12 +51,15 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
   );
 }
 
-function CheckRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
+function CheckRow({ label, checked, onChange, inactive }: { label: string; checked: boolean; onChange: () => void; inactive?: boolean }) {
   return (
     <button
       type="button"
       onClick={onChange}
-      className="flex w-full items-center gap-2 mb-2 cursor-pointer text-left bg-transparent border-none p-0"
+      className={cx(
+        'flex w-full items-center gap-2 mb-2 text-left bg-transparent border-none p-0',
+        inactive ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+      )}
     >
       <span className={cx(
         'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
@@ -117,6 +123,12 @@ function ExercisesPageContent() {
   const [categorySearch, setCategorySearch] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
+  const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
+
+  useScrollMemory();
+
+  const filtersInactive = dataState === 'empty';
+  const guardFilter = (fn: () => void) => { if (filtersInactive) { setShowSignUpModal(true); return; } fn(); };
 
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
@@ -148,6 +160,12 @@ function ExercisesPageContent() {
       return 0;
     });
   }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites]);
+
+  const isFirstFilterRender = useRef(true);
+  useEffect(() => {
+    if (isFirstFilterRender.current) { isFirstFilterRender.current = false; return; }
+    setVisibleCount(PAGE_SIZE);
+  }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly]);
 
   const levelClasses = (l: string) =>
     l === 'Beginner' ? 'bg-success-50 text-success-700' :
@@ -194,7 +212,7 @@ function ExercisesPageContent() {
             </div>
 
             <div className="mb-5 pb-5 border-b border-secondary">
-              <CheckRow label="Favourites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
+              <CheckRow label="Favourites only" checked={showFavoritesOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowFavoritesOnly((v) => !v))} />
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
@@ -209,7 +227,7 @@ function ExercisesPageContent() {
                 />
               </div>
               {visibleConditions.map((c) => (
-                <CheckRow key={c} label={c} checked={filterConditions.includes(c)} onChange={() => toggleArr(filterConditions, c, setFilterConditions)} />
+                <CheckRow key={c} label={c} checked={filterConditions.includes(c)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterConditions, c, setFilterConditions))} />
               ))}
               {!conditionSearch && ALL_CONDITIONS.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreConditions((v) => !v)}>
@@ -233,7 +251,7 @@ function ExercisesPageContent() {
                 />
               </div>
               {visibleCategories.map((c) => (
-                <CheckRow key={c} label={c} checked={filterCategories.includes(c)} onChange={() => toggleArr(filterCategories, c, setFilterCategories)} />
+                <CheckRow key={c} label={c} checked={filterCategories.includes(c)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterCategories, c, setFilterCategories))} />
               ))}
               {!categorySearch && ALL_CATEGORIES.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreCategories((v) => !v)}>
@@ -247,7 +265,7 @@ function ExercisesPageContent() {
 
             <FilterSection title="Level" activeCount={filterLevels.length} onClear={() => setFilterLevels([])}>
               {visibleLevels.map((l) => (
-                <CheckRow key={l} label={l} checked={filterLevels.includes(l)} onChange={() => toggleArr(filterLevels, l, setFilterLevels)} />
+                <CheckRow key={l} label={l} checked={filterLevels.includes(l)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterLevels, l, setFilterLevels))} />
               ))}
               {ALL_LEVELS.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreLevels((v) => !v)}>
@@ -258,7 +276,7 @@ function ExercisesPageContent() {
 
             <FilterSection title="Equipment" activeCount={filterEquipment.length} onClear={() => setFilterEquipment([])}>
               {visibleEquipment.map((eq) => (
-                <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} onChange={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />
+                <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterEquipment, eq, setFilterEquipment))} />
               ))}
               {ALL_EQUIPMENT.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreEquipment((v) => !v)}>
@@ -269,7 +287,7 @@ function ExercisesPageContent() {
 
             <FilterSection title="Movement Type" activeCount={filterMovementTypes.length} onClear={() => setFilterMovementTypes([])}>
               {visibleMovementTypes.map((m) => (
-                <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} onChange={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />
+                <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterMovementTypes, m, setFilterMovementTypes))} />
               ))}
               {MOVEMENT_TYPES.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreMovementTypes((v) => !v)}>
@@ -280,7 +298,7 @@ function ExercisesPageContent() {
 
             <FilterSection title="Effort Type" activeCount={filterEffortTypes.length} onClear={() => setFilterEffortTypes([])}>
               {visibleEffortTypes.map((e) => (
-                <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} onChange={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />
+                <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterEffortTypes, e, setFilterEffortTypes))} />
               ))}
               {EFFORT_TYPES.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreEffortTypes((v) => !v)}>
@@ -298,15 +316,19 @@ function ExercisesPageContent() {
                 <Input
                   placeholder="Search exercises, SUI, OAB…"
                   value={search}
-                  onChange={setSearch}
+                  onChange={(v) => guardFilter(() => setSearch(v))}
+                  onFocus={() => { if (filtersInactive) setShowSignUpModal(true); }}
                   icon={Search}
                   size="sm"
+                  inputClassName={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
                 />
               </div>
               <NativeSelect
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => guardFilter(() => setSortBy(e.target.value))}
+                onMouseDown={(e) => { if (filtersInactive) { e.preventDefault(); setShowSignUpModal(true); } }}
                 wrapperClassName="w-40 shrink-0"
+                className={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
               >
                 {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
               </NativeSelect>
@@ -348,7 +370,7 @@ function ExercisesPageContent() {
               </div>
             ) : (
               <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
-                {filtered.map((ex) => (
+                {filtered.slice(0, visibleCount).map((ex) => (
                   <div
                     key={ex.id}
                     className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
@@ -363,8 +385,10 @@ function ExercisesPageContent() {
                       if (filterEffortTypes.length) p.set('eft', filterEffortTypes.join(','));
                       if (showFavoritesOnly) p.set('fav', '1');
                       if (sortBy !== 'A → Z') p.set('sort', sortBy);
+                      if (visibleCount !== PAGE_SIZE) p.set('show', String(visibleCount));
                       const qs = p.toString();
                       const back = encodeURIComponent(qs ? `/exercises-mvp?${qs}` : '/exercises-mvp');
+                      saveScrollPosition();
                       router.push(`/exercises/${ex.id}?back=${back}`);
                     }}
                   >
@@ -407,6 +431,19 @@ function ExercisesPageContent() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {filtered.length > visibleCount && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  color="secondary"
+                  size="md"
+                  className={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
+                  onPress={() => guardFilter(() => setVisibleCount((v) => v + PAGE_SIZE))}
+                >
+                  See more
+                </Button>
               </div>
             )}
           </div>

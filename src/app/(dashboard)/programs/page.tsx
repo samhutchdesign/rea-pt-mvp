@@ -1,6 +1,6 @@
 'use client';
-import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
@@ -13,6 +13,9 @@ import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import { Heart, Plus, Search, X } from 'lucide-react';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
+
+const PAGE_SIZE = 24;
 
 const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
@@ -36,12 +39,15 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
   );
 }
 
-function CheckRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
+function CheckRow({ label, checked, onChange, inactive }: { label: string; checked: boolean; onChange: () => void; inactive?: boolean }) {
   return (
     <button
       type="button"
       onClick={onChange}
-      className="flex w-full items-center gap-2 mb-2 cursor-pointer text-left bg-transparent border-none p-0"
+      className={cx(
+        'flex w-full items-center gap-2 mb-2 text-left bg-transparent border-none p-0',
+        inactive ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+      )}
     >
       <span className={cx(
         'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
@@ -69,23 +75,42 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
   );
 }
 
-export default function ProgramsPage() {
+function ProgramsPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dataState = useDataState();
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('A → Z');
-  const [filterConditions, setFilterConditions] = useState<string[]>([]);
-  const [filterCategories, setFilterCategories] = useState<string[]>([]);
-  const [filterLevels, setFilterLevels] = useState<string[]>([]);
-  const [filterEquipment, setFilterEquipment] = useState<string[]>([]);
-  const [filterMovementTypes, setFilterMovementTypes] = useState<string[]>([]);
-  const [filterEffortTypes, setFilterEffortTypes] = useState<string[]>([]);
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [search, setSearch] = useState(searchParams.get('q') ?? '');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'A → Z');
+  const [filterConditions, setFilterConditions] = useState<string[]>(
+    searchParams.get('conds')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterCategories, setFilterCategories] = useState<string[]>(
+    searchParams.get('cats')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterLevels, setFilterLevels] = useState<string[]>(
+    searchParams.get('levels')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterEquipment, setFilterEquipment] = useState<string[]>(
+    searchParams.get('equip')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterMovementTypes, setFilterMovementTypes] = useState<string[]>(
+    searchParams.get('mvt')?.split(',').filter(Boolean) ?? []
+  );
+  const [filterEffortTypes, setFilterEffortTypes] = useState<string[]>(
+    searchParams.get('eft')?.split(',').filter(Boolean) ?? []
+  );
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('fav') === '1');
   const [conditionSearch, setConditionSearch] = useState('');
   const [categorySearch, setCategorySearch] = useState('');
   const [showMoreConditions, setShowMoreConditions] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockPrograms.filter((p) => p.isFavorite).map((p) => p.id)));
+  const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
+
+  useScrollMemory();
+
+  const filtersInactive = dataState === 'empty';
+  const guardFilter = (fn: () => void) => { if (filtersInactive) { setShowSignUpModal(true); return; } fn(); };
 
   const toggleFavorite = (id: string) => setFavorites((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
@@ -128,6 +153,12 @@ export default function ProgramsPage() {
     });
   }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites]);
 
+  const isFirstFilterRender = useRef(true);
+  useEffect(() => {
+    if (isFirstFilterRender.current) { isFirstFilterRender.current = false; return; }
+    setVisibleCount(PAGE_SIZE);
+  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly]);
+
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Programs' }]} />
@@ -153,7 +184,7 @@ export default function ProgramsPage() {
             </div>
 
             <div className="mb-5 pb-5 border-b border-secondary">
-              <CheckRow label="Favourites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
+              <CheckRow label="Favourites only" checked={showFavoritesOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowFavoritesOnly((v) => !v))} />
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
@@ -168,7 +199,7 @@ export default function ProgramsPage() {
                 />
               </div>
               {visibleConditions.map((c) => (
-                <CheckRow key={c} label={c} checked={filterConditions.includes(c)} onChange={() => toggleArr(filterConditions, c, setFilterConditions)} />
+                <CheckRow key={c} label={c} checked={filterConditions.includes(c)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterConditions, c, setFilterConditions))} />
               ))}
               {!conditionSearch && ALL_CONDITIONS.length > 7 && (
                 <Button color="link-color" size="sm" onPress={() => setShowMoreConditions((v) => !v)}>
@@ -192,7 +223,7 @@ export default function ProgramsPage() {
                 />
               </div>
               {filteredCategories.map((c) => (
-                <CheckRow key={c} label={c} checked={filterCategories.includes(c)} onChange={() => toggleArr(filterCategories, c, setFilterCategories)} />
+                <CheckRow key={c} label={c} checked={filterCategories.includes(c)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterCategories, c, setFilterCategories))} />
               ))}
               {categorySearch && filteredCategories.length === 0 && (
                 <p className="text-xs text-tertiary">No categories found.</p>
@@ -201,25 +232,25 @@ export default function ProgramsPage() {
 
             <FilterSection title="Level" activeCount={filterLevels.length} onClear={() => setFilterLevels([])}>
               {ALL_LEVELS.map((l) => (
-                <CheckRow key={l} label={l} checked={filterLevels.includes(l)} onChange={() => toggleArr(filterLevels, l, setFilterLevels)} />
+                <CheckRow key={l} label={l} checked={filterLevels.includes(l)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterLevels, l, setFilterLevels))} />
               ))}
             </FilterSection>
 
             <FilterSection title="Equipment" activeCount={filterEquipment.length} onClear={() => setFilterEquipment([])}>
               {ALL_EQUIPMENT.map((eq) => (
-                <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} onChange={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />
+                <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterEquipment, eq, setFilterEquipment))} />
               ))}
             </FilterSection>
 
             <FilterSection title="Movement Type" activeCount={filterMovementTypes.length} onClear={() => setFilterMovementTypes([])}>
               {MOVEMENT_TYPES.map((m) => (
-                <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} onChange={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />
+                <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterMovementTypes, m, setFilterMovementTypes))} />
               ))}
             </FilterSection>
 
             <FilterSection title="Effort Type" activeCount={filterEffortTypes.length} onClear={() => setFilterEffortTypes([])}>
               {EFFORT_TYPES.map((e) => (
-                <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} onChange={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />
+                <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterEffortTypes, e, setFilterEffortTypes))} />
               ))}
             </FilterSection>
           </div>
@@ -232,15 +263,19 @@ export default function ProgramsPage() {
                 <Input
                   placeholder="Search programs…"
                   value={search}
-                  onChange={setSearch}
+                  onChange={(v) => guardFilter(() => setSearch(v))}
+                  onFocus={() => { if (filtersInactive) setShowSignUpModal(true); }}
                   icon={Search}
                   size="sm"
+                  inputClassName={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
                 />
               </div>
               <NativeSelect
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => guardFilter(() => setSortBy(e.target.value))}
+                onMouseDown={(e) => { if (filtersInactive) { e.preventDefault(); setShowSignUpModal(true); } }}
                 wrapperClassName="w-40 shrink-0"
+                className={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
               >
                 {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
               </NativeSelect>
@@ -270,13 +305,29 @@ export default function ProgramsPage() {
               </div>
             ) : (
               <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
-                {filtered.map((prog) => {
+                {filtered.slice(0, visibleCount).map((prog) => {
                   const firstEx = mockExercises.find((e) => e.id === prog.exercises[0]?.exerciseId);
                   return (
                   <div
                     key={prog.id}
                     className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
-                    onClick={() => router.push(`/programs/${prog.id}`)}
+                    onClick={() => {
+                      const p = new URLSearchParams();
+                      if (search) p.set('q', search);
+                      if (filterCategories.length) p.set('cats', filterCategories.join(','));
+                      if (filterConditions.length) p.set('conds', filterConditions.join(','));
+                      if (filterLevels.length) p.set('levels', filterLevels.join(','));
+                      if (filterEquipment.length) p.set('equip', filterEquipment.join(','));
+                      if (filterMovementTypes.length) p.set('mvt', filterMovementTypes.join(','));
+                      if (filterEffortTypes.length) p.set('eft', filterEffortTypes.join(','));
+                      if (showFavoritesOnly) p.set('fav', '1');
+                      if (sortBy !== 'A → Z') p.set('sort', sortBy);
+                      if (visibleCount !== PAGE_SIZE) p.set('show', String(visibleCount));
+                      const qs = p.toString();
+                      const back = encodeURIComponent(qs ? `/programs?${qs}` : '/programs');
+                      saveScrollPosition();
+                      router.push(`/programs/${prog.id}?back=${back}`);
+                    }}
                   >
                     <div className="relative h-28 overflow-hidden bg-brand-50">
                       <ExerciseThumbnail src={firstEx?.imageUrl} alt={prog.name} iconSize={32} />
@@ -311,10 +362,27 @@ export default function ProgramsPage() {
                 })}
               </div>
             )}
+
+            {filtered.length > visibleCount && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  color="secondary"
+                  size="md"
+                  className={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
+                  onPress={() => guardFilter(() => setVisibleCount((v) => v + PAGE_SIZE))}
+                >
+                  See more
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
       <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or edit programs" />
     </>
   );
+}
+
+export default function ProgramsPage() {
+  return <Suspense><ProgramsPageContent /></Suspense>;
 }
