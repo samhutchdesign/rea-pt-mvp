@@ -12,10 +12,10 @@ import { Divider } from '@/components/ui/divider';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
-import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
+import { mockPatients, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
-import { useYourEmpId } from '@/lib/locationScope';
-import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds } from '@/lib/patientLocationStore';
+import { useYourEmpId, useAvailableLocationIds } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds, transferPatient } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { clearUploadedData } from '@/lib/uploadStore';
 import { cx } from '@/utils/cx';
@@ -67,6 +67,9 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [archived, setArchived] = useState(patient?.archived ?? false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [restoreOpen, setRestoreOpen] = useState(false);
+  const [restoreLocationId, setRestoreLocationId] = useState('');
+  const [restorePtId, setRestorePtId] = useState('');
   const [editOpen, setEditOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: patient?.firstName ?? '',
@@ -78,6 +81,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const can = usePermissions();
   const yourEmpId = useYourEmpId();
   const viewMode = useViewMode();
+  const availableLocationIds = useAvailableLocationIds();
 
   const MVP_HIDDEN = new Set(['pat8', 'pat1']);
   useEffect(() => {
@@ -111,8 +115,35 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     toast.warning(`${patient.firstName} ${patient.lastName} has been archived.`);
   };
 
+  const restoreLocations = mockClinicLocations.filter((l) => l.orgId === patient.clinicId && availableLocationIds.includes(l.id));
+  const restoreDestLocation = mockClinicLocations.find((l) => l.id === restoreLocationId) ?? null;
+  const restoreEligiblePts = restoreDestLocation
+    ? mockEmployees.filter((e) => restoreDestLocation.employeeIds.includes(e.id) && !e.archived)
+    : [];
+
+  const openRestore = () => {
+    const currentLocationId = locationOverrides.get(id)?.locationId ?? '';
+    setRestoreLocationId(availableLocationIds.includes(currentLocationId) ? currentLocationId : '');
+    setRestorePtId('');
+    setRestoreOpen(true);
+  };
+
+  const handleSelectRestoreLocation = (locationId: string) => {
+    setRestoreLocationId(locationId);
+    const location = mockClinicLocations.find((l) => l.id === locationId);
+    const pts = location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && !e.archived) : [];
+    const currentAssigned = getEffectiveAssignedEmployeeIds(patient, locationOverrides);
+    const keptPt = pts.find((p) => currentAssigned.includes(p.id));
+    setRestorePtId(keptPt?.id ?? '');
+  };
+
   const handleRestore = () => {
+    if (!restoreLocationId || !restorePtId) return;
+    transferPatient(id, restoreLocationId, restorePtId);
     setArchived(false);
+    setRestoreOpen(false);
+    setRestoreLocationId('');
+    setRestorePtId('');
     toast.success(`${patient.firstName} ${patient.lastName} restored to active.`);
   };
 
@@ -170,7 +201,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
             {can.canArchivePatient && archived && (
               <div className="flex gap-2 shrink-0">
-                <Button size="sm" color="secondary" iconLeading={Inbox} onPress={handleRestore}>
+                <Button size="sm" color="secondary" iconLeading={Inbox} onPress={openRestore}>
                   Restore Patient
                 </Button>
                 <Button size="sm" color="primary-destructive" onPress={() => setConfirmDeleteOpen(true)}>
@@ -258,6 +289,60 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
               <div className="flex justify-end gap-3 mt-6">
                 <Button color="secondary" onPress={() => setEditOpen(false)}>Cancel</Button>
                 <Button color="primary" onPress={handleSaveProfile}>Save Changes</Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
+
+      {/* Restore Patient Dialog */}
+      <ModalOverlay isOpen={restoreOpen} onOpenChange={(v) => { if (!v) setRestoreOpen(false); }}>
+        <Modal className="w-full max-w-md">
+          <Dialog>
+            <div className="p-6">
+              <h2 className="text-lg font-semibold text-primary mb-1">Restore Patient</h2>
+              <p className="text-sm text-secondary mb-4">
+                To reactivate <strong>{patient.firstName} {patient.lastName}</strong>, assign a clinic location and treating PT.
+              </p>
+              {restoreLocations.length === 0 ? (
+                <p className="text-sm text-tertiary mb-4">No locations are available to you for this organization.</p>
+              ) : (
+                <div className="flex flex-col gap-4 mb-6">
+                  <div>
+                    <div className="mb-1 text-xs font-medium text-secondary">Location</div>
+                    <NativeSelect
+                      value={restoreLocationId}
+                      onChange={(e) => handleSelectRestoreLocation(e.target.value)}
+                    >
+                      <option value="">Select a location…</option>
+                      {restoreLocations.map((l) => (
+                        <option key={l.id} value={l.id}>{l.name} — {l.city}, {l.regionCountry}</option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                  {restoreDestLocation && (
+                    <div>
+                      <div className="mb-1 text-xs font-medium text-secondary">Treating PT</div>
+                      {restoreEligiblePts.length === 0 ? (
+                        <p className="text-sm text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                      ) : (
+                        <NativeSelect
+                          value={restorePtId}
+                          onChange={(e) => setRestorePtId(e.target.value)}
+                        >
+                          <option value="">Select a PT…</option>
+                          {restoreEligiblePts.map((e) => (
+                            <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
+                          ))}
+                        </NativeSelect>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="flex justify-end gap-3">
+                <Button color="secondary" onPress={() => setRestoreOpen(false)}>Cancel</Button>
+                <Button color="primary" isDisabled={!restoreLocationId || !restorePtId} onPress={handleRestore}>Restore Patient</Button>
               </div>
             </div>
           </Dialog>

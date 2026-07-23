@@ -9,14 +9,15 @@ import { Avatar } from '@/components/base/avatar/avatar';
 import { Badge } from '@/components/base/badges/badges';
 import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
-import { mockChartSessions } from '@/lib/mock-data';
-import { useLocationScope, useYourEmpId } from '@/lib/locationScope';
-import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds } from '@/lib/patientLocationStore';
+import { mockChartSessions, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
+import { useLocationScope, useYourEmpId, useAvailableLocationIds } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds, transferPatient } from '@/lib/patientLocationStore';
 import { useRole } from '@/lib/roleStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
 import { EmptyState } from '@/components/ui/empty-state';
 import { NativeSelect } from '@/components/ui/native-select';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import type { Patient } from '@/lib/types';
 import { Calendar, Map01, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
 
@@ -75,6 +76,7 @@ export default function PatientsPage() {
   const viewMode = useViewMode();
   const role = useRole();
   const locationOverrides = useLocationOverrides();
+  const availableLocationIds = useAvailableLocationIds();
 
   const MVP_HIDDEN = new Set(['pat8', 'pat1']);
   const patients = scopedPatients
@@ -90,11 +92,13 @@ export default function PatientsPage() {
   const showYoursTab = yourEmpId !== null;
   // Practitioners (staff role) only see patients assigned to them — no "All" tab.
   const showAllTab = role !== 'staff';
+  // Any "User: …" viewing-as state maps to the staff role — hide Archived for those, keep for Owner/Admin.
+  const showArchivedTab = role !== 'staff';
 
   const sections = [
     ...(showYoursTab ? [{ list: yourPatients, label: 'Your Patients', searchPlaceholder: 'Search your patients…', emptyMessage: 'No patients assigned to you yet' }] : []),
     ...(showAllTab ? [{ list: allActive, label: 'All', searchPlaceholder: 'Search all patients…', emptyMessage: 'No active patients found' }] : []),
-    { list: archived, label: 'Archived', searchPlaceholder: 'Search archived patients…', emptyMessage: 'No archived patients found' },
+    ...(showArchivedTab ? [{ list: archived, label: 'Archived', searchPlaceholder: 'Search archived patients…', emptyMessage: 'No archived patients found' }] : []),
   ];
   const tabList = sections.map((s) => s.list);
 
@@ -126,9 +130,42 @@ export default function PatientsPage() {
 
   const displayed = applySort(applySearch(currentList));
 
-  const restore = (patient: Patient) => {
-    setLocalPatients((prev) => ({ ...prev, [patient.id]: false }));
-    toast.success(`${patient.firstName} ${patient.lastName} restored to active.`);
+  const [restoreTarget, setRestoreTarget] = useState<Patient | null>(null);
+  const [restoreLocationId, setRestoreLocationId] = useState('');
+  const [restorePtId, setRestorePtId] = useState('');
+
+  const restoreLocations = restoreTarget
+    ? mockClinicLocations.filter((l) => l.orgId === restoreTarget.clinicId && availableLocationIds.includes(l.id))
+    : [];
+  const restoreDestLocation = mockClinicLocations.find((l) => l.id === restoreLocationId) ?? null;
+  const restoreEligiblePts = restoreDestLocation
+    ? mockEmployees.filter((e) => restoreDestLocation.employeeIds.includes(e.id) && !e.archived)
+    : [];
+
+  const openRestore = (patient: Patient) => {
+    const currentLocationId = locationOverrides.get(patient.id)?.locationId ?? '';
+    setRestoreTarget(patient);
+    setRestoreLocationId(availableLocationIds.includes(currentLocationId) ? currentLocationId : '');
+    setRestorePtId('');
+  };
+
+  const handleSelectRestoreLocation = (locationId: string) => {
+    setRestoreLocationId(locationId);
+    const location = mockClinicLocations.find((l) => l.id === locationId);
+    const pts = location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && !e.archived) : [];
+    const currentAssigned = restoreTarget ? getEffectiveAssignedEmployeeIds(restoreTarget, locationOverrides) : [];
+    const keptPt = pts.find((p) => currentAssigned.includes(p.id));
+    setRestorePtId(keptPt?.id ?? '');
+  };
+
+  const confirmRestore = () => {
+    if (!restoreTarget || !restoreLocationId || !restorePtId) return;
+    transferPatient(restoreTarget.id, restoreLocationId, restorePtId);
+    setLocalPatients((prev) => ({ ...prev, [restoreTarget.id]: false }));
+    toast.success(`${restoreTarget.firstName} ${restoreTarget.lastName} restored to active.`);
+    setRestoreTarget(null);
+    setRestoreLocationId('');
+    setRestorePtId('');
   };
 
   const searchPlaceholders = sections.map((s) => s.searchPlaceholder);
@@ -273,7 +310,7 @@ export default function PatientsPage() {
                     )}
                     {tab === archivedTabIndex && (
                       <div onClick={(e) => e.stopPropagation()} className="mt-1">
-                        <Button size="xs" color="secondary" iconLeading={RefreshCcw01} onPress={() => restore(patient)}>
+                        <Button size="xs" color="secondary" iconLeading={RefreshCcw01} onPress={() => openRestore(patient)}>
                           Restore
                         </Button>
                       </div>
@@ -287,6 +324,62 @@ export default function PatientsPage() {
       </div>
 
       <AddPatientDialog open={addOpen} onClose={() => setAddOpen(false)} />
+
+      {/* Restore Patient Dialog */}
+      <ModalOverlay isOpen={!!restoreTarget} onOpenChange={(v) => { if (!v) setRestoreTarget(null); }}>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-full max-w-md">
+              <h3 className="text-lg font-semibold text-primary mb-1">Restore Patient</h3>
+              <p className="text-sm text-secondary mb-4">
+                To reactivate <strong>{restoreTarget?.firstName} {restoreTarget?.lastName}</strong>, assign a clinic location and treating PT.
+              </p>
+              {restoreLocations.length === 0 ? (
+                <p className="text-sm text-tertiary mb-4">No locations are available to you for this organization.</p>
+              ) : (
+                <div className="flex flex-col gap-4 mb-6">
+                  <div>
+                    <div className="mb-1 text-xs font-medium text-secondary">Location</div>
+                    <NativeSelect
+                      value={restoreLocationId}
+                      onChange={(e) => handleSelectRestoreLocation(e.target.value)}
+                    >
+                      <option value="">Select a location…</option>
+                      {restoreLocations.map((l) => (
+                        <option key={l.id} value={l.id}>{l.name} — {l.city}, {l.regionCountry}</option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                  {restoreDestLocation && (
+                    <div>
+                      <div className="mb-1 text-xs font-medium text-secondary">Treating PT</div>
+                      {restoreEligiblePts.length === 0 ? (
+                        <p className="text-sm text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                      ) : (
+                        <NativeSelect
+                          value={restorePtId}
+                          onChange={(e) => setRestorePtId(e.target.value)}
+                        >
+                          <option value="">Select a PT…</option>
+                          {restoreEligiblePts.map((e) => (
+                            <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
+                          ))}
+                        </NativeSelect>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="flex justify-end gap-3">
+                <Button color="secondary" size="md" onPress={() => setRestoreTarget(null)}>Cancel</Button>
+                <Button color="primary" size="md" isDisabled={!restoreLocationId || !restorePtId} onPress={confirmRestore}>
+                  Restore Patient
+                </Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </>
   );
 }

@@ -3,9 +3,11 @@ import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
-import { mockEmployees, mockPatients } from '@/lib/mock-data';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { mockEmployees, mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
-import { useLocationOverrides, getEffectivePatientIdsForEmployee } from '@/lib/patientLocationStore';
+import { useAvailableLocationIds } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectivePatientIdsForEmployee, transferPatient as transferPatientLocation, type PatientLocationState } from '@/lib/patientLocationStore';
 import type { Patient, Employee } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
@@ -15,28 +17,45 @@ import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/mod
 import { cx } from '@/utils/cx';
 import { ArrowLeftRight, Calendar, Inbox, Mail, Pencil, Phone, User } from 'lucide-react';
 
-const AVATAR_COLORS: Record<string, string> = {
-  emp1: '#6750A4',
-  emp2: '#0288D1',
-  emp3: '#2E7D32',
-  emp4: '#F57C00',
-};
-
 function TransferDialog({
   open,
   patient,
   currentEmployee,
+  locationOverrides,
   onClose,
   onTransfer,
 }: {
   open: boolean;
   patient: Patient | null;
   currentEmployee: Employee;
+  locationOverrides: Map<string, PatientLocationState>;
   onClose: () => void;
-  onTransfer: (toEmployee: Employee) => void;
+  onTransfer: (locationId: string, toEmployee: Employee) => void;
 }) {
+  const availableLocationIds = useAvailableLocationIds();
+  const [locationId, setLocationId] = useState('');
   const [selected, setSelected] = useState<Employee | null>(null);
-  const otherEmployees = mockEmployees.filter((e) => e.id !== currentEmployee.id && !e.archived);
+
+  useEffect(() => {
+    if (open && patient) {
+      const currentLocationId = locationOverrides.get(patient.id)?.locationId ?? '';
+      setLocationId(availableLocationIds.includes(currentLocationId) ? currentLocationId : '');
+      setSelected(null);
+    }
+  }, [open, patient, locationOverrides, availableLocationIds]);
+
+  const locations = patient
+    ? mockClinicLocations.filter((l) => l.orgId === patient.clinicId && availableLocationIds.includes(l.id))
+    : [];
+  const destinationLocation = mockClinicLocations.find((l) => l.id === locationId) ?? null;
+  const otherEmployees = destinationLocation
+    ? mockEmployees.filter((e) => destinationLocation.employeeIds.includes(e.id) && e.id !== currentEmployee.id && !e.archived)
+    : [];
+
+  const handleSelectLocation = (id: string) => {
+    setLocationId(id);
+    setSelected(null);
+  };
 
   return (
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
@@ -45,25 +64,51 @@ function TransferDialog({
           <div className="p-6 w-full min-w-[420px]">
             <h3 className="text-lg font-semibold text-primary mb-3">Transfer Patient</h3>
             <p className="text-tertiary text-sm mb-4">
-              Transfer <strong className="text-primary">{patient?.firstName} {patient?.lastName}</strong> to another physiotherapist.
+              Transfer <strong className="text-primary">{patient?.firstName} {patient?.lastName}</strong> to a clinic location and physiotherapist.
             </p>
-            <NativeSelect
-              wrapperClassName="mb-6"
-              value={selected?.id ?? ''}
-              onChange={(e) => setSelected(otherEmployees.find((emp) => emp.id === e.target.value) ?? null)}
-            >
-              <option value="" disabled>Select physiotherapist</option>
-              {otherEmployees.map((e) => (
-                <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
-              ))}
-            </NativeSelect>
+            {locations.length === 0 ? (
+              <p className="text-sm text-tertiary mb-4">No locations are available to you for this organization.</p>
+            ) : (
+              <div className="flex flex-col gap-4 mb-6">
+                <div>
+                  <div className="mb-1 text-xs font-medium text-secondary">Location</div>
+                  <NativeSelect
+                    value={locationId}
+                    onChange={(e) => handleSelectLocation(e.target.value)}
+                  >
+                    <option value="">Select a location</option>
+                    {locations.map((l) => (
+                      <option key={l.id} value={l.id}>{l.name} — {l.city}, {l.regionCountry}</option>
+                    ))}
+                  </NativeSelect>
+                </div>
+                {destinationLocation && (
+                  <div>
+                    <div className="mb-1 text-xs font-medium text-secondary">Physiotherapist</div>
+                    {otherEmployees.length === 0 ? (
+                      <p className="text-sm text-tertiary">No other physiotherapists are staffed at this location.</p>
+                    ) : (
+                      <NativeSelect
+                        value={selected?.id ?? ''}
+                        onChange={(e) => setSelected(otherEmployees.find((emp) => emp.id === e.target.value) ?? null)}
+                      >
+                        <option value="" disabled>Select physiotherapist</option>
+                        {otherEmployees.map((e) => (
+                          <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
+                        ))}
+                      </NativeSelect>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             <div className="flex justify-end gap-2">
               <Button color="secondary" size="sm" onPress={onClose}>Cancel</Button>
               <Button
                 color="primary"
                 size="sm"
-                isDisabled={!selected}
-                onPress={() => { if (selected) onTransfer(selected); }}
+                isDisabled={!locationId || !selected}
+                onPress={() => { if (selected) onTransfer(locationId, selected); }}
               >
                 Transfer
               </Button>
@@ -75,39 +120,61 @@ function TransferDialog({
   );
 }
 
+type ArchiveReassignment = { locationId: string; employee: Employee | null };
+
 function ArchiveEmployeeDialog({
   open,
   employee,
   assignedPatients,
+  locationOverrides,
   onClose,
   onConfirm,
 }: {
   open: boolean;
   employee: Employee;
   assignedPatients: Patient[];
+  locationOverrides: Map<string, PatientLocationState>;
   onClose: () => void;
-  onConfirm: (reassignments: Record<string, Employee>) => void;
+  onConfirm: (reassignments: Record<string, { locationId: string; employee: Employee }>) => void;
 }) {
-  const [reassignments, setReassignments] = useState<Record<string, Employee | null>>({});
-  const otherEmployees = mockEmployees.filter((e) => e.id !== employee.id && !e.archived);
+  const availableLocationIds = useAvailableLocationIds();
+  const [reassignments, setReassignments] = useState<Record<string, ArchiveReassignment>>({});
 
   useEffect(() => {
     if (open) {
-      const init: Record<string, Employee | null> = {};
-      assignedPatients.forEach((p) => { init[p.id] = null; });
+      const init: Record<string, ArchiveReassignment> = {};
+      assignedPatients.forEach((p) => {
+        const currentLocationId = locationOverrides.get(p.id)?.locationId ?? '';
+        init[p.id] = { locationId: availableLocationIds.includes(currentLocationId) ? currentLocationId : '', employee: null };
+      });
       setReassignments(init);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, assignedPatients]);
 
+  const locationsFor = (patient: Patient) =>
+    mockClinicLocations.filter((l) => l.orgId === patient.clinicId && availableLocationIds.includes(l.id));
+  const employeesFor = (locationId: string) => {
+    const location = mockClinicLocations.find((l) => l.id === locationId);
+    return location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && e.id !== employee.id && !e.archived) : [];
+  };
+
+  const setPatientLocation = (patientId: string, locationId: string) => {
+    setReassignments((r) => ({ ...r, [patientId]: { locationId, employee: null } }));
+  };
+  const setPatientEmployee = (patientId: string, emp: Employee | null) => {
+    setReassignments((r) => ({ ...r, [patientId]: { ...r[patientId], employee: emp } }));
+  };
+
   const hasPatients = assignedPatients.length > 0;
-  const allReassigned = assignedPatients.every((p) => reassignments[p.id] != null);
+  const allReassigned = assignedPatients.every((p) => reassignments[p.id]?.locationId && reassignments[p.id]?.employee);
   const canConfirm = !hasPatients || allReassigned;
 
   return (
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
       <Modal>
         <Dialog>
-          <div className="p-6 w-full min-w-[420px]">
+          <div className="p-6 w-full min-w-[480px]">
             <h3 className="text-lg font-semibold text-primary mb-3">Archive Employee?</h3>
             {!hasPatients ? (
               <p className="text-tertiary text-sm mb-6">
@@ -116,32 +183,49 @@ function ArchiveEmployeeDialog({
             ) : (
               <>
                 <Alert type="warning" className="mb-6">
-                  <strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new physiotherapist for each before archiving.
+                  <strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new clinic location and physiotherapist for each before archiving.
                 </Alert>
                 <div className="flex flex-col gap-4 mb-6">
-                  {assignedPatients.map((p) => (
-                    <div key={p.id} className="flex items-center gap-4">
-                      <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-semibold text-sm"
-                        style={{ background: '#EDE7F6', color: '#6750A4' }}
-                      >
-                        {p.avatarInitials}
+                  {assignedPatients.map((p) => {
+                    const locations = locationsFor(p);
+                    const rowLocationId = reassignments[p.id]?.locationId ?? '';
+                    const rowEmployees = employeesFor(rowLocationId);
+                    return (
+                      <div key={p.id} className="flex flex-col gap-2 pb-4 border-b border-secondary last:border-b-0 last:pb-0">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-semibold text-sm"
+                            style={{ background: '#EDE7F6', color: '#6750A4' }}
+                          >
+                            {p.avatarInitials}
+                          </div>
+                          <span className="font-semibold text-primary text-sm">{p.firstName} {p.lastName}</span>
+                        </div>
+                        <div className="flex gap-3 pl-12">
+                          <NativeSelect
+                            wrapperClassName="flex-1"
+                            value={rowLocationId}
+                            onChange={(e) => setPatientLocation(p.id, e.target.value)}
+                          >
+                            <option value="" disabled>Location…</option>
+                            {locations.map((l) => (
+                              <option key={l.id} value={l.id}>{l.name} — {l.city}</option>
+                            ))}
+                          </NativeSelect>
+                          <NativeSelect
+                            wrapperClassName="flex-1"
+                            value={reassignments[p.id]?.employee?.id ?? ''}
+                            onChange={(e) => setPatientEmployee(p.id, rowEmployees.find((emp) => emp.id === e.target.value) ?? null)}
+                          >
+                            <option value="" disabled>Transfer to…</option>
+                            {rowEmployees.map((e) => (
+                              <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
+                            ))}
+                          </NativeSelect>
+                        </div>
                       </div>
-                      <div className="min-w-[130px] shrink-0">
-                        <span className="font-semibold text-primary text-sm">{p.firstName} {p.lastName}</span>
-                      </div>
-                      <NativeSelect
-                        wrapperClassName="flex-1"
-                        value={reassignments[p.id]?.id ?? ''}
-                        onChange={(e) => setReassignments((r) => ({ ...r, [p.id]: otherEmployees.find((emp) => emp.id === e.target.value) ?? null }))}
-                      >
-                        <option value="" disabled>Transfer to…</option>
-                        {otherEmployees.map((e) => (
-                          <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
-                        ))}
-                      </NativeSelect>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -152,9 +236,10 @@ function ArchiveEmployeeDialog({
                 size="sm"
                 isDisabled={!canConfirm}
                 onPress={() => {
-                  const result: Record<string, Employee> = {};
+                  const result: Record<string, { locationId: string; employee: Employee }> = {};
                   assignedPatients.forEach((p) => {
-                    if (reassignments[p.id]) result[p.id] = reassignments[p.id]!;
+                    const r = reassignments[p.id];
+                    if (r?.locationId && r.employee) result[p.id] = { locationId: r.locationId, employee: r.employee };
                   });
                   onConfirm(result);
                 }}
@@ -201,15 +286,19 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
   const assignedPatientIds = getEffectivePatientIdsForEmployee(emp, locationOverrides);
   const assignedPatients = mockPatients.filter((p) => assignedPatientIds.includes(p.id));
-  const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
 
-  const handleTransfer = (toEmployee: Employee) => {
-    const name = `${transferPatient?.firstName} ${transferPatient?.lastName}`;
+  const handleTransfer = (locationId: string, toEmployee: Employee) => {
+    if (!transferPatient) return;
+    const name = `${transferPatient.firstName} ${transferPatient.lastName}`;
+    transferPatientLocation(transferPatient.id, locationId, toEmployee.id);
     setTransferPatient(null);
     toast.success(`${name} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
   };
 
-  const handleConfirmArchive = (reassignments: Record<string, Employee>) => {
+  const handleConfirmArchive = (reassignments: Record<string, { locationId: string; employee: Employee }>) => {
+    Object.entries(reassignments).forEach(([patientId, { locationId, employee: toEmployee }]) => {
+      transferPatientLocation(patientId, locationId, toEmployee.id);
+    });
     setArchived(true);
     setArchiveDialogOpen(false);
     const count = Object.keys(reassignments).length;
@@ -259,12 +348,13 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Header */}
         <div className="flex items-start gap-6 mb-8">
-          <div
-            className="w-[72px] h-[72px] rounded-full flex items-center justify-center shrink-0 font-bold text-2xl"
-            style={{ background: bgColor + '18', color: bgColor, opacity: archived ? 0.6 : 1 }}
-          >
-            {emp.avatarInitials}
-          </div>
+          <Avatar
+            size="2xl"
+            src={emp.avatarUrl}
+            alt={`${emp.firstName} ${emp.lastName}`}
+            initials={emp.avatarInitials}
+            className={cx('shrink-0', archived && 'opacity-60')}
+          />
           <div className="grow">
             <div className="flex items-center gap-3 mb-1">
               <h2 className="text-xl font-semibold text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h2>
@@ -586,6 +676,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         open={!!transferPatient}
         patient={transferPatient}
         currentEmployee={emp}
+        locationOverrides={locationOverrides}
         onClose={() => setTransferPatient(null)}
         onTransfer={handleTransfer}
       />
@@ -594,6 +685,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         open={archiveDialogOpen}
         employee={emp}
         assignedPatients={assignedPatients}
+        locationOverrides={locationOverrides}
         onClose={() => setArchiveDialogOpen(false)}
         onConfirm={handleConfirmArchive}
       />

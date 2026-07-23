@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-export type StaffPersona = 'emp2' | 'emp_user2' | 'emp_user3';
+export type StaffPersona = 'emp2' | 'emp_user2' | 'emp_user3' | 'emp_staff';
 
 let _persona: StaffPersona = 'emp2';
 const _listeners = new Set<(p: StaffPersona) => void>();

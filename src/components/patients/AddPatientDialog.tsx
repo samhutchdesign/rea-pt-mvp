@@ -6,8 +6,8 @@ import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { NativeSelect } from '@/components/ui/native-select';
-import { mockClinicLocations } from '@/lib/mock-data';
-import { useRole } from '@/lib/roleStore';
+import { mockClinicLocations, mockEmployees } from '@/lib/mock-data';
+import { useAvailableLocationIds } from '@/lib/locationScope';
 import { cx } from '@/utils/cx';
 
 interface Props {
@@ -15,19 +15,25 @@ interface Props {
   onClose: () => void;
 }
 
+const STEPS = ['Patient Info', 'Assign Location & PT'];
+
 export default function AddPatientDialog({ open, onClose }: Props) {
   const router = useRouter();
-  const role = useRole();
-  const isOwner = role === 'owner';
+  const availableLocationIds = useAvailableLocationIds();
+  const availableLocations = mockClinicLocations.filter((l) => availableLocationIds.includes(l.id));
 
   const [activeStep, setActiveStep] = useState(0);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [locationId, setLocationId] = useState('');
+  const [ptId, setPtId] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const steps = isOwner ? ['Patient Info', 'Select Location'] : [];
+  const destinationLocation = mockClinicLocations.find((l) => l.id === locationId) ?? null;
+  const eligiblePts = destinationLocation
+    ? mockEmployees.filter((e) => destinationLocation.employeeIds.includes(e.id) && !e.archived)
+    : [];
 
   const validateStep0 = () => {
     const e: Record<string, string> = {};
@@ -42,23 +48,21 @@ export default function AddPatientDialog({ open, onClose }: Props) {
   const validateStep1 = () => {
     const e: Record<string, string> = {};
     if (!locationId) e.location = 'Please select a location';
+    if (!ptId) e.pt = 'Please select a treating PT';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const handleNext = () => {
-    if (activeStep === 0 && !validateStep0()) return;
-    if (activeStep === 1 && !validateStep1()) return;
-    setActiveStep((s) => s + 1);
+    if (!validateStep0()) return;
+    setActiveStep(1);
   };
 
-  const handleBack = () => setActiveStep((s) => s - 1);
+  const handleBack = () => setActiveStep(0);
 
-  const handleCreate = () => {
-    if (!validateStep0()) return;
-    onClose();
-    router.push('/patients/pat4/overview?welcome=1');
-    reset();
+  const handleSelectLocation = (id: string) => {
+    setLocationId(id);
+    setPtId('');
   };
 
   const handleConfirm = () => {
@@ -71,12 +75,10 @@ export default function AddPatientDialog({ open, onClose }: Props) {
   const reset = () => {
     setActiveStep(0);
     setErrors({});
-    setFirstName(''); setLastName(''); setEmail(''); setLocationId('');
+    setFirstName(''); setLastName(''); setEmail(''); setLocationId(''); setPtId('');
   };
 
   const handleClose = () => { onClose(); reset(); };
-
-  const isLastStep = isOwner ? activeStep === steps.length - 1 : true;
 
   return (
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
@@ -87,30 +89,28 @@ export default function AddPatientDialog({ open, onClose }: Props) {
             <Divider className="mb-5" />
 
             {/* Stepper */}
-            {isOwner && (
-              <div className="flex items-center gap-0 mb-6">
-                {steps.map((label, i) => (
-                  <div key={i} className="flex items-center flex-1">
-                    <div className="flex flex-col items-center gap-1">
-                      <div className={cx(
-                        'flex size-7 items-center justify-center rounded-full text-xs font-semibold',
-                        i < activeStep ? 'bg-brand-600 text-white' :
-                        i === activeStep ? 'border-2 border-brand-600 text-brand-700' :
-                        'border-2 border-secondary text-tertiary'
-                      )}>
-                        {i < activeStep ? '✓' : i + 1}
-                      </div>
-                      <span className={cx('text-xs whitespace-nowrap', i === activeStep ? 'font-semibold text-brand-700' : 'text-tertiary')}>
-                        {label}
-                      </span>
+            <div className="flex items-center gap-0 mb-6">
+              {STEPS.map((label, i) => (
+                <div key={i} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={cx(
+                      'flex size-7 items-center justify-center rounded-full text-xs font-semibold',
+                      i < activeStep ? 'bg-brand-600 text-white' :
+                      i === activeStep ? 'border-2 border-brand-600 text-brand-700' :
+                      'border-2 border-secondary text-tertiary'
+                    )}>
+                      {i < activeStep ? '✓' : i + 1}
                     </div>
-                    {i < steps.length - 1 && (
-                      <div className={cx('flex-1 h-px mx-3 mb-5', i < activeStep ? 'bg-brand-600' : 'bg-secondary')} />
-                    )}
+                    <span className={cx('text-xs whitespace-nowrap', i === activeStep ? 'font-semibold text-brand-700' : 'text-tertiary')}>
+                      {label}
+                    </span>
                   </div>
-                ))}
-              </div>
-            )}
+                  {i < STEPS.length - 1 && (
+                    <div className={cx('flex-1 h-px mx-3 mb-5', i < activeStep ? 'bg-brand-600' : 'bg-secondary')} />
+                  )}
+                </div>
+              ))}
+            </div>
 
             {activeStep === 0 && (
               <div className="flex flex-col gap-5">
@@ -141,23 +141,42 @@ export default function AddPatientDialog({ open, onClose }: Props) {
               </div>
             )}
 
-            {isOwner && activeStep === 1 && (
+            {activeStep === 1 && (
               <div className="flex flex-col gap-4">
-                <p className="text-sm text-secondary">Which clinic location will {firstName} be seen at?</p>
+                <p className="text-sm text-secondary">Which clinic location and PT will {firstName} be seen by?</p>
                 <div>
                   <label className="block text-sm font-medium text-secondary mb-1.5">Location</label>
                   <NativeSelect
                     value={locationId}
-                    onChange={(e) => setLocationId(e.target.value)}
+                    onChange={(e) => handleSelectLocation(e.target.value)}
                     className={errors.location ? 'border-error-300' : undefined}
                   >
                     <option value="">Select a location</option>
-                    {mockClinicLocations.map((loc) => (
+                    {availableLocations.map((loc) => (
                       <option key={loc.id} value={loc.id}>{loc.name} — {loc.city}, {loc.regionCountry}</option>
                     ))}
                   </NativeSelect>
                   {errors.location && <p className="mt-1 text-xs text-error-600">{errors.location}</p>}
                 </div>
+                {destinationLocation && (
+                  <div>
+                    <label className="block text-sm font-medium text-secondary mb-1.5">Treating PT</label>
+                    <NativeSelect
+                      value={ptId}
+                      onChange={(e) => setPtId(e.target.value)}
+                      className={errors.pt ? 'border-error-300' : undefined}
+                    >
+                      <option value="">Select a PT</option>
+                      {eligiblePts.map((e) => (
+                        <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
+                      ))}
+                    </NativeSelect>
+                    {errors.pt && <p className="mt-1 text-xs text-error-600">{errors.pt}</p>}
+                    {destinationLocation && eligiblePts.length === 0 && !errors.pt && (
+                      <p className="mt-1 text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -166,16 +185,12 @@ export default function AddPatientDialog({ open, onClose }: Props) {
                 Cancel
               </button>
               <div className="flex-1" />
-              {isOwner && activeStep > 0 && (
+              {activeStep > 0 && (
                 <Button color="secondary" onPress={handleBack} className="mr-3">Back</Button>
               )}
-              {isOwner ? (
-                isLastStep
-                  ? <Button color="primary" onPress={handleConfirm}>Create Patient</Button>
-                  : <Button color="primary" onPress={handleNext}>Next</Button>
-              ) : (
-                <Button color="primary" onPress={handleCreate}>Create Patient</Button>
-              )}
+              {activeStep === 0
+                ? <Button color="primary" onPress={handleNext}>Next</Button>
+                : <Button color="primary" onPress={handleConfirm}>Create Patient</Button>}
             </div>
           </div>
         </Dialog>

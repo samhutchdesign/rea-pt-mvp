@@ -10,6 +10,7 @@ import { NativeSelect } from '@/components/ui/native-select';
 import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic, mockClinicLocations } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
+import { useAvailableLocationIds } from '@/lib/locationScope';
 import { useLocationState, transferPatient } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { ArrowLeftRight, Building2, Calendar, Plus, X, Zap } from 'lucide-react';
@@ -38,9 +39,10 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const assignedEmployees = mockEmployees.filter((e) => locationState.assignedEmployeeIds.includes(e.id));
   const can = usePermissions();
   const viewMode = useViewMode();
+  const availableLocationIds = useAvailableLocationIds();
 
-  const otherLocations = patient
-    ? mockClinicLocations.filter((l) => l.orgId === patient.clinicId && l.id !== locationState.locationId)
+  const transferLocations = patient
+    ? mockClinicLocations.filter((l) => l.orgId === patient.clinicId && availableLocationIds.includes(l.id))
     : [];
   const destinationLocation = mockClinicLocations.find((l) => l.id === selectedLocationId) ?? null;
   const physiosAtDestination = destinationLocation
@@ -260,22 +262,24 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
             <div className="p-6 w-full min-w-[400px] max-w-md">
               <h2 className="text-lg font-semibold text-primary mb-1">Transfer Patient</h2>
               <p className="text-sm text-secondary mb-4">
-                Move <strong>{patient.firstName} {patient.lastName}</strong> to a different clinic location and care team.
+                Update <strong>{patient.firstName} {patient.lastName}</strong>&apos;s clinic location and care team.
               </p>
 
-              {otherLocations.length === 0 ? (
-                <p className="text-sm text-tertiary">No other locations are available in this organization.</p>
+              {transferLocations.length === 0 ? (
+                <p className="text-sm text-tertiary">No locations are available to you in this organization.</p>
               ) : (
                 <div className="flex flex-col gap-4">
                   <div>
-                    <div className="mb-1 text-xs font-medium text-secondary">Destination Location</div>
+                    <div className="mb-1 text-xs font-medium text-secondary">Location</div>
                     <NativeSelect
                       value={selectedLocationId}
                       onChange={(e) => handleSelectLocation(e.target.value)}
                     >
                       <option value="">Select a location</option>
-                      {otherLocations.map((l) => (
-                        <option key={l.id} value={l.id}>{l.name} — {l.city}, {l.regionCountry}</option>
+                      {transferLocations.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.name} — {l.city}, {l.regionCountry}{l.id === locationState.locationId ? ' (current)' : ''}
+                        </option>
                       ))}
                     </NativeSelect>
                   </div>
