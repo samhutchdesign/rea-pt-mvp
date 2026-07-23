@@ -13,13 +13,6 @@ import { Divider } from '@/components/ui/divider';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { ArrowLeft, MapPin, Pencil, Trash2, Users } from 'lucide-react';
 
-const AVATAR_COLORS: Record<string, string> = {
-  emp1: '#6750A4',
-  emp2: '#0288D1',
-  emp3: '#2E7D32',
-  emp4: '#F57C00',
-};
-
 export default function ClinicLocationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -192,7 +185,6 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
               ) : (
                 <div className="flex flex-col">
                   {teamMembers.map((emp, i) => {
-                    const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
                     const patientCount = getEffectivePatientIdsForEmployee(emp, locationOverrides).length;
                     return (
                       <div key={emp.id}>
@@ -200,12 +192,13 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                           className="flex items-center gap-3 py-3 px-1 cursor-pointer rounded-lg hover:bg-secondary_alt transition-colors"
                           onClick={() => router.push(`/employees/${emp.id}`)}
                         >
-                          <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
-                            style={{ background: bgColor + '18', color: bgColor }}
-                          >
-                            {emp.avatarInitials}
-                          </div>
+                          <Avatar
+                            size="md"
+                            src={emp.avatarUrl}
+                            alt={`${emp.firstName} ${emp.lastName}`}
+                            initials={emp.avatarInitials}
+                            className="shrink-0"
+                          />
                           <div className="grow min-w-0">
                             <span className="block font-semibold text-primary text-sm truncate">{emp.firstName} {emp.lastName}</span>
                             <span className="text-tertiary text-xs truncate">{emp.credentials} · {emp.title}</span>

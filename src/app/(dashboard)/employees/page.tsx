@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
+import { Avatar } from '@/components/base/avatar/avatar';
 import { mockPatients } from '@/lib/mock-data';
 import { useLocationScope } from '@/lib/locationScope';
 import type { Employee } from '@/lib/types';
@@ -14,13 +15,6 @@ import { useDataState } from '@/lib/dataStateStore';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
-
-const AVATAR_COLORS: Record<string, string> = {
-  emp1: '#6750A4',
-  emp2: '#0288D1',
-  emp3: '#2E7D32',
-  emp4: '#F57C00',
-};
 
 export default function EmployeesPage() {
   const router = useRouter();
@@ -126,7 +120,6 @@ export default function EmployeesPage() {
           <div className="flex flex-col gap-3">
             {displayed.map((emp) => {
               const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
-              const bgColor = AVATAR_COLORS[emp.id] ?? '#6750A4';
               return (
                 <div
                   key={emp.id}
@@ -137,12 +130,13 @@ export default function EmployeesPage() {
                   onClick={() => router.push(`/employees/${emp.id}`)}
                 >
                   <div className="flex items-center gap-5 px-6 py-4">
-                    <div
-                      className="w-13 h-13 rounded-full flex items-center justify-center shrink-0 font-bold text-base"
-                      style={{ width: 52, height: 52, background: bgColor + '18', color: bgColor }}
-                    >
-                      {emp.avatarInitials}
-                    </div>
+                    <Avatar
+                      size="xl"
+                      src={emp.avatarUrl}
+                      alt={`${emp.firstName} ${emp.lastName}`}
+                      initials={emp.avatarInitials}
+                      className="shrink-0"
+                    />
                     <div className="grow">
                       <div className="flex items-center gap-3 mb-0.5">
                         <span className="font-semibold text-primary text-sm">{emp.firstName} {emp.lastName}</span>

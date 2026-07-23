@@ -12,6 +12,7 @@ export interface Physio {
   title: string;
   bio: string;
   avatarInitials: string;
+  avatarUrl?: string;
   role: UserRole;
   clinicId: string;
   locationId: string;
@@ -28,6 +29,7 @@ export interface Employee {
   bio: string;
   role: UserRole;
   avatarInitials: string;
+  avatarUrl?: string;
   patientIds: string[];
   clinicId: string;
   locationIds: string[];
@@ -131,6 +133,7 @@ export interface Program {
   tags: string[];
   isFavorite: boolean;
   createdAt: string;
+  userCreated?: boolean;
 }
 
 export interface ExerciseComment {
