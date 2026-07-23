@@ -26,6 +26,7 @@ const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
 const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
+const STEPS = ['Choose Exercises', 'Program Details'];
 
 const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
@@ -108,11 +109,42 @@ function CompactField({ value, onChange, unitSingular, unitPlural }: { value: nu
   );
 }
 
+function StepIndicator({ activeStep }: { activeStep: number }) {
+  return (
+    <div className="flex items-center w-full max-w-xs mx-auto">
+      {STEPS.map((label, i) => (
+        <div key={label} className="flex items-center flex-1 last:flex-initial">
+          <div className="flex flex-col items-center gap-1">
+            <div className={cx(
+              'flex size-7 items-center justify-center rounded-full text-xs font-semibold shrink-0',
+              i < activeStep ? 'bg-brand-600 text-white' :
+              i === activeStep ? 'border-2 border-brand-600 text-brand-700' :
+              'border-2 border-secondary text-tertiary'
+            )}>
+              {i < activeStep ? '✓' : i + 1}
+            </div>
+            <span className={cx('text-xs whitespace-nowrap', i === activeStep ? 'font-semibold text-brand-700' : 'text-tertiary')}>
+              {label}
+            </span>
+          </div>
+          {i < STEPS.length - 1 && (
+            <div className={cx('flex-1 h-px mx-3 mb-5', i < activeStep ? 'bg-brand-600' : 'bg-secondary')} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function ProgramEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const patient = mockPatients.find((p) => p.id === id);
   const existingProgram = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
+
+  const [step, setStep] = useState(0);
+  const [programName, setProgramName] = useState(existingProgram?.name ?? '');
+  const [description, setDescription] = useState(existingProgram?.description ?? '');
 
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('A → Z');
@@ -228,8 +260,24 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
       ? { programId: currentProgram.id, programName: currentProgram.name, exercises: currentProgram.exercises, assignedAt: current.programAssignedAt }
       : null;
     const newProgramId = current.programId ?? 'prog1';
-    const newProgramName = currentProgram?.name ?? 'Custom Program';
+    const newProgramName = programName.trim() || 'Custom Program';
     const newExercises = programRows.map((r) => ({ ...r, adherence: 0 }));
+
+    const progIdx = mockPrograms.findIndex((p) => p.id === newProgramId);
+    if (progIdx !== -1) {
+      mockPrograms[progIdx] = { ...mockPrograms[progIdx], name: newProgramName, description: description.trim(), exercises: newExercises };
+    } else {
+      mockPrograms.push({
+        id: newProgramId,
+        name: newProgramName,
+        description: description.trim(),
+        exercises: newExercises,
+        tags: [],
+        isFavorite: false,
+        createdAt: new Date().toISOString().slice(0, 10),
+      });
+    }
+
     saveNewProgram(id, newProgramId, newProgramName, newExercises, oldSnapshot);
     toast.success('Program updated');
     router.push(`/patients/${id}/program`);
@@ -247,265 +295,294 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           <ArrowLeft size={15} />
           Back
         </button>
-        <h1 className="text-2xl font-bold text-primary m-0 text-center">
-          {patient?.firstName} {patient?.lastName}&apos;s Program
-        </h1>
+        <StepIndicator activeStep={step} />
         <div className="flex gap-3 justify-self-end">
           <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-          <Button color="primary" size="sm" onPress={handleSave}>Save</Button>
+          {step === 0 ? (
+            <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => setStep(1)}>Next</Button>
+          ) : (
+            <>
+              <Button color="secondary" size="sm" onPress={() => setStep(0)}>Back</Button>
+              <Button color="primary" size="sm" onPress={handleSave}>Save</Button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Three-column content */}
-      <div className="flex flex-1 min-h-0 gap-6 px-6 py-5 overflow-hidden">
+      {step === 0 ? (
+        /* Three-column content */
+        <div className="flex flex-1 min-h-0 gap-6 px-6 py-5 overflow-hidden">
 
-        {/* Left: Filters */}
-        <div className="w-56 shrink-0 overflow-y-auto pr-1">
-          <span className="block text-lg font-bold text-primary mb-4">Exercises</span>
+          {/* Left: Filters */}
+          <div className="w-56 shrink-0 overflow-y-auto pr-1">
+            <span className="block text-lg font-bold text-primary mb-4">Exercises</span>
 
-          <div className="flex justify-between items-center mb-4 pb-3 border-b border-secondary">
-            <span className="font-semibold text-sm text-primary">Filters</span>
-            {hasFilters && (
-              <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
-            )}
-          </div>
-
-          <div className="mb-5 pb-5 border-b border-secondary">
-            <CheckRow label="Favourites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
-          </div>
-
-          <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
-            <FilterSearchBox value={conditionSearch} onChange={setConditionSearch} placeholder="Search conditions…" />
-            {visibleConditions.map((c) => (
-              <CheckRow key={c} label={c} checked={filterConditions.includes(c)} onChange={() => toggleArr(filterConditions, c, setFilterConditions)} />
-            ))}
-            {!conditionSearch && ALL_CONDITIONS.length > 7 && (
-              <Button color="link-color" size="sm" onPress={() => setShowMoreConditions((v) => !v)}>
-                {showMoreConditions ? 'Show less' : `+${ALL_CONDITIONS.length - 7} more`}
-              </Button>
-            )}
-            {conditionSearch && filteredConditions.length === 0 && (
-              <p className="text-xs text-tertiary">No conditions found.</p>
-            )}
-          </FilterSection>
-
-          <FilterSection title="Category" activeCount={filterCategories.length} onClear={() => setFilterCategories([])}>
-            <FilterSearchBox value={categorySearch} onChange={setCategorySearch} placeholder="Search categories…" />
-            {visibleCategories.map((c) => (
-              <CheckRow key={c} label={c} checked={filterCategories.includes(c)} onChange={() => toggleArr(filterCategories, c, setFilterCategories)} />
-            ))}
-            {!categorySearch && ALL_CATEGORIES.length > 7 && (
-              <Button color="link-color" size="sm" onPress={() => setShowMoreCategories((v) => !v)}>
-                {showMoreCategories ? 'Show less' : `+${ALL_CATEGORIES.length - 7} more`}
-              </Button>
-            )}
-            {categorySearch && filteredCategories.length === 0 && (
-              <p className="text-xs text-tertiary">No categories found.</p>
-            )}
-          </FilterSection>
-
-          <FilterSection title="Level" activeCount={filterLevels.length} onClear={() => setFilterLevels([])}>
-            {visibleLevels.map((l) => (
-              <CheckRow key={l} label={l} checked={filterLevels.includes(l)} onChange={() => toggleArr(filterLevels, l, setFilterLevels)} />
-            ))}
-            {ALL_LEVELS.length > 7 && (
-              <Button color="link-color" size="sm" onPress={() => setShowMoreLevels((v) => !v)}>
-                {showMoreLevels ? 'Show less' : `+${ALL_LEVELS.length - 7} more`}
-              </Button>
-            )}
-          </FilterSection>
-
-          <FilterSection title="Equipment" activeCount={filterEquipment.length} onClear={() => setFilterEquipment([])}>
-            {visibleEquipment.map((eq) => (
-              <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} onChange={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />
-            ))}
-            {ALL_EQUIPMENT.length > 7 && (
-              <Button color="link-color" size="sm" onPress={() => setShowMoreEquipment((v) => !v)}>
-                {showMoreEquipment ? 'Show less' : `+${ALL_EQUIPMENT.length - 7} more`}
-              </Button>
-            )}
-          </FilterSection>
-
-          <FilterSection title="Movement Type" activeCount={filterMovementTypes.length} onClear={() => setFilterMovementTypes([])}>
-            {visibleMovementTypes.map((m) => (
-              <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} onChange={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />
-            ))}
-            {MOVEMENT_TYPES.length > 7 && (
-              <Button color="link-color" size="sm" onPress={() => setShowMoreMovementTypes((v) => !v)}>
-                {showMoreMovementTypes ? 'Show less' : `+${MOVEMENT_TYPES.length - 7} more`}
-              </Button>
-            )}
-          </FilterSection>
-
-          <FilterSection title="Effort Type" activeCount={filterEffortTypes.length} onClear={() => setFilterEffortTypes([])}>
-            {visibleEffortTypes.map((e) => (
-              <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} onChange={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />
-            ))}
-            {EFFORT_TYPES.length > 7 && (
-              <Button color="link-color" size="sm" onPress={() => setShowMoreEffortTypes((v) => !v)}>
-                {showMoreEffortTypes ? 'Show less' : `+${EFFORT_TYPES.length - 7} more`}
-              </Button>
-            )}
-          </FilterSection>
-        </div>
-
-        <Divider vertical />
-
-        {/* Middle: Exercise Library */}
-        <div className="flex flex-col gap-3 min-h-0 flex-1 min-w-0">
-          <div className="flex gap-2.5 items-center">
-            <div className="flex-1">
-              <Input
-                placeholder="Search exercises, SUI, OAB…"
-                value={search}
-                onChange={setSearch}
-                icon={Search}
-                size="sm"
-              />
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-secondary">
+              <span className="font-semibold text-sm text-primary">Filters</span>
+              {hasFilters && (
+                <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
+              )}
             </div>
-            <NativeSelect
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              wrapperClassName="w-40 shrink-0"
-            >
-              {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-            </NativeSelect>
+
+            <div className="mb-5 pb-5 border-b border-secondary">
+              <CheckRow label="Favourites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
+            </div>
+
+            <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
+              <FilterSearchBox value={conditionSearch} onChange={setConditionSearch} placeholder="Search conditions…" />
+              {visibleConditions.map((c) => (
+                <CheckRow key={c} label={c} checked={filterConditions.includes(c)} onChange={() => toggleArr(filterConditions, c, setFilterConditions)} />
+              ))}
+              {!conditionSearch && ALL_CONDITIONS.length > 7 && (
+                <Button color="link-color" size="sm" onPress={() => setShowMoreConditions((v) => !v)}>
+                  {showMoreConditions ? 'Show less' : `+${ALL_CONDITIONS.length - 7} more`}
+                </Button>
+              )}
+              {conditionSearch && filteredConditions.length === 0 && (
+                <p className="text-xs text-tertiary">No conditions found.</p>
+              )}
+            </FilterSection>
+
+            <FilterSection title="Category" activeCount={filterCategories.length} onClear={() => setFilterCategories([])}>
+              <FilterSearchBox value={categorySearch} onChange={setCategorySearch} placeholder="Search categories…" />
+              {visibleCategories.map((c) => (
+                <CheckRow key={c} label={c} checked={filterCategories.includes(c)} onChange={() => toggleArr(filterCategories, c, setFilterCategories)} />
+              ))}
+              {!categorySearch && ALL_CATEGORIES.length > 7 && (
+                <Button color="link-color" size="sm" onPress={() => setShowMoreCategories((v) => !v)}>
+                  {showMoreCategories ? 'Show less' : `+${ALL_CATEGORIES.length - 7} more`}
+                </Button>
+              )}
+              {categorySearch && filteredCategories.length === 0 && (
+                <p className="text-xs text-tertiary">No categories found.</p>
+              )}
+            </FilterSection>
+
+            <FilterSection title="Level" activeCount={filterLevels.length} onClear={() => setFilterLevels([])}>
+              {visibleLevels.map((l) => (
+                <CheckRow key={l} label={l} checked={filterLevels.includes(l)} onChange={() => toggleArr(filterLevels, l, setFilterLevels)} />
+              ))}
+              {ALL_LEVELS.length > 7 && (
+                <Button color="link-color" size="sm" onPress={() => setShowMoreLevels((v) => !v)}>
+                  {showMoreLevels ? 'Show less' : `+${ALL_LEVELS.length - 7} more`}
+                </Button>
+              )}
+            </FilterSection>
+
+            <FilterSection title="Equipment" activeCount={filterEquipment.length} onClear={() => setFilterEquipment([])}>
+              {visibleEquipment.map((eq) => (
+                <CheckRow key={eq} label={eq} checked={filterEquipment.includes(eq)} onChange={() => toggleArr(filterEquipment, eq, setFilterEquipment)} />
+              ))}
+              {ALL_EQUIPMENT.length > 7 && (
+                <Button color="link-color" size="sm" onPress={() => setShowMoreEquipment((v) => !v)}>
+                  {showMoreEquipment ? 'Show less' : `+${ALL_EQUIPMENT.length - 7} more`}
+                </Button>
+              )}
+            </FilterSection>
+
+            <FilterSection title="Movement Type" activeCount={filterMovementTypes.length} onClear={() => setFilterMovementTypes([])}>
+              {visibleMovementTypes.map((m) => (
+                <CheckRow key={m} label={m} checked={filterMovementTypes.includes(m)} onChange={() => toggleArr(filterMovementTypes, m, setFilterMovementTypes)} />
+              ))}
+              {MOVEMENT_TYPES.length > 7 && (
+                <Button color="link-color" size="sm" onPress={() => setShowMoreMovementTypes((v) => !v)}>
+                  {showMoreMovementTypes ? 'Show less' : `+${MOVEMENT_TYPES.length - 7} more`}
+                </Button>
+              )}
+            </FilterSection>
+
+            <FilterSection title="Effort Type" activeCount={filterEffortTypes.length} onClear={() => setFilterEffortTypes([])}>
+              {visibleEffortTypes.map((e) => (
+                <CheckRow key={e} label={e} checked={filterEffortTypes.includes(e)} onChange={() => toggleArr(filterEffortTypes, e, setFilterEffortTypes)} />
+              ))}
+              {EFFORT_TYPES.length > 7 && (
+                <Button color="link-color" size="sm" onPress={() => setShowMoreEffortTypes((v) => !v)}>
+                  {showMoreEffortTypes ? 'Show less' : `+${EFFORT_TYPES.length - 7} more`}
+                </Button>
+              )}
+            </FilterSection>
           </div>
 
-          <p className="text-xs text-tertiary m-0">
-            {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} shown
-          </p>
+          <Divider vertical />
 
-          <div className="flex-1 min-h-0 overflow-y-auto">
-            {filteredExercises.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-sm text-tertiary mb-3">No exercises match your filters.</p>
-                <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
+          {/* Middle: Exercise Library */}
+          <div className="flex flex-col gap-3 min-h-0 flex-1 min-w-0">
+            <div className="flex gap-2.5 items-center">
+              <div className="flex-1">
+                <Input
+                  placeholder="Search exercises, SUI, OAB…"
+                  value={search}
+                  onChange={setSearch}
+                  icon={Search}
+                  size="sm"
+                />
               </div>
-            ) : (
-              <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, 260px)' }}>
-                {filteredExercises.map((ex) => {
-                  const isAdded = programRows.some((r) => r.exerciseId === ex.id);
-                  return (
-                    <div
-                      key={ex.id}
-                      title={isAdded ? 'Remove from program' : 'Add to program'}
-                      className={cx(
-                        'cursor-pointer overflow-hidden rounded-xl border bg-primary shadow-xs hover:shadow-md transition-shadow',
-                        isAdded ? 'border-brand-400' : 'border-secondary'
-                      )}
-                      onClick={() => toggleInProgram(ex)}
-                    >
-                      <div className="relative h-28 flex items-center justify-center bg-brand-50">
-                        <Zap size={32} className="text-brand-600" />
-                        {isAdded && (
-                          <div className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600">
-                            <Check size={13} className="text-white" strokeWidth={3} />
-                          </div>
+              <NativeSelect
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                wrapperClassName="w-40 shrink-0"
+              >
+                {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+              </NativeSelect>
+            </div>
+
+            <p className="text-xs text-tertiary m-0">
+              {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} shown
+            </p>
+
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              {filteredExercises.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className="text-sm text-tertiary mb-3">No exercises match your filters.</p>
+                  <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
+                </div>
+              ) : (
+                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, 260px)' }}>
+                  {filteredExercises.map((ex) => {
+                    const isAdded = programRows.some((r) => r.exerciseId === ex.id);
+                    return (
+                      <div
+                        key={ex.id}
+                        title={isAdded ? 'Remove from program' : 'Add to program'}
+                        className={cx(
+                          'cursor-pointer overflow-hidden rounded-xl border bg-primary shadow-xs hover:shadow-md transition-shadow',
+                          isAdded ? 'border-brand-400' : 'border-secondary'
                         )}
-                        <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            type="button"
-                            title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}
-                            className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
-                            onClick={() => toggleFavorite(ex.id)}
-                          >
-                            {favorites.has(ex.id)
-                              ? <Heart size={14} className="text-pink-500" fill="currentColor" />
-                              : <Heart size={14} className="text-tertiary" />}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="px-3 py-2.5">
-                        <p className="font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
-                        <div className="flex gap-1 flex-wrap mb-2">
-                          <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-tertiary truncate">{ex.category}</span>
-                          <div onClick={(e) => e.stopPropagation()}>
+                        onClick={() => toggleInProgram(ex)}
+                      >
+                        <div className="relative h-28 flex items-center justify-center bg-brand-50">
+                          <Zap size={32} className="text-brand-600" />
+                          {isAdded && (
+                            <div className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600">
+                              <Check size={13} className="text-white" strokeWidth={3} />
+                            </div>
+                          )}
+                          <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
-                              title="Preview"
-                              className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary shrink-0"
-                              onClick={() => setPreviewExercise(ex)}
+                              title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}
+                              className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
+                              onClick={() => toggleFavorite(ex.id)}
                             >
-                              <Eye size={14} />
+                              {favorites.has(ex.id)
+                                ? <Heart size={14} className="text-pink-500" fill="currentColor" />
+                                : <Heart size={14} className="text-tertiary" />}
                             </button>
                           </div>
                         </div>
+                        <div className="px-3 py-2.5">
+                          <p className="font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
+                          <div className="flex gap-1 flex-wrap mb-2">
+                            <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-tertiary truncate">{ex.category}</span>
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <button
+                                type="button"
+                                title="Preview"
+                                className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary shrink-0"
+                                onClick={() => setPreviewExercise(ex)}
+                              >
+                                <Eye size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <Divider vertical />
-
-        {/* Right: Patient's Program */}
-        <div className="flex flex-col gap-3 min-h-0 flex-1 min-w-0" style={{ maxWidth: 530 }}>
-          <span className="text-sm font-semibold text-primary shrink-0">
-            {programRows.length} exercise{programRows.length !== 1 ? 's' : ''} in program
-          </span>
-
-          <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
-            {programRows.length === 0 ? (
-              <div className="py-12 text-center">
-                <span className="text-sm text-secondary">Add exercises from the library</span>
-              </div>
-            ) : programRows.map((row, idx) => {
-              const ex = mockExercises.find((e) => e.id === row.exerciseId);
-              if (!ex) return null;
-              const isDragging = dragIndex === idx;
-              const isDropTarget = dragOverIndex === idx && dragIndex !== idx;
-              return (
-                <div
-                  key={row.exerciseId}
-                  className={cx(
-                    'shrink-0 rounded-xl border bg-primary shadow-xs p-4 transition-opacity',
-                    isDragging ? 'opacity-40' : 'opacity-100',
-                    isDropTarget ? 'border-brand-600 border-dashed' : 'border-secondary'
-                  )}
-                  draggable
-                  onDragStart={() => handleDragStart(idx)}
-                  onDragOver={(e) => handleDragOver(e, idx)}
-                  onDrop={(e) => handleDrop(e, idx)}
-                  onDragEnd={handleDragEnd}
-                >
-                  <div className="mb-3 flex justify-between items-start">
-                    <div className="flex items-center gap-2">
-                      <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" />
-                      <span className="text-sm font-semibold text-primary">{ex.name}</span>
-                    </div>
-                    <button
-                      onClick={() => removeExercise(row.exerciseId)}
-                      className="flex h-6 w-6 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
-                    >
-                      <X size={15} />
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2 items-center">
-                    <CompactField value={row.sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => updateRow(row.exerciseId, 'sets', v)} />
-                    <CompactField value={row.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => updateRow(row.exerciseId, 'reps', v)} />
-                    <CompactField value={row.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => updateRow(row.exerciseId, 'holdSecs', v)} />
-                    <NativeSelect
-                      value={row.frequency}
-                      onChange={(e) => updateRow(row.exerciseId, 'frequency', e.target.value)}
-                      wrapperClassName="w-[166px] shrink-0"
-                    >
-                      {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
-                    </NativeSelect>
-                  </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              )}
+            </div>
+          </div>
+
+          <Divider vertical />
+
+          {/* Right: Patient's Program */}
+          <div className="flex flex-col gap-3 min-h-0 flex-1 min-w-0" style={{ maxWidth: 530 }}>
+            <span className="text-sm font-semibold text-primary shrink-0">
+              {programRows.length} exercise{programRows.length !== 1 ? 's' : ''} in program
+            </span>
+
+            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
+              {programRows.length === 0 ? (
+                <div className="py-12 text-center">
+                  <span className="text-sm text-secondary">Add exercises from the library</span>
+                </div>
+              ) : programRows.map((row, idx) => {
+                const ex = mockExercises.find((e) => e.id === row.exerciseId);
+                if (!ex) return null;
+                const isDragging = dragIndex === idx;
+                const isDropTarget = dragOverIndex === idx && dragIndex !== idx;
+                return (
+                  <div
+                    key={row.exerciseId}
+                    className={cx(
+                      'shrink-0 rounded-xl border bg-primary shadow-xs p-4 transition-opacity',
+                      isDragging ? 'opacity-40' : 'opacity-100',
+                      isDropTarget ? 'border-brand-600 border-dashed' : 'border-secondary'
+                    )}
+                    draggable
+                    onDragStart={() => handleDragStart(idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDrop={(e) => handleDrop(e, idx)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="mb-3 flex justify-between items-start">
+                      <div className="flex items-center gap-2">
+                        <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" />
+                        <span className="text-sm font-semibold text-primary">{ex.name}</span>
+                      </div>
+                      <button
+                        onClick={() => removeExercise(row.exerciseId)}
+                        className="flex h-6 w-6 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+                      >
+                        <X size={15} />
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <CompactField value={row.sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => updateRow(row.exerciseId, 'sets', v)} />
+                      <CompactField value={row.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => updateRow(row.exerciseId, 'reps', v)} />
+                      <CompactField value={row.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => updateRow(row.exerciseId, 'holdSecs', v)} />
+                      <NativeSelect
+                        value={row.frequency}
+                        onChange={(e) => updateRow(row.exerciseId, 'frequency', e.target.value)}
+                        wrapperClassName="w-[166px] shrink-0"
+                      >
+                        {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+                      </NativeSelect>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      ) : (
+        /* Step 2: Program details */
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-10">
+          <div className="max-w-lg mx-auto flex flex-col gap-5">
+            <Input
+              label="Program name"
+              placeholder="New program"
+              value={programName}
+              onChange={setProgramName}
+            />
+            <div>
+              <label className="block text-sm font-medium text-secondary mb-1.5">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Add a description for this program…"
+                rows={5}
+                className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+              />
+            </div>
           </div>
         </div>
-
-      </div>
+      )}
 
       <ExercisePreviewDrawer
         exercise={previewExercise}
