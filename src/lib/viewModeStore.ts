@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 export type ViewMode = 'full' | 'mvp';
 
-let _mode: ViewMode = 'full';
+let _mode: ViewMode = 'mvp';
 const _listeners = new Set<(m: ViewMode) => void>();
 
 export function getViewMode(): ViewMode {
