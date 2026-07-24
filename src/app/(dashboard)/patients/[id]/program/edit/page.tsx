@@ -12,7 +12,7 @@ import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
-import { ArrowLeft, Check, Eye, GripVertical, Heart, Search, X, Zap } from 'lucide-react';
+import { Check, Eye, GripVertical, Heart, Search, X, Zap } from 'lucide-react';
 import { NativeSelect } from '@/components/ui/native-select';
 
 const SEARCH_ALIASES: Record<string, string> = {
@@ -298,16 +298,11 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
 
       {/* Full-screen header */}
       <div className="grid grid-cols-3 items-center px-6 py-4 border-b border-secondary shrink-0">
-        <button
-          onClick={() => router.push(`/patients/${id}/program`)}
-          className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-primary transition-colors justify-self-start"
-        >
-          <ArrowLeft size={15} />
-          Back
-        </button>
+        <div className="justify-self-start">
+          <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
+        </div>
         <StepIndicator activeStep={step} />
         <div className="flex gap-3 justify-self-end">
-          <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
           {step === 0 ? (
             <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => setStep(1)}>Next</Button>
           ) : (
