@@ -11,6 +11,9 @@ import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/mod
 import { mockPrograms, mockExercises, mockPatients, mockPhysio } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
+import { useRole } from '@/lib/roleStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
+import { canManageProgram } from '@/lib/permissions';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { cx } from '@/utils/cx';
@@ -43,6 +46,9 @@ function ProgramDetailContent({ id }: { id: string }) {
   const prog = mockPrograms.find((p) => p.id === id);
   const [isFavorite, setIsFavorite] = useState(prog?.isFavorite ?? false);
   const dataState = useDataState();
+  const role = useRole();
+  const currentIdentity = useCurrentIdentity();
+  const canManage = prog ? canManageProgram(prog, role, currentIdentity.id) : false;
   const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -170,7 +176,7 @@ function ProgramDetailContent({ id }: { id: string }) {
                   </AriaButton>
                   <Dropdown.Popover className="w-44">
                     <Dropdown.Menu onAction={handleMenuAction}>
-                      {prog.userCreated ? (
+                      {canManage ? (
                         <>
                           <Dropdown.Item id="edit" icon={Pencil} label="Edit" />
                           <Dropdown.Item id="delete" icon={Trash2} label="Delete" />

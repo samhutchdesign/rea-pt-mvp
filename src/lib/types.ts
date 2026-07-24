@@ -135,6 +135,7 @@ export interface Program {
   isFavorite: boolean;
   createdAt: string;
   userCreated?: boolean;
+  createdByEmpId?: string;
 }
 
 export interface ExerciseComment {

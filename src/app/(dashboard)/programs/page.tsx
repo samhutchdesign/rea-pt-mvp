@@ -12,6 +12,9 @@ import { NativeSelect } from '@/components/ui/native-select';
 import { mockPrograms, mockExercises, mockPatients } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
+import { useRole } from '@/lib/roleStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
+import { canManageProgram } from '@/lib/permissions';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import type { Patient, Program } from '@/lib/types';
 import { Heart, Plus, Search, X } from 'lucide-react';
@@ -83,6 +86,8 @@ function ProgramsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dataState = useDataState();
+  const role = useRole();
+  const currentIdentity = useCurrentIdentity();
   const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [search, setSearch] = useState(searchParams.get('q') ?? '');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'A → Z');
@@ -375,8 +380,8 @@ function ProgramsPageContent() {
                         <span className="text-xs text-tertiary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
                         <div onClick={(e) => e.stopPropagation()}>
                           <ProgramCardMenu
-                            program={prog}
                             isFavorite={favorites.has(prog.id)}
+                            canManage={canManageProgram(prog, role, currentIdentity.id)}
                             onToggleFavorite={() => toggleFavorite(prog.id)}
                             onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
                             onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}

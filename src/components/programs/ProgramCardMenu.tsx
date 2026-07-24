@@ -3,12 +3,11 @@ import { useState } from 'react';
 import { Button as AriaButton } from 'react-aria-components';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { cx } from '@/utils/cx';
-import type { Program } from '@/lib/types';
 import { Copy, Heart, MoreVertical, Pencil, Trash2, UserPlus } from 'lucide-react';
 
 interface ProgramCardMenuProps {
-  program: Program;
   isFavorite: boolean;
+  canManage: boolean;
   onToggleFavorite: () => void;
   onAssign: () => void;
   onEdit: () => void;
@@ -16,7 +15,7 @@ interface ProgramCardMenuProps {
   onDuplicate: () => void;
 }
 
-export default function ProgramCardMenu({ program, isFavorite, onToggleFavorite, onAssign, onEdit, onDelete, onDuplicate }: ProgramCardMenuProps) {
+export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorite, onAssign, onEdit, onDelete, onDuplicate }: ProgramCardMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleAction = (key: React.Key) => {
@@ -42,7 +41,7 @@ export default function ProgramCardMenu({ program, isFavorite, onToggleFavorite,
         <Dropdown.Menu onAction={handleAction}>
           <Dropdown.Item id="favorite" icon={Heart} label={isFavorite ? 'Unfavourite' : 'Favourite'} />
           <Dropdown.Item id="assign" icon={UserPlus} label="Assign to Patient" />
-          {program.userCreated ? (
+          {canManage ? (
             <>
               <Dropdown.Item id="edit" icon={Pencil} label="Edit" />
               <Dropdown.Item id="delete" icon={Trash2} label="Delete" />

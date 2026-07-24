@@ -2099,6 +2099,25 @@ export const mockPrograms: Program[] = [
     isFavorite: true,
     createdAt: '2026-06-10',
     userCreated: true,
+    createdByEmpId: 'emp_sarah',
+  },
+  {
+    id: 'prog9',
+    name: 'Post-Surgical & Prolapse Recovery',
+    description: "James Wilson's protocol for patients recovering from pelvic surgery or managing pelvic organ prolapse, combining scar mobilization with graded pelvic floor and core reactivation.",
+    frequency: 'Daily',
+    exercises: [
+      { exerciseId: 'ex47', sets: 1, reps: 1, holdSecs: 60, adherence: 0 },
+      { exerciseId: 'ex49', sets: 1, reps: 1, holdSecs: 60, adherence: 0 },
+      { exerciseId: 'ex1', sets: 3, reps: 10, holdSecs: 5, cue: 'contraction', adherence: 0 },
+      { exerciseId: 'ex3', sets: 3, reps: 8, holdSecs: 10, adherence: 0 },
+      { exerciseId: 'ex44', sets: 1, reps: 1, holdSecs: 0, cue: 'pressure', adherence: 0 },
+    ],
+    tags: ['Custom', 'Post-Surgical', 'Prolapse'],
+    isFavorite: false,
+    createdAt: '2026-06-25',
+    userCreated: true,
+    createdByEmpId: 'emp2',
   },
 ];
 

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { mockExercises, mockPrograms } from '@/lib/mock-data';
 import type { Exercise, Program } from '@/lib/types';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
+import { useCurrentIdentity } from '@/lib/locationScope';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
@@ -143,6 +144,7 @@ function StepIndicator({ activeStep }: { activeStep: number }) {
 function NewProgramContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const currentIdentity = useCurrentIdentity();
   const editId = searchParams.get('edit');
   const duplicateId = searchParams.get('duplicate');
   const editingProgram = useMemo(() => (editId ? mockPrograms.find((p) => p.id === editId) ?? null : null), [editId]);
@@ -293,6 +295,7 @@ function NewProgramContent() {
       isFavorite: false,
       createdAt: new Date().toISOString().slice(0, 10),
       userCreated: true,
+      createdByEmpId: currentIdentity.id,
     };
     mockPrograms.push(newProgram);
     toast.success('Program created');

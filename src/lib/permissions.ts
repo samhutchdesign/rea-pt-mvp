@@ -78,6 +78,21 @@ export function getPermissions(role: string): Permissions {
   return PERMISSIONS[role] ?? PERMISSIONS.editor;
 }
 
+/**
+ * Owner/Admin manage all content in the clinic; an Editor (Practitioner) only manages content
+ * they personally created; Limited Access (Staff) never manages program content.
+ */
+export function canManageProgram(
+  program: { userCreated?: boolean; createdByEmpId?: string },
+  role: string,
+  currentEmpId: string | null
+): boolean {
+  if (!program.userCreated) return false;
+  if (role === 'owner' || role === 'admin') return true;
+  if (role === 'editor') return !!currentEmpId && program.createdByEmpId === currentEmpId;
+  return false;
+}
+
 export function roleLabel(role: string): string {
   if (role === 'owner') return 'Clinic Owner';
   if (role === 'admin') return 'Admin';
