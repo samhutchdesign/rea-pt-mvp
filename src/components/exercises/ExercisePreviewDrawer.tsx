@@ -40,11 +40,13 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onAddToCurrentProgram?: () => void;
+  isInCurrentProgram?: boolean;
+  hideAddToProgram?: boolean;
   patientPrescription?: PatientPrescription;
   onActionBlocked?: () => void;
 }
 
-export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram, patientPrescription, onActionBlocked }: Props) {
+export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddToCurrentProgram, isInCurrentProgram, hideAddToProgram, patientPrescription, onActionBlocked }: Props) {
   const [programSelectorOpen, setProgramSelectorOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [audioOpen, setAudioOpen] = useState(false);
@@ -160,21 +162,24 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             <Button
               size="sm"
               color="primary"
+              isDisabled={isInCurrentProgram}
               onPress={() => onActionBlocked ? onActionBlocked() : (onAddToCurrentProgram(), onClose())}
               className="flex-1"
             >
-              Add to This Program
+              {isInCurrentProgram ? 'Already in Program' : 'Add to This Program'}
             </Button>
           )}
-          <Button
-            size="sm"
-            color={onAddToCurrentProgram ? 'secondary' : 'primary'}
-            iconLeading={List}
-            onPress={() => onActionBlocked ? onActionBlocked() : setProgramSelectorOpen(true)}
-            className="flex-1"
-          >
-            Add to a Program
-          </Button>
+          {!hideAddToProgram && (
+            <Button
+              size="sm"
+              color={onAddToCurrentProgram ? 'secondary' : 'primary'}
+              iconLeading={List}
+              onPress={() => onActionBlocked ? onActionBlocked() : setProgramSelectorOpen(true)}
+              className="flex-1"
+            >
+              Add to a Program
+            </Button>
+          )}
         </div>
       </Drawer>
 

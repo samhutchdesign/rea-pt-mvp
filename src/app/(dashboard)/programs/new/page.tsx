@@ -623,9 +623,9 @@ function NewProgramContent() {
         exercise={previewExercise}
         open={!!previewExercise}
         onClose={() => setPreviewExercise(null)}
-        onAddToCurrentProgram={previewExercise && !programRows.some((r) => r.exerciseId === previewExercise.id)
-          ? () => { if (previewExercise) addExercise(previewExercise); }
-          : undefined}
+        onAddToCurrentProgram={() => { if (previewExercise) addExercise(previewExercise); }}
+        isInCurrentProgram={!!previewExercise && programRows.some((r) => r.exerciseId === previewExercise.id)}
+        hideAddToProgram
       />
     </div>
   );
