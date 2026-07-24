@@ -110,6 +110,7 @@ function ProgramsPageContent() {
     searchParams.get('eft')?.split(',').filter(Boolean) ?? []
   );
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('fav') === '1');
+  const [showMyProgramsOnly, setShowMyProgramsOnly] = useState(searchParams.get('mine') === '1');
   const [conditionSearch, setConditionSearch] = useState('');
   const [categorySearch, setCategorySearch] = useState('');
   const [showMoreConditions, setShowMoreConditions] = useState(false);
@@ -144,8 +145,8 @@ function ProgramsPageContent() {
     setDeleteVersion((v) => v + 1);
   };
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
-  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); };
-  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly;
+  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); setShowMyProgramsOnly(false); };
+  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly || showMyProgramsOnly;
 
   const filteredConditions = conditionSearch
     ? ALL_CONDITIONS.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase()))
@@ -160,6 +161,7 @@ function ProgramsPageContent() {
   const filtered = useMemo(() => {
     return mockPrograms.filter((p) => {
       if (showFavoritesOnly && !favorites.has(p.id)) return false;
+      if (showMyProgramsOnly && p.createdByEmpId !== currentIdentity.id) return false;
       if (search) {
         const q = search.toLowerCase();
         if (!p.name.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q) && !p.tags.some((t) => t.toLowerCase().includes(q))) return false;
@@ -181,13 +183,13 @@ function ProgramsPageContent() {
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, deleteVersion]);
+  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, showMyProgramsOnly, currentIdentity.id, favorites, deleteVersion]);
 
   const isFirstFilterRender = useRef(true);
   useEffect(() => {
     if (isFirstFilterRender.current) { isFirstFilterRender.current = false; return; }
     setVisibleCount(PAGE_SIZE);
-  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly]);
+  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, showMyProgramsOnly]);
 
   return (
     <>
@@ -215,6 +217,7 @@ function ProgramsPageContent() {
 
             <div className="mb-5 pb-5 border-b border-secondary">
               <CheckRow label="Favourites only" checked={showFavoritesOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowFavoritesOnly((v) => !v))} />
+              <CheckRow label="My programs only" checked={showMyProgramsOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowMyProgramsOnly((v) => !v))} />
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
@@ -315,6 +318,7 @@ function ProgramsPageContent() {
               <div className="flex gap-1.5 flex-wrap mb-3">
                 {search && <FilterTag label={`"${search}"`} onRemove={() => setSearch('')} />}
                 {showFavoritesOnly && <FilterTag label="Favourites only" onRemove={() => setShowFavoritesOnly(false)} />}
+                {showMyProgramsOnly && <FilterTag label="My programs only" onRemove={() => setShowMyProgramsOnly(false)} />}
                 {filterConditions.map((c) => <FilterTag key={c} label={c} onRemove={() => toggleArr(filterConditions, c, setFilterConditions)} />)}
                 {filterCategories.map((c) => <FilterTag key={c} label={c} onRemove={() => toggleArr(filterCategories, c, setFilterCategories)} />)}
                 {filterLevels.map((l) => <FilterTag key={l} label={l} onRemove={() => toggleArr(filterLevels, l, setFilterLevels)} />)}
@@ -351,6 +355,7 @@ function ProgramsPageContent() {
                       if (filterMovementTypes.length) p.set('mvt', filterMovementTypes.join(','));
                       if (filterEffortTypes.length) p.set('eft', filterEffortTypes.join(','));
                       if (showFavoritesOnly) p.set('fav', '1');
+                      if (showMyProgramsOnly) p.set('mine', '1');
                       if (sortBy !== 'A → Z') p.set('sort', sortBy);
                       if (visibleCount !== PAGE_SIZE) p.set('show', String(visibleCount));
                       const qs = p.toString();
