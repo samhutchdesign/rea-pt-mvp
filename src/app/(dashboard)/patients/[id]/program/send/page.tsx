@@ -46,7 +46,8 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
 
       {/* Program preview */}
       <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
-        <span className="mb-4 block text-sm font-semibold text-primary">{program.name}</span>
+        <span className="mb-1 block text-sm font-semibold text-primary">{program.name}</span>
+        <span className="mb-4 block text-xs text-tertiary">{program.frequency}</span>
         <div className="flex flex-col gap-3">
           {program.exercises.map((pe) => {
             const ex = mockExercises.find((e) => e.id === pe.exerciseId);
@@ -63,7 +64,6 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
                       <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.sets} Sets`}</span>
                       <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.reps} Reps`}</span>
                       {pe.holdSecs > 0 && <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.holdSecs}s Hold`}</span>}
-                      <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{pe.frequency}</span>
                     </div>
                   </div>
                 </div>

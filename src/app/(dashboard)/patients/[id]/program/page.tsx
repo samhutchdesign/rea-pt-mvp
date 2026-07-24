@@ -45,7 +45,6 @@ function ExerciseCard({
               {pe.holdSecs > 0 && (
                 <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.holdSecs} Sec Hold</span>
               )}
-              <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.frequency}</span>
             </div>
           </div>
           {viewMode === 'full' && pe.adherence != null && (
@@ -103,7 +102,7 @@ function HistoryEntry({ entry }: { entry: HepHistoryEntry }) {
         <div>
           <p className="text-sm font-medium text-primary">{entry.programName}</p>
           <p className="text-xs text-tertiary mt-0.5">
-            {formatDate(entry.assignedAt)} – {formatDate(entry.endedAt)} · {entry.exercises.length} exercise{entry.exercises.length !== 1 ? 's' : ''}
+            {formatDate(entry.assignedAt)} – {formatDate(entry.endedAt)} · {entry.exercises.length} exercise{entry.exercises.length !== 1 ? 's' : ''} · {entry.frequency}
           </p>
         </div>
         {open ? <ChevronUp size={14} className="text-quaternary shrink-0" /> : <ChevronDown size={14} className="text-quaternary shrink-0" />}
@@ -117,7 +116,7 @@ function HistoryEntry({ entry }: { entry: HepHistoryEntry }) {
               <div key={pe.exerciseId} className="flex items-center justify-between py-1.5">
                 <span className="text-sm text-primary">{ex.name}</span>
                 <span className="text-xs text-tertiary shrink-0 ml-4">
-                  {pe.sets} × {pe.reps}{pe.holdSecs > 0 ? ` · ${pe.holdSecs}s hold` : ''} · {pe.frequency}
+                  {pe.sets} × {pe.reps}{pe.holdSecs > 0 ? ` · ${pe.holdSecs}s hold` : ''}
                 </span>
               </div>
             );
@@ -193,6 +192,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           <h3 className="text-lg font-semibold text-primary m-0">{program.name}</h3>
           <p className="text-sm text-secondary mt-0.5">
             {completedSessions} of {totalSessions} sessions
+            <span className="ml-3 text-xs text-tertiary">{program.frequency}</span>
             {viewMode === 'full' && hep.programAssignedAt && (
               <span className="ml-3 text-xs text-tertiary">Assigned {formatDate(hep.programAssignedAt)}</span>
             )}
@@ -240,7 +240,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
         exercise={previewExercise}
         open={!!previewExercise}
         onClose={() => { setPreviewExercise(null); setPreviewPE(null); }}
-        patientPrescription={previewPE ? { sets: previewPE.sets, reps: previewPE.reps, holdSecs: previewPE.holdSecs, frequency: previewPE.frequency } : undefined}
+        patientPrescription={previewPE ? { sets: previewPE.sets, reps: previewPE.reps, holdSecs: previewPE.holdSecs, frequency: program?.frequency } : undefined}
       />
     </div>
   );

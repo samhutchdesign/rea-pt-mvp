@@ -10,6 +10,7 @@ import { NativeSelect } from '@/components/ui/native-select';
 import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic, mockClinicLocations } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
+import { useRole } from '@/lib/roleStore';
 import { useAvailableLocationIds } from '@/lib/locationScope';
 import { useLocationState, transferPatient } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
@@ -36,8 +37,10 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
   const locationState = useLocationState(id);
-  const assignedEmployees = mockEmployees.filter((e) => locationState.assignedEmployeeIds.includes(e.id));
+  const assignedEmployee = mockEmployees.find((e) => e.id === locationState.assignedEmployeeId) ?? null;
   const can = usePermissions();
+  const role = useRole();
+  const isStaffPersona = role === 'limited';
   const viewMode = useViewMode();
   const availableLocationIds = useAvailableLocationIds();
 
@@ -48,7 +51,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const physiosAtDestination = destinationLocation
     ? mockEmployees.filter((e) => destinationLocation.employeeIds.includes(e.id) && !e.archived)
     : [];
-  const currentPhysioStillValid = assignedEmployees.some((e) => physiosAtDestination.some((p) => p.id === e.id));
+  const currentPhysioStillValid = !!assignedEmployee && physiosAtDestination.some((p) => p.id === assignedEmployee.id);
 
   const closeTransfer = () => { setTransferOpen(false); setSelectedLocationId(''); setSelectedEmployeeId(''); };
 
@@ -56,7 +59,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
     setSelectedLocationId(locationId);
     const location = mockClinicLocations.find((l) => l.id === locationId);
     const physios = location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && !e.archived) : [];
-    const keptPhysio = assignedEmployees.find((e) => physios.some((p) => p.id === e.id));
+    const keptPhysio = assignedEmployee && physios.some((p) => p.id === assignedEmployee.id) ? assignedEmployee : undefined;
     setSelectedEmployeeId(keptPhysio?.id ?? '');
   };
 
@@ -132,6 +135,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
       </div>
       )}
 
+      {!isStaffPersona && (
       <div className="flex gap-6">
         {/* Recent Session */}
         <div className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
@@ -216,11 +220,12 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           )}
         </div>
       </div>
+      )}
 
       {/* Care Team */}
       <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mt-6">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-sm font-semibold text-primary">Care Team</span>
+          <span className="text-sm font-semibold text-primary">Assigned PT</span>
           {can.canTransferPatient && (
             <Button size="xs" color="secondary" iconLeading={ArrowLeftRight} onPress={() => setTransferOpen(true)}>
               Transfer Patient
@@ -229,21 +234,22 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         </div>
 
         <div className="flex gap-4 flex-wrap mb-4">
-          {assignedEmployees.map((emp) => (
+          {assignedEmployee ? (
             <div
-              key={emp.id}
               className="flex items-center gap-3 p-3 border border-secondary rounded-lg cursor-pointer hover:border-brand-600 transition-colors min-w-[220px]"
-              onClick={() => router.push(`/employees/${emp.id}`)}
+              onClick={() => router.push(`/employees/${assignedEmployee.id}`)}
             >
               <div className="w-10 h-10 rounded-full bg-[#EDE7F6] flex items-center justify-center shrink-0 font-bold text-sm text-[#6750A4]">
-                {emp.avatarInitials}
+                {assignedEmployee.avatarInitials}
               </div>
               <div>
-                <p className="text-sm font-semibold text-primary">{emp.firstName} {emp.lastName}</p>
-                <p className="text-xs text-secondary">{emp.credentials} · {emp.title}</p>
+                <p className="text-sm font-semibold text-primary">{assignedEmployee.firstName} {assignedEmployee.lastName}</p>
+                <p className="text-xs text-secondary">{assignedEmployee.credentials} · {assignedEmployee.title}</p>
               </div>
             </div>
-          ))}
+          ) : (
+            <p className="text-sm text-tertiary">No PT assigned yet.</p>
+          )}
         </div>
 
         <div

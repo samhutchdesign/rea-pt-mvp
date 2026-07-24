@@ -11,7 +11,7 @@ import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
 import { mockChartSessions, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId, useAvailableLocationIds } from '@/lib/locationScope';
-import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds, transferPatient } from '@/lib/patientLocationStore';
+import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeId, transferPatient } from '@/lib/patientLocationStore';
 import { useRole } from '@/lib/roleStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -84,16 +84,18 @@ export default function PatientsPage() {
     .map((p) => p.id in localPatients ? { ...p, archived: localPatients[p.id] } : p);
 
   const yourPatients = yourEmpId
-    ? patients.filter((p) => !p.archived && getEffectiveAssignedEmployeeIds(p, locationOverrides).includes(yourEmpId))
+    ? patients.filter((p) => !p.archived && getEffectiveAssignedEmployeeId(p, locationOverrides) === yourEmpId)
     : [];
   const allActive = patients.filter((p) => !p.archived);
   const archived = patients.filter((p) => p.archived);
 
+  // "User: Staff" (Limited Access) behaves like Owner/Admin here: All + Archived, no Your Patients.
+  const isStaffPersona = role === 'limited';
+  // Practitioners (editor role) only see patients assigned to them — no "All" tab, and useYourEmpId
+  // already returns null for Owner/Limited so showYoursTab naturally excludes them too.
   const showYoursTab = yourEmpId !== null;
-  // Practitioners (staff role) only see patients assigned to them — no "All" tab.
-  const showAllTab = role !== 'staff';
-  // Any "User: …" viewing-as state maps to the staff role — hide Archived for those, keep for Owner/Admin.
-  const showArchivedTab = role !== 'staff';
+  const showAllTab = role !== 'editor';
+  const showArchivedTab = role !== 'editor';
 
   const sections = [
     ...(showYoursTab ? [{ list: yourPatients, label: 'Your Patients', searchPlaceholder: 'Search your patients…', emptyMessage: 'No patients assigned to you yet' }] : []),
@@ -153,8 +155,8 @@ export default function PatientsPage() {
     setRestoreLocationId(locationId);
     const location = mockClinicLocations.find((l) => l.id === locationId);
     const pts = location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && !e.archived) : [];
-    const currentAssigned = restoreTarget ? getEffectiveAssignedEmployeeIds(restoreTarget, locationOverrides) : [];
-    const keptPt = pts.find((p) => currentAssigned.includes(p.id));
+    const currentAssigned = restoreTarget ? getEffectiveAssignedEmployeeId(restoreTarget, locationOverrides) : null;
+    const keptPt = pts.find((p) => p.id === currentAssigned);
     setRestorePtId(keptPt?.id ?? '');
   };
 
@@ -280,7 +282,7 @@ export default function PatientsPage() {
                       {patient.firstName} {patient.lastName}
                     </p>
                     <p className="text-sm text-tertiary mt-0.5">{patient.email}</p>
-                    {condition && (
+                    {condition && !isStaffPersona && (
                       <div className="mt-2">
                         <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
                       </div>

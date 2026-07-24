@@ -1,18 +1,21 @@
 'use client';
 import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, Heart, Search, X } from 'lucide-react';
+import { toast } from 'sonner';
+import { Heart, Search, X } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
+import ExerciseCardMenu from '@/components/exercises/ExerciseCardMenu';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
-import { mockExercises } from '@/lib/mock-data';
+import { mockExercises, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
-import type { Exercise } from '@/lib/types';
+import type { Exercise, Patient } from '@/lib/types';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -87,6 +90,21 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
   );
 }
 
+function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
+  return (
+    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2 shadow-xs">
+      <input
+        type="number"
+        min={0}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-6 bg-transparent text-sm text-primary text-center outline-none"
+      />
+      <span className="text-sm text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
+    </div>
+  );
+}
+
 function ExercisesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -123,12 +141,34 @@ function ExercisesPageContent() {
   const [categorySearch, setCategorySearch] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
+  const [programTargetExercise, setProgramTargetExercise] = useState<Exercise | null>(null);
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
+  const [assignTargetExercise, setAssignTargetExercise] = useState<Exercise | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
+  const [rxSets, setRxSets] = useState(3);
+  const [rxReps, setRxReps] = useState(10);
+  const [rxHoldSecs, setRxHoldSecs] = useState(0);
 
   useScrollMemory();
 
   const filtersInactive = dataState === 'empty';
   const guardFilter = (fn: () => void) => { if (filtersInactive) { setShowSignUpModal(true); return; } fn(); };
+  const resetRx = (ex: Exercise) => { setRxSets(ex.defaultSets); setRxReps(ex.defaultReps); setRxHoldSecs(ex.defaultHoldSecs); };
+  const rxSummary = () => `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
+
+  const handleAddToProgram = () => {
+    const prog = mockPrograms.find((p) => p.id === selectedProgramId);
+    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummary()}).`);
+    setProgramTargetExercise(null);
+    setSelectedProgramId(null);
+  };
+
+  const handleAssign = () => {
+    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummary()}).`);
+    setAssignTargetExercise(null);
+    setSelectedPatient(null);
+  };
 
   const toggleFavorite = (exId: string) => setFavorites((prev) => { const next = new Set(prev); next.has(exId) ? next.delete(exId) : next.add(exId); return next; });
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
@@ -145,12 +185,15 @@ function ExercisesPageContent() {
         const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
         if (!ex.name.toLowerCase().includes(q) && !ex.category.toLowerCase().includes(q) && !allTags.some((t) => t.toLowerCase().includes(q))) return false;
       }
-      if (filterConditions.length && !filterConditions.some((c) => ex.tags.condition.some((ec) => ec.toLowerCase().includes(c.toLowerCase())))) return false;
-      if (filterCategories.length && !filterCategories.includes(ex.category)) return false;
-      if (filterLevels.length && !filterLevels.includes(ex.level)) return false;
-      if (filterEquipment.length && !filterEquipment.includes(toTitleCase(ex.equipment))) return false;
-      if (filterMovementTypes.length && !filterMovementTypes.some((m) => ex.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number]))) return false;
-      if (filterEffortTypes.length && !filterEffortTypes.some((e) => ex.effortTypes.includes(e as (typeof EFFORT_TYPES)[number]))) return false;
+      const matchesCondition = filterConditions.length > 0 && filterConditions.some((c) => ex.tags.condition.some((ec) => ec.toLowerCase().includes(c.toLowerCase())));
+      const matchesCategory = filterCategories.length > 0 && filterCategories.includes(ex.category);
+      const matchesLevel = filterLevels.length > 0 && filterLevels.includes(ex.level);
+      const matchesEquipment = filterEquipment.length > 0 && filterEquipment.includes(toTitleCase(ex.equipment));
+      const matchesMovementType = filterMovementTypes.length > 0 && filterMovementTypes.some((m) => ex.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number]));
+      const matchesEffortType = filterEffortTypes.length > 0 && filterEffortTypes.some((e) => ex.effortTypes.includes(e as (typeof EFFORT_TYPES)[number]));
+      const hasTagFilters = filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0;
+      // Tag facets OR together (match any checked box across any group); Search and Favourites stay separate narrowing filters above.
+      if (hasTagFilters && !(matchesCondition || matchesCategory || matchesLevel || matchesEquipment || matchesMovementType || matchesEffortType)) return false;
       return true;
     }).sort((a, b) => {
       if (sortBy === 'A → Z') return a.name.localeCompare(b.name);
@@ -373,7 +416,7 @@ function ExercisesPageContent() {
                 {filtered.slice(0, visibleCount).map((ex) => (
                   <div
                     key={ex.id}
-                    className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
+                    className="group cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
                     onClick={() => {
                       const p = new URLSearchParams();
                       if (search) p.set('q', search);
@@ -418,14 +461,14 @@ function ExercisesPageContent() {
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-tertiary">{ex.category}</span>
                         <div onClick={(e) => e.stopPropagation()}>
-                          <button
-                            type="button"
-                            title="Preview"
-                            className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary"
-                            onClick={() => setPreviewExercise(ex)}
-                          >
-                            <Eye size={14} />
-                          </button>
+                          <ExerciseCardMenu
+                            exercise={ex}
+                            variant="mvp"
+                            isFavorite={favorites.has(ex.id)}
+                            onToggleFavorite={() => toggleFavorite(ex.id)}
+                            onAddToProgram={() => guardFilter(() => { resetRx(ex); setProgramTargetExercise(ex); })}
+                            onAssign={() => guardFilter(() => { resetRx(ex); setAssignTargetExercise(ex); })}
+                          />
                         </div>
                       </div>
                     </div>
@@ -457,6 +500,55 @@ function ExercisesPageContent() {
         onActionBlocked={dataState === 'empty' ? () => { setPreviewExercise(null); setShowSignUpModal(true); } : undefined}
       />
       <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or assign exercises" />
+
+      <ModalOverlay isOpen={!!programTargetExercise} onOpenChange={(o) => { if (!o) { setProgramTargetExercise(null); setSelectedProgramId(null); } }}>
+        <Modal><Dialog>
+          <div className="p-6 w-[440px]">
+            <h3 className="mb-4 text-lg font-semibold text-primary">Add to Program</h3>
+            <NativeSelect value={selectedProgramId ?? ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') { router.push('/programs/new'); setProgramTargetExercise(null); return; } setSelectedProgramId(v || null); }}>
+              <option value="">Select a program…</option>
+              <option value="__new__">+ Create new program</option>
+              {mockPrograms.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </NativeSelect>
+            <div className="mt-4">
+              <div className="mb-1.5 text-xs font-medium text-secondary">Prescription</div>
+              <div className="flex flex-wrap gap-2">
+                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <Button color="secondary" size="sm" onPress={() => { setProgramTargetExercise(null); setSelectedProgramId(null); }}>Cancel</Button>
+              <Button color="primary" size="sm" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
+            </div>
+          </div>
+        </Dialog></Modal>
+      </ModalOverlay>
+
+      <ModalOverlay isOpen={!!assignTargetExercise} onOpenChange={(o) => { if (!o) { setAssignTargetExercise(null); setSelectedPatient(null); } }}>
+        <Modal><Dialog>
+          <div className="p-6 w-[440px]">
+            <h3 className="mb-4 text-lg font-semibold text-primary">Assign to Patient</h3>
+            <NativeSelect value={selectedPatient?.id ?? ''} onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}>
+              <option value="">Select a patient…</option>
+              {mockPatients.filter((p) => !p.archived).map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
+            </NativeSelect>
+            <div className="mt-4">
+              <div className="mb-1.5 text-xs font-medium text-secondary">Prescription</div>
+              <div className="flex flex-wrap gap-2">
+                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <Button color="secondary" size="sm" onPress={() => { setAssignTargetExercise(null); setSelectedPatient(null); }}>Cancel</Button>
+              <Button color="primary" size="sm" isDisabled={!selectedPatient} onPress={handleAssign}>Assign</Button>
+            </div>
+          </div>
+        </Dialog></Modal>
+      </ModalOverlay>
     </>
   );
 }

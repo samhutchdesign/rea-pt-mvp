@@ -9,6 +9,7 @@ import { useRole } from '@/lib/roleStore';
 import { useStaffPersona } from '@/lib/staffPersonaStore';
 import { useOrgId, setOrgId } from '@/lib/orgStore';
 import { setLocationId } from '@/lib/locationStore';
+import { resolveEmpId } from '@/lib/locationScope';
 import { mockEmployees, mockClinicLocations, mockClinics } from '@/lib/mock-data';
 import { LayoutDashboard, List, Users, Zap, ChevronDown } from 'lucide-react';
 import { cx } from '@/utils/cx';
@@ -18,16 +19,16 @@ type NavItem = { label: string; href: string; mvpHref?: string; mvpHide?: boolea
 const baseNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', mvpHide: true, icon: LayoutDashboard },
   { label: 'Patients', href: '/patients', icon: Users },
-  { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: Zap },
   { label: 'Programs', href: '/programs', icon: List },
+  { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: Zap },
 ];
 
 const ownerNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', mvpHide: true, icon: LayoutDashboard },
-  { label: 'Patients', href: '/patients', icon: Users },
   { label: 'Employees', href: '/employees', icon: Users },
-  { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: Zap },
+  { label: 'Patients', href: '/patients', icon: Users },
   { label: 'Programs', href: '/programs', icon: List },
+  { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: Zap },
 ];
 
 const ORG_COLORS: Record<string, string> = {
@@ -58,7 +59,7 @@ export default function Sidebar() {
 
   // Compute available orgs for this user
   const availableClinics = useMemo(() => {
-    const empId = role === 'staff' ? persona : role === 'admin' ? 'emp1' : null;
+    const empId = role === 'owner' ? null : resolveEmpId(role, persona);
     const emp = empId ? mockEmployees.find((e) => e.id === empId) : null;
     const orgIds = new Set(
       (emp?.locationIds ?? [])
@@ -72,7 +73,7 @@ export default function Sidebar() {
   const activeClinic = mockClinics.find((c) => c.id === activeOrgId) ?? mockClinics[0];
   const hasMultipleOrgs = availableClinics.length > 1 && viewMode === 'full';
 
-  const navItems = can.canManageStaff ? ownerNavItems : baseNavItems;
+  const navItems = can.canViewEmployeesTab ? ownerNavItems : baseNavItems;
 
   return (
     <nav className="fixed top-10 left-0 z-[100] flex h-[calc(100vh-40px)] w-20 shrink-0 flex-col items-center border-r border-secondary bg-primary py-4">

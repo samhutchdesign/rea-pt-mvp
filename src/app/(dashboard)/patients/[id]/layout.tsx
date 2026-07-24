@@ -14,8 +14,9 @@ import { NativeSelect } from '@/components/ui/native-select';
 import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
 import { mockPatients, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
+import { useRole } from '@/lib/roleStore';
 import { useYourEmpId, useAvailableLocationIds } from '@/lib/locationScope';
-import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeIds, transferPatient } from '@/lib/patientLocationStore';
+import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeId, transferPatient } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { clearUploadedData } from '@/lib/uploadStore';
 import { cx } from '@/utils/cx';
@@ -23,9 +24,9 @@ import { Inbox, Mail, MapPin, Pencil } from 'lucide-react';
 
 const ALL_TABS = [
   { label: 'Overview', path: 'overview' },
-  { label: 'Details', path: 'details' },
-  { label: 'Program', path: 'program' },
-  { label: 'Chart', path: 'chart' },
+  { label: 'Details', path: 'details', staffHide: true },
+  { label: 'Program', path: 'program', staffHide: true },
+  { label: 'Chart', path: 'chart', staffHide: true },
   { label: 'Documents', path: 'documents', fullOnly: true },
   { label: 'Contact', path: 'contact' },
 ];
@@ -79,6 +80,8 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   });
 
   const can = usePermissions();
+  const role = useRole();
+  const isStaffPersona = role === 'limited';
   const yourEmpId = useYourEmpId();
   const viewMode = useViewMode();
   const availableLocationIds = useAvailableLocationIds();
@@ -88,8 +91,8 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     if (viewMode === 'mvp' && MVP_HIDDEN.has(id)) router.push('/patients');
   }, [viewMode, id, router]);
 
-  const patientTabs = ALL_TABS.filter((t) => !(t.fullOnly && viewMode === 'mvp'));
-  const isYourPatient = yourEmpId !== null && !!patient && getEffectiveAssignedEmployeeIds(patient, locationOverrides).includes(yourEmpId);
+  const patientTabs = ALL_TABS.filter((t) => !(t.fullOnly && viewMode === 'mvp') && !(t.staffHide && isStaffPersona));
+  const isYourPatient = yourEmpId !== null && !!patient && getEffectiveAssignedEmployeeId(patient, locationOverrides) === yourEmpId;
   const canEdit = can.canArchivePatient || isYourPatient;
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
   const currentTab = patientTabs[activeTab] ?? patientTabs[0];
@@ -132,8 +135,8 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     setRestoreLocationId(locationId);
     const location = mockClinicLocations.find((l) => l.id === locationId);
     const pts = location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && !e.archived) : [];
-    const currentAssigned = getEffectiveAssignedEmployeeIds(patient, locationOverrides);
-    const keptPt = pts.find((p) => currentAssigned.includes(p.id));
+    const currentAssigned = getEffectiveAssignedEmployeeId(patient, locationOverrides);
+    const keptPt = pts.find((p) => p.id === currentAssigned);
     setRestorePtId(keptPt?.id ?? '');
   };
 
@@ -192,7 +195,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                   <span className="text-sm text-tertiary">{getEffectiveLocationString(patient, locationOverrides)}</span>
                 </div>
               </div>
-              {chip && (
+              {chip && !isStaffPersona && (
                 <div className="mt-2">
                   <Badge type="pill-color" color="brand" size="sm">{chip}</Badge>
                 </div>

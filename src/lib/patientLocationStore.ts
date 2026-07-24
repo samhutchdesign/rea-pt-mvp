@@ -5,7 +5,7 @@ import type { Patient, Employee } from './types';
 
 export type PatientLocationState = {
   locationId: string;
-  assignedEmployeeIds: string[];
+  assignedEmployeeId: string | null;
 };
 
 function seedLocationId(patient: Patient): string {
@@ -13,7 +13,7 @@ function seedLocationId(patient: Patient): string {
 }
 
 let _state: Map<string, PatientLocationState> = new Map(
-  mockPatients.map((p) => [p.id, { locationId: seedLocationId(p), assignedEmployeeIds: p.assignedEmployeeIds }])
+  mockPatients.map((p) => [p.id, { locationId: seedLocationId(p), assignedEmployeeId: p.assignedEmployeeId ?? null }])
 );
 
 const _listeners = new Set<() => void>();
@@ -23,7 +23,7 @@ function notify() {
 }
 
 export function getLocationState(patientId: string): PatientLocationState {
-  return _state.get(patientId) ?? { locationId: '', assignedEmployeeIds: [] };
+  return _state.get(patientId) ?? { locationId: '', assignedEmployeeId: null };
 }
 
 export function getLocationOverrides(): Map<string, PatientLocationState> {
@@ -35,12 +35,10 @@ export function transferPatient(patientId: string, toLocationId: string, newPhys
   const toLocation = mockClinicLocations.find((l) => l.id === toLocationId);
   if (!toLocation) return;
 
-  const retained = current.assignedEmployeeIds.filter((empId) => toLocation.employeeIds.includes(empId));
-  const assignedEmployeeIds = newPhysioId && !retained.includes(newPhysioId)
-    ? [...retained, newPhysioId]
-    : retained;
+  const assignedEmployeeId = newPhysioId
+    ?? (current.assignedEmployeeId && toLocation.employeeIds.includes(current.assignedEmployeeId) ? current.assignedEmployeeId : null);
 
-  _state = new Map(_state).set(patientId, { locationId: toLocationId, assignedEmployeeIds });
+  _state = new Map(_state).set(patientId, { locationId: toLocationId, assignedEmployeeId });
   notify();
 }
 
@@ -76,15 +74,15 @@ export function getEffectiveLocationString(patient: Patient, overrides: Map<stri
   return `${loc.city}, ${loc.regionCountry.split(',')[0].trim()}`;
 }
 
-export function getEffectiveAssignedEmployeeIds(patient: Patient, overrides: Map<string, PatientLocationState>): string[] {
-  return overrides.get(patient.id)?.assignedEmployeeIds ?? patient.assignedEmployeeIds;
+export function getEffectiveAssignedEmployeeId(patient: Patient, overrides: Map<string, PatientLocationState>): string | null {
+  return overrides.get(patient.id)?.assignedEmployeeId ?? patient.assignedEmployeeId ?? null;
 }
 
 export function getEffectivePatientIdsForEmployee(employee: Employee, overrides: Map<string, PatientLocationState>): string[] {
   const ids = new Set(employee.patientIds);
   for (const [patientId, state] of overrides) {
     const wasOriginallyAssigned = employee.patientIds.includes(patientId);
-    const isNowAssigned = state.assignedEmployeeIds.includes(employee.id);
+    const isNowAssigned = state.assignedEmployeeId === employee.id;
     if (isNowAssigned) ids.add(patientId);
     else if (wasOriginallyAssigned) ids.delete(patientId);
   }

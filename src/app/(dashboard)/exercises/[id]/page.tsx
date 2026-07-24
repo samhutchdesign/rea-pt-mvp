@@ -23,6 +23,21 @@ const RELAXATION_CUES = [
   { key: 'pressure', label: 'Pressure Management Cue', text: 'Exhale with the effort and avoid holding your breath' },
 ];
 
+function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
+  return (
+    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2 shadow-xs">
+      <input
+        type="number"
+        min={0}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-6 bg-transparent text-sm text-primary text-center outline-none"
+      />
+      <span className="text-sm text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
+    </div>
+  );
+}
+
 function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => void }) {
   return (
     <div className="flex gap-3 cursor-pointer group" onClick={onClick}>
@@ -64,6 +79,9 @@ function ExerciseDetailContent({ id }: { id: string }) {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [programOpen, setProgramOpen] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
+  const [rxSets, setRxSets] = useState(ex?.defaultSets ?? 3);
+  const [rxReps, setRxReps] = useState(ex?.defaultReps ?? 10);
+  const [rxHoldSecs, setRxHoldSecs] = useState(ex?.defaultHoldSecs ?? 0);
   const [moreOpen, setMoreOpen] = useState(false);
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
   const [selectedCue, setSelectedCue] = useState('');
@@ -108,20 +126,23 @@ function ExerciseDetailContent({ id }: { id: string }) {
     : [];
   const similar = [...sameCategory, ...fallback];
 
+  const rxSummary = `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
+
   const handleAddToProgram = () => {
     const prog = mockPrograms.find((p) => p.id === selectedProgramId);
-    if (prog) toast.success(`Exercise added to "${prog.name}"!`);
+    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummary}).`);
     setProgramOpen(false);
     setSelectedProgramId(null);
   };
 
   const handleAssign = () => {
-    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program!`);
+    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummary}).`);
     setAssignOpen(false);
     setSelectedPatient(null);
   };
 
   const block = (fn: () => void) => dataState === 'empty' ? setShowSignUpModal(true) : fn();
+  const resetRx = () => { setRxSets(ex.defaultSets); setRxReps(ex.defaultReps); setRxHoldSecs(ex.defaultHoldSecs); };
 
   return (
     <>
@@ -166,10 +187,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
-              <Button color="secondary" size="sm" iconLeading={ListPlus} onPress={() => block(() => setProgramOpen(true))}>
+              <Button color="secondary" size="sm" iconLeading={ListPlus} onPress={() => block(() => { resetRx(); setProgramOpen(true); })}>
                 Add to Program
               </Button>
-              <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => block(() => setAssignOpen(true))}>
+              <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => block(() => { resetRx(); setAssignOpen(true); })}>
                 Assign
               </Button>
               <button
@@ -300,6 +321,14 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <option value="__new__">+ Create new program</option>
               {mockPrograms.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </NativeSelect>
+            <div className="mt-4">
+              <div className="mb-1.5 text-xs font-medium text-secondary">Prescription</div>
+              <div className="flex flex-wrap gap-2">
+                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+              </div>
+            </div>
             <div className="mt-6 flex justify-end gap-3">
               <Button color="secondary" size="sm" onPress={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>
               <Button color="primary" size="sm" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
@@ -316,6 +345,14 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <option value="">Select a patient…</option>
               {mockPatients.filter((p) => !p.archived).map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
             </NativeSelect>
+            <div className="mt-4">
+              <div className="mb-1.5 text-xs font-medium text-secondary">Prescription</div>
+              <div className="flex flex-wrap gap-2">
+                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+              </div>
+            </div>
             <div className="mt-6 flex justify-end gap-3">
               <Button color="secondary" size="sm" onPress={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>
               <Button color="primary" size="sm" isDisabled={!selectedPatient} onPress={handleAssign}>Assign</Button>

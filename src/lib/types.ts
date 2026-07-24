@@ -1,4 +1,4 @@
-export type UserRole = 'owner' | 'admin' | 'staff';
+export type UserRole = 'owner' | 'admin' | 'editor' | 'limited';
 
 export interface Physio {
   id: string;
@@ -121,7 +121,7 @@ export interface ProgramExercise {
   sets: number;
   reps: number;
   holdSecs: number;
-  frequency: string;
+  cue?: string;
   adherence: number;
 }
 
@@ -129,6 +129,7 @@ export interface Program {
   id: string;
   name: string;
   description: string;
+  frequency: string;
   exercises: ProgramExercise[];
   tags: string[];
   isFavorite: boolean;
@@ -151,6 +152,7 @@ export interface HepHistoryEntry {
   id: string;
   programId: string;
   programName: string;
+  frequency: string;
   exercises: ProgramExercise[];
   assignedAt: string;
   endedAt: string;
@@ -285,7 +287,7 @@ export interface Patient {
   programId?: string;
   programAssignedAt?: string;
   hepHistory?: HepHistoryEntry[];
-  assignedEmployeeIds: string[];
+  assignedEmployeeId?: string;
   clinicId: string;
   archived: boolean;
   sessionsPerWeek: number;

@@ -27,6 +27,11 @@ const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Foots
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
 const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
 const STEPS = ['Choose Exercises', 'Program Details'];
+const CUES = [
+  { key: 'relaxation', label: 'Relaxation Cue' },
+  { key: 'contraction', label: 'Pelvic Floor Contraction Cue' },
+  { key: 'pressure', label: 'Pressure Management Cue' },
+];
 
 const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
@@ -38,7 +43,7 @@ interface ProgramRow {
   sets: number;
   reps: number;
   holdSecs: number;
-  frequency: string;
+  cue: string;
 }
 
 function FilterSection({ title, activeCount, onClear, children }: { title: string; activeCount: number; onClear: () => void; children: React.ReactNode }) {
@@ -145,6 +150,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
   const [step, setStep] = useState(0);
   const [programName, setProgramName] = useState(existingProgram?.name ?? '');
   const [description, setDescription] = useState(existingProgram?.description ?? '');
+  const [frequency, setFrequency] = useState(existingProgram?.frequency ?? FREQUENCIES[0]);
 
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('A → Z');
@@ -166,7 +172,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
 
   const [programRows, setProgramRows] = useState<ProgramRow[]>(
-    existingProgram?.exercises.map((e) => ({ exerciseId: e.exerciseId, sets: e.sets, reps: e.reps, holdSecs: e.holdSecs, frequency: e.frequency })) ?? []
+    existingProgram?.exercises.map((e) => ({ exerciseId: e.exerciseId, sets: e.sets, reps: e.reps, holdSecs: e.holdSecs, cue: e.cue ?? '' })) ?? []
   );
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -192,7 +198,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
 
   const addExercise = (ex: Exercise) => {
     if (programRows.some((r) => r.exerciseId === ex.id)) return;
-    setProgramRows((prev) => [...prev, { exerciseId: ex.id, sets: ex.defaultSets, reps: ex.defaultReps, holdSecs: ex.defaultHoldSecs, frequency: ex.defaultFrequency }]);
+    setProgramRows((prev) => [...prev, { exerciseId: ex.id, sets: ex.defaultSets, reps: ex.defaultReps, holdSecs: ex.defaultHoldSecs, cue: '' }]);
   };
   const removeExercise = (exId: string) => setProgramRows((prev) => prev.filter((r) => r.exerciseId !== exId));
   const toggleInProgram = (ex: Exercise) => {
@@ -213,12 +219,15 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
         const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
         if (!ex.name.toLowerCase().includes(q) && !ex.category.toLowerCase().includes(q) && !allTags.some((t) => t.toLowerCase().includes(q))) return false;
       }
-      if (filterConditions.length && !filterConditions.some((c) => ex.tags.condition.some((ec) => ec.toLowerCase().includes(c.toLowerCase())))) return false;
-      if (filterCategories.length && !filterCategories.includes(ex.category)) return false;
-      if (filterLevels.length && !filterLevels.includes(ex.level)) return false;
-      if (filterEquipment.length && !filterEquipment.includes(toTitleCase(ex.equipment))) return false;
-      if (filterMovementTypes.length && !filterMovementTypes.some((m) => ex.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number]))) return false;
-      if (filterEffortTypes.length && !filterEffortTypes.some((e) => ex.effortTypes.includes(e as (typeof EFFORT_TYPES)[number]))) return false;
+      const matchesCondition = filterConditions.length > 0 && filterConditions.some((c) => ex.tags.condition.some((ec) => ec.toLowerCase().includes(c.toLowerCase())));
+      const matchesCategory = filterCategories.length > 0 && filterCategories.includes(ex.category);
+      const matchesLevel = filterLevels.length > 0 && filterLevels.includes(ex.level);
+      const matchesEquipment = filterEquipment.length > 0 && filterEquipment.includes(toTitleCase(ex.equipment));
+      const matchesMovementType = filterMovementTypes.length > 0 && filterMovementTypes.some((m) => ex.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number]));
+      const matchesEffortType = filterEffortTypes.length > 0 && filterEffortTypes.some((e) => ex.effortTypes.includes(e as (typeof EFFORT_TYPES)[number]));
+      const hasTagFilters = filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0;
+      // Tag facets OR together (match any checked box across any group); Search and Favourites stay separate narrowing filters above.
+      if (hasTagFilters && !(matchesCondition || matchesCategory || matchesLevel || matchesEquipment || matchesMovementType || matchesEffortType)) return false;
       return true;
     }).sort((a, b) => {
       const aFav = favorites.has(a.id) ? 1 : 0;
@@ -257,7 +266,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     const current = getHepState(id);
     const currentProgram = current.programId ? mockPrograms.find((p) => p.id === current.programId) : null;
     const oldSnapshot = currentProgram && current.programAssignedAt
-      ? { programId: currentProgram.id, programName: currentProgram.name, exercises: currentProgram.exercises, assignedAt: current.programAssignedAt }
+      ? { programId: currentProgram.id, programName: currentProgram.name, frequency: currentProgram.frequency, exercises: currentProgram.exercises, assignedAt: current.programAssignedAt }
       : null;
     const newProgramId = current.programId ?? 'prog1';
     const newProgramName = programName.trim() || 'Custom Program';
@@ -265,12 +274,13 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
 
     const progIdx = mockPrograms.findIndex((p) => p.id === newProgramId);
     if (progIdx !== -1) {
-      mockPrograms[progIdx] = { ...mockPrograms[progIdx], name: newProgramName, description: description.trim(), exercises: newExercises };
+      mockPrograms[progIdx] = { ...mockPrograms[progIdx], name: newProgramName, description: description.trim(), frequency, exercises: newExercises };
     } else {
       mockPrograms.push({
         id: newProgramId,
         name: newProgramName,
         description: description.trim(),
+        frequency,
         exercises: newExercises,
         tags: [],
         isFavorite: false,
@@ -530,27 +540,40 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                     onDragEnd={handleDragEnd}
                   >
                     <div className="mb-3 flex justify-between items-start">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
                         <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" />
-                        <span className="text-sm font-semibold text-primary">{ex.name}</span>
+                        <span className="text-sm font-semibold text-primary truncate">{ex.name}</span>
                       </div>
-                      <button
-                        onClick={() => removeExercise(row.exerciseId)}
-                        className="flex h-6 w-6 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
-                      >
-                        <X size={15} />
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          title="Preview"
+                          onClick={() => setPreviewExercise(ex)}
+                          className="flex h-6 w-6 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+                        >
+                          <Eye size={15} />
+                        </button>
+                        <button
+                          onClick={() => removeExercise(row.exerciseId)}
+                          className="flex h-6 w-6 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+                        >
+                          <X size={15} />
+                        </button>
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2 items-center">
                       <CompactField value={row.sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => updateRow(row.exerciseId, 'sets', v)} />
                       <CompactField value={row.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => updateRow(row.exerciseId, 'reps', v)} />
                       <CompactField value={row.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => updateRow(row.exerciseId, 'holdSecs', v)} />
                       <NativeSelect
-                        value={row.frequency}
-                        onChange={(e) => updateRow(row.exerciseId, 'frequency', e.target.value)}
-                        wrapperClassName="w-[166px] shrink-0"
+                        wrapperClassName="w-auto"
+                        className="w-auto py-1.5 pr-7 text-xs"
+                        value={row.cue}
+                        onChange={(e) => updateRow(row.exerciseId, 'cue', e.target.value)}
                       >
-                        {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+                        <option value="">No Cue</option>
+                        {CUES.map((c) => (
+                          <option key={c.key} value={c.key}>{c.label}</option>
+                        ))}
                       </NativeSelect>
                     </div>
                   </div>
@@ -579,6 +602,12 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                 rows={5}
                 className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-secondary mb-1.5">Frequency</label>
+              <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)}>
+                {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+              </NativeSelect>
             </div>
           </div>
         </div>

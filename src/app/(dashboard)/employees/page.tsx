@@ -6,7 +6,9 @@ import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { mockPatients } from '@/lib/mock-data';
 import { useLocationScope } from '@/lib/locationScope';
-import type { Employee } from '@/lib/types';
+import { useRole } from '@/lib/roleStore';
+import { usePermissions } from '@/lib/permissionsHook';
+import type { Employee, UserRole } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -26,8 +28,16 @@ export default function EmployeesPage() {
   const [inviteRole, setInviteRole] = useState('Practitioner');
   const { employees: scopedEmployees } = useLocationScope();
   const [overrides, setOverrides] = useState<Record<string, Partial<Employee>>>({});
+  const role = useRole();
+  const can = usePermissions();
 
   const employees = scopedEmployees.map((e) => overrides[e.id] ? { ...e, ...overrides[e.id] } : e);
+
+  const changeRole = (emp: Employee, newRole: UserRole) => {
+    setOverrides((prev) => ({ ...prev, [emp.id]: { ...prev[emp.id], role: newRole } }));
+    const label = newRole === 'admin' ? 'Manager' : newRole === 'limited' ? 'Staff' : 'Practitioner';
+    toast.success(`${emp.firstName} ${emp.lastName}'s permissions updated to ${label}.`);
+  };
 
   const activeEmployees = employees.filter((e) => !e.archived);
   const archivedEmployees = employees.filter((e) => e.archived);
@@ -69,7 +79,9 @@ export default function EmployeesPage() {
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-primary m-0">Employees</h2>
-          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add Employee</Button>
+          {can.canInviteUsers && (
+            <Button color="primary" size="sm" iconLeading={Plus} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add Employee</Button>
+          )}
         </div>
 
         <div className="flex border-b border-secondary mb-6">
@@ -166,7 +178,20 @@ export default function EmployeesPage() {
                         <span className="text-tertiary text-xs">{emp.email}</span>
                       </div>
                     </div>
-                    {tab === '1' && (
+                    {role === 'owner' && emp.role !== 'owner' && (
+                      <div onClick={(e) => e.stopPropagation()} className="shrink-0 ml-2">
+                        <NativeSelect
+                          wrapperClassName="w-32"
+                          value={emp.role}
+                          onChange={(e) => changeRole(emp, e.target.value as UserRole)}
+                        >
+                          <option value="admin">Manager</option>
+                          <option value="editor">Practitioner</option>
+                          <option value="limited">Staff</option>
+                        </NativeSelect>
+                      </div>
+                    )}
+                    {tab === '1' && can.canArchiveEmployees && (
                       <div onClick={(e) => e.stopPropagation()} className="shrink-0 ml-2">
                         <Button
                           color="secondary"
@@ -208,7 +233,7 @@ export default function EmployeesPage() {
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value)}
                 >
-                  <option value="Admin">Admin</option>
+                  <option value="Manager">Manager</option>
                   <option value="Practitioner">Practitioner</option>
                   <option value="Staff">Staff</option>
                 </NativeSelect>

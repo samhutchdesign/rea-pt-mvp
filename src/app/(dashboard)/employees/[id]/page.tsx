@@ -6,16 +6,17 @@ import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { mockEmployees, mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
-import { useAvailableLocationIds } from '@/lib/locationScope';
+import { useRole } from '@/lib/roleStore';
+import { useAvailableLocationIds, useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectivePatientIdsForEmployee, transferPatient as transferPatientLocation, type PatientLocationState } from '@/lib/patientLocationStore';
-import type { Patient, Employee } from '@/lib/types';
+import type { Patient, Employee, UserRole } from '@/lib/types';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
-import { ArrowLeftRight, Calendar, Inbox, Mail, Pencil, Phone, User } from 'lucide-react';
+import { ArrowLeftRight, Calendar, Crown, Inbox, Mail, Pencil, Phone, User } from 'lucide-react';
 
 function TransferDialog({
   open,
@@ -263,6 +264,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [archived, setArchived] = useState(emp?.archived ?? false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [transferPatient, setTransferPatient] = useState<Patient | null>(null);
+  const [roleOverride, setRoleOverride] = useState<UserRole>(emp?.role ?? 'editor');
 
   // Details tab edit state
   const [editingContact, setEditingContact] = useState(false);
@@ -280,9 +282,13 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [professionalDraft, setProfessionalDraft] = useState({ ...savedProfessional });
   const can = usePermissions();
+  const role = useRole();
+  const currentIdentity = useCurrentIdentity();
   const locationOverrides = useLocationOverrides();
 
   if (!emp) return <div className="p-8"><span className="text-tertiary text-sm">Employee not found.</span></div>;
+
+  const isOwnProfile = role === 'owner' && currentIdentity.id === emp.id;
 
   const assignedPatientIds = getEffectivePatientIdsForEmployee(emp, locationOverrides);
   const assignedPatients = mockPatients.filter((p) => assignedPatientIds.includes(p.id));
@@ -311,6 +317,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const handleRestore = () => {
     setArchived(false);
     toast.success(`${emp.firstName} ${emp.lastName} restored to active.`);
+  };
+
+  const handleChangeRole = (newRole: UserRole) => {
+    setRoleOverride(newRole);
+    const label = newRole === 'admin' ? 'Manager' : newRole === 'limited' ? 'Staff' : 'Practitioner';
+    toast.success(`${emp.firstName} ${emp.lastName}'s permissions updated to ${label}.`);
   };
 
   const handleEditContact = () => {
@@ -377,8 +389,29 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
             </div>
           </div>
-          {can.canManageStaff && (
-            archived ? (
+          {isOwnProfile && (
+            <Button
+              color="secondary"
+              size="xs"
+              iconLeading={Crown}
+              onPress={() => router.push('/account/settings?transfer=1')}
+            >
+              Transfer Ownership
+            </Button>
+          )}
+          {role === 'owner' && emp.role !== 'owner' && (
+            <NativeSelect
+              wrapperClassName="w-36 shrink-0"
+              value={roleOverride}
+              onChange={(e) => handleChangeRole(e.target.value as UserRole)}
+            >
+              <option value="admin">Manager</option>
+              <option value="editor">Practitioner</option>
+              <option value="limited">Staff</option>
+            </NativeSelect>
+          )}
+          {archived ? (
+            can.canArchiveEmployees && (
               <Button
                 color="secondary"
                 size="xs"
@@ -388,7 +421,9 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               >
                 Restore Employee
               </Button>
-            ) : (
+            )
+          ) : (
+            can.canArchiveEmployees && (
               <Button
                 color="secondary"
                 size="xs"

@@ -4,23 +4,31 @@ import { useStaffPersona } from './staffPersonaStore';
 import { useOrgId } from './orgStore';
 import { mockPatients, mockEmployees, mockClinicLocations } from './mock-data';
 import { useLocationOverrides, getEffectivePatientIdsForEmployee, getEffectiveLocationString, type PatientLocationState } from './patientLocationStore';
-import type { Patient, Employee } from './types';
+import type { Patient, Employee, UserRole } from './types';
+
+/** The employee id that represents "you" for the active role/persona. Owner -> Sarah Harper, Admin -> Emily Chen, Limited -> Taylor Brennan, Editor -> whichever practitioner persona is selected. */
+export function resolveEmpId(role: UserRole, persona: string): string {
+  if (role === 'owner') return 'emp_sarah';
+  if (role === 'admin') return 'emp1';
+  if (role === 'limited') return 'emp_staff';
+  return persona;
+}
 
 export function useYourEmpId(): string | null {
   const role = useRole();
   const persona = useStaffPersona();
-  if (role === 'admin') return 'emp1';
-  if (role === 'staff') return persona;
-  return null;
+  // Owner and Limited Access don't have a personal patient caseload — no "Your Patients" concept.
+  if (role === 'owner' || role === 'limited') return null;
+  return resolveEmpId(role, persona);
 }
 
 export const YOUR_EMP_ID = 'emp1';
 
-/** The employee record that represents whoever is currently "logged in" for display purposes (avatar, name, account pages) — unlike useYourEmpId, this always resolves to someone, including Owner. */
+/** The employee record that represents whoever is currently "logged in" for display purposes (avatar, name, account pages) — unlike useYourEmpId, this always resolves to someone, including Owner and Limited Access. */
 export function useCurrentIdentity(): Employee {
   const role = useRole();
   const persona = useStaffPersona();
-  const empId = role === 'owner' ? 'emp_sarah' : role === 'admin' ? 'emp1' : persona;
+  const empId = resolveEmpId(role, persona);
   return mockEmployees.find((e) => e.id === empId) ?? mockEmployees[0];
 }
 
@@ -55,8 +63,8 @@ export function useLocationScope(): { patients: Patient[]; employees: Employee[]
     return { patients, employees: emps };
   }
 
-  // admin or staff: constrain to their locations within the active org
-  const empId = role === 'admin' ? 'emp1' : persona;
+  // admin, editor, or limited: constrain to their locations within the active org
+  const empId = resolveEmpId(role, persona);
   const yourEmp = mockEmployees.find((e) => e.id === empId);
 
   // Locations this user works at that belong to the active org
@@ -91,7 +99,7 @@ export function useAvailableLocationIds(): string[] {
   const persona = useStaffPersona();
   const activeOrgId = useOrgId();
   if (role === 'owner') return mockClinicLocations.filter((l) => l.orgId === activeOrgId).map((l) => l.id);
-  const empId = role === 'admin' ? 'emp1' : persona;
+  const empId = resolveEmpId(role, persona);
   const emp = mockEmployees.find((e) => e.id === empId);
   return (emp?.locationIds ?? []).filter(
     (locId) => mockClinicLocations.find((l) => l.id === locId)?.orgId === activeOrgId

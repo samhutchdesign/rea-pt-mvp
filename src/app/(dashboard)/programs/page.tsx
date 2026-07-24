@@ -1,18 +1,22 @@
 'use client';
 import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
+import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
 import { NativeSelect } from '@/components/ui/native-select';
-import { mockPrograms, mockExercises } from '@/lib/mock-data';
+import { mockPrograms, mockExercises, mockPatients } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
+import type { Patient, Program } from '@/lib/types';
 import { Heart, Plus, Search, X } from 'lucide-react';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import ProgramCardMenu from '@/components/programs/ProgramCardMenu';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
 
 const PAGE_SIZE = 24;
@@ -106,6 +110,10 @@ function ProgramsPageContent() {
   const [showMoreConditions, setShowMoreConditions] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockPrograms.filter((p) => p.isFavorite).map((p) => p.id)));
   const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
+  const [assignTargetProgram, setAssignTargetProgram] = useState<Program | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [deleteTargetProgram, setDeleteTargetProgram] = useState<Program | null>(null);
+  const [deleteVersion, setDeleteVersion] = useState(0);
 
   useScrollMemory();
 
@@ -113,6 +121,23 @@ function ProgramsPageContent() {
   const guardFilter = (fn: () => void) => { if (filtersInactive) { setShowSignUpModal(true); return; } fn(); };
 
   const toggleFavorite = (id: string) => setFavorites((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+
+  const handleAssign = () => {
+    if (selectedPatient && assignTargetProgram) {
+      toast.success(`${assignTargetProgram.name} assigned to ${selectedPatient.firstName} ${selectedPatient.lastName}!`);
+    }
+    setAssignTargetProgram(null);
+    setSelectedPatient(null);
+  };
+
+  const handleDelete = () => {
+    if (!deleteTargetProgram) return;
+    const idx = mockPrograms.findIndex((p) => p.id === deleteTargetProgram.id);
+    if (idx !== -1) mockPrograms.splice(idx, 1);
+    toast.success(`${deleteTargetProgram.name} deleted`);
+    setDeleteTargetProgram(null);
+    setDeleteVersion((v) => v + 1);
+  };
   const toggleArr = (arr: string[], val: string, set: (v: string[]) => void) => set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
   const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); };
   const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly;
@@ -151,7 +176,7 @@ function ProgramsPageContent() {
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites]);
+  }, [search, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, deleteVersion]);
 
   const isFirstFilterRender = useRef(true);
   useEffect(() => {
@@ -310,7 +335,7 @@ function ProgramsPageContent() {
                   return (
                   <div
                     key={prog.id}
-                    className="cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
+                    className="group flex flex-col cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
                     onClick={() => {
                       const p = new URLSearchParams();
                       if (search) p.set('q', search);
@@ -329,7 +354,7 @@ function ProgramsPageContent() {
                       router.push(`/programs/${prog.id}?back=${back}`);
                     }}
                   >
-                    <div className="relative h-28 overflow-hidden bg-brand-50">
+                    <div className="relative h-28 shrink-0 overflow-hidden bg-brand-50">
                       <ExerciseThumbnail src={firstEx?.imageUrl} alt={prog.name} iconSize={32} />
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                         <button
@@ -342,19 +367,23 @@ function ProgramsPageContent() {
                             : <Heart size={14} className="text-tertiary" />}
                         </button>
                       </div>
-                      <span className="absolute bottom-2 left-2 inline-flex items-center rounded-full bg-brand-600 px-2 py-0.5 text-xs font-medium text-white">
-                        {prog.exercises.length} exercises
-                      </span>
                     </div>
-                    <div className="px-3.5 py-3">
+                    <div className="px-3.5 py-3 flex flex-col flex-1">
                       <span className="block mb-1 text-sm font-semibold text-primary leading-snug">{prog.name}</span>
-                      <span className="block text-xs text-secondary mb-2.5 leading-snug">{prog.description}</span>
-                      <div className="flex gap-1 flex-wrap">
-                        {prog.tags.map((t) => (
-                          <span key={t} className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
-                            {t}
-                          </span>
-                        ))}
+                      <span className="block text-xs text-secondary leading-snug">{prog.description}</span>
+                      <div className="flex justify-between items-center mt-auto pt-1.5">
+                        <span className="text-xs text-tertiary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <ProgramCardMenu
+                            program={prog}
+                            isFavorite={favorites.has(prog.id)}
+                            onToggleFavorite={() => toggleFavorite(prog.id)}
+                            onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
+                            onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
+                            onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}
+                            onDuplicate={() => guardFilter(() => router.push(`/programs/new?duplicate=${prog.id}`))}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -379,6 +408,50 @@ function ProgramsPageContent() {
         </div>
       </div>
       <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or edit programs" />
+
+      <ModalOverlay isOpen={!!assignTargetProgram} onOpenChange={(o) => { if (!o) { setAssignTargetProgram(null); setSelectedPatient(null); } }}>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-full max-w-md">
+              <h3 className="text-lg font-semibold text-primary mb-1">Assign to Patient</h3>
+              <p className="text-sm text-secondary mb-4">
+                Select a patient to assign <strong>{assignTargetProgram?.name}</strong> to.
+              </p>
+              <NativeSelect
+                wrapperClassName="mb-6"
+                value={selectedPatient?.id ?? ''}
+                onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}
+              >
+                <option value="">Select a patient…</option>
+                {mockPatients.filter((p) => !p.archived).map((p) => (
+                  <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
+                ))}
+              </NativeSelect>
+              <div className="flex justify-end gap-3">
+                <Button color="secondary" size="md" onPress={() => { setAssignTargetProgram(null); setSelectedPatient(null); }}>Cancel</Button>
+                <Button color="primary" size="md" isDisabled={!selectedPatient} onPress={handleAssign}>Assign Program</Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
+
+      <ModalOverlay isOpen={!!deleteTargetProgram} onOpenChange={(o) => { if (!o) setDeleteTargetProgram(null); }}>
+        <Modal>
+          <Dialog>
+            <div className="p-6 w-full max-w-sm">
+              <h2 className="text-lg font-semibold text-primary mb-2">Delete Program?</h2>
+              <p className="text-sm text-secondary mb-6">
+                This will permanently delete <strong>{deleteTargetProgram?.name}</strong>. This cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button color="secondary" size="sm" onPress={() => setDeleteTargetProgram(null)}>Cancel</Button>
+                <Button color="primary-destructive" size="sm" onPress={handleDelete}>Delete Program</Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </>
   );
 }

@@ -8,15 +8,15 @@ import { setLocationId } from '@/lib/locationStore';
 import { setOrgId } from '@/lib/orgStore';
 import type { UserRole } from '@/lib/types';
 
-type ViewingAs = UserRole | 'staff2' | 'staff3' | 'staff4';
+type ViewingAs = UserRole | 'editor2' | 'editor3';
 
 const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean; hidden?: boolean }[] = [
   { value: 'owner', label: 'Owner: Org' },
   { value: 'admin', label: 'Admin: Clinic' },
-  { value: 'staff', label: 'User: PT' },
-  { value: 'staff2', label: 'User: PT Multi Locations' },
-  { value: 'staff3', label: 'User: PT Multi Org', fullOnly: true },
-  { value: 'staff4', label: 'User: Staff' },
+  { value: 'editor', label: 'User: PT' },
+  { value: 'editor2', label: 'User: PT Multi Locations' },
+  { value: 'editor3', label: 'User: PT Multi Org', fullOnly: true },
+  { value: 'limited', label: 'User: Staff' },
 ];
 
 const VIEW_MODES = [
@@ -49,15 +49,15 @@ function switchVersion(mode: ViewMode, pathname: string, router: ReturnType<type
 }
 
 function switchViewingAs(value: ViewingAs) {
-  if (value === 'staff2') {
-    setRole('staff');
+  if (value === 'editor2') {
+    setRole('editor');
     setStaffPersona('emp_user2');
-  } else if (value === 'staff3') {
-    setRole('staff');
+  } else if (value === 'editor3') {
+    setRole('editor');
     setStaffPersona('emp_user3');
-  } else if (value === 'staff4') {
-    setRole('staff');
-    setStaffPersona('emp_staff');
+  } else if (value === 'editor') {
+    setRole('editor');
+    setStaffPersona('emp2');
   } else {
     setRole(value as UserRole);
     setStaffPersona('emp2');
@@ -75,9 +75,8 @@ export default function DemoRoleBar() {
   const pathname = usePathname();
 
   const currentViewingAs: ViewingAs =
-    currentRole === 'staff' && persona === 'emp_user2' ? 'staff2' :
-    currentRole === 'staff' && persona === 'emp_user3' ? 'staff3' :
-    currentRole === 'staff' && persona === 'emp_staff' ? 'staff4' :
+    currentRole === 'editor' && persona === 'emp_user2' ? 'editor2' :
+    currentRole === 'editor' && persona === 'emp_user3' ? 'editor3' :
     currentRole;
 
   return (

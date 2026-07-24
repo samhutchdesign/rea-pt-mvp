@@ -319,7 +319,7 @@ export default function DashboardPage() {
         </h2>
         {role === 'owner' && <OwnerDashboard />}
         {role === 'admin' && <AdminDashboard />}
-        {role === 'staff' && empId && <StaffDashboard empId={empId} />}
+        {role === 'editor' && empId && <StaffDashboard empId={empId} />}
       </div>
     </>
   );

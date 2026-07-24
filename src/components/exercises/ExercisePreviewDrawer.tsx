@@ -32,7 +32,7 @@ interface PatientPrescription {
   sets: number;
   reps: number;
   holdSecs: number;
-  frequency: string;
+  frequency?: string;
 }
 
 interface Props {
@@ -118,7 +118,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
                 <PrescriptionTag label={`${patientPrescription.sets} Sets`} />
                 <PrescriptionTag label={`${patientPrescription.reps} Reps`} />
                 {patientPrescription.holdSecs > 0 && <PrescriptionTag label={`${patientPrescription.holdSecs}s Hold`} />}
-                <PrescriptionTag label={patientPrescription.frequency} />
+                {patientPrescription.frequency && <PrescriptionTag label={patientPrescription.frequency} />}
               </div>
             </div>
           )}

@@ -16,7 +16,7 @@ import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
 import type { Patient } from '@/lib/types';
-import { ArrowLeft, Heart, MoreHorizontal, Pencil, Play, Trash2, UserPlus } from 'lucide-react';
+import { ArrowLeft, Copy, Heart, MoreHorizontal, Pencil, Play, Trash2, UserPlus } from 'lucide-react';
 
 const INITIAL_TAG_COUNT = 5;
 
@@ -97,6 +97,9 @@ function ProgramDetailContent({ id }: { id: string }) {
     if (key === 'delete') {
       dataState === 'empty' ? setShowSignUpModal(true) : setDeleteOpen(true);
     }
+    if (key === 'duplicate') {
+      dataState === 'empty' ? setShowSignUpModal(true) : router.push(`/programs/new?duplicate=${prog.id}`);
+    }
   };
 
   return (
@@ -131,7 +134,8 @@ function ProgramDetailContent({ id }: { id: string }) {
               )}
             </div>
 
-            <h2 className="text-2xl font-bold text-primary mt-5 mb-3">{prog.name}</h2>
+            <h2 className="text-2xl font-bold text-primary mt-5 mb-1">{prog.name}</h2>
+            <p className="text-sm text-tertiary mb-3">{prog.frequency}</p>
 
             <div className="flex justify-between items-center mb-5">
               <div className="flex items-center gap-2.5">
@@ -166,8 +170,14 @@ function ProgramDetailContent({ id }: { id: string }) {
                   </AriaButton>
                   <Dropdown.Popover className="w-44">
                     <Dropdown.Menu onAction={handleMenuAction}>
-                      <Dropdown.Item id="edit" icon={Pencil} label="Edit" />
-                      {prog.userCreated && <Dropdown.Item id="delete" icon={Trash2} label="Delete" />}
+                      {prog.userCreated ? (
+                        <>
+                          <Dropdown.Item id="edit" icon={Pencil} label="Edit" />
+                          <Dropdown.Item id="delete" icon={Trash2} label="Delete" />
+                        </>
+                      ) : (
+                        <Dropdown.Item id="duplicate" icon={Copy} label="Duplicate" />
+                      )}
                     </Dropdown.Menu>
                   </Dropdown.Popover>
                 </Dropdown.Root>
