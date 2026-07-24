@@ -39,7 +39,7 @@ export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorit
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>
-          <Dropdown.Item id="favorite" icon={Heart} label={isFavorite ? 'Unfavourite' : 'Favourite'} />
+          <Dropdown.Item id="favorite" icon={Heart} label={isFavorite ? 'Unfavorite' : 'Favorite'} />
           <Dropdown.Item id="assign" icon={UserPlus} label="Assign to Patient" />
           {canManage ? (
             <>

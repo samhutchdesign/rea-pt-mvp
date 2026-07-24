@@ -216,8 +216,8 @@ function ProgramsPageContent() {
             </div>
 
             <div className="mb-5 pb-5 border-b border-secondary">
-              <CheckRow label="Favourites only" checked={showFavoritesOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowFavoritesOnly((v) => !v))} />
-              <CheckRow label="My programs only" checked={showMyProgramsOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowMyProgramsOnly((v) => !v))} />
+              <CheckRow label="Favorites only" checked={showFavoritesOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowFavoritesOnly((v) => !v))} />
+              <CheckRow label="My Programs Only" checked={showMyProgramsOnly} inactive={filtersInactive} onChange={() => guardFilter(() => setShowMyProgramsOnly((v) => !v))} />
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
@@ -317,8 +317,8 @@ function ProgramsPageContent() {
             {hasFilters && (
               <div className="flex gap-1.5 flex-wrap mb-3">
                 {search && <FilterTag label={`"${search}"`} onRemove={() => setSearch('')} />}
-                {showFavoritesOnly && <FilterTag label="Favourites only" onRemove={() => setShowFavoritesOnly(false)} />}
-                {showMyProgramsOnly && <FilterTag label="My programs only" onRemove={() => setShowMyProgramsOnly(false)} />}
+                {showFavoritesOnly && <FilterTag label="Favorites only" onRemove={() => setShowFavoritesOnly(false)} />}
+                {showMyProgramsOnly && <FilterTag label="My Programs Only" onRemove={() => setShowMyProgramsOnly(false)} />}
                 {filterConditions.map((c) => <FilterTag key={c} label={c} onRemove={() => toggleArr(filterConditions, c, setFilterConditions)} />)}
                 {filterCategories.map((c) => <FilterTag key={c} label={c} onRemove={() => toggleArr(filterCategories, c, setFilterCategories)} />)}
                 {filterLevels.map((l) => <FilterTag key={l} label={l} onRemove={() => toggleArr(filterLevels, l, setFilterLevels)} />)}
@@ -368,7 +368,7 @@ function ProgramsPageContent() {
                       <ExerciseThumbnail src={firstEx?.imageUrl} alt={prog.name} iconSize={32} />
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                         <button
-                          title={favorites.has(prog.id) ? 'Unfavourite' : 'Favourite'}
+                          title={favorites.has(prog.id) ? 'Unfavorite' : 'Favorite'}
                           className="flex items-center justify-center w-7 h-7 rounded-md bg-white/85 border-0 cursor-pointer hover:bg-white transition-colors"
                           onClick={() => toggleFavorite(prog.id)}
                         >

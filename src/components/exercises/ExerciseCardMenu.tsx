@@ -47,7 +47,7 @@ export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorit
       </AriaButton>
       <Dropdown.Popover className="w-56">
         <Dropdown.Menu onAction={handleAction}>
-          <Dropdown.Item id="favorite" icon={Heart} label={isFavorite ? 'Unfavourite' : 'Favourite'} />
+          <Dropdown.Item id="favorite" icon={Heart} label={isFavorite ? 'Unfavorite' : 'Favorite'} />
           <Dropdown.Item id="add-to-program" icon={ListPlus} label="Add to Program" />
           <Dropdown.Item id="assign" icon={UserPlus} label="Assign to Patient" />
           {variant === 'full' && onRecordAudio && <Dropdown.Item id="record-audio" icon={Mic} label="Record Audio Cue" />}

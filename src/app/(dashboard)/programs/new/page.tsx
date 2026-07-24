@@ -232,7 +232,7 @@ function NewProgramContent() {
       const matchesMovementType = filterMovementTypes.length > 0 && filterMovementTypes.some((m) => ex.movementTypes.includes(m as (typeof MOVEMENT_TYPES)[number]));
       const matchesEffortType = filterEffortTypes.length > 0 && filterEffortTypes.some((e) => ex.effortTypes.includes(e as (typeof EFFORT_TYPES)[number]));
       const hasTagFilters = filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0;
-      // Tag facets OR together (match any checked box across any group); Search and Favourites stay separate narrowing filters above.
+      // Tag facets OR together (match any checked box across any group); Search and Favorites stay separate narrowing filters above.
       if (hasTagFilters && !(matchesCondition || matchesCategory || matchesLevel || matchesEquipment || matchesMovementType || matchesEffortType)) return false;
       return true;
     }).sort((a, b) => {
@@ -339,7 +339,7 @@ function NewProgramContent() {
             </div>
 
             <div className="mb-5 pb-5 border-b border-secondary">
-              <CheckRow label="Favourites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
+              <CheckRow label="Favorites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
@@ -474,7 +474,7 @@ function NewProgramContent() {
                           <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
-                              title={favorites.has(ex.id) ? 'Unfavourite' : 'Favourite'}
+                              title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
                               className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
                               onClick={() => toggleFavorite(ex.id)}
                             >
