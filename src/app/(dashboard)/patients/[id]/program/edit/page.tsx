@@ -12,8 +12,9 @@ import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
-import { Check, Eye, GripVertical, Heart, Search, X, Zap } from 'lucide-react';
+import { Check, Eye, GripVertical, Heart, Search, X } from 'lucide-react';
 import { NativeSelect } from '@/components/ui/native-select';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 
 const SEARCH_ALIASES: Record<string, string> = {
   sui: 'Stress Urinary Incontinence', uui: 'Urge Urinary Incontinence',
@@ -455,8 +456,8 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                         )}
                         onClick={() => toggleInProgram(ex)}
                       >
-                        <div className="relative h-28 flex items-center justify-center bg-brand-50">
-                          <Zap size={32} className="text-brand-600" />
+                        <div className="relative h-28 overflow-hidden bg-brand-50">
+                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={32} />
                           {isAdded && (
                             <div className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600">
                               <Check size={13} className="text-white" strokeWidth={3} />
@@ -536,6 +537,9 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                   >
                     <div className="mb-3 flex justify-between items-start">
                       <div className="flex items-center gap-2 min-w-0">
+                        <div className="relative size-9 shrink-0 rounded-md overflow-hidden">
+                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
+                        </div>
                         <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" />
                         <span className="text-sm font-semibold text-primary truncate">{ex.name}</span>
                       </div>

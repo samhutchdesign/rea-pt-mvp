@@ -8,7 +8,8 @@ import { useHepState } from '@/lib/patientHepStore';
 import type { Exercise, ProgramExercise, HepHistoryEntry, Program } from '@/lib/types';
 import { useViewMode } from '@/lib/viewModeStore';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { ChevronDown, ChevronUp, Eye, Pencil, Pin, Send, Zap } from 'lucide-react';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { ChevronDown, ChevronUp, Eye, Pencil, Pin, Send } from 'lucide-react';
 
 function formatDate(iso: string): string {
   return new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -33,8 +34,8 @@ function ExerciseCard({
     <div className="rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden">
       <div className="p-4">
         <div className="flex items-center gap-5">
-          <div className="w-20 h-16 rounded-lg bg-[#EDE7F6] flex items-center justify-center shrink-0">
-            <Zap size={28} />
+          <div className="relative w-20 h-16 shrink-0 rounded-lg overflow-hidden bg-[#EDE7F6]">
+            <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={28} />
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold text-primary mb-0.5">{ex.name}</p>

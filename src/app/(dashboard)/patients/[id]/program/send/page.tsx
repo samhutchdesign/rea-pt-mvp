@@ -5,7 +5,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/base/buttons/button';
 import { Divider } from '@/components/ui/divider';
 import { mockPatients, mockPrograms, mockExercises } from '@/lib/mock-data';
-import { Send, Zap } from 'lucide-react';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { Send } from 'lucide-react';
 
 export default function SendProgramPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -55,8 +56,8 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
             return (
               <div key={pe.exerciseId}>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EDE7F6]">
-                    <Zap size={18} />
+                  <div className="relative h-9 w-9 shrink-0 rounded-lg overflow-hidden bg-[#EDE7F6]">
+                    <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={18} />
                   </div>
                   <div className="flex-1">
                     <span className="text-sm font-semibold text-primary">{ex.name}</span>
