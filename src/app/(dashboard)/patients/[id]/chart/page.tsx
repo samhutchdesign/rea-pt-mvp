@@ -7,7 +7,7 @@ import { useViewMode } from '@/lib/viewModeStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
 import { Button } from '@/components/base/buttons/button';
-import { Pencil, Plus, Lock, Eye } from 'lucide-react';
+import { Plus, Lock, ChevronRight } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 const ADHERENCE_STYLE: Record<string, { bg: string; text: string }> = {
@@ -53,7 +53,14 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
       ) : (
         <div className="flex flex-col gap-3">
           {sessions.map((session) => (
-            <div key={session.id} className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+            <div
+              key={session.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push(`/patients/${id}/chart/${session.id}`)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') router.push(`/patients/${id}/chart/${session.id}`); }}
+              className="rounded-xl border border-secondary bg-primary shadow-xs p-5 cursor-pointer transition-colors hover:bg-secondary_alt"
+            >
               <div className="flex justify-between items-start gap-2">
                 <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -76,13 +83,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                   <p className="text-xs text-tertiary mt-1.5 line-clamp-2">{session.summary}</p>
                 )}
                 </div>
-                <Button
-                  color="tertiary"
-                  size="xs"
-                  iconLeading={isChartWriter ? Pencil : Eye}
-                  onPress={() => router.push(`/patients/${id}/chart/${session.id}`)}
-                  className="shrink-0"
-                />
+                <ChevronRight size={18} className="text-quaternary shrink-0 mt-0.5" />
               </div>
             </div>
           ))}
