@@ -3,6 +3,8 @@ import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
 import { getHepState, saveNewProgram } from '@/lib/patientHepStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
+import { getUsageCountByEmployee } from '@/lib/usageStats';
 import { toast } from 'sonner';
 import type { Exercise } from '@/lib/types';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
@@ -25,7 +27,7 @@ const SEARCH_ALIASES: Record<string, string> = {
 
 const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
-const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
+const SORT_OPTIONS = ['A → Z', 'Z → A', 'Your Most Used', 'Newest Added'];
 const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
 const STEPS = ['Choose Exercises', 'Program Details'];
 const CUES = [
@@ -145,6 +147,7 @@ function StepIndicator({ activeStep }: { activeStep: number }) {
 export default function ProgramEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const currentIdentity = useCurrentIdentity();
   const patient = mockPatients.find((p) => p.id === id);
   const existingProgram = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
 
@@ -212,6 +215,8 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
   const effectiveSearch = expandSearch(search);
   const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly;
 
+  const yourUsage = useMemo(() => getUsageCountByEmployee(currentIdentity.id), [currentIdentity.id]);
+
   const filteredExercises = useMemo(() => {
     return mockExercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
@@ -235,11 +240,11 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
       const bFav = favorites.has(b.id) ? 1 : 0;
       if (sortBy === 'A → Z') return aFav !== bFav ? bFav - aFav : a.name.localeCompare(b.name);
       if (sortBy === 'Z → A') return b.name.localeCompare(a.name);
-      if (sortBy === 'Most Used') return b.usageCount - a.usageCount;
+      if (sortBy === 'Your Most Used') return (yourUsage[b.id] ?? 0) - (yourUsage[a.id] ?? 0);
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites]);
+  }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, yourUsage]);
 
   const levelClasses = (l: string) =>
     l === 'Beginner' ? 'bg-success-50 text-success-700' :

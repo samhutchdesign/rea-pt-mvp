@@ -10,6 +10,8 @@ import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
 import { mockExercises, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useDataState } from '@/lib/dataStateStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
+import { getUsageCountByEmployee } from '@/lib/usageStats';
 import { SignUpRequiredModal } from '@/components/ui/sign-up-required-modal';
 import type { Exercise, Patient } from '@/lib/types';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
@@ -31,7 +33,7 @@ const SEARCH_ALIASES: Record<string, string> = {
 
 const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
-const SORT_OPTIONS = ['A → Z', 'Z → A', 'Most Used', 'Newest Added'];
+const SORT_OPTIONS = ['A → Z', 'Z → A', 'Your Most Used', 'Newest Added'];
 
 const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
@@ -109,6 +111,7 @@ function ExercisesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dataState = useDataState();
+  const currentIdentity = useCurrentIdentity();
   const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [search, setSearch] = useState(searchParams.get('q') ?? '');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'A → Z');
@@ -177,6 +180,8 @@ function ExercisesPageContent() {
   const effectiveSearch = expandSearch(search);
   const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly;
 
+  const yourUsage = useMemo(() => getUsageCountByEmployee(currentIdentity.id), [currentIdentity.id]);
+
   const filtered = useMemo(() => {
     return mockExercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
@@ -198,11 +203,11 @@ function ExercisesPageContent() {
     }).sort((a, b) => {
       if (sortBy === 'A → Z') return a.name.localeCompare(b.name);
       if (sortBy === 'Z → A') return b.name.localeCompare(a.name);
-      if (sortBy === 'Most Used') return b.usageCount - a.usageCount;
+      if (sortBy === 'Your Most Used') return (yourUsage[b.id] ?? 0) - (yourUsage[a.id] ?? 0);
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites]);
+  }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, yourUsage]);
 
   const isFirstFilterRender = useRef(true);
   useEffect(() => {
