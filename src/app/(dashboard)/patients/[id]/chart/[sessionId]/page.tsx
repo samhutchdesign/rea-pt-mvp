@@ -204,13 +204,13 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       )}
 
       <div className="flex flex-col gap-4">
-        {/* Session summary */}
+        {/* Notes */}
         <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
-          <span className="mb-2 block text-sm font-semibold text-primary">Session Summary</span>
+          <span className="mb-2 block text-sm font-semibold text-primary">Notes</span>
           {editing ? (
             <Textarea rows={2} value={summary} onChange={(e) => setSummary(e.target.value)} />
           ) : (
-            <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No summary recorded.'}</span>
+            <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
           )}
         </div>
 
