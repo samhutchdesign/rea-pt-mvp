@@ -1,6 +1,7 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions, addChartSession } from '@/lib/chartSessionStore';
@@ -18,6 +19,7 @@ import type {
   ChartSession, PainLevel, AdherenceLevel, ImprovementLevel,
   SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection,
 } from '@/lib/types';
+import { Unlock } from 'lucide-react';
 
 const PAIN_LEVELS: PainLevel[] = ['No Pain', 'Low Pain', 'Moderate Pain', 'High Pain'];
 const ADHERENCE_LEVELS: AdherenceLevel[] = ['High Adherence', 'Moderate Adherence', 'Low Adherence'];
@@ -81,33 +83,44 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
 
   if (!isChartWriter) {
     return (
-      <div className="max-w-[560px]">
-        <p className="text-sm text-secondary">Only {patient.firstName} {patient.lastName}&apos;s assigned practitioner can add entries to this chart.</p>
-        <Button color="secondary" size="sm" className="mt-4" onPress={() => router.push(`/patients/${id}/chart`)}>
+      <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] flex flex-col items-center justify-center gap-4 bg-primary px-6">
+        <p className="max-w-[420px] text-center text-sm text-secondary">Only {patient.firstName} {patient.lastName}&apos;s assigned practitioner can add entries to this chart.</p>
+        <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart`)}>
           Back to Chart
         </Button>
       </div>
     );
   }
 
-  const sessionDate = new Date().toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' });
-  const ageLabel = patient.metrics?.age ? `${patient.metrics.age} y.o.` : '';
-  const sexLabel = patient.metrics?.sexAssignedAtBirth ?? '';
+  const titleLabel = isIntake ? 'Intake Session' : `Session ${sessions.length + 1}`;
 
   return (
-    <div className="max-w-[820px]">
-      {/* Session header bar */}
-      <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg border border-secondary bg-black/4 px-5 py-3">
-        <span className="text-sm font-semibold text-primary">{patient.firstName} {patient.lastName}</span>
-        {ageLabel && <span className="text-sm text-secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</span>}
-        <span className="text-sm text-secondary">{sessionDate}</span>
-        <div className="ml-auto">
-          <span className="inline-flex items-center rounded-full bg-brand-600 px-2.5 py-0.5 text-xs font-semibold text-white">
-            {isIntake ? 'Intake Session' : `Session ${sessions.length + 1}`}
-          </span>
+    <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] bg-primary flex flex-col overflow-hidden">
+      {/* Full-screen header */}
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-4 border-b border-secondary shrink-0">
+        <div>
+          <Link href={`/patients/${id}/chart`} className="text-sm font-medium text-secondary hover:text-primary">
+            &lt; Back
+          </Link>
+        </div>
+        <div className="flex items-center gap-3 justify-self-center">
+          <Unlock size={26} className="shrink-0 text-primary" />
+          <h1 className="whitespace-nowrap text-2xl font-bold text-primary">
+            {patient.firstName} {patient.lastName}&apos;s Chart - {titleLabel}
+          </h1>
+        </div>
+        <div className="flex items-center justify-end gap-3">
+          <Button color="secondary" size="md" onPress={() => router.push(`/patients/${id}/chart`)}>
+            Cancel
+          </Button>
+          <Button color="primary" size="md" onPress={handleSave}>
+            Save New Chart
+          </Button>
         </div>
       </div>
 
+      <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="max-w-[820px] mx-auto">
       <div className="flex flex-col gap-4">
         {/* Session summary */}
         <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
@@ -159,14 +172,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
           recommendations={recommendations} setRecommendations={setRecommendations}
         />
       </div>
-
-      <div className="mt-8 flex justify-end gap-4">
-        <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart`)}>
-          Cancel
-        </Button>
-        <Button color="primary" size="sm" onPress={handleSave}>
-          Save New Chart
-        </Button>
+        </div>
       </div>
     </div>
   );

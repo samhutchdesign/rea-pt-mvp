@@ -12,7 +12,6 @@ import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { SignatureFontPicker } from '@/components/ui/signature-font-picker';
-import { Divider } from '@/components/ui/divider';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import {
   emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
@@ -139,9 +138,9 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   return (
-    <div className="max-w-[820px]">
-      {/* Page header */}
-      <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+    <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] bg-primary flex flex-col overflow-hidden">
+      {/* Full-screen header */}
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-4 border-b border-secondary shrink-0">
         <div>
           <Link href={`/patients/${id}/chart`} className="text-sm font-medium text-secondary hover:text-primary">
             &lt; Back
@@ -180,7 +179,9 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           )}
         </div>
       </div>
-      <Divider className="mb-6" />
+
+      <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="max-w-[820px] mx-auto">
 
       {canEdit && !signatureFontId && (
         <div className="mb-6 rounded-xl border border-secondary bg-primary p-5 shadow-xs">
@@ -298,6 +299,9 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           </Button>
         </div>
       )}
+
+        </div>
+      </div>
 
       {/* Sign & Lock confirmation modal */}
       <ModalOverlay isOpen={signOpen} onOpenChange={setSignOpen}>
