@@ -10,7 +10,8 @@ import { mockPrograms } from '@/lib/mock-data';
 import type { Exercise, Program } from '@/lib/types';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { useViewMode } from '@/lib/viewModeStore';
-import { ChevronDown, List, Mic, X, Zap } from 'lucide-react';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { ChevronDown, List, Mic, X } from 'lucide-react';
 
 function CollapsibleSection({ title, titleClassName, open, onToggle, children }: { title: string; titleClassName?: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
@@ -96,9 +97,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
               className="border-0 block"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <Zap size={52} className="text-brand-300" />
-            </div>
+            <ExerciseThumbnail src={exercise.imageUrl} alt={exercise.name} iconSize={52} />
           )}
           <button
             onClick={onClose}
