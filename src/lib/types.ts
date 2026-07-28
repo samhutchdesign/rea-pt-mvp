@@ -170,6 +170,9 @@ export interface PainPoint {
   pattern: 'constant' | 'intermittent';
   aggravating: string;
   easing: string;
+  bodyView?: 'front' | 'side' | 'back';
+  x?: number;
+  y?: number;
 }
 
 export interface SubjectiveSection {

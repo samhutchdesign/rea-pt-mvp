@@ -1,9 +1,12 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
 import { Field } from '@/components/ui/field';
 import { RepeatableList } from '@/components/ui/repeatable-list';
+import { BodyMap } from '@/components/charts/body-map';
+import { MapPin } from 'lucide-react';
 import type {
   Patient, PainPoint, RomEntry, ProblemListItem, GoalItem, PlanItem, InterventionItem,
   SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, EvaluationSection,
@@ -108,33 +111,56 @@ export function ChartFormBody({
   analysis, setAnalysis, plan, setPlan, interventions, setInterventions, evaluation, setEvaluation,
   recommendations, setRecommendations,
 }: ChartFormBodyProps) {
+  const [armedIndex, setArmedIndex] = useState<number | null>(null);
+
+  const handlePlace = (view: 'front' | 'side' | 'back', x: number, y: number) => {
+    if (armedIndex === null) return;
+    setSubjective((s) => ({
+      ...s,
+      painPoints: s.painPoints.map((p, i) => (i === armedIndex ? { ...p, bodyView: view, x, y } : p)),
+    }));
+    setArmedIndex(null);
+  };
+
   return (
     <>
       {/* Subjective */}
       <SectionCard letter="S" label="Subjective">
         <Field label="Pain Points">
+          <BodyMap painPoints={subjective.painPoints} armedIndex={armedIndex} onPlace={handlePlace} />
+          <div className="mt-3">
           <RepeatableList
             items={subjective.painPoints}
             onChange={(painPoints) => setSubjective((s) => ({ ...s, painPoints }))}
             newItem={emptyPainPoint}
             addLabel="Add Pain Point"
             emptyLabel="No pain points reported."
-            renderRow={(pp, update) => (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <Field label="Location"><input className={inputCls} value={pp.location} onChange={(e) => update({ location: e.target.value })} /></Field>
-                <Field label="Description"><input className={inputCls} value={pp.description} onChange={(e) => update({ description: e.target.value })} /></Field>
-                <Field label="NPRS (0-10)"><input type="number" min={0} max={10} className={inputCls} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} /></Field>
-                <Field label="Pattern">
-                  <NativeSelect value={pp.pattern} onChange={(e) => update({ pattern: e.target.value as PainPoint['pattern'] })}>
-                    <option value="constant">Constant</option>
-                    <option value="intermittent">Intermittent</option>
-                  </NativeSelect>
-                </Field>
-                <Field label="Aggravating Factors"><input className={inputCls} value={pp.aggravating} onChange={(e) => update({ aggravating: e.target.value })} /></Field>
-                <Field label="Easing Factors"><input className={inputCls} value={pp.easing} onChange={(e) => update({ easing: e.target.value })} /></Field>
+            renderRow={(pp, update, index) => (
+              <div className="flex flex-col gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Field label="Location"><input className={inputCls} value={pp.location} onChange={(e) => update({ location: e.target.value })} /></Field>
+                  <Field label="Description"><input className={inputCls} value={pp.description} onChange={(e) => update({ description: e.target.value })} /></Field>
+                  <Field label="NPRS (0-10)"><input type="number" min={0} max={10} className={inputCls} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} /></Field>
+                  <Field label="Pattern">
+                    <NativeSelect value={pp.pattern} onChange={(e) => update({ pattern: e.target.value as PainPoint['pattern'] })}>
+                      <option value="constant">Constant</option>
+                      <option value="intermittent">Intermittent</option>
+                    </NativeSelect>
+                  </Field>
+                  <Field label="Aggravating Factors"><input className={inputCls} value={pp.aggravating} onChange={(e) => update({ aggravating: e.target.value })} /></Field>
+                  <Field label="Easing Factors"><input className={inputCls} value={pp.easing} onChange={(e) => update({ easing: e.target.value })} /></Field>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setArmedIndex(index)}
+                  className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-600 hover:underline"
+                >
+                  <MapPin size={12} /> {pp.bodyView ? `Reposition P${index + 1} on Diagram` : `Place P${index + 1} on Diagram`}
+                </button>
               </div>
             )}
           />
+          </div>
         </Field>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="AM Symptoms"><input className={inputCls} value={subjective.amSymptoms} onChange={(e) => setSubjective((s) => ({ ...s, amSymptoms: e.target.value }))} /></Field>
@@ -360,6 +386,9 @@ export function ChartReadOnlyBody({ subjective, objective, analysis, plan, inter
     <>
       {/* Subjective */}
       <SectionCard letter="S" label="Subjective">
+        {subjective.painPoints.some((p) => p.bodyView) && (
+          <BodyMap painPoints={subjective.painPoints} interactive={false} />
+        )}
         {subjective.painPoints.length === 0 ? (
           <ReadEmpty>No pain points reported.</ReadEmpty>
         ) : (
