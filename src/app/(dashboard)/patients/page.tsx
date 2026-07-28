@@ -91,6 +91,7 @@ export default function PatientsPage() {
 
   // "User: Staff" (Limited Access) behaves like Owner/Admin here: All + Archived, no Your Patients.
   const isStaffPersona = role === 'limited';
+  const isManagerView = role === 'owner' || role === 'admin';
   // Practitioners (editor role) only see patients assigned to them — no "All" tab, and useYourEmpId
   // already returns null for Owner/Limited so showYoursTab naturally excludes them too.
   const showYoursTab = yourEmpId !== null;
@@ -265,6 +266,7 @@ export default function PatientsPage() {
             {displayed.map((patient) => {
               const { lastSeen, count } = sessionInfo(patient);
               const condition = conditionChip(patient);
+              const assignedEmp = mockEmployees.find((e) => e.id === getEffectiveAssignedEmployeeId(patient, locationOverrides));
               return (
                 <div
                   key={patient.id}
@@ -282,7 +284,7 @@ export default function PatientsPage() {
                       {patient.firstName} {patient.lastName}
                     </p>
                     <p className="text-sm text-tertiary mt-0.5">{patient.email}</p>
-                    {condition && !isStaffPersona && (
+                    {condition && !isStaffPersona && !isManagerView && (
                       <div className="mt-2">
                         <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
                       </div>
@@ -290,6 +292,12 @@ export default function PatientsPage() {
                   </div>
 
                   <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    {isManagerView && assignedEmp && (
+                      <div className="flex items-center gap-1.5">
+                        <User01 className="size-3.5 text-quaternary" />
+                        <span className="text-xs text-tertiary">{assignedEmp.firstName} {assignedEmp.lastName}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-1.5">
                       <Map01 className="size-3.5 text-quaternary" />
                       <span className="text-xs text-tertiary">{getEffectiveLocationString(patient, locationOverrides)}</span>
