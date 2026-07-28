@@ -12,14 +12,14 @@ import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { SignatureFontPicker } from '@/components/ui/signature-font-picker';
+import { Divider } from '@/components/ui/divider';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import {
   emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
   ChartFormBody, ChartReadOnlyBody, HistoryCard,
 } from '@/components/charts/chart-form-sections';
 import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
-import { Copy, Pencil, Trash2, Lock, FileSignature } from 'lucide-react';
-import { cx } from '@/utils/cx';
+import { Trash2, Lock, Unlock } from 'lucide-react';
 
 export default function ChartDetailPage({ params }: { params: Promise<{ id: string; sessionId: string }> }) {
   const { id, sessionId } = use(params);
@@ -36,7 +36,6 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
 
   const [editing, setEditing] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [signOpen, setSignOpen] = useState(false);
   const [amendmentText, setAmendmentText] = useState('');
@@ -58,10 +57,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     return <span className="block p-8 text-secondary">Session not found.</span>;
   }
 
-  const sessionDate = new Date(session.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const ageLabel = patient.metrics?.age ? `${patient.metrics.age} y.o.` : '';
-  const sexLabel = patient.metrics?.sexAssignedAtBirth ?? '';
   const sessionLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1} of ${sessions.length}`;
+  const titleLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1}`;
   const isSigned = !!session.signedAt;
   const canEdit = isChartWriter && !isSigned;
   const amendments = session.amendments ?? [];
@@ -105,29 +102,6 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     setSignOpen(true);
   };
 
-  const handleCopy = async () => {
-    const lines = [`${sessionLabel} — ${patient.firstName} ${patient.lastName}`, sessionDate, '', 'Summary', session.summary, ''];
-    lines.push('S — Subjective', session.subjective.notes || '—', '');
-    lines.push('O — Objective', session.objective.notes || '—', '');
-    lines.push('A — Analysis', session.analysis.ptDiagnosis || session.analysis.notes || '—', '');
-    lines.push('P — Plan', session.plan.notes || '—', '');
-    lines.push('I — Intervention', session.interventions.map((i) => `${i.type}: ${i.details}`).join('\n') || '—', '');
-    lines.push('E — Evaluation', session.evaluation.patientReaction || '—', '');
-    lines.push('R — Recommendations', session.recommendations.join('\n') || '—');
-    if (isSigned) {
-      lines.push('', `Signed by ${session.signedByName} on ${new Date(session.signedAt!).toLocaleString()}`);
-    }
-    if (amendments.length > 0) {
-      lines.push('', 'Amendments');
-      for (const a of amendments) {
-        lines.push(`${a.authorName} — ${new Date(a.createdAt).toLocaleString()}`, a.text, '');
-      }
-    }
-    await navigator.clipboard.writeText(lines.join('\n')).catch(() => {});
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2500);
-  };
-
   const handleDelete = () => {
     deleteChartSession(id, sessionId);
     setDeleteOpen(false);
@@ -166,49 +140,47 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-[820px]">
-      {/* Session header bar */}
-      <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg border border-secondary bg-black/4 px-5 py-3">
-        <span className="text-sm font-semibold text-primary">{patient.firstName} {patient.lastName}</span>
-        {ageLabel && <span className="text-sm text-secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</span>}
-        <span className="text-sm text-secondary">{sessionDate}</span>
-        <div className="ml-auto flex items-center gap-2">
-          {isSigned && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-secondary_alt px-2.5 py-0.5 text-xs font-semibold text-secondary" title={`Signed by ${session.signedByName} on ${new Date(session.signedAt!).toLocaleString()}`}>
-              <Lock size={11} /> Signed
-            </span>
-          )}
-          <span className={cx(
-            'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
-            session.isIntakeSession ? 'bg-brand-50 text-brand-700' : 'bg-brand-600 text-white',
-          )}>
-            {sessionLabel}
-          </span>
-          {!editing && (
+      {/* Page header */}
+      <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+        <div>
+          <Link href={`/patients/${id}/chart`} className="text-sm font-medium text-secondary hover:text-primary">
+            &lt; Back
+          </Link>
+        </div>
+        <div className="flex items-center gap-3 justify-self-center">
+          {isSigned ? <Lock size={26} className="shrink-0 text-primary" /> : <Unlock size={26} className="shrink-0 text-primary" />}
+          <h1 className="whitespace-nowrap text-2xl font-bold text-primary">
+            {patient.firstName} {patient.lastName}&apos;s Chart - {titleLabel}
+          </h1>
+        </div>
+        <div className="flex items-center justify-end gap-3">
+          {!editing ? (
+            canEdit && (
+              <>
+                <Button color="secondary" size="md" onPress={startEditing}>
+                  Edit
+                </Button>
+                <Button color="primary" size="md" isDisabled={!signatureFontId} onPress={() => setSignOpen(true)}>
+                  Sign & Lock
+                </Button>
+              </>
+            )
+          ) : (
             <>
-              <button
-                title={copySuccess ? 'Copied!' : 'Copy chart notes'}
-                onClick={handleCopy}
-                className={cx(
-                  'inline-flex items-center justify-center rounded-lg p-1.5 text-sm transition-colors hover:bg-secondary_alt',
-                  copySuccess ? 'text-green-700' : 'text-secondary',
-                )}
-              >
-                <Copy size={14} />
-              </button>
-              {canEdit && (
-                <>
-                  <Button size="xs" color="secondary" iconLeading={Pencil} onPress={startEditing}>
-                    Edit
-                  </Button>
-                  <Button size="xs" color="secondary" iconLeading={FileSignature} isDisabled={!signatureFontId} onPress={() => setSignOpen(true)}>
-                    Sign & Lock
-                  </Button>
-                </>
-              )}
+              <Button color="secondary" size="md" onPress={() => setEditing(false)}>
+                Cancel
+              </Button>
+              <Button color="secondary" size="md" onPress={handleSaveEdits}>
+                Save as Draft
+              </Button>
+              <Button color="primary" size="md" isDisabled={!signatureFontId} onPress={handleSaveAndOpenSign}>
+                Sign & Lock
+              </Button>
             </>
           )}
         </div>
       </div>
+      <Divider className="mb-6" />
 
       {canEdit && !signatureFontId && (
         <div className="mb-6 rounded-xl border border-secondary bg-primary p-5 shadow-xs">
@@ -319,29 +291,10 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         )}
       </div>
 
-      {editing ? (
-        <div className="mt-8">
-          <div className="flex justify-end gap-4">
-            <Button color="secondary" size="sm" onPress={() => setEditing(false)}>
-              Cancel
-            </Button>
-            <Button color="secondary" size="sm" onPress={handleSaveEdits}>
-              Save as Draft
-            </Button>
-            <Button size="sm" color="primary" iconLeading={FileSignature} isDisabled={!signatureFontId} onPress={handleSaveAndOpenSign}>
-              Sign & Lock
-            </Button>
-          </div>
-          <div className="mt-6 border-t border-secondary pt-6">
-            <Button color="primary-destructive" size="xs" iconLeading={Trash2} onPress={() => setDeleteOpen(true)}>
-              Delete Session
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-6 flex justify-end">
-          <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart`)}>
-            Back to Chart
+      {editing && (
+        <div className="mt-8 border-t border-secondary pt-6">
+          <Button color="primary-destructive" size="xs" iconLeading={Trash2} onPress={() => setDeleteOpen(true)}>
+            Delete Session
           </Button>
         </div>
       )}
