@@ -78,7 +78,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     setEditing(true);
   };
 
-  const handleSaveEdits = () => {
+  const persistEdits = () => {
     updateChartSession(id, {
       ...session,
       summary,
@@ -90,8 +90,19 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       evaluation,
       recommendations: recommendations.map((r) => r.text).filter(Boolean),
     });
+  };
+
+  const handleSaveEdits = () => {
+    persistEdits();
     setEditing(false);
-    toast.success('Chart updated successfully.');
+    toast.success('Chart saved as draft.');
+  };
+
+  const handleSaveAndOpenSign = () => {
+    if (!signatureFontId) return;
+    persistEdits();
+    setEditing(false);
+    setSignOpen(true);
   };
 
   const handleCopy = async () => {
@@ -314,8 +325,11 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             <Button color="secondary" size="sm" onPress={() => setEditing(false)}>
               Cancel
             </Button>
-            <Button color="primary" size="sm" onPress={handleSaveEdits}>
-              Save Updates
+            <Button color="secondary" size="sm" onPress={handleSaveEdits}>
+              Save as Draft
+            </Button>
+            <Button size="sm" color="primary" iconLeading={FileSignature} isDisabled={!signatureFontId} onPress={handleSaveAndOpenSign}>
+              Sign & Lock
             </Button>
           </div>
           <div className="mt-6 border-t border-secondary pt-6">
