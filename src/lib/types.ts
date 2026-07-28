@@ -163,6 +163,98 @@ export type PainLevel = 'No Pain' | 'Low Pain' | 'Moderate Pain' | 'High Pain';
 export type AdherenceLevel = 'High Adherence' | 'Moderate Adherence' | 'Low Adherence';
 export type ImprovementLevel = 'Significant Improvement' | 'Some Improvement' | 'No Improvement' | 'Worsening';
 
+export interface PainPoint {
+  location: string;
+  description: string;
+  nprs: number;
+  pattern: 'constant' | 'intermittent';
+  aggravating: string;
+  easing: string;
+}
+
+export interface SubjectiveSection {
+  painPoints: PainPoint[];
+  amSymptoms: string;
+  pmSymptoms: string;
+  nightPain: boolean;
+  sleepingPosition: string;
+  bladderBowelUpdate: string;
+  notes: string;
+}
+
+export interface PelvicFloorExam {
+  power: number;
+  endurance: number;
+  repetitions: number;
+  fastContractions: number;
+  tone: 'hypertonic' | 'normal' | 'hypotonic' | '';
+  tenderness: string;
+}
+
+export interface RomEntry {
+  joint: string;
+  side: string;
+  aromNotes: string;
+  strengthNotes: string;
+}
+
+export interface ObjectiveSection {
+  observation: string;
+  functionalTests: string;
+  romStrength: RomEntry[];
+  pelvicFloorExam: PelvicFloorExam;
+  prolapseGrade: string;
+  diastasisRecti: string;
+  specialTests: string;
+  palpation: string;
+  notes: string;
+}
+
+export interface ProblemListItem {
+  bodyFunction: string;
+  activityParticipation: string;
+  environment: string;
+}
+
+export interface GoalItem {
+  problem: string;
+  shortTerm: string;
+  longTerm: string;
+}
+
+export interface AnalysisSection {
+  bodyStructures: string;
+  problemList: ProblemListItem[];
+  ptDiagnosis: string;
+  goals: GoalItem[];
+  notes: string;
+}
+
+export interface PlanItem {
+  problemRef: string;
+  treatment: string;
+}
+
+export interface PlanSection {
+  items: PlanItem[];
+  frequency: string;
+  reassessmentPlan: string;
+  dischargePlan: string;
+  consentObtained: boolean;
+  notes: string;
+}
+
+export interface InterventionItem {
+  type: 'Manual Therapy' | 'Exercise' | 'Modality' | 'Education' | 'Other';
+  details: string;
+}
+
+export interface EvaluationSection {
+  postNprs?: number;
+  patientReaction: string;
+  objectiveResponse: string;
+}
+
 export interface ChartSession {
   id: string;
   patientId: string;
@@ -173,15 +265,13 @@ export interface ChartSession {
   adherenceLevel?: AdherenceLevel;
   improvementLevel?: ImprovementLevel;
   exercisesPerDay: number;
-  soapie: {
-    subjective: string;
-    objective: string;
-    assessment: string;
-    plan: string;
-    intervention: string;
-    evaluation: string;
-    recommendations: string;
-  };
+  subjective: SubjectiveSection;
+  objective: ObjectiveSection;
+  analysis: AnalysisSection;
+  plan: PlanSection;
+  interventions: InterventionItem[];
+  evaluation: EvaluationSection;
+  recommendations: string[];
 }
 
 export interface DocumentField {

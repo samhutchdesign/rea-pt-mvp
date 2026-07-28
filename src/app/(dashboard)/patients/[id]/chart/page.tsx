@@ -1,7 +1,7 @@
 'use client';
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
-import { mockChartSessions } from '@/lib/mock-data';
+import { useChartSessions } from '@/lib/chartSessionStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { Button } from '@/components/base/buttons/button';
 import { Pencil, Plus } from 'lucide-react';
@@ -17,7 +17,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   const { id } = use(params);
   const router = useRouter();
   const viewMode = useViewMode();
-  const sessions = (mockChartSessions[id] ?? []).slice().reverse();
+  const sessions = useChartSessions(id).slice().reverse();
 
   return (
     <div>

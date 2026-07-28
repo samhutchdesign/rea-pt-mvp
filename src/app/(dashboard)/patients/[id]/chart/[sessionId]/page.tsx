@@ -2,34 +2,42 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { mockPatients, mockChartSessions } from '@/lib/mock-data';
+import { mockPatients } from '@/lib/mock-data';
+import { useChartSessions, updateChartSession, deleteChartSession } from '@/lib/chartSessionStore';
 import { Button } from '@/components/base/buttons/button';
+import { Textarea } from '@/components/ui/textarea';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
+import {
+  emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
+  ChartFormBody, ChartReadOnlyBody, HistoryCard,
+} from '@/components/charts/chart-form-sections';
+import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
 import { Copy, Pencil, Trash2 } from 'lucide-react';
 import { cx } from '@/utils/cx';
-
-const SOAPIER_SECTIONS = [
-  { key: 'subjective', letter: 'S', label: 'Subjective', rows: 5 },
-  { key: 'objective', letter: 'O', label: 'Objective', rows: 4 },
-  { key: 'assessment', letter: 'A', label: 'Analysis', rows: 6 },
-  { key: 'plan', letter: 'P', label: 'Plan', rows: 4 },
-  { key: 'intervention', letter: 'I', label: 'Intervention', rows: 4 },
-  { key: 'evaluation', letter: 'E', label: 'Evaluation', rows: 3 },
-  { key: 'recommendations', letter: 'R', label: 'Recommendations', rows: 3 },
-];
 
 export default function ChartDetailPage({ params }: { params: Promise<{ id: string; sessionId: string }> }) {
   const { id, sessionId } = use(params);
   const router = useRouter();
   const patient = mockPatients.find((p) => p.id === id);
-  const sessions = mockChartSessions[id] ?? [];
+  const sessions = useChartSessions(id);
   const session = sessions.find((s) => s.id === sessionId);
   const sessionIndex = sessions.findIndex((s) => s.id === sessionId);
 
   const [editing, setEditing] = useState(false);
-  const [soapie, setSoapie] = useState<Record<string, string>>(session?.soapie ?? {});
   const [copySuccess, setCopySuccess] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const [summary, setSummary] = useState(session?.summary ?? '');
+  const [subjective, setSubjective] = useState<SubjectiveSection>(session?.subjective ?? emptySubjective());
+  const [objective, setObjective] = useState<ObjectiveSection>(session?.objective ?? emptyObjective());
+  const [showGeneralScreen, setShowGeneralScreen] = useState(true);
+  const [analysis, setAnalysis] = useState<AnalysisSection>(session?.analysis ?? emptyAnalysis());
+  const [plan, setPlan] = useState<PlanSection>(session?.plan ?? emptyPlan());
+  const [interventions, setInterventions] = useState<InterventionItem[]>(session?.interventions ?? []);
+  const [evaluation, setEvaluation] = useState<EvaluationSection>(session?.evaluation ?? emptyEvaluation());
+  const [recommendations, setRecommendations] = useState<{ text: string }[]>(
+    (session?.recommendations ?? []).map((text) => ({ text }))
+  );
 
   if (!patient || !session) {
     return <span className="block p-8 text-secondary">Session not found.</span>;
@@ -40,40 +48,63 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const sexLabel = patient.metrics?.sexAssignedAtBirth ?? '';
   const sessionLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1} of ${sessions.length}`;
 
+  const startEditing = () => {
+    setSummary(session.summary);
+    setSubjective(session.subjective);
+    setObjective(session.objective);
+    setAnalysis(session.analysis);
+    setPlan(session.plan);
+    setInterventions(session.interventions);
+    setEvaluation(session.evaluation);
+    setRecommendations(session.recommendations.map((text) => ({ text })));
+    setEditing(true);
+  };
+
+  const handleSaveEdits = () => {
+    updateChartSession(id, {
+      ...session,
+      summary,
+      subjective,
+      objective,
+      analysis,
+      plan,
+      interventions,
+      evaluation,
+      recommendations: recommendations.map((r) => r.text).filter(Boolean),
+    });
+    setEditing(false);
+    toast.success('Chart updated successfully.');
+  };
+
   const handleCopy = async () => {
-    const lines = [`${sessionLabel} — ${patient.firstName} ${patient.lastName}`, sessionDate, ''];
-    for (const { letter, label, key } of SOAPIER_SECTIONS) {
-      lines.push(`${letter} — ${label}`);
-      lines.push((soapie as Record<string, string>)[key] || '—');
-      lines.push('');
-    }
+    const lines = [`${sessionLabel} — ${patient.firstName} ${patient.lastName}`, sessionDate, '', 'Summary', session.summary, ''];
+    lines.push('S — Subjective', session.subjective.notes || '—', '');
+    lines.push('O — Objective', session.objective.notes || '—', '');
+    lines.push('A — Analysis', session.analysis.ptDiagnosis || session.analysis.notes || '—', '');
+    lines.push('P — Plan', session.plan.notes || '—', '');
+    lines.push('I — Intervention', session.interventions.map((i) => `${i.type}: ${i.details}`).join('\n') || '—', '');
+    lines.push('E — Evaluation', session.evaluation.patientReaction || '—', '');
+    lines.push('R — Recommendations', session.recommendations.join('\n') || '—');
     await navigator.clipboard.writeText(lines.join('\n')).catch(() => {});
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2500);
   };
 
   const handleDelete = () => {
+    deleteChartSession(id, sessionId);
     setDeleteOpen(false);
     toast.success('Session deleted.');
-    setTimeout(() => router.push(`/patients/${id}/chart`), 1500);
+    router.push(`/patients/${id}/chart`);
   };
-
-  const letterBadge = (letter: string) => (
-    <div className="w-[30px] h-[30px] rounded-full bg-brand-600 flex items-center justify-center shrink-0">
-      <span className="text-white font-bold text-[0.8rem] leading-none">{letter}</span>
-    </div>
-  );
 
   return (
     <div className="max-w-[820px]">
       {/* Session header bar */}
-      <div className="bg-black/4 border border-secondary rounded-lg px-5 py-3 mb-6 flex flex-wrap gap-4 items-center">
-        <span className="font-semibold text-sm text-primary">{patient.firstName} {patient.lastName}</span>
-        {ageLabel && (
-          <span className="text-secondary text-sm">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</span>
-        )}
-        <span className="text-secondary text-sm">{sessionDate}</span>
-        <div className="ml-auto flex gap-2 items-center">
+      <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg border border-secondary bg-black/4 px-5 py-3">
+        <span className="text-sm font-semibold text-primary">{patient.firstName} {patient.lastName}</span>
+        {ageLabel && <span className="text-sm text-secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</span>}
+        <span className="text-sm text-secondary">{sessionDate}</span>
+        <div className="ml-auto flex items-center gap-2">
           <span className={cx(
             'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
             session.isIntakeSession ? 'bg-brand-50 text-brand-700' : 'bg-brand-600 text-white',
@@ -92,7 +123,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
               >
                 <Copy size={14} />
               </button>
-              <Button size="xs" color="secondary" iconLeading={Pencil} onPress={() => setEditing(true)}>
+              <Button size="xs" color="secondary" iconLeading={Pencil} onPress={startEditing}>
                 Edit
               </Button>
             </>
@@ -100,85 +131,63 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      {/* Session summary */}
-      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-6">
-        <div className={cx('flex justify-between items-center', editing ? 'mb-4' : 'mb-2')}>
-          <span className="font-semibold text-sm text-primary">Session Notes</span>
+      <div className="flex flex-col gap-4">
+        {/* Session summary */}
+        <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+          <span className="mb-2 block text-sm font-semibold text-primary">Session Summary</span>
+          {editing ? (
+            <Textarea rows={2} value={summary} onChange={(e) => setSummary(e.target.value)} />
+          ) : (
+            <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No summary recorded.'}</span>
+          )}
         </div>
+
+        <p className="mt-2 text-sm font-semibold text-primary">H-SOAPIER Chart</p>
+
+        {session.isIntakeSession && <HistoryCard patient={patient} />}
+
         {editing ? (
-          <textarea
-            rows={3}
-            defaultValue={session.summary}
-            className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 min-h-[120px] bg-primary"
+          <ChartFormBody
+            subjective={subjective} setSubjective={setSubjective}
+            objective={objective} setObjective={setObjective}
+            showGeneralScreen={showGeneralScreen} setShowGeneralScreen={setShowGeneralScreen}
+            analysis={analysis} setAnalysis={setAnalysis}
+            plan={plan} setPlan={setPlan}
+            interventions={interventions} setInterventions={setInterventions}
+            evaluation={evaluation} setEvaluation={setEvaluation}
+            recommendations={recommendations} setRecommendations={setRecommendations}
           />
         ) : (
-          <span className="text-secondary text-sm whitespace-pre-wrap">{session.summary}</span>
+          <ChartReadOnlyBody
+            subjective={session.subjective}
+            objective={session.objective}
+            analysis={session.analysis}
+            plan={session.plan}
+            interventions={session.interventions}
+            evaluation={session.evaluation}
+            recommendations={session.recommendations}
+          />
         )}
-      </div>
-
-      {/* H-SOAPIER sections */}
-      <p className="font-semibold text-sm text-primary mb-4">H-SOAPIER Chart</p>
-      <div className="flex flex-col gap-4">
-        {SOAPIER_SECTIONS.map(({ key, letter, label, rows }) => {
-          const value = (soapie as Record<string, string>)[key] || '';
-          return (
-            <div key={key} className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
-              <div className="flex items-center gap-3 mb-3">
-                {letterBadge(letter)}
-                <span className="font-semibold text-sm text-primary">{label}</span>
-              </div>
-              {editing ? (
-                <textarea
-                  rows={rows}
-                  value={value}
-                  onChange={(e) => setSoapie((prev) => ({ ...prev, [key]: e.target.value }))}
-                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 min-h-[120px] bg-primary"
-                />
-              ) : value ? (
-                <span className="text-sm text-primary whitespace-pre-wrap leading-relaxed">{value}</span>
-              ) : (
-                <span className="text-secondary text-sm italic">Not recorded</span>
-              )}
-            </div>
-          );
-        })}
       </div>
 
       {editing ? (
         <div className="mt-8">
-          <div className="flex justify-between items-center">
-            <button
-              onClick={() => {}}
-              className="text-sm text-secondary hover:text-primary transition-colors"
-            >
-              View Version History
-            </button>
-            <div className="flex gap-4">
-              <Button color="secondary" size="sm" onPress={() => setEditing(false)}>
-                Cancel
-              </Button>
-              <Button
-                color="primary"
-                size="sm"
-                onPress={() => { setEditing(false); toast.success('Chart updated successfully.'); }}
-              >
-                Save Updates
-              </Button>
-            </div>
+          <div className="flex justify-end gap-4">
+            <Button color="secondary" size="sm" onPress={() => setEditing(false)}>
+              Cancel
+            </Button>
+            <Button color="primary" size="sm" onPress={handleSaveEdits}>
+              Save Updates
+            </Button>
           </div>
-          <div className="mt-6 pt-6 border-t border-secondary">
-            <Button
-              color="primary-destructive"
-              size="xs"
-              iconLeading={Trash2}
-              onPress={() => setDeleteOpen(true)}
-            >
+          <div className="mt-6 border-t border-secondary pt-6">
+            <Button color="primary-destructive" size="xs" iconLeading={Trash2} onPress={() => setDeleteOpen(true)}>
               Delete Session
             </Button>
           </div>
         </div>
       ) : (
-        <div className="flex justify-end mt-6">
+        <div className="mt-6 flex justify-end">
           <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart`)}>
             Back to Chart
           </Button>
@@ -189,9 +198,9 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       <ModalOverlay isOpen={deleteOpen} onOpenChange={setDeleteOpen}>
         <Modal>
           <Dialog>
-            <div className="p-6 w-full max-w-sm">
-              <h2 className="text-lg font-semibold text-primary mb-2">Delete Session?</h2>
-              <p className="text-sm text-secondary mb-6">
+            <div className="w-full max-w-sm p-6">
+              <h2 className="mb-2 text-lg font-semibold text-primary">Delete Session?</h2>
+              <p className="mb-6 text-sm text-secondary">
                 This will permanently delete <strong>{sessionLabel}</strong> for {patient.firstName} {patient.lastName}. This cannot be undone.
               </p>
               <div className="flex justify-end gap-3">
@@ -206,8 +215,6 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           </Dialog>
         </Modal>
       </ModalOverlay>
-
-      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
     </div>
   );
 }

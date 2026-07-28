@@ -356,7 +356,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
         open={confirmArchiveOpen}
         onClose={() => setConfirmArchiveOpen(false)}
         title="Archive Patient?"
-        description={<><strong>{patient.firstName} {patient.lastName}</strong> will be moved to the Archived tab and removed from your active patient list. You can restore them at any time.</>}
+        description={<><strong>{patient.firstName} {patient.lastName}</strong> will be moved to the Archived tab and removed from your active patient list. <strong className="text-error-600">You&apos;ll lose access to their profile and won&apos;t be able to make edits</strong> — an admin will need to restore them to active status.</>}
         confirmLabel="Archive Patient"
         onConfirm={handleArchive}
       />

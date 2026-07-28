@@ -60,6 +60,7 @@ const SORT_OPTIONS = [
   { value: 'a-z', label: 'A → Z' },
   { value: 'z-a', label: 'Z → A' },
   { value: 'location', label: 'Location' },
+  { value: 'practitioner', label: 'Practitioner' },
 ];
 
 export default function PatientsPage() {
@@ -107,7 +108,13 @@ export default function PatientsPage() {
 
   useEffect(() => { setTab(0); }, [showYoursTab, showAllTab]);
   useEffect(() => { if (viewMode === 'mvp' && sort === 'upcoming') setSort('newest'); }, [viewMode, sort]);
+  useEffect(() => { if (!isManagerView && sort === 'practitioner') setSort('newest'); }, [isManagerView, sort]);
   const currentList = tabList[tab] ?? allActive;
+
+  const practitionerName = (p: Patient) => {
+    const emp = mockEmployees.find((e) => e.id === getEffectiveAssignedEmployeeId(p, locationOverrides));
+    return emp ? `${emp.firstName} ${emp.lastName}` : '';
+  };
 
   const applySearch = (list: Patient[]) => {
     const q = search.toLowerCase();
@@ -116,7 +123,8 @@ export default function PatientsPage() {
       p.firstName.toLowerCase().includes(q) ||
       p.lastName.toLowerCase().includes(q) ||
       p.email.toLowerCase().includes(q) ||
-      getEffectiveLocationString(p, locationOverrides).toLowerCase().includes(q)
+      getEffectiveLocationString(p, locationOverrides).toLowerCase().includes(q) ||
+      practitionerName(p).toLowerCase().includes(q)
     );
   };
 
@@ -126,6 +134,8 @@ export default function PatientsPage() {
     else if (sort === 'a-z') sorted.sort((a, b) => a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName));
     else if (sort === 'z-a') sorted.sort((a, b) => b.firstName.localeCompare(a.firstName) || b.lastName.localeCompare(a.lastName));
     else if (sort === 'location') sorted.sort((a, b) => getEffectiveLocationString(a, locationOverrides).localeCompare(getEffectiveLocationString(b, locationOverrides)));
+    // Unassigned patients (no practitioner name) sort first — empty string compares before any name.
+    else if (sort === 'practitioner') sorted.sort((a, b) => practitionerName(a).localeCompare(practitionerName(b)) || a.firstName.localeCompare(b.firstName));
     else if (sort === 'oldest') sorted.sort((a, b) => a.id.localeCompare(b.id));
     else sorted.sort((a, b) => b.id.localeCompare(a.id));
     return sorted;
@@ -174,7 +184,7 @@ export default function PatientsPage() {
   const searchPlaceholders = sections.map((s) => s.searchPlaceholder);
   const emptyMessages = sections.map((s) => s.emptyMessage);
   const tabItems = sections.map((s, i) => ({ key: i, label: s.label, count: s.list.length }));
-  const archivedTabIndex = sections.length - 1;
+  const archivedTabIndex = showArchivedTab ? sections.length - 1 : -1;
   const empty = displayed.length === 0;
 
   if (dataState === 'empty') {
@@ -246,7 +256,10 @@ export default function PatientsPage() {
               wrapperClassName="w-36 shrink-0"
               className="font-medium text-secondary"
             >
-              {SORT_OPTIONS.filter((o) => viewMode === 'full' || o.value !== 'upcoming').map((o) => (
+              {SORT_OPTIONS.filter((o) =>
+                (viewMode === 'full' || o.value !== 'upcoming') &&
+                (isManagerView || o.value !== 'practitioner')
+              ).map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </NativeSelect>
@@ -292,10 +305,14 @@ export default function PatientsPage() {
                   </div>
 
                   <div className="flex flex-col items-end gap-1.5 shrink-0">
-                    {isManagerView && assignedEmp && (
+                    {isManagerView && (
                       <div className="flex items-center gap-1.5">
                         <User01 className="size-3.5 text-quaternary" />
-                        <span className="text-xs text-tertiary">{assignedEmp.firstName} {assignedEmp.lastName}</span>
+                        {assignedEmp ? (
+                          <span className="text-xs text-tertiary">{assignedEmp.firstName} {assignedEmp.lastName}</span>
+                        ) : (
+                          <span className="text-xs text-tertiary italic">Unassigned</span>
+                        )}
                       </div>
                     )}
                     <div className="flex items-center gap-1.5">
