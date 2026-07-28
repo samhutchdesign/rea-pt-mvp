@@ -142,7 +142,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm font-semibold text-primary">Latest Session</span>
             <Button size="xs" color="primary" iconLeading={Plus} onPress={() => router.push(`/patients/${id}/chart/new`)}>
-              Add to Chart
+              Add New Chart
             </Button>
           </div>
           {latestSession ? (

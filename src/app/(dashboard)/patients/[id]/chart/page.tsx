@@ -28,7 +28,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
           iconLeading={Plus}
           onPress={() => router.push(`/patients/${id}/chart/new`)}
         >
-          Add to Chart
+          Add New Chart
         </Button>
       </div>
 
