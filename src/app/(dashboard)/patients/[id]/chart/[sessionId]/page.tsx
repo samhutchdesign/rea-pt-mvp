@@ -208,7 +208,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
           <span className="mb-2 block text-sm font-semibold text-primary">Notes</span>
           {editing ? (
-            <Textarea rows={2} value={summary} onChange={(e) => setSummary(e.target.value)} />
+            <Textarea rows={6} value={summary} onChange={(e) => setSummary(e.target.value)} />
           ) : (
             <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
           )}

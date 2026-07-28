@@ -126,7 +126,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
         <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
           <span className="mb-3 block text-sm font-semibold text-primary">Notes</span>
           <Textarea
-            rows={2}
+            rows={6}
             placeholder="Add notes about this session — shown in the chart list…"
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
