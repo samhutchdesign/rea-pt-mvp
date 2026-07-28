@@ -14,7 +14,7 @@ const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean; hidden?
   { value: 'owner', label: 'Owner: Org' },
   { value: 'admin', label: 'Admin: Clinic' },
   { value: 'editor', label: 'User: PT Single Loc', hidden: true },
-  { value: 'editor2', label: 'User: PT Multi Locations' },
+  { value: 'editor2', label: 'User: Practitioner' },
   { value: 'editor3', label: 'User: PT Multi Org', fullOnly: true },
   { value: 'limited', label: 'User: Staff' },
 ];
