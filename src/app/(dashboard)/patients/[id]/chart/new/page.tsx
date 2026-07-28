@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions, addChartSession } from '@/lib/chartSessionStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
 import { Button } from '@/components/base/buttons/button';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,6 +27,9 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const { id } = use(params);
   const router = useRouter();
   const patient = mockPatients.find((p) => p.id === id);
+  const currentIdentity = useCurrentIdentity();
+  const locationOverrides = useLocationOverrides();
+  const isChartWriter = !!patient && currentIdentity.id === getEffectiveAssignedEmployeeId(patient, locationOverrides);
   const sessions = useChartSessions(id);
   const isIntake = sessions.length === 0;
   const lastSession = [...sessions].sort((a, b) => a.date.localeCompare(b.date)).at(-1);
@@ -73,6 +78,17 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   };
 
   if (!patient) return null;
+
+  if (!isChartWriter) {
+    return (
+      <div className="max-w-[560px]">
+        <p className="text-sm text-secondary">Only {patient.firstName} {patient.lastName}&apos;s assigned practitioner can add entries to this chart.</p>
+        <Button color="secondary" size="sm" className="mt-4" onPress={() => router.push(`/patients/${id}/chart`)}>
+          Back to Chart
+        </Button>
+      </div>
+    );
+  }
 
   const sessionDate = new Date().toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' });
   const ageLabel = patient.metrics?.age ? `${patient.metrics.age} y.o.` : '';

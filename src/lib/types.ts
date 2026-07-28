@@ -255,6 +255,15 @@ export interface EvaluationSection {
   objectiveResponse: string;
 }
 
+export interface ChartAmendment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorInitials: string;
+  text: string;
+  createdAt: string;
+}
+
 export interface ChartSession {
   id: string;
   patientId: string;
@@ -272,6 +281,11 @@ export interface ChartSession {
   interventions: InterventionItem[];
   evaluation: EvaluationSection;
   recommendations: string[];
+  signedAt?: string;
+  signedByEmpId?: string;
+  signedByName?: string;
+  signedByInitials?: string;
+  amendments?: ChartAmendment[];
 }
 
 export interface DocumentField {

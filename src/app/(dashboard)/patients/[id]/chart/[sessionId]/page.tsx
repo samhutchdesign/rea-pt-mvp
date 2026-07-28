@@ -3,8 +3,11 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
-import { useChartSessions, updateChartSession, deleteChartSession } from '@/lib/chartSessionStore';
+import { useChartSessions, updateChartSession, deleteChartSession, signChartSession, addAmendment } from '@/lib/chartSessionStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
 import { Button } from '@/components/base/buttons/button';
+import { Avatar } from '@/components/base/avatar/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import {
@@ -12,7 +15,7 @@ import {
   ChartFormBody, ChartReadOnlyBody, HistoryCard,
 } from '@/components/charts/chart-form-sections';
 import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
-import { Copy, Pencil, Trash2 } from 'lucide-react';
+import { Copy, Pencil, Trash2, Lock, FileSignature } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 export default function ChartDetailPage({ params }: { params: Promise<{ id: string; sessionId: string }> }) {
@@ -23,9 +26,15 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const session = sessions.find((s) => s.id === sessionId);
   const sessionIndex = sessions.findIndex((s) => s.id === sessionId);
 
+  const currentIdentity = useCurrentIdentity();
+  const locationOverrides = useLocationOverrides();
+  const isChartWriter = !!patient && currentIdentity.id === getEffectiveAssignedEmployeeId(patient, locationOverrides);
+
   const [editing, setEditing] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [signOpen, setSignOpen] = useState(false);
+  const [amendmentText, setAmendmentText] = useState('');
 
   const [summary, setSummary] = useState(session?.summary ?? '');
   const [subjective, setSubjective] = useState<SubjectiveSection>(session?.subjective ?? emptySubjective());
@@ -47,6 +56,9 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const ageLabel = patient.metrics?.age ? `${patient.metrics.age} y.o.` : '';
   const sexLabel = patient.metrics?.sexAssignedAtBirth ?? '';
   const sessionLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1} of ${sessions.length}`;
+  const isSigned = !!session.signedAt;
+  const canEdit = isChartWriter && !isSigned;
+  const amendments = session.amendments ?? [];
 
   const startEditing = () => {
     setSummary(session.summary);
@@ -85,6 +97,15 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     lines.push('I — Intervention', session.interventions.map((i) => `${i.type}: ${i.details}`).join('\n') || '—', '');
     lines.push('E — Evaluation', session.evaluation.patientReaction || '—', '');
     lines.push('R — Recommendations', session.recommendations.join('\n') || '—');
+    if (isSigned) {
+      lines.push('', `Signed by ${session.signedByName} on ${new Date(session.signedAt!).toLocaleString()}`);
+    }
+    if (amendments.length > 0) {
+      lines.push('', 'Amendments');
+      for (const a of amendments) {
+        lines.push(`${a.authorName} — ${new Date(a.createdAt).toLocaleString()}`, a.text, '');
+      }
+    }
     await navigator.clipboard.writeText(lines.join('\n')).catch(() => {});
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2500);
@@ -97,6 +118,28 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     router.push(`/patients/${id}/chart`);
   };
 
+  const handleSign = () => {
+    signChartSession(id, sessionId, {
+      empId: currentIdentity.id,
+      name: `${currentIdentity.firstName} ${currentIdentity.lastName}`,
+      initials: currentIdentity.avatarInitials,
+    });
+    setSignOpen(false);
+    toast.success('Chart signed and locked.');
+  };
+
+  const handleAddAmendment = () => {
+    if (!amendmentText.trim()) return;
+    addAmendment(id, sessionId, {
+      authorId: currentIdentity.id,
+      authorName: `${currentIdentity.firstName} ${currentIdentity.lastName}`,
+      authorInitials: currentIdentity.avatarInitials,
+      text: amendmentText.trim(),
+    });
+    setAmendmentText('');
+    toast.success('Amendment added.');
+  };
+
   return (
     <div className="max-w-[820px]">
       {/* Session header bar */}
@@ -105,6 +148,11 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         {ageLabel && <span className="text-sm text-secondary">{ageLabel}{sexLabel ? ` · ${sexLabel}` : ''}</span>}
         <span className="text-sm text-secondary">{sessionDate}</span>
         <div className="ml-auto flex items-center gap-2">
+          {isSigned && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-secondary_alt px-2.5 py-0.5 text-xs font-semibold text-secondary" title={`Signed by ${session.signedByName} on ${new Date(session.signedAt!).toLocaleString()}`}>
+              <Lock size={11} /> Signed
+            </span>
+          )}
           <span className={cx(
             'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
             session.isIntakeSession ? 'bg-brand-50 text-brand-700' : 'bg-brand-600 text-white',
@@ -123,9 +171,16 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
               >
                 <Copy size={14} />
               </button>
-              <Button size="xs" color="secondary" iconLeading={Pencil} onPress={startEditing}>
-                Edit
-              </Button>
+              {canEdit && (
+                <>
+                  <Button size="xs" color="secondary" iconLeading={Pencil} onPress={startEditing}>
+                    Edit
+                  </Button>
+                  <Button size="xs" color="secondary" iconLeading={FileSignature} onPress={() => setSignOpen(true)}>
+                    Sign & Lock
+                  </Button>
+                </>
+              )}
             </>
           )}
         </div>
@@ -168,6 +223,41 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             recommendations={session.recommendations}
           />
         )}
+
+        {amendments.length > 0 && (
+          <div>
+            <p className="mb-3 text-sm font-semibold text-primary">Amendments</p>
+            <div className="flex flex-col gap-3">
+              {amendments.map((a) => (
+                <div key={a.id} className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Avatar initials={a.authorInitials} size="xs" />
+                    <span className="text-xs font-semibold text-amber-900">{a.authorName}</span>
+                    <span className="text-xs text-amber-700">{new Date(a.createdAt).toLocaleString()}</span>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm text-amber-900">{a.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isChartWriter && isSigned && !editing && (
+          <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+            <span className="mb-2 block text-sm font-semibold text-primary">Add Amendment</span>
+            <Textarea
+              rows={3}
+              placeholder="This chart is signed and locked. Add a dated, attributed amendment instead of editing the original entry…"
+              value={amendmentText}
+              onChange={(e) => setAmendmentText(e.target.value)}
+            />
+            <div className="mt-3 flex justify-end">
+              <Button size="sm" color="secondary" isDisabled={!amendmentText.trim()} onPress={handleAddAmendment}>
+                Add Amendment
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {editing ? (
@@ -193,6 +283,28 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           </Button>
         </div>
       )}
+
+      {/* Sign & Lock confirmation modal */}
+      <ModalOverlay isOpen={signOpen} onOpenChange={setSignOpen}>
+        <Modal>
+          <Dialog>
+            <div className="w-full max-w-sm p-6">
+              <h2 className="mb-2 text-lg font-semibold text-primary">Sign & Lock Chart?</h2>
+              <p className="mb-6 text-sm text-secondary">
+                Once signed, <strong>{sessionLabel}</strong> becomes locked and can no longer be edited directly. Any future correction will be added as a separate, dated amendment.
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button color="secondary" size="sm" onPress={() => setSignOpen(false)}>
+                  Cancel
+                </Button>
+                <Button color="primary" size="sm" onPress={handleSign}>
+                  Sign & Lock
+                </Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
 
       {/* Delete confirmation modal */}
       <ModalOverlay isOpen={deleteOpen} onOpenChange={setDeleteOpen}>

@@ -3,8 +3,9 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/base/buttons/button';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
-import { mockPatients, mockExercises, mockPrograms, mockChartSessions, mockExerciseComments } from '@/lib/mock-data';
+import { mockPatients, mockExercises, mockPrograms, mockExerciseComments } from '@/lib/mock-data';
 import { useHepState } from '@/lib/patientHepStore';
+import { useChartSessions } from '@/lib/chartSessionStore';
 import type { Exercise, ProgramExercise, HepHistoryEntry, Program } from '@/lib/types';
 import { useViewMode } from '@/lib/viewModeStore';
 import { Avatar } from '@/components/base/avatar/avatar';
@@ -138,7 +139,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
   const patient = mockPatients.find((p) => p.id === id);
   const hep = useHepState(id);
   const program: Program | undefined = hep.programId ? mockPrograms.find((p) => p.id === hep.programId) : undefined;
-  const completedSessions = (mockChartSessions[id] ?? []).filter((s) => !s.isIntakeSession).length;
+  const completedSessions = useChartSessions(id).filter((s) => !s.isIntakeSession).length;
   const totalSessions = patient?.totalSessions ?? 8;
 
   const visibleExercises = program?.exercises ?? [];

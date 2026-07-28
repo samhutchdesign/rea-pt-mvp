@@ -1,10 +1,13 @@
 'use client';
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
+import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions } from '@/lib/chartSessionStore';
 import { useViewMode } from '@/lib/viewModeStore';
+import { useCurrentIdentity } from '@/lib/locationScope';
+import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
 import { Button } from '@/components/base/buttons/button';
-import { Pencil, Plus } from 'lucide-react';
+import { Pencil, Plus, Lock, Eye } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 const ADHERENCE_STYLE: Record<string, { bg: string; text: string }> = {
@@ -19,17 +22,30 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   const viewMode = useViewMode();
   const sessions = useChartSessions(id).slice().reverse();
 
+  const patient = mockPatients.find((p) => p.id === id);
+  const currentIdentity = useCurrentIdentity();
+  const locationOverrides = useLocationOverrides();
+  const assignedEmpId = patient ? getEffectiveAssignedEmployeeId(patient, locationOverrides) : null;
+  const isChartWriter = !!patient && currentIdentity.id === assignedEmpId;
+
   return (
     <div>
-      <div className="flex justify-end mb-6">
-        <Button
-          color="primary"
-          size="sm"
-          iconLeading={Plus}
-          onPress={() => router.push(`/patients/${id}/chart/new`)}
-        >
-          Add New Chart
-        </Button>
+      <div className="flex justify-end items-center mb-6 gap-3">
+        {!isChartWriter && (
+          <span className="text-xs text-tertiary italic">
+            {assignedEmpId ? 'Only the assigned practitioner can add chart entries.' : 'No practitioner is assigned to this patient yet.'}
+          </span>
+        )}
+        {isChartWriter && (
+          <Button
+            color="primary"
+            size="sm"
+            iconLeading={Plus}
+            onPress={() => router.push(`/patients/${id}/chart/new`)}
+          >
+            Add New Chart
+          </Button>
+        )}
       </div>
 
       {sessions.length === 0 ? (
@@ -41,6 +57,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
               <div className="flex justify-between items-start gap-2">
                 <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
+                  {session.signedAt && <Lock size={12} className="text-tertiary shrink-0" />}
                   <span className="font-semibold text-sm text-primary">
                     {session.isIntakeSession
                       ? `Intake Session – ${new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
@@ -62,7 +79,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 <Button
                   color="tertiary"
                   size="xs"
-                  iconLeading={Pencil}
+                  iconLeading={isChartWriter ? Pencil : Eye}
                   onPress={() => router.push(`/patients/${id}/chart/${session.id}`)}
                   className="shrink-0"
                 />
