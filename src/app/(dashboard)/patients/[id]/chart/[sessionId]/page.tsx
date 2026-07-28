@@ -7,10 +7,11 @@ import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions, updateChartSession, deleteChartSession, signChartSession, addAmendment } from '@/lib/chartSessionStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
-import { useSignatureFontId, SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
+import { useSignatureFontId, setSignatureFontId, SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Textarea } from '@/components/ui/textarea';
+import { SignatureFontPicker } from '@/components/ui/signature-font-picker';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import {
   emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
@@ -39,6 +40,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [signOpen, setSignOpen] = useState(false);
   const [amendmentText, setAmendmentText] = useState('');
+  const [pendingSignatureFont, setPendingSignatureFont] = useState<string>(SIGNATURE_FONTS[0].id);
 
   const [summary, setSummary] = useState(session?.summary ?? '');
   const [subjective, setSubjective] = useState<SubjectiveSection>(session?.subjective ?? emptySubjective());
@@ -134,6 +136,11 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     toast.success('Chart signed and locked.');
   };
 
+  const handleSaveSignature = () => {
+    setSignatureFontId(currentIdentity.id, pendingSignatureFont);
+    toast.success('Signature saved.');
+  };
+
   const handleAddAmendment = () => {
     if (!amendmentText.trim()) return;
     addAmendment(id, sessionId, {
@@ -193,9 +200,23 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       </div>
 
       {canEdit && !signatureFontId && (
-        <p className="mb-4 -mt-2 text-xs text-tertiary">
-          Add a signature in <Link href="/account/settings" className="font-medium text-brand-600 hover:underline">Account Settings</Link> before you can sign charts.
-        </p>
+        <div className="mb-6 rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+          <span className="mb-2 block text-sm font-semibold text-primary">Set Up Your Signature</span>
+          <p className="mb-4 text-sm text-secondary">
+            You&apos;ll need a signature before you can sign and lock charts. Pick a style below — you can change it anytime in{' '}
+            <Link href="/account/settings" className="font-medium text-brand-600 hover:underline">Account Settings</Link>.
+          </p>
+          <SignatureFontPicker
+            name={`${currentIdentity.firstName} ${currentIdentity.lastName}`}
+            value={pendingSignatureFont}
+            onChange={setPendingSignatureFont}
+          />
+          <div className="mt-4 flex justify-end">
+            <Button size="sm" color="primary" onPress={handleSaveSignature}>
+              Save Signature
+            </Button>
+          </div>
+        </div>
       )}
 
       <div className="flex flex-col gap-4">

@@ -9,6 +9,7 @@ import { Divider } from '@/components/ui/divider';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
+import { SignatureFontPicker } from '@/components/ui/signature-font-picker';
 import { useThemeMode, setThemeMode } from '@/lib/themeStore';
 import { useRole } from '@/lib/roleStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
@@ -16,7 +17,6 @@ import { useSignatureFontId, setSignatureFontId, SIGNATURE_FONTS } from '@/lib/e
 import { mockEmployees } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
 import { Crown } from 'lucide-react';
-import { cx } from '@/utils/cx';
 
 type NewOwnerMode = 'existing' | 'invite';
 type OutgoingChoice = UserRole | 'remove';
@@ -184,23 +184,7 @@ function SignatureModal({ open, onClose }: { open: boolean; onClose: () => void 
               This is stamped on every chart you sign and lock. Pick a style below.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {SIGNATURE_FONTS.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setSelected(f.id)}
-                  className={cx(
-                    'rounded-lg border px-4 py-4 text-center transition-colors',
-                    selected === f.id ? 'border-brand-600 ring-2 ring-brand-300 bg-brand-50' : 'border-secondary bg-secondary_alt hover:bg-secondary_alt/80',
-                  )}
-                >
-                  <span style={{ fontFamily: f.variable }} className="block text-3xl text-primary truncate">
-                    {fullName}
-                  </span>
-                </button>
-              ))}
-            </div>
+            <SignatureFontPicker name={fullName} value={selected} onChange={setSelected} />
 
             <div className="flex justify-end gap-3 mt-6">
               <Button color="secondary" size="sm" onPress={handleClose}>Cancel</Button>

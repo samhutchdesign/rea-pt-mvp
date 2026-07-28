@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { mockEmployees } from './mock-data';
 
 export const SIGNATURE_FONTS = [
   { id: 'dancing-script', label: 'Dancing Script', variable: 'var(--font-dancing-script)' },
@@ -8,7 +9,11 @@ export const SIGNATURE_FONTS = [
   { id: 'sacramento', label: 'Sacramento', variable: 'var(--font-sacramento)' },
 ] as const;
 
-let _state: Map<string, string> = new Map();
+// Pre-seeded per employee (round-robin over the available styles) so this demo never starts
+// blocked on Sign & Lock — practitioners can still change their style anytime in Settings.
+let _state: Map<string, string> = new Map(
+  mockEmployees.map((e, i) => [e.id, SIGNATURE_FONTS[i % SIGNATURE_FONTS.length].id])
+);
 
 const _listeners: Map<string, Set<() => void>> = new Map();
 
