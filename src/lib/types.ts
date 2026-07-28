@@ -285,6 +285,7 @@ export interface ChartSession {
   signedByEmpId?: string;
   signedByName?: string;
   signedByInitials?: string;
+  signatureFontId?: string;
   amendments?: ChartAmendment[];
 }
 

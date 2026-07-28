@@ -12,9 +12,11 @@ import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/mod
 import { useThemeMode, setThemeMode } from '@/lib/themeStore';
 import { useRole } from '@/lib/roleStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
+import { useSignatureFontId, setSignatureFontId, SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { mockEmployees } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
 import { Crown } from 'lucide-react';
+import { cx } from '@/utils/cx';
 
 type NewOwnerMode = 'existing' | 'invite';
 type OutgoingChoice = UserRole | 'remove';
@@ -154,11 +156,72 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
   );
 }
 
+function SignatureModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const currentIdentity = useCurrentIdentity();
+  const savedFontId = useSignatureFontId(currentIdentity.id);
+  const fullName = `${currentIdentity.firstName} ${currentIdentity.lastName}`;
+
+  const [selected, setSelected] = useState(savedFontId ?? SIGNATURE_FONTS[0].id);
+
+  const handleClose = () => {
+    onClose();
+    setSelected(savedFontId ?? SIGNATURE_FONTS[0].id);
+  };
+
+  const handleSave = () => {
+    setSignatureFontId(currentIdentity.id, selected);
+    toast.success('Signature saved.');
+    handleClose();
+  };
+
+  return (
+    <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+      <Modal className="w-full max-w-lg">
+        <Dialog>
+          <div className="p-6">
+            <h2 className="text-lg font-semibold text-primary mb-1">Choose Your Signature</h2>
+            <p className="text-sm text-secondary mb-5">
+              This is stamped on every chart you sign and lock. Pick a style below.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {SIGNATURE_FONTS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setSelected(f.id)}
+                  className={cx(
+                    'rounded-lg border px-4 py-4 text-center transition-colors',
+                    selected === f.id ? 'border-brand-600 ring-2 ring-brand-300 bg-brand-50' : 'border-secondary bg-secondary_alt hover:bg-secondary_alt/80',
+                  )}
+                >
+                  <span style={{ fontFamily: f.variable }} className="block text-3xl text-primary truncate">
+                    {fullName}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <Button color="secondary" size="sm" onPress={handleClose}>Cancel</Button>
+              <Button color="primary" size="sm" onPress={handleSave}>Save Signature</Button>
+            </div>
+          </div>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
+  );
+}
+
 function SettingsContent() {
   const mode = useThemeMode();
   const role = useRole();
   const searchParams = useSearchParams();
   const [transferOpen, setTransferOpen] = useState(false);
+  const [signatureOpen, setSignatureOpen] = useState(false);
+  const currentIdentity = useCurrentIdentity();
+  const signatureFontId = useSignatureFontId(currentIdentity.id);
+  const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
 
   useEffect(() => {
     if (searchParams.get('transfer') === '1' && role === 'owner') setTransferOpen(true);
@@ -181,6 +244,25 @@ function SettingsContent() {
           </div>
         </div>
 
+        <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-4">
+          <span className="font-semibold text-sm text-primary block mb-4">Signature</span>
+          {signatureFont ? (
+            <>
+              <div className="rounded-lg border border-secondary bg-secondary_alt px-4 py-3 mb-3">
+                <span style={{ fontFamily: signatureFont.variable }} className="text-3xl text-primary">
+                  {currentIdentity.firstName} {currentIdentity.lastName}
+                </span>
+              </div>
+              <Button color="secondary" size="sm" onPress={() => setSignatureOpen(true)}>Change Signature</Button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-secondary mb-3">No signature saved yet. You&apos;ll need one before you can sign and lock charts.</p>
+              <Button color="secondary" size="sm" onPress={() => setSignatureOpen(true)}>Add Signature</Button>
+            </>
+          )}
+        </div>
+
         {role === 'owner' && (
           <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
             <span className="font-semibold text-sm text-primary block mb-4">Organization</span>
@@ -194,6 +276,7 @@ function SettingsContent() {
       </div>
 
       <TransferOwnershipModal open={transferOpen} onClose={() => setTransferOpen(false)} />
+      <SignatureModal open={signatureOpen} onClose={() => setSignatureOpen(false)} />
     </>
   );
 }

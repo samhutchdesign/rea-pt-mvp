@@ -1,11 +1,13 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions, updateChartSession, deleteChartSession, signChartSession, addAmendment } from '@/lib/chartSessionStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
+import { useSignatureFontId, SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,6 +31,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const currentIdentity = useCurrentIdentity();
   const locationOverrides = useLocationOverrides();
   const isChartWriter = !!patient && currentIdentity.id === getEffectiveAssignedEmployeeId(patient, locationOverrides);
+  const signatureFontId = useSignatureFontId(currentIdentity.id);
+  const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
 
   const [editing, setEditing] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -119,10 +123,12 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   const handleSign = () => {
+    if (!signatureFontId) return;
     signChartSession(id, sessionId, {
       empId: currentIdentity.id,
       name: `${currentIdentity.firstName} ${currentIdentity.lastName}`,
       initials: currentIdentity.avatarInitials,
+      signatureFontId,
     });
     setSignOpen(false);
     toast.success('Chart signed and locked.');
@@ -176,7 +182,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
                   <Button size="xs" color="secondary" iconLeading={Pencil} onPress={startEditing}>
                     Edit
                   </Button>
-                  <Button size="xs" color="secondary" iconLeading={FileSignature} onPress={() => setSignOpen(true)}>
+                  <Button size="xs" color="secondary" iconLeading={FileSignature} isDisabled={!signatureFontId} onPress={() => setSignOpen(true)}>
                     Sign & Lock
                   </Button>
                 </>
@@ -185,6 +191,12 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           )}
         </div>
       </div>
+
+      {canEdit && !signatureFontId && (
+        <p className="mb-4 -mt-2 text-xs text-tertiary">
+          Add a signature in <Link href="/account/settings" className="font-medium text-brand-600 hover:underline">Account Settings</Link> before you can sign charts.
+        </p>
+      )}
 
       <div className="flex flex-col gap-4">
         {/* Session summary */}
@@ -222,6 +234,21 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             evaluation={session.evaluation}
             recommendations={session.recommendations}
           />
+        )}
+
+        {isSigned && !editing && (
+          <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+            <span className="mb-2 block text-sm font-semibold text-primary">Signed</span>
+            <span
+              style={{ fontFamily: SIGNATURE_FONTS.find((f) => f.id === session.signatureFontId)?.variable }}
+              className="block text-3xl text-primary"
+            >
+              {session.signedByName}
+            </span>
+            <span className="mt-1 block text-xs text-tertiary">
+              {new Date(session.signedAt!).toLocaleString()}
+            </span>
+          </div>
         )}
 
         {amendments.length > 0 && (
@@ -290,9 +317,17 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           <Dialog>
             <div className="w-full max-w-sm p-6">
               <h2 className="mb-2 text-lg font-semibold text-primary">Sign & Lock Chart?</h2>
-              <p className="mb-6 text-sm text-secondary">
+              <p className="mb-4 text-sm text-secondary">
                 Once signed, <strong>{sessionLabel}</strong> becomes locked and can no longer be edited directly. Any future correction will be added as a separate, dated amendment.
               </p>
+              {signatureFont && (
+                <div className="mb-6 rounded-lg border border-secondary bg-secondary_alt px-4 py-3">
+                  <span className="mb-1 block text-xs text-secondary">This will be stamped as your signature:</span>
+                  <span style={{ fontFamily: signatureFont.variable }} className="block text-2xl text-primary">
+                    {currentIdentity.firstName} {currentIdentity.lastName}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-end gap-3">
                 <Button color="secondary" size="sm" onPress={() => setSignOpen(false)}>
                   Cancel

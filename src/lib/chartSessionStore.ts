@@ -51,12 +51,12 @@ export function deleteChartSession(patientId: string, sessionId: string): void {
   notify(patientId);
 }
 
-export function signChartSession(patientId: string, sessionId: string, signer: { empId: string; name: string; initials: string }): void {
+export function signChartSession(patientId: string, sessionId: string, signer: { empId: string; name: string; initials: string; signatureFontId: string }): void {
   const current = getChartSessions(patientId);
   _state = new Map(_state).set(
     patientId,
     current.map((s) => (s.id === sessionId
-      ? { ...s, signedAt: new Date().toISOString(), signedByEmpId: signer.empId, signedByName: signer.name, signedByInitials: signer.initials }
+      ? { ...s, signedAt: new Date().toISOString(), signedByEmpId: signer.empId, signedByName: signer.name, signedByInitials: signer.initials, signatureFontId: signer.signatureFontId }
       : s
     ))
   );
