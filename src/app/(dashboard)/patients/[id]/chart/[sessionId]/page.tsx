@@ -17,8 +17,9 @@ import {
   emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
   ChartFormBody, ChartReadOnlyBody, HistoryCard,
 } from '@/components/charts/chart-form-sections';
+import { buildChartExport } from '@/lib/chartExport';
 import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
-import { Trash2, Lock, Unlock } from 'lucide-react';
+import { Trash2, Lock, Unlock, Copy, Check } from 'lucide-react';
 
 export default function ChartDetailPage({ params }: { params: Promise<{ id: string; sessionId: string }> }) {
   const { id, sessionId } = use(params);
@@ -35,6 +36,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
 
   const [editing, setEditing] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [signOpen, setSignOpen] = useState(false);
   const [amendmentText, setAmendmentText] = useState('');
@@ -125,6 +127,26 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     toast.success('Signature saved.');
   };
 
+  const handleCopy = async () => {
+    const { text, html } = buildChartExport(session, patient, titleLabel);
+    try {
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([text], { type: 'text/plain' }),
+            'text/html': new Blob([html], { type: 'text/html' }),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2500);
+    } catch {
+      toast.error('Could not copy to clipboard.');
+    }
+  };
+
   const handleAddAmendment = () => {
     if (!amendmentText.trim()) return;
     addAmendment(id, sessionId, {
@@ -153,6 +175,11 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           </h1>
         </div>
         <div className="flex items-center justify-end gap-3">
+          {isSigned && (
+            <Button color="secondary" size="md" iconLeading={copySuccess ? Check : Copy} onPress={handleCopy}>
+              {copySuccess ? 'Copied!' : 'Copy'}
+            </Button>
+          )}
           {!editing ? (
             canEdit && (
               <>
