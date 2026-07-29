@@ -14,10 +14,11 @@ interface BodyMapProps {
   painPoints: PainPoint[];
   armedIndex?: number | null;
   onPlace?: (view: BodyView, x: number, y: number) => void;
+  onCreate?: (view: BodyView, x: number, y: number) => void;
   interactive?: boolean;
 }
 
-export function BodyMap({ painPoints, armedIndex = null, onPlace, interactive = true }: BodyMapProps) {
+export function BodyMap({ painPoints, armedIndex = null, onPlace, onCreate, interactive = true }: BodyMapProps) {
   const [view, setView] = useState<BodyView>('front');
   const [imgError, setImgError] = useState<Partial<Record<BodyView, boolean>>>({});
 
@@ -27,11 +28,15 @@ export function BodyMap({ painPoints, armedIndex = null, onPlace, interactive = 
     .filter(({ p }) => p.bodyView === view && p.x !== undefined && p.y !== undefined);
 
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
-    if (!interactive || armedIndex === null || !onPlace) return;
+    if (!interactive) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    onPlace(view, Math.min(100, Math.max(0, x)), Math.min(100, Math.max(0, y)));
+    const x = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
+    if (armedIndex !== null && onPlace) {
+      onPlace(view, x, y);
+    } else if (armedIndex === null && onCreate) {
+      onCreate(view, x, y);
+    }
   };
 
   return (
@@ -55,15 +60,17 @@ export function BodyMap({ painPoints, armedIndex = null, onPlace, interactive = 
         </div>
       </div>
 
-      {interactive && armedIndex !== null && (
-        <p className="mb-2 text-xs font-medium text-brand-600">Click the diagram to place P{armedIndex + 1}</p>
+      {interactive && (
+        <p className="mb-2 text-xs font-medium text-brand-600">
+          {armedIndex !== null ? `Click the diagram to place P${armedIndex + 1}` : 'Click the diagram to add a pain point'}
+        </p>
       )}
 
       <div
         onClick={handleClick}
         className={cx(
           'relative mx-auto aspect-[3/4] max-w-[320px] select-none rounded-lg',
-          interactive && armedIndex !== null && 'cursor-crosshair ring-2 ring-brand-400',
+          interactive && (armedIndex !== null ? 'cursor-crosshair ring-2 ring-brand-400' : 'cursor-crosshair'),
         )}
       >
         {imgError[view] ? (

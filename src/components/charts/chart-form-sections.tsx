@@ -122,12 +122,19 @@ export function ChartFormBody({
     setArmedIndex(null);
   };
 
+  const handleCreate = (view: 'front' | 'back', x: number, y: number) => {
+    setSubjective((s) => ({
+      ...s,
+      painPoints: [...s.painPoints, { ...emptyPainPoint(), bodyView: view, x, y }],
+    }));
+  };
+
   return (
     <>
       {/* Subjective */}
       <SectionCard letter="S" label="Subjective">
         <Field label="Pain Points">
-          <BodyMap painPoints={subjective.painPoints} armedIndex={armedIndex} onPlace={handlePlace} />
+          <BodyMap painPoints={subjective.painPoints} armedIndex={armedIndex} onPlace={handlePlace} onCreate={handleCreate} />
           <div className="mt-3">
           <RepeatableList
             items={subjective.painPoints}
