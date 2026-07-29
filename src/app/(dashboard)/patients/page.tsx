@@ -12,6 +12,7 @@ import { cx } from '@/utils/cx';
 import { mockChartSessions, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
 import { useLocationScope, useYourEmpId, useAvailableLocationIds } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeId, transferPatient } from '@/lib/patientLocationStore';
+import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { useRole } from '@/lib/roleStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -77,6 +78,7 @@ export default function PatientsPage() {
   const viewMode = useViewMode();
   const role = useRole();
   const locationOverrides = useLocationOverrides();
+  const contactOverrides = useContactOverrides();
   const availableLocationIds = useAvailableLocationIds();
 
   const MVP_HIDDEN = new Set(['pat8', 'pat1']);
@@ -119,23 +121,27 @@ export default function PatientsPage() {
   const applySearch = (list: Patient[]) => {
     const q = search.toLowerCase();
     if (!q) return list;
-    return list.filter((p) =>
-      p.firstName.toLowerCase().includes(q) ||
-      p.lastName.toLowerCase().includes(q) ||
-      p.email.toLowerCase().includes(q) ||
-      getEffectiveLocationString(p, locationOverrides).toLowerCase().includes(q) ||
-      practitionerName(p).toLowerCase().includes(q)
-    );
+    return list.filter((p) => {
+      const contact = getEffectiveContactInfo(p, contactOverrides);
+      return (
+        contact.firstName.toLowerCase().includes(q) ||
+        contact.lastName.toLowerCase().includes(q) ||
+        contact.email.toLowerCase().includes(q) ||
+        getEffectiveLocationString(p, locationOverrides).toLowerCase().includes(q) ||
+        practitionerName(p).toLowerCase().includes(q)
+      );
+    });
   };
 
   const applySort = (list: Patient[]) => {
     const sorted = [...list];
+    const name = (p: Patient) => getEffectiveContactInfo(p, contactOverrides);
     if (sort === 'upcoming') sorted.sort((a, b) => computeEstimatedNext(a.id) - computeEstimatedNext(b.id));
-    else if (sort === 'a-z') sorted.sort((a, b) => a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName));
-    else if (sort === 'z-a') sorted.sort((a, b) => b.firstName.localeCompare(a.firstName) || b.lastName.localeCompare(a.lastName));
+    else if (sort === 'a-z') sorted.sort((a, b) => name(a).firstName.localeCompare(name(b).firstName) || name(a).lastName.localeCompare(name(b).lastName));
+    else if (sort === 'z-a') sorted.sort((a, b) => name(b).firstName.localeCompare(name(a).firstName) || name(b).lastName.localeCompare(name(a).lastName));
     else if (sort === 'location') sorted.sort((a, b) => getEffectiveLocationString(a, locationOverrides).localeCompare(getEffectiveLocationString(b, locationOverrides)));
     // Unassigned patients (no practitioner name) sort first — empty string compares before any name.
-    else if (sort === 'practitioner') sorted.sort((a, b) => practitionerName(a).localeCompare(practitionerName(b)) || a.firstName.localeCompare(b.firstName));
+    else if (sort === 'practitioner') sorted.sort((a, b) => practitionerName(a).localeCompare(practitionerName(b)) || name(a).firstName.localeCompare(name(b).firstName));
     else if (sort === 'oldest') sorted.sort((a, b) => a.id.localeCompare(b.id));
     else sorted.sort((a, b) => b.id.localeCompare(a.id));
     return sorted;
@@ -280,6 +286,7 @@ export default function PatientsPage() {
               const { lastSeen, count } = sessionInfo(patient);
               const condition = conditionChip(patient);
               const assignedEmp = mockEmployees.find((e) => e.id === getEffectiveAssignedEmployeeId(patient, locationOverrides));
+              const contact = getEffectiveContactInfo(patient, contactOverrides);
               return (
                 <div
                   key={patient.id}
@@ -294,9 +301,9 @@ export default function PatientsPage() {
 
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-primary">
-                      {patient.firstName} {patient.lastName}
+                      {contact.firstName} {contact.lastName}
                     </p>
-                    <p className="text-sm text-tertiary mt-0.5">{patient.email}</p>
+                    <p className="text-sm text-tertiary mt-0.5">{contact.email}</p>
                     {condition && !isStaffPersona && !isManagerView && (
                       <div className="mt-2">
                         <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>

@@ -7,6 +7,7 @@ import { Input } from '@/components/base/input/input';
 import { Alert } from '@/components/ui/alert';
 import { Divider } from '@/components/ui/divider';
 import { mockPatients } from '@/lib/mock-data';
+import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { saveUploadedData } from '@/lib/uploadStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { ArrowLeft, FileText, Languages, Star } from 'lucide-react';
@@ -189,9 +190,12 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
   const router = useRouter();
   const viewMode = useViewMode();
   const patient = mockPatients.find((p) => p.id === id);
+  const contactOverrides = useContactOverrides();
   const [fields, setFields] = useState<typeof FAKE_EXTRACTED>({ ...FAKE_EXTRACTED });
 
   if (!patient) return null;
+
+  const contact = getEffectiveContactInfo(patient, contactOverrides);
 
   const set = (key: FieldKey, value: string) =>
     setFields((prev) => ({ ...prev, [key]: value }));
@@ -209,7 +213,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
       <TopBar
         breadcrumbs={[
           { label: 'All Patients', href: '/patients' },
-          { label: `${patient.firstName} ${patient.lastName}`, href: `/patients/${id}/documents` },
+          { label: `${contact.firstName} ${contact.lastName}`, href: `/patients/${id}/documents` },
           { label: 'Review Uploaded PDF' },
         ]}
       />

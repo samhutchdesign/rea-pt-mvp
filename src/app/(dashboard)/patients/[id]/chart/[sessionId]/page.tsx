@@ -7,6 +7,7 @@ import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions, updateChartSession, deleteChartSession, signChartSession, addAmendment } from '@/lib/chartSessionStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
+import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { useSignatureFontId, setSignatureFontId, SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
@@ -32,6 +33,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
 
   const currentIdentity = useCurrentIdentity();
   const locationOverrides = useLocationOverrides();
+  const contactOverrides = useContactOverrides();
   const isChartWriter = !!patient && currentIdentity.id === getEffectiveAssignedEmployeeId(patient, locationOverrides);
   const signatureFontId = useSignatureFontId(currentIdentity.id);
   const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
@@ -59,6 +61,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     return <span className="block p-8 text-secondary">Session not found.</span>;
   }
 
+  const contact = getEffectiveContactInfo(patient, contactOverrides);
   const sessionLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1} of ${sessions.length}`;
   const titleLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1}`;
   const isSigned = !!session.signedAt;
@@ -143,7 +146,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       backPins.length > 0 ? renderBodyMapSnapshot('/body-map/back.svg', backPins) : Promise.resolve(null),
     ]);
 
-    const { text, html } = buildChartExport(session, patient, titleLabel, { front: frontImg, back: backImg });
+    const { text, html } = buildChartExport(session, { ...patient, ...contact }, titleLabel, { front: frontImg, back: backImg });
     try {
       if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
         await navigator.clipboard.write([
@@ -186,7 +189,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         <div className="flex items-center gap-3 justify-self-center">
           {isSigned ? <Lock size={26} className="shrink-0 text-primary" /> : <Unlock size={26} className="shrink-0 text-primary" />}
           <h1 className="whitespace-nowrap text-2xl font-bold text-primary">
-            {patient.firstName} {patient.lastName}&apos;s Chart - {titleLabel}
+            {contact.firstName} {contact.lastName}&apos;s Chart - {titleLabel}
           </h1>
         </div>
         <div className="flex items-center justify-end gap-3">
@@ -382,7 +385,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             <div className="w-full max-w-sm p-6">
               <h2 className="mb-2 text-lg font-semibold text-primary">Delete Session?</h2>
               <p className="mb-6 text-sm text-secondary">
-                This will permanently delete <strong>{sessionLabel}</strong> for {patient.firstName} {patient.lastName}. This cannot be undone.
+                This will permanently delete <strong>{sessionLabel}</strong> for {contact.firstName} {contact.lastName}. This cannot be undone.
               </p>
               <div className="flex justify-end gap-3">
                 <Button color="secondary" size="sm" onPress={() => setDeleteOpen(false)}>

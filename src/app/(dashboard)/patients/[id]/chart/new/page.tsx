@@ -7,6 +7,7 @@ import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions, addChartSession } from '@/lib/chartSessionStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
+import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { Button } from '@/components/base/buttons/button';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,7 +32,9 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const patient = mockPatients.find((p) => p.id === id);
   const currentIdentity = useCurrentIdentity();
   const locationOverrides = useLocationOverrides();
+  const contactOverrides = useContactOverrides();
   const isChartWriter = !!patient && currentIdentity.id === getEffectiveAssignedEmployeeId(patient, locationOverrides);
+  const contact = patient ? getEffectiveContactInfo(patient, contactOverrides) : null;
   const sessions = useChartSessions(id);
   const isIntake = sessions.length === 0;
   const lastSession = [...sessions].sort((a, b) => a.date.localeCompare(b.date)).at(-1);
@@ -79,12 +82,12 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
     router.push(`/patients/${id}/chart`);
   };
 
-  if (!patient) return null;
+  if (!patient || !contact) return null;
 
   if (!isChartWriter) {
     return (
       <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] flex flex-col items-center justify-center gap-4 bg-primary px-6">
-        <p className="max-w-[420px] text-center text-sm text-secondary">Only {patient.firstName} {patient.lastName}&apos;s assigned practitioner can add entries to this chart.</p>
+        <p className="max-w-[420px] text-center text-sm text-secondary">Only {contact.firstName} {contact.lastName}&apos;s assigned practitioner can add entries to this chart.</p>
         <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart`)}>
           Back to Chart
         </Button>
@@ -106,7 +109,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
         <div className="flex items-center gap-3 justify-self-center">
           <Unlock size={26} className="shrink-0 text-primary" />
           <h1 className="whitespace-nowrap text-2xl font-bold text-primary">
-            {patient.firstName} {patient.lastName}&apos;s Chart - {titleLabel}
+            {contact.firstName} {contact.lastName}&apos;s Chart - {titleLabel}
           </h1>
         </div>
         <div className="flex items-center justify-end gap-3">

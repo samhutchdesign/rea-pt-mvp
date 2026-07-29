@@ -26,7 +26,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
     if (searchParams.get('welcome') === '1') toast.success('Success! The patient has received their documents.');
   }, [searchParams]);
 
-  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(() => searchParams.get('transfer') === '1');
   const [selectedLocationId, setSelectedLocationId] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
 

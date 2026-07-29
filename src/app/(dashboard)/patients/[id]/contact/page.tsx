@@ -5,23 +5,26 @@ import { Button } from '@/components/base/buttons/button';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
+import { useContactOverrides, setContactInfo, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { Pencil } from 'lucide-react';
 
 export default function PatientContactPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const patient = mockPatients.find((p) => p.id === id);
   const uploaded = getUploadedData(id);
+  const contactOverrides = useContactOverrides();
 
   const [editingContact, setEditingContact] = useState(false);
   const [editingEmergency, setEditingEmergency] = useState(false);
 
-  const [savedContact, setSavedContact] = useState({
-    firstName: patient?.firstName ?? '',
-    lastName: patient?.lastName ?? '',
-    phone: uploaded?.phone || patient?.phone || '',
-    email: patient?.email ?? '',
-    address: uploaded?.address || patient?.address || '',
-  });
+  const effectiveContact = patient ? getEffectiveContactInfo(patient, contactOverrides) : null;
+  const savedContact = {
+    firstName: effectiveContact?.firstName ?? '',
+    lastName: effectiveContact?.lastName ?? '',
+    phone: uploaded?.phone || effectiveContact?.phone || '',
+    email: effectiveContact?.email ?? '',
+    address: uploaded?.address || effectiveContact?.address || '',
+  };
   const [savedEmergency, setSavedEmergency] = useState({
     firstName: uploaded?.emergencyFirstName || patient?.emergencyContact?.firstName || '',
     lastName: uploaded?.emergencyLastName || patient?.emergencyContact?.lastName || '',
@@ -43,7 +46,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   };
 
   const handleSaveContact = () => {
-    setSavedContact({ ...contactDraft });
+    setContactInfo(id, { ...contactDraft });
     setEditingContact(false);
     toast.success('Contact information updated.');
   };

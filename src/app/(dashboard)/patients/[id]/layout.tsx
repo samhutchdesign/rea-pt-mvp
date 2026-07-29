@@ -7,20 +7,20 @@ import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Badge } from '@/components/base/badges/badges';
 import { Button } from '@/components/base/buttons/button';
-import { Input } from '@/components/base/input/input';
-import { Divider } from '@/components/ui/divider';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
+import { PatientHeaderMenu } from '@/components/patients/PatientHeaderMenu';
 import { mockPatients, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
 import { useYourEmpId, useAvailableLocationIds } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveLocationString, getEffectiveAssignedEmployeeId, transferPatient } from '@/lib/patientLocationStore';
+import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { clearUploadedData } from '@/lib/uploadStore';
 import { cx } from '@/utils/cx';
-import { Inbox, Mail, MapPin, Pencil } from 'lucide-react';
+import { Inbox, Mail, MapPin } from 'lucide-react';
 
 const ALL_TABS = [
   { label: 'Overview', path: 'overview' },
@@ -64,6 +64,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const router = useRouter();
   const patient = mockPatients.find((p) => p.id === id);
   const locationOverrides = useLocationOverrides();
+  const contactOverrides = useContactOverrides();
 
   const [archived, setArchived] = useState(patient?.archived ?? false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
@@ -71,13 +72,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [restoreOpen, setRestoreOpen] = useState(false);
   const [restoreLocationId, setRestoreLocationId] = useState('');
   const [restorePtId, setRestorePtId] = useState('');
-  const [editOpen, setEditOpen] = useState(false);
-  const [editForm, setEditForm] = useState({
-    firstName: patient?.firstName ?? '',
-    lastName: patient?.lastName ?? '',
-    email: patient?.email ?? '',
-    locationId: locationOverrides.get(id)?.locationId ?? '',
-  });
 
   const can = usePermissions();
   const role = useRole();
@@ -113,7 +107,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
   const handleArchive = () => {
     setArchived(true);
-    setEditOpen(false);
     setConfirmArchiveOpen(false);
     toast.warning(`${patient.firstName} ${patient.lastName} has been archived.`);
   };
@@ -155,11 +148,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     router.push('/patients');
   };
 
-  const handleSaveProfile = () => {
-    setEditOpen(false);
-    toast.success('Profile updated successfully.');
-  };
-
+  const effectiveContact = getEffectiveContactInfo(patient, contactOverrides);
   const selectedIndex = activeTab === -1 ? 0 : activeTab;
 
   return (
@@ -167,7 +156,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
       <TopBar
         breadcrumbs={[
           { label: 'All Patients', href: '/patients' },
-          { label: `${patient.firstName} ${patient.lastName}`, href: `/patients/${id}/overview` },
+          { label: `${effectiveContact.firstName} ${effectiveContact.lastName}`, href: `/patients/${id}/overview` },
           { label: currentTab.label },
         ]}
       />
@@ -183,12 +172,12 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             <Avatar initials={patient.avatarInitials} size="xl" className={archived ? 'opacity-60' : ''} />
             <div className="flex-1 min-w-0">
               <h1 className="text-display-xs font-semibold text-primary" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
-                {patient.firstName} {patient.lastName}
+                {effectiveContact.firstName} {effectiveContact.lastName}
               </h1>
               <div className="flex gap-4 mt-1">
                 <div className="flex items-center gap-1.5">
                   <Mail size={14} className="text-quaternary" />
-                  <span className="text-sm text-tertiary">{patient.email}</span>
+                  <span className="text-sm text-tertiary">{effectiveContact.email}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <MapPin size={14} className="text-quaternary" />
@@ -213,17 +202,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
               </div>
             )}
             {canEdit && !archived && (
-              <Button
-                size="sm"
-                color="secondary"
-                iconLeading={Pencil}
-                onPress={() => {
-                  setEditForm({ firstName: patient.firstName, lastName: patient.lastName, email: patient.email, locationId: locationOverrides.get(id)?.locationId ?? '' });
-                  setEditOpen(true);
-                }}
-              >
-                Edit Profile
-              </Button>
+              <PatientHeaderMenu
+                canArchive={can.canArchivePatient}
+                onArchive={() => setConfirmArchiveOpen(true)}
+                onReassign={() => router.push(`/patients/${id}/overview?transfer=1`)}
+              />
             )}
           </div>
 
@@ -250,53 +233,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           {children}
         </div>
       </div>
-
-      {/* Edit Profile Modal */}
-      <ModalOverlay isOpen={editOpen} onOpenChange={(v) => { if (!v) setEditOpen(false); }}>
-        <Modal className="w-full max-w-lg">
-          <Dialog>
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-primary mb-5">Edit Profile</h2>
-              <div className="flex flex-col gap-4">
-                <div className="flex gap-3">
-                  <Input label="First Name" value={editForm.firstName} onChange={(v) => setEditForm((f) => ({ ...f, firstName: v }))} />
-                  <Input label="Last Name" value={editForm.lastName} onChange={(v) => setEditForm((f) => ({ ...f, lastName: v }))} />
-                </div>
-                <Input label="Email" value={editForm.email} onChange={(v) => setEditForm((f) => ({ ...f, email: v }))} />
-                <div>
-                  <label className="block text-sm font-medium text-secondary mb-1.5">Location</label>
-                  <NativeSelect
-                    value={editForm.locationId}
-                    onChange={(e) => setEditForm((f) => ({ ...f, locationId: e.target.value }))}
-                  >
-                    <option value="">Select a location</option>
-                    {mockClinicLocations.map((loc) => (
-                      <option key={loc.id} value={loc.id}>{loc.name} — {loc.city}, {loc.regionCountry}</option>
-                    ))}
-                  </NativeSelect>
-                </div>
-
-                {can.canArchivePatient && (
-                  <>
-                    <Divider />
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-tertiary mb-2">Danger Zone</p>
-                      <Button size="sm" color="secondary" iconLeading={Inbox} onPress={() => setConfirmArchiveOpen(true)}>
-                        Archive Patient
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <Button color="secondary" onPress={() => setEditOpen(false)}>Cancel</Button>
-                <Button color="primary" onPress={handleSaveProfile}>Save Changes</Button>
-              </div>
-            </div>
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
 
       {/* Restore Patient Dialog */}
       <ModalOverlay isOpen={restoreOpen} onOpenChange={(v) => { if (!v) setRestoreOpen(false); }}>

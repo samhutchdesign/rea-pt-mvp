@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/base/buttons/button';
 import { Divider } from '@/components/ui/divider';
 import { mockPatients, mockPrograms, mockExercises } from '@/lib/mock-data';
+import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { Send } from 'lucide-react';
 
@@ -12,10 +13,12 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
   const { id } = use(params);
   const router = useRouter();
   const patient = mockPatients.find((p) => p.id === id);
+  const contactOverrides = useContactOverrides();
+  const contact = patient ? getEffectiveContactInfo(patient, contactOverrides) : null;
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
 
   const templateMessage = program
-    ? `Hi ${patient?.firstName},\n\nI hope you're doing well! Please find your updated home exercise program attached below. I've put together ${program.exercises.length} exercises tailored to your current treatment plan.\n\nPlease aim to complete your exercises as prescribed. If you have any questions or experience any discomfort, don't hesitate to reach out.\n\nWarm regards,\nSarah Harper, PT, DPT, PRPC\nRea Pelvic Health`
+    ? `Hi ${contact?.firstName},\n\nI hope you're doing well! Please find your updated home exercise program attached below. I've put together ${program.exercises.length} exercises tailored to your current treatment plan.\n\nPlease aim to complete your exercises as prescribed. If you have any questions or experience any discomfort, don't hesitate to reach out.\n\nWarm regards,\nSarah Harper, PT, DPT, PRPC\nRea Pelvic Health`
     : '';
 
   const [message, setMessage] = useState(templateMessage);
@@ -25,14 +28,14 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
     setTimeout(() => router.push(`/patients/${id}/program`), 1500);
   };
 
-  if (!patient || !program) return (
+  if (!patient || !program || !contact) return (
     <p className="block p-8 text-secondary">No program to send.</p>
   );
 
   return (
     <div className="max-w-[700px]">
       <h3 className="mt-0 mb-1 text-xl font-semibold text-primary">Send Program to Patient</h3>
-      <p className="mb-6 text-sm text-secondary">{patient.firstName} {patient.lastName} · {patient.email}</p>
+      <p className="mb-6 text-sm text-secondary">{contact.firstName} {contact.lastName} · {contact.email}</p>
 
       {/* Message */}
       <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
