@@ -167,7 +167,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </Alert>
         )}
 
-        <div className="px-8 pt-8">
+        <div className="px-8 pt-4">
           <div className="flex items-start gap-5 mb-6">
             <Avatar initials={patient.avatarInitials} size="xl" className={archived ? 'opacity-60' : ''} />
             <div className="flex-1 min-w-0">
@@ -212,7 +212,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-secondary">
+          <div className="flex border-b border-secondary pt-3">
             {patientTabs.map((tab, i) => (
               <Link
                 key={tab.path}
