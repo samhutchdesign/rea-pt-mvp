@@ -11,7 +11,7 @@ export function renderBodyMapSnapshot(imgSrc: string, pins: Pin[]): Promise<stri
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
-      const width = 480;
+      const width = 320;
       const height = Math.round(width * (img.naturalHeight / img.naturalWidth || 4 / 3));
       const canvas = document.createElement('canvas');
       canvas.width = width;
@@ -27,14 +27,14 @@ export function renderBodyMapSnapshot(imgSrc: string, pins: Pin[]): Promise<stri
         const px = (p.x / 100) * width;
         const py = (p.y / 100) * height;
         ctx.beginPath();
-        ctx.arc(px, py, 15, 0, Math.PI * 2);
+        ctx.arc(px, py, 16, 0, Math.PI * 2);
         ctx.fillStyle = BRAND_600;
         ctx.fill();
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#ffffff';
         ctx.stroke();
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 14px Arial, sans-serif';
+        ctx.font = 'bold 19px Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(p.label, px, py + 1);
