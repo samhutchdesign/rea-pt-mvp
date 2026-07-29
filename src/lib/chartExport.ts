@@ -73,10 +73,10 @@ export function buildChartExport(
     text.push('S — SUBJECTIVE');
     html.push(`<h2 style="${H2}">S — Subjective</h2>`);
     if (bodyMapImages?.front) {
-      html.push(`<img src="${bodyMapImages.front}" alt="Pain diagram — Front" style="display:block;max-width:140px;width:100%;height:auto;border:1px solid #ddd;border-radius:8px;margin:0 0 8px;" />`);
+      html.push(`<img src="${bodyMapImages.front}" alt="Pain diagram — Front" style="display:block;max-width:140px;width:100%;height:auto;margin:0 0 8px;" />`);
     }
     if (bodyMapImages?.back) {
-      html.push(`<img src="${bodyMapImages.back}" alt="Pain diagram — Back" style="display:block;max-width:140px;width:100%;height:auto;border:1px solid #ddd;border-radius:8px;margin:0 0 8px;" />`);
+      html.push(`<img src="${bodyMapImages.back}" alt="Pain diagram — Back" style="display:block;max-width:140px;width:100%;height:auto;margin:0 0 8px;" />`);
     }
     if (s.painPoints.length === 0) {
       text.push('No pain points reported.');
