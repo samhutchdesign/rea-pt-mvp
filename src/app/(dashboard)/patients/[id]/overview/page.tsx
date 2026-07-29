@@ -26,9 +26,13 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
     if (searchParams.get('welcome') === '1') toast.success('Success! The patient has received their documents.');
   }, [searchParams]);
 
-  const [transferOpen, setTransferOpen] = useState(() => searchParams.get('transfer') === '1');
+  const [transferOpen, setTransferOpen] = useState(false);
   const [selectedLocationId, setSelectedLocationId] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+
+  useEffect(() => {
+    if (searchParams.get('transfer') === '1') setTransferOpen(true);
+  }, [searchParams]);
 
   const patient = mockPatients.find((p) => p.id === id);
   const showUploadBanner = searchParams.get('uploaded') === 'true' && !uploadBannerDismissed;
