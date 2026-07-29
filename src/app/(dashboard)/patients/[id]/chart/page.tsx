@@ -1,13 +1,17 @@
 'use client';
-import { use } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions } from '@/lib/chartSessionStore';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
+import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { Button } from '@/components/base/buttons/button';
-import { Plus, Lock, ChevronRight } from 'lucide-react';
+import { ChartSessionReadPanel } from '@/components/charts/chart-form-sections';
+import { copyChartSessionToClipboard } from '@/lib/chartExport';
+import { Plus, Lock, Unlock, Copy, Check } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 const ADHERENCE_STYLE: Record<string, { bg: string; text: string }> = {
@@ -25,70 +29,141 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   const patient = mockPatients.find((p) => p.id === id);
   const currentIdentity = useCurrentIdentity();
   const locationOverrides = useLocationOverrides();
+  const contactOverrides = useContactOverrides();
   const assignedEmpId = patient ? getEffectiveAssignedEmployeeId(patient, locationOverrides) : null;
   const isChartWriter = !!patient && currentIdentity.id === assignedEmpId;
 
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(sessions[0]?.id ?? null);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const selectedIndex = sessions.findIndex((s) => s.id === selectedSessionId);
+  const selectedSession = selectedIndex >= 0 ? sessions[selectedIndex] : null;
+
+  if (!patient) return null;
+
+  const contact = getEffectiveContactInfo(patient, contactOverrides);
+  const sessionCount = sessions.length;
+  const titleLabel = selectedSession
+    ? selectedSession.isIntakeSession
+      ? 'Intake Session'
+      : `Session ${sessionCount - selectedIndex}`
+    : '';
+  const canEditSelected = isChartWriter && !!selectedSession && !selectedSession.signedAt;
+
+  const handleCopy = async () => {
+    if (!selectedSession) return;
+    try {
+      await copyChartSessionToClipboard(selectedSession, { ...patient, ...contact }, titleLabel);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2500);
+    } catch {
+      toast.error('Could not copy to clipboard.');
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-end items-center mb-6 gap-3">
-        {!isChartWriter && (
+    <div className="grid grid-cols-[minmax(0,320px)_1fr] gap-6 items-start">
+      {/* Left pane: session list */}
+      <div className="flex flex-col gap-3">
+        {isChartWriter ? (
+          <Button
+            color="secondary"
+            size="sm"
+            iconLeading={Plus}
+            onPress={() => router.push(`/patients/${id}/chart/new`)}
+            className="w-full justify-center"
+          >
+            Create New Chart
+          </Button>
+        ) : (
           <span className="text-xs text-tertiary italic">
             {assignedEmpId ? 'Only the assigned practitioner can add chart entries.' : 'No practitioner is assigned to this patient yet.'}
           </span>
         )}
-        {isChartWriter && (
-          <Button
-            color="primary"
-            size="sm"
-            iconLeading={Plus}
-            onPress={() => router.push(`/patients/${id}/chart/new`)}
-          >
-            Add New Chart
-          </Button>
-        )}
-      </div>
 
-      {sessions.length === 0 ? (
-        <span className="text-secondary text-sm">No sessions recorded yet.</span>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {sessions.map((session) => (
-            <div
-              key={session.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => router.push(`/patients/${id}/chart/${session.id}`)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') router.push(`/patients/${id}/chart/${session.id}`); }}
-              className="rounded-xl border border-secondary bg-primary shadow-xs p-5 cursor-pointer transition-colors hover:bg-secondary_alt"
-            >
-              <div className="flex justify-between items-start gap-2">
-                <div className="flex-1 min-w-0">
+        {sessions.length === 0 ? (
+          <span className="text-secondary text-sm">No sessions recorded yet.</span>
+        ) : (
+          sessions.map((session, i) => {
+            const isSelected = session.id === selectedSessionId;
+            return (
+              <div
+                key={session.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedSessionId(session.id)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
+                className={cx(
+                  'rounded-xl border p-4 cursor-pointer transition-colors',
+                  isSelected ? 'border-brand-600 bg-brand-50' : 'border-secondary bg-primary hover:bg-secondary_alt'
+                )}
+              >
                 <div className="flex items-center gap-2 flex-wrap">
-                  {session.signedAt && <Lock size={12} className="text-tertiary shrink-0" />}
+                  {session.signedAt ? (
+                    <Lock size={12} className="text-tertiary shrink-0" />
+                  ) : (
+                    <Unlock size={12} className="text-tertiary shrink-0" />
+                  )}
                   <span className="font-semibold text-sm text-primary">
-                    {session.isIntakeSession
-                      ? `Intake Session – ${new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
-                      : `Session – ${new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`}
+                    {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
                   </span>
-                  {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
-                    const s = ADHERENCE_STYLE[session.adherenceLevel];
-                    return (
-                      <span className={cx('inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold', s?.bg, s?.text)}>
-                        {session.adherenceLevel}
-                      </span>
-                    );
-                  })()}
                 </div>
+                <span className="mt-1 block text-xs text-tertiary">
+                  {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </span>
+                {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
+                  const s = ADHERENCE_STYLE[session.adherenceLevel];
+                  return (
+                    <span className={cx('mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold', s?.bg, s?.text)}>
+                      {session.adherenceLevel}
+                    </span>
+                  );
+                })()}
                 {viewMode === 'full' && session.summary && (
                   <p className="text-xs text-tertiary mt-1.5 line-clamp-2">{session.summary}</p>
                 )}
-                </div>
-                <ChevronRight size={18} className="text-quaternary shrink-0 mt-0.5" />
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Right pane: selected session, read-only */}
+      <div>
+        {selectedSession ? (
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-4 border-b border-secondary pb-4">
+              <div>
+                <h2 className="text-xl font-bold text-primary">{titleLabel}</h2>
+                <span className="text-sm text-tertiary">
+                  {new Date(selectedSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                {selectedSession.signedAt && (
+                  <Button color="secondary" size="sm" iconLeading={copySuccess ? Check : Copy} onPress={handleCopy}>
+                    {copySuccess ? 'Copied!' : 'Copy'}
+                  </Button>
+                )}
+                {canEditSelected && (
+                  <>
+                    <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?edit=1`)}>
+                      Edit
+                    </Button>
+                    <Button color="primary" size="sm" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?sign=1`)}>
+                      Sign & Lock
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
-          ))}
-        </div>
-      )}
+
+            <ChartSessionReadPanel patient={patient} session={selectedSession} />
+          </div>
+        ) : (
+          <span className="text-secondary text-sm">Select a session to view its chart.</span>
+        )}
+      </div>
     </div>
   );
 }

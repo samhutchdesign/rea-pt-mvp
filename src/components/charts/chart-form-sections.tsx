@@ -6,9 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Field } from '@/components/ui/field';
 import { RepeatableList } from '@/components/ui/repeatable-list';
 import { BodyMap } from '@/components/charts/body-map';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { MapPin } from 'lucide-react';
 import type {
-  Patient, PainPoint, RomEntry, ProblemListItem, GoalItem, PlanItem, InterventionItem,
+  Patient, ChartSession, PainPoint, RomEntry, ProblemListItem, GoalItem, PlanItem, InterventionItem,
   SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, EvaluationSection,
 } from '@/lib/types';
 
@@ -571,5 +573,65 @@ export function ChartReadOnlyBody({ subjective, objective, analysis, plan, inter
         )}
       </SectionCard>
     </>
+  );
+}
+
+/** Read-only body for a single chart session — Notes, History (intake only), H-SOAPIER sections,
+ *  Signed card, and Amendments. Shared between the full-screen chart page and the inline Chart tab view. */
+export function ChartSessionReadPanel({ patient, session }: { patient: Patient; session: ChartSession }) {
+  const amendments = session.amendments ?? [];
+  const signatureFont = SIGNATURE_FONTS.find((f) => f.id === session.signatureFontId);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+        <span className="mb-2 block text-sm font-semibold text-primary">Notes</span>
+        <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
+      </div>
+
+      <p className="mt-2 text-sm font-semibold text-primary">H-SOAPIER Chart</p>
+
+      {session.isIntakeSession && <HistoryCard patient={patient} />}
+
+      <ChartReadOnlyBody
+        subjective={session.subjective}
+        objective={session.objective}
+        analysis={session.analysis}
+        plan={session.plan}
+        interventions={session.interventions}
+        evaluation={session.evaluation}
+        recommendations={session.recommendations}
+      />
+
+      {session.signedAt && (
+        <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+          <span className="mb-2 block text-sm font-semibold text-primary">Signed</span>
+          <span style={{ fontFamily: signatureFont?.variable }} className="block text-3xl text-primary">
+            {session.signedByName}
+          </span>
+          <span className="mt-1 block text-xs text-tertiary">
+            {new Date(session.signedAt).toLocaleString()}
+          </span>
+        </div>
+      )}
+
+      {amendments.length > 0 && (
+        <div>
+          <p className="mb-3 text-sm font-semibold text-primary">Amendments</p>
+          <div className="flex flex-col gap-3">
+            {amendments.map((a) => (
+              <div key={a.id} className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <Avatar initials={a.authorInitials} size="xs" />
+                  <span className="text-xs font-semibold text-amber-900">{a.authorName}</span>
+                  <span className="text-xs text-amber-700">{new Date(a.createdAt).toLocaleString()}</span>
+                </div>
+                <p className="whitespace-pre-wrap text-sm text-amber-900">{a.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

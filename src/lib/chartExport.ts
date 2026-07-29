@@ -1,4 +1,5 @@
 import type { ChartSession, Patient } from './types';
+import { renderBodyMapSnapshot } from './bodyMapSnapshot';
 
 function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -254,4 +255,33 @@ export function buildChartExport(
     text: text.join('\n').trim() + '\n',
     html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#222;max-width:640px;">${html.join('')}</div>`,
   };
+}
+
+/** Renders the body-map pain-diagram snapshots and copies the full chart (text + HTML) to the clipboard. */
+export async function copyChartSessionToClipboard(session: ChartSession, patient: Patient, titleLabel: string): Promise<void> {
+  const painPoints = session.subjective.painPoints;
+  const pinsFor = (view: 'front' | 'back') =>
+    painPoints
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => p.bodyView === view && p.x !== undefined && p.y !== undefined)
+      .map(({ p, i }) => ({ x: p.x!, y: p.y!, label: String(i + 1) }));
+
+  const frontPins = pinsFor('front');
+  const backPins = pinsFor('back');
+  const [frontImg, backImg] = await Promise.all([
+    frontPins.length > 0 ? renderBodyMapSnapshot('/body-map/front.svg', frontPins) : Promise.resolve(null),
+    backPins.length > 0 ? renderBodyMapSnapshot('/body-map/back.svg', backPins) : Promise.resolve(null),
+  ]);
+
+  const { text, html } = buildChartExport(session, patient, titleLabel, { front: frontImg, back: backImg });
+  if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/plain': new Blob([text], { type: 'text/plain' }),
+        'text/html': new Blob([html], { type: 'text/html' }),
+      }),
+    ]);
+  } else {
+    await navigator.clipboard.writeText(text);
+  }
 }

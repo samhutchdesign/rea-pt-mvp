@@ -1,6 +1,6 @@
 'use client';
-import { use, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { use, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
@@ -10,22 +10,21 @@ import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/pati
 import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { useSignatureFontId, setSignatureFontId, SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { Button } from '@/components/base/buttons/button';
-import { Avatar } from '@/components/base/avatar/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { SignatureFontPicker } from '@/components/ui/signature-font-picker';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import {
   emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
-  ChartFormBody, ChartReadOnlyBody, HistoryCard,
+  ChartFormBody, HistoryCard, ChartSessionReadPanel,
 } from '@/components/charts/chart-form-sections';
-import { buildChartExport } from '@/lib/chartExport';
-import { renderBodyMapSnapshot } from '@/lib/bodyMapSnapshot';
+import { copyChartSessionToClipboard } from '@/lib/chartExport';
 import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
 import { Trash2, Lock, Unlock, Copy, Check } from 'lucide-react';
 
 export default function ChartDetailPage({ params }: { params: Promise<{ id: string; sessionId: string }> }) {
   const { id, sessionId } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const patient = mockPatients.find((p) => p.id === id);
   const sessions = useChartSessions(id);
   const session = sessions.find((s) => s.id === sessionId);
@@ -37,6 +36,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const isChartWriter = !!patient && currentIdentity.id === getEffectiveAssignedEmployeeId(patient, locationOverrides);
   const signatureFontId = useSignatureFontId(currentIdentity.id);
   const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
+  const isSigned = !!session?.signedAt;
+  const canEdit = isChartWriter && !isSigned;
 
   const [editing, setEditing] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -57,18 +58,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     (session?.recommendations ?? []).map((text) => ({ text }))
   );
 
-  if (!patient || !session) {
-    return <span className="block p-8 text-secondary">Session not found.</span>;
-  }
-
-  const contact = getEffectiveContactInfo(patient, contactOverrides);
-  const sessionLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1} of ${sessions.length}`;
-  const titleLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1}`;
-  const isSigned = !!session.signedAt;
-  const canEdit = isChartWriter && !isSigned;
-  const amendments = session.amendments ?? [];
-
   const startEditing = () => {
+    if (!session) return;
     setSummary(session.summary);
     setSubjective(session.subjective);
     setObjective(session.objective);
@@ -79,6 +70,24 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     setRecommendations(session.recommendations.map((text) => ({ text })));
     setEditing(true);
   };
+
+  // Deep-links from the inline Chart tab view: ?edit=1 opens straight into edit mode,
+  // ?sign=1 opens straight into the Sign & Lock confirmation, so there's no redundant second click.
+  useEffect(() => {
+    if (searchParams.get('edit') === '1' && canEdit) startEditing();
+  }, [searchParams, canEdit]);
+
+  useEffect(() => {
+    if (searchParams.get('sign') === '1') setSignOpen(true);
+  }, [searchParams]);
+
+  if (!patient || !session) {
+    return <span className="block p-8 text-secondary">Session not found.</span>;
+  }
+
+  const contact = getEffectiveContactInfo(patient, contactOverrides);
+  const sessionLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1} of ${sessions.length}`;
+  const titleLabel = session.isIntakeSession ? 'Intake Session' : `Session ${sessionIndex + 1}`;
 
   const persistEdits = () => {
     updateChartSession(id, {
@@ -132,32 +141,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   const handleCopy = async () => {
-    const painPoints = session.subjective.painPoints;
-    const pinsFor = (view: 'front' | 'back') =>
-      painPoints
-        .map((p, i) => ({ p, i }))
-        .filter(({ p }) => p.bodyView === view && p.x !== undefined && p.y !== undefined)
-        .map(({ p, i }) => ({ x: p.x!, y: p.y!, label: String(i + 1) }));
-
-    const frontPins = pinsFor('front');
-    const backPins = pinsFor('back');
-    const [frontImg, backImg] = await Promise.all([
-      frontPins.length > 0 ? renderBodyMapSnapshot('/body-map/front.svg', frontPins) : Promise.resolve(null),
-      backPins.length > 0 ? renderBodyMapSnapshot('/body-map/back.svg', backPins) : Promise.resolve(null),
-    ]);
-
-    const { text, html } = buildChartExport(session, { ...patient, ...contact }, titleLabel, { front: frontImg, back: backImg });
     try {
-      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            'text/plain': new Blob([text], { type: 'text/plain' }),
-            'text/html': new Blob([html], { type: 'text/html' }),
-          }),
-        ]);
-      } else {
-        await navigator.clipboard.writeText(text);
-      }
+      await copyChartSessionToClipboard(session, { ...patient, ...contact }, titleLabel);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2500);
     } catch {
@@ -248,22 +233,18 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
-        {/* Notes */}
-        <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
-          <span className="mb-2 block text-sm font-semibold text-primary">Notes</span>
-          {editing ? (
+      {editing ? (
+        <div className="flex flex-col gap-4">
+          {/* Notes */}
+          <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+            <span className="mb-2 block text-sm font-semibold text-primary">Notes</span>
             <Textarea rows={6} value={summary} onChange={(e) => setSummary(e.target.value)} />
-          ) : (
-            <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
-          )}
-        </div>
+          </div>
 
-        <p className="mt-2 text-sm font-semibold text-primary">H-SOAPIER Chart</p>
+          <p className="mt-2 text-sm font-semibold text-primary">H-SOAPIER Chart</p>
 
-        {session.isIntakeSession && <HistoryCard patient={patient} />}
+          {session.isIntakeSession && <HistoryCard patient={patient} />}
 
-        {editing ? (
           <ChartFormBody
             subjective={subjective} setSubjective={setSubjective}
             objective={objective} setObjective={setObjective}
@@ -274,68 +255,27 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             evaluation={evaluation} setEvaluation={setEvaluation}
             recommendations={recommendations} setRecommendations={setRecommendations}
           />
-        ) : (
-          <ChartReadOnlyBody
-            subjective={session.subjective}
-            objective={session.objective}
-            analysis={session.analysis}
-            plan={session.plan}
-            interventions={session.interventions}
-            evaluation={session.evaluation}
-            recommendations={session.recommendations}
+        </div>
+      ) : (
+        <ChartSessionReadPanel patient={patient} session={session} />
+      )}
+
+      {isChartWriter && isSigned && !editing && (
+        <div className="mt-4 rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+          <span className="mb-2 block text-sm font-semibold text-primary">Add Amendment</span>
+          <Textarea
+            rows={3}
+            placeholder="This chart is signed and locked. Add a dated, attributed amendment instead of editing the original entry…"
+            value={amendmentText}
+            onChange={(e) => setAmendmentText(e.target.value)}
           />
-        )}
-
-        {isSigned && !editing && (
-          <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
-            <span className="mb-2 block text-sm font-semibold text-primary">Signed</span>
-            <span
-              style={{ fontFamily: SIGNATURE_FONTS.find((f) => f.id === session.signatureFontId)?.variable }}
-              className="block text-3xl text-primary"
-            >
-              {session.signedByName}
-            </span>
-            <span className="mt-1 block text-xs text-tertiary">
-              {new Date(session.signedAt!).toLocaleString()}
-            </span>
+          <div className="mt-3 flex justify-end">
+            <Button size="sm" color="secondary" isDisabled={!amendmentText.trim()} onPress={handleAddAmendment}>
+              Add Amendment
+            </Button>
           </div>
-        )}
-
-        {amendments.length > 0 && (
-          <div>
-            <p className="mb-3 text-sm font-semibold text-primary">Amendments</p>
-            <div className="flex flex-col gap-3">
-              {amendments.map((a) => (
-                <div key={a.id} className="rounded-xl border border-amber-300 bg-amber-50 p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Avatar initials={a.authorInitials} size="xs" />
-                    <span className="text-xs font-semibold text-amber-900">{a.authorName}</span>
-                    <span className="text-xs text-amber-700">{new Date(a.createdAt).toLocaleString()}</span>
-                  </div>
-                  <p className="whitespace-pre-wrap text-sm text-amber-900">{a.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {isChartWriter && isSigned && !editing && (
-          <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
-            <span className="mb-2 block text-sm font-semibold text-primary">Add Amendment</span>
-            <Textarea
-              rows={3}
-              placeholder="This chart is signed and locked. Add a dated, attributed amendment instead of editing the original entry…"
-              value={amendmentText}
-              onChange={(e) => setAmendmentText(e.target.value)}
-            />
-            <div className="mt-3 flex justify-end">
-              <Button size="sm" color="secondary" isDisabled={!amendmentText.trim()} onPress={handleAddAmendment}>
-                Add Amendment
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {editing && (
         <div className="mt-8 border-t border-secondary pt-6">
