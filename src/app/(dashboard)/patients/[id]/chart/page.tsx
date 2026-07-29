@@ -62,9 +62,9 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   };
 
   return (
-    <div className="grid grid-cols-[minmax(0,320px)_1fr] gap-6 items-start">
+    <div className="sticky top-[96px] grid h-[calc(100vh-128px)] grid-cols-[minmax(0,320px)_1fr] items-start gap-6">
       {/* Left pane: session list */}
-      <div className="flex flex-col gap-3">
+      <div className="h-full overflow-y-auto flex flex-col gap-3">
         {isChartWriter ? (
           <Button
             color="secondary"
@@ -80,6 +80,8 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
             {assignedEmpId ? 'Only the assigned practitioner can add chart entries.' : 'No practitioner is assigned to this patient yet.'}
           </span>
         )}
+
+        <div className="border-b border-secondary" />
 
         {sessions.length === 0 ? (
           <span className="text-secondary text-sm">No sessions recorded yet.</span>
@@ -129,10 +131,10 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Right pane: selected session, read-only */}
-      <div>
+      <div className="h-full overflow-y-auto border-l border-secondary pl-6">
         {selectedSession ? (
           <div className="flex flex-col gap-4">
-            <div className="flex items-start justify-between gap-4 border-b border-secondary pb-4">
+            <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold text-primary">{titleLabel}</h2>
                 <span className="text-sm text-tertiary">
