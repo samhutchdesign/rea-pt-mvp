@@ -143,27 +143,30 @@ export function ChartFormBody({
             addLabel="Add Pain Point"
             emptyLabel="No pain points reported."
             renderRow={(pp, update, index) => (
-              <div className="flex flex-col gap-3">
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Field label="Location"><input className={inputCls} value={pp.location} onChange={(e) => update({ location: e.target.value })} /></Field>
-                  <Field label="Description"><input className={inputCls} value={pp.description} onChange={(e) => update({ description: e.target.value })} /></Field>
-                  <Field label="NPRS (0-10)"><input type="number" min={0} max={10} className={inputCls} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} /></Field>
-                  <Field label="Pattern">
-                    <NativeSelect value={pp.pattern} onChange={(e) => update({ pattern: e.target.value as PainPoint['pattern'] })}>
-                      <option value="constant">Constant</option>
-                      <option value="intermittent">Intermittent</option>
-                    </NativeSelect>
-                  </Field>
-                  <Field label="Aggravating Factors"><input className={inputCls} value={pp.aggravating} onChange={(e) => update({ aggravating: e.target.value })} /></Field>
-                  <Field label="Easing Factors"><input className={inputCls} value={pp.easing} onChange={(e) => update({ easing: e.target.value })} /></Field>
+              <div className="flex gap-3">
+                <PainPointBadge index={index} />
+                <div className="flex flex-1 flex-col gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Field label="Location"><input className={inputCls} value={pp.location} onChange={(e) => update({ location: e.target.value })} /></Field>
+                    <Field label="Description"><input className={inputCls} value={pp.description} onChange={(e) => update({ description: e.target.value })} /></Field>
+                    <Field label="NPRS (0-10)"><input type="number" min={0} max={10} className={inputCls} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} /></Field>
+                    <Field label="Pattern">
+                      <NativeSelect value={pp.pattern} onChange={(e) => update({ pattern: e.target.value as PainPoint['pattern'] })}>
+                        <option value="constant">Constant</option>
+                        <option value="intermittent">Intermittent</option>
+                      </NativeSelect>
+                    </Field>
+                    <Field label="Aggravating Factors"><input className={inputCls} value={pp.aggravating} onChange={(e) => update({ aggravating: e.target.value })} /></Field>
+                    <Field label="Easing Factors"><input className={inputCls} value={pp.easing} onChange={(e) => update({ easing: e.target.value })} /></Field>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setArmedIndex(index)}
+                    className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-600 hover:underline"
+                  >
+                    <MapPin size={12} /> {pp.bodyView ? `Reposition P${index + 1} on Diagram` : `Place P${index + 1} on Diagram`}
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setArmedIndex(index)}
-                  className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-600 hover:underline"
-                >
-                  <MapPin size={12} /> {pp.bodyView ? `Reposition P${index + 1} on Diagram` : `Place P${index + 1} on Diagram`}
-                </button>
               </div>
             )}
           />
@@ -375,6 +378,14 @@ function ReadEmpty({ children }: { children: React.ReactNode }) {
   return <span className="text-sm italic text-tertiary">{children}</span>;
 }
 
+function PainPointBadge({ index }: { index: number }) {
+  return (
+    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-600 text-[11px] font-bold text-white">
+      {index + 1}
+    </div>
+  );
+}
+
 interface ChartReadOnlyBodyProps {
   subjective: SubjectiveSection;
   objective: ObjectiveSection;
@@ -401,13 +412,16 @@ export function ChartReadOnlyBody({ subjective, objective, analysis, plan, inter
         ) : (
           <div className="flex flex-col gap-3">
             {subjective.painPoints.map((pp, i) => (
-              <div key={i} className="grid grid-cols-1 gap-2 rounded-lg border border-secondary p-3 sm:grid-cols-2">
-                <ReadField label="Location" value={pp.location} />
-                <ReadField label="Description" value={pp.description} />
-                <ReadField label="NPRS" value={`${pp.nprs}/10`} />
-                <ReadField label="Pattern" value={pp.pattern} />
-                <ReadField label="Aggravating Factors" value={pp.aggravating} />
-                <ReadField label="Easing Factors" value={pp.easing} />
+              <div key={i} className="flex gap-3 rounded-lg border border-secondary p-3">
+                <PainPointBadge index={i} />
+                <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
+                  <ReadField label="Location" value={pp.location} />
+                  <ReadField label="Description" value={pp.description} />
+                  <ReadField label="NPRS" value={`${pp.nprs}/10`} />
+                  <ReadField label="Pattern" value={pp.pattern} />
+                  <ReadField label="Aggravating Factors" value={pp.aggravating} />
+                  <ReadField label="Easing Factors" value={pp.easing} />
+                </div>
               </div>
             ))}
           </div>
