@@ -3,11 +3,10 @@ import { useState, type MouseEvent } from 'react';
 import { cx } from '@/utils/cx';
 import type { PainPoint } from '@/lib/types';
 
-type BodyView = 'front' | 'side' | 'back';
+type BodyView = 'front' | 'back';
 
 const VIEWS: { id: BodyView; label: string; src: string }[] = [
   { id: 'front', label: 'Front', src: '/body-map/front.svg' },
-  { id: 'side', label: 'Side', src: '/body-map/side.svg' },
   { id: 'back', label: 'Back', src: '/body-map/back.svg' },
 ];
 

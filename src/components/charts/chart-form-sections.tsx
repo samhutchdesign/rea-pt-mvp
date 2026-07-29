@@ -113,7 +113,7 @@ export function ChartFormBody({
 }: ChartFormBodyProps) {
   const [armedIndex, setArmedIndex] = useState<number | null>(null);
 
-  const handlePlace = (view: 'front' | 'side' | 'back', x: number, y: number) => {
+  const handlePlace = (view: 'front' | 'back', x: number, y: number) => {
     if (armedIndex === null) return;
     setSubjective((s) => ({
       ...s,
