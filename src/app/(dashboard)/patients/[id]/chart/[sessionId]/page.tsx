@@ -18,6 +18,7 @@ import {
   ChartFormBody, ChartReadOnlyBody, HistoryCard,
 } from '@/components/charts/chart-form-sections';
 import { buildChartExport } from '@/lib/chartExport';
+import { renderBodyMapSnapshot } from '@/lib/bodyMapSnapshot';
 import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
 import { Trash2, Lock, Unlock, Copy, Check } from 'lucide-react';
 
@@ -128,7 +129,21 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   const handleCopy = async () => {
-    const { text, html } = buildChartExport(session, patient, titleLabel);
+    const painPoints = session.subjective.painPoints;
+    const pinsFor = (view: 'front' | 'back') =>
+      painPoints
+        .map((p, i) => ({ p, i }))
+        .filter(({ p }) => p.bodyView === view && p.x !== undefined && p.y !== undefined)
+        .map(({ p, i }) => ({ x: p.x!, y: p.y!, label: String(i + 1) }));
+
+    const frontPins = pinsFor('front');
+    const backPins = pinsFor('back');
+    const [frontImg, backImg] = await Promise.all([
+      frontPins.length > 0 ? renderBodyMapSnapshot('/body-map/front.svg', frontPins) : Promise.resolve(null),
+      backPins.length > 0 ? renderBodyMapSnapshot('/body-map/back.svg', backPins) : Promise.resolve(null),
+    ]);
+
+    const { text, html } = buildChartExport(session, patient, titleLabel, { front: frontImg, back: backImg });
     try {
       if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
         await navigator.clipboard.write([

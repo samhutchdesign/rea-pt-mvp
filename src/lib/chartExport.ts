@@ -19,7 +19,12 @@ function textField(label: string, value?: string | number | null): string | null
 }
 
 /** Builds both a plain-text and an HTML representation of everything shown under the H-SOAPIER chart, for clipboard export. */
-export function buildChartExport(session: ChartSession, patient: Patient, titleLabel: string): { text: string; html: string } {
+export function buildChartExport(
+  session: ChartSession,
+  patient: Patient,
+  titleLabel: string,
+  bodyMapImages?: { front?: string | null; back?: string | null }
+): { text: string; html: string } {
   const text: string[] = [];
   const html: string[] = [];
 
@@ -67,6 +72,12 @@ export function buildChartExport(session: ChartSession, patient: Patient, titleL
     const s = session.subjective;
     text.push('S — SUBJECTIVE');
     html.push(`<h2 style="${H2}">S — Subjective</h2>`);
+    if (bodyMapImages?.front) {
+      html.push(`<img src="${bodyMapImages.front}" alt="Pain diagram — Front" style="display:block;max-width:320px;width:100%;height:auto;border:1px solid #ddd;border-radius:8px;margin:0 0 8px;" />`);
+    }
+    if (bodyMapImages?.back) {
+      html.push(`<img src="${bodyMapImages.back}" alt="Pain diagram — Back" style="display:block;max-width:320px;width:100%;height:auto;border:1px solid #ddd;border-radius:8px;margin:0 0 8px;" />`);
+    }
     if (s.painPoints.length === 0) {
       text.push('No pain points reported.');
     } else {
