@@ -32,7 +32,7 @@ export function PatientHeaderMenu({ onArchive, onReassign, canArchive = true }: 
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>
-          <Dropdown.Item id="reassign" icon={Repeat} label="Reassign" />
+          <Dropdown.Item id="reassign" icon={Repeat} label="Transfer Patient" />
           {canArchive && <Dropdown.Item id="archive" icon={Inbox} label="Archive Patient" />}
         </Dropdown.Menu>
       </Dropdown.Popover>
