@@ -3,18 +3,20 @@ import { useState } from 'react';
 import { Button as AriaButton } from 'react-aria-components';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { cx } from '@/utils/cx';
-import { Inbox, MoreHorizontal, Repeat } from 'lucide-react';
+import { Inbox, MoreHorizontal, Pencil, Repeat } from 'lucide-react';
 
 interface PatientHeaderMenuProps {
+  onEditProfile: () => void;
   onArchive: () => void;
   onReassign: () => void;
   canArchive?: boolean;
 }
 
-export function PatientHeaderMenu({ onArchive, onReassign, canArchive = true }: PatientHeaderMenuProps) {
+export function PatientHeaderMenu({ onEditProfile, onArchive, onReassign, canArchive = true }: PatientHeaderMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleAction = (key: React.Key) => {
+    if (key === 'edit') onEditProfile();
     if (key === 'archive') onArchive();
     if (key === 'reassign') onReassign();
   };
@@ -32,6 +34,7 @@ export function PatientHeaderMenu({ onArchive, onReassign, canArchive = true }: 
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>
+          <Dropdown.Item id="edit" icon={Pencil} label="Edit Profile" />
           <Dropdown.Item id="reassign" icon={Repeat} label="Transfer Patient" />
           {canArchive && <Dropdown.Item id="archive" icon={Inbox} label="Archive Patient" />}
         </Dropdown.Menu>

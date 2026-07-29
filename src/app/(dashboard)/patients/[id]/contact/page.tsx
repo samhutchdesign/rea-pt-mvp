@@ -1,5 +1,6 @@
 'use client';
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/base/buttons/button';
 import { mockPatients } from '@/lib/mock-data';
@@ -13,6 +14,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   const patient = mockPatients.find((p) => p.id === id);
   const uploaded = getUploadedData(id);
   const contactOverrides = useContactOverrides();
+  const searchParams = useSearchParams();
 
   const [editingContact, setEditingContact] = useState(false);
   const [editingEmergency, setEditingEmergency] = useState(false);
@@ -35,6 +37,15 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   });
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [emergencyDraft, setEmergencyDraft] = useState({ ...savedEmergency });
+
+  // Intentionally omits `savedContact` from deps — it's a fresh object every render, and
+  // including it would re-seed (and wipe) the draft on every keystroke while editing.
+  useEffect(() => {
+    if (searchParams.get('edit') === '1') {
+      setContactDraft({ ...savedContact });
+      setEditingContact(true);
+    }
+  }, [searchParams]);
 
   const can = usePermissions();
 

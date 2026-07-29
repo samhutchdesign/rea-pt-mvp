@@ -204,6 +204,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             {canEdit && !archived && (
               <PatientHeaderMenu
                 canArchive={can.canArchivePatient}
+                onEditProfile={() => router.push(`/patients/${id}/contact?edit=1`)}
                 onArchive={() => setConfirmArchiveOpen(true)}
                 onReassign={() => router.push(`/patients/${id}/overview?transfer=1`)}
               />
