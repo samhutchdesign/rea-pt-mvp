@@ -39,8 +39,8 @@ export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorit
       <AriaButton
         aria-label="More actions"
         className={cx(
-          'flex h-7 w-7 items-center justify-center rounded-md text-tertiary transition-colors outline-none opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:bg-secondary',
-          isOpen && 'opacity-100 bg-secondary'
+          'flex h-7 w-7 items-center justify-center rounded-md bg-white/85 text-tertiary transition-colors outline-none hover:bg-white',
+          isOpen && 'bg-white'
         )}
       >
         <MoreVertical size={15} />

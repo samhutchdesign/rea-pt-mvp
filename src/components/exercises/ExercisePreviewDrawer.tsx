@@ -51,13 +51,13 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
   const [programSelectorOpen, setProgramSelectorOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [audioOpen, setAudioOpen] = useState(false);
-  const [instructionsOpen, setInstructionsOpen] = useState(false);
+  const [instructionsOpen, setInstructionsOpen] = useState(true);
   const [mistakesOpen, setMistakesOpen] = useState(false);
   const viewMode = useViewMode();
 
-  // Collapse both sections again each time a new exercise is previewed.
+  // Reset to defaults (Instructions open, Common Mistakes collapsed) each time a new exercise is previewed.
   useEffect(() => {
-    setInstructionsOpen(false);
+    setInstructionsOpen(true);
     setMistakesOpen(false);
   }, [exercise?.id]);
 

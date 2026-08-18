@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { Heart, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import ExerciseCardMenu from '@/components/exercises/ExerciseCardMenu';
@@ -443,16 +443,14 @@ function ExercisesPageContent() {
                     <div className="relative h-32 overflow-hidden bg-brand-50">
                       <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          type="button"
-                          title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
-                          className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
-                          onClick={() => toggleFavorite(ex.id)}
-                        >
-                          {favorites.has(ex.id)
-                            ? <Heart size={14} className="text-pink-500" fill="currentColor" />
-                            : <Heart size={14} className="text-tertiary" />}
-                        </button>
+                        <ExerciseCardMenu
+                          exercise={ex}
+                          variant="mvp"
+                          isFavorite={favorites.has(ex.id)}
+                          onToggleFavorite={() => toggleFavorite(ex.id)}
+                          onAddToProgram={() => guardFilter(() => { resetRx(ex); setProgramTargetExercise(ex); })}
+                          onAssign={() => guardFilter(() => { resetRx(ex); setAssignTargetExercise(ex); })}
+                        />
                       </div>
                     </div>
                     <div className="px-3.5 py-3">
@@ -463,19 +461,7 @@ function ExercisesPageContent() {
                           <span className="text-xs rounded px-1.5 py-0.5 bg-secondary text-secondary">{ex.equipment}</span>
                         )}
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-tertiary">{ex.category}</span>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <ExerciseCardMenu
-                            exercise={ex}
-                            variant="mvp"
-                            isFavorite={favorites.has(ex.id)}
-                            onToggleFavorite={() => toggleFavorite(ex.id)}
-                            onAddToProgram={() => guardFilter(() => { resetRx(ex); setProgramTargetExercise(ex); })}
-                            onAssign={() => guardFilter(() => { resetRx(ex); setAssignTargetExercise(ex); })}
-                          />
-                        </div>
-                      </div>
+                      <span className="text-xs text-tertiary">{ex.category}</span>
                     </div>
                   </div>
                 ))}

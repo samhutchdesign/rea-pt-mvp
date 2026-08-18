@@ -17,7 +17,7 @@ import { useCurrentIdentity } from '@/lib/locationScope';
 import { canManageProgram } from '@/lib/permissions';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import type { Patient, Program } from '@/lib/types';
-import { Heart, Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X } from 'lucide-react';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import ProgramCardMenu from '@/components/programs/ProgramCardMenu';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
@@ -372,33 +372,22 @@ function ProgramsPageContent() {
                     <div className="relative h-28 shrink-0 overflow-hidden bg-brand-50">
                       <ExerciseThumbnail src={firstEx?.imageUrl} alt={prog.name} iconSize={32} />
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          title={favorites.has(prog.id) ? 'Unfavorite' : 'Favorite'}
-                          className="flex items-center justify-center w-7 h-7 rounded-md bg-white/85 border-0 cursor-pointer hover:bg-white transition-colors"
-                          onClick={() => toggleFavorite(prog.id)}
-                        >
-                          {favorites.has(prog.id)
-                            ? <Heart size={14} className="text-pink-500" fill="#E91E63" />
-                            : <Heart size={14} className="text-tertiary" />}
-                        </button>
+                        <ProgramCardMenu
+                          isFavorite={favorites.has(prog.id)}
+                          canManage={canManageProgram(prog, role, currentIdentity.id)}
+                          onToggleFavorite={() => toggleFavorite(prog.id)}
+                          onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
+                          onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
+                          onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}
+                          onDuplicate={() => guardFilter(() => router.push(`/programs/new?duplicate=${prog.id}`))}
+                        />
                       </div>
                     </div>
                     <div className="px-3.5 py-3 flex flex-col flex-1">
                       <span className="block mb-1 text-sm font-semibold text-primary leading-snug">{prog.name}</span>
                       <span className="block text-xs text-secondary leading-snug">{prog.description}</span>
-                      <div className="flex justify-between items-center mt-auto pt-1.5">
+                      <div className="mt-auto pt-1.5">
                         <span className="text-xs text-tertiary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <ProgramCardMenu
-                            isFavorite={favorites.has(prog.id)}
-                            canManage={canManageProgram(prog, role, currentIdentity.id)}
-                            onToggleFavorite={() => toggleFavorite(prog.id)}
-                            onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
-                            onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
-                            onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}
-                            onDuplicate={() => guardFilter(() => router.push(`/programs/new?duplicate=${prog.id}`))}
-                          />
-                        </div>
                       </div>
                     </div>
                   </div>

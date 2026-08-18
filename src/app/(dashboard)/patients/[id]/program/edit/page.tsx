@@ -29,7 +29,6 @@ const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Your Most Used', 'Newest Added'];
 const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
-const STEPS = ['Choose Exercises', 'Program Details'];
 const CUES = [
   { key: 'relaxation', label: 'Relaxation Cue' },
   { key: 'contraction', label: 'Pelvic Floor Contraction Cue' },
@@ -104,42 +103,15 @@ function FilterSearchBox({ value, onChange, placeholder }: { value: string; onCh
 
 function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2 shadow-xs">
+    <div className="flex items-center gap-2 rounded-lg border border-secondary bg-primary pl-3 pr-5 py-2.5 shadow-xs">
       <input
         type="number"
         min={0}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-6 bg-transparent text-sm text-primary text-center outline-none"
+        className="w-8 bg-transparent text-base text-primary text-center outline-none"
       />
-      <span className="text-sm text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
-    </div>
-  );
-}
-
-function StepIndicator({ activeStep }: { activeStep: number }) {
-  return (
-    <div className="flex items-center w-full max-w-xs mx-auto">
-      {STEPS.map((label, i) => (
-        <div key={label} className="flex items-center flex-1 last:flex-initial">
-          <div className="flex flex-col items-center gap-1">
-            <div className={cx(
-              'flex size-7 items-center justify-center rounded-full text-xs font-semibold shrink-0',
-              i < activeStep ? 'bg-brand-600 text-white' :
-              i === activeStep ? 'border-2 border-brand-600 text-brand-700' :
-              'border-2 border-secondary text-tertiary'
-            )}>
-              {i < activeStep ? '✓' : i + 1}
-            </div>
-            <span className={cx('text-xs whitespace-nowrap', i === activeStep ? 'font-semibold text-brand-700' : 'text-tertiary')}>
-              {label}
-            </span>
-          </div>
-          {i < STEPS.length - 1 && (
-            <div className={cx('flex-1 h-px mx-3 mb-5', i < activeStep ? 'bg-brand-600' : 'bg-secondary')} />
-          )}
-        </div>
-      ))}
+      <span className="text-base text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
     </div>
   );
 }
@@ -223,7 +195,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
       if (effectiveSearch) {
         const q = effectiveSearch.toLowerCase();
         const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
-        if (!ex.name.toLowerCase().includes(q) && !ex.category.toLowerCase().includes(q) && !allTags.some((t) => t.toLowerCase().includes(q))) return false;
+        if (!ex.name.toLowerCase().includes(q) && !ex.description.toLowerCase().includes(q) && !ex.category.toLowerCase().includes(q) && !allTags.some((t) => t.toLowerCase().includes(q))) return false;
       }
       const matchesCondition = filterConditions.length > 0 && filterConditions.some((c) => ex.tags.condition.some((ec) => ec.toLowerCase().includes(c.toLowerCase())));
       const matchesCategory = filterCategories.length > 0 && filterCategories.includes(ex.category);
@@ -307,7 +279,9 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
         <div className="justify-self-start">
           <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
         </div>
-        <StepIndicator activeStep={step} />
+        <h1 className="text-2xl font-semibold text-primary m-0 text-center">
+          {patient?.firstName} {patient?.lastName}&apos;s Program
+        </h1>
         <div className="flex gap-3 justify-self-end">
           {step === 0 ? (
             <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => setStep(1)}>Next</Button>
@@ -421,7 +395,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <div className="flex gap-2.5 items-center">
               <div className="flex-1">
                 <Input
-                  placeholder="Search exercises, SUI, OAB…"
+                  placeholder="Search by name, description, or any tag"
                   value={search}
                   onChange={setSearch}
                   icon={Search}
@@ -511,7 +485,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           <Divider vertical />
 
           {/* Right: Patient's Program */}
-          <div className="flex flex-col gap-3 min-h-0 flex-1 min-w-0" style={{ maxWidth: 530 }}>
+          <div className="flex flex-col gap-3 min-h-0 flex-1 min-w-0" style={{ maxWidth: 520 }}>
             <span className="text-sm font-semibold text-primary shrink-0">
               {programRows.length} exercise{programRows.length !== 1 ? 's' : ''} in program
             </span>
@@ -530,7 +504,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                   <div
                     key={row.exerciseId}
                     className={cx(
-                      'shrink-0 rounded-xl border bg-primary shadow-xs p-4 transition-opacity',
+                      'flex items-center gap-4 shrink-0 min-w-[450px] rounded-xl border bg-primary shadow-xs p-5 transition-opacity',
                       isDragging ? 'opacity-40' : 'opacity-100',
                       isDropTarget ? 'border-brand-600 border-dashed' : 'border-secondary'
                     )}
@@ -540,45 +514,44 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                     onDrop={(e) => handleDrop(e, idx)}
                     onDragEnd={handleDragEnd}
                   >
-                    <div className="mb-3 flex justify-between items-start">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="relative size-9 shrink-0 rounded-md overflow-hidden">
-                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
+                    <GripVertical size={18} className="shrink-0 cursor-grab text-quaternary" />
+                    <div className="flex-1 min-w-0 flex flex-col gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="relative size-10 shrink-0 rounded-md overflow-hidden">
+                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={14} />
                         </div>
-                        <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" />
-                        <span className="text-sm font-semibold text-primary truncate">{ex.name}</span>
+                        <span className="flex-1 min-w-0 text-sm font-semibold text-primary truncate">{ex.name}</span>
+                        <button
+                          onClick={() => removeExercise(row.exerciseId)}
+                          className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+                        >
+                          <X size={18} />
+                        </button>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex flex-nowrap gap-2 items-center">
+                        <CompactField value={row.sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => updateRow(row.exerciseId, 'sets', v)} />
+                        <CompactField value={row.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => updateRow(row.exerciseId, 'reps', v)} />
+                        <CompactField value={row.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => updateRow(row.exerciseId, 'holdSecs', v)} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <NativeSelect
+                          wrapperClassName="flex-1 max-w-[360px]"
+                          value={row.cue}
+                          onChange={(e) => updateRow(row.exerciseId, 'cue', e.target.value)}
+                        >
+                          <option value="">No Cue</option>
+                          {CUES.map((c) => (
+                            <option key={c.key} value={c.key}>{c.label}</option>
+                          ))}
+                        </NativeSelect>
                         <button
                           title="Preview"
                           onClick={() => setPreviewExercise(ex)}
-                          className="flex h-6 w-6 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
+                          className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
                         >
-                          <Eye size={15} />
-                        </button>
-                        <button
-                          onClick={() => removeExercise(row.exerciseId)}
-                          className="flex h-6 w-6 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
-                        >
-                          <X size={15} />
+                          <Eye size={16} />
                         </button>
                       </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 items-center">
-                      <CompactField value={row.sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => updateRow(row.exerciseId, 'sets', v)} />
-                      <CompactField value={row.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => updateRow(row.exerciseId, 'reps', v)} />
-                      <CompactField value={row.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => updateRow(row.exerciseId, 'holdSecs', v)} />
-                      <NativeSelect
-                        wrapperClassName="w-auto"
-                        className="w-auto py-1.5 pr-7 text-xs"
-                        value={row.cue}
-                        onChange={(e) => updateRow(row.exerciseId, 'cue', e.target.value)}
-                      >
-                        <option value="">No Cue</option>
-                        {CUES.map((c) => (
-                          <option key={c.key} value={c.key}>{c.label}</option>
-                        ))}
-                      </NativeSelect>
                     </div>
                   </div>
                 );
