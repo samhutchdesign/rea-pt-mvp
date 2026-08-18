@@ -357,7 +357,7 @@ function ExercisesPageContent() {
       if (effectiveSearch) {
         const q = effectiveSearch.toLowerCase();
         const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
-        if (!ex.name.toLowerCase().includes(q) && !ex.category.toLowerCase().includes(q) && !allTags.some((t) => t.toLowerCase().includes(q))) return false;
+        if (!ex.name.toLowerCase().includes(q) && !ex.description.toLowerCase().includes(q) && !ex.category.toLowerCase().includes(q) && !allTags.some((t) => t.toLowerCase().includes(q))) return false;
       }
       const matchesCondition = filterConditions.length > 0 && filterConditions.some((c) => ex.tags.condition.some((ec) => ec.toLowerCase().includes(c.toLowerCase())));
       const matchesCategory = filterCategories.length > 0 && filterCategories.includes(ex.category);
@@ -569,7 +569,7 @@ function ExercisesPageContent() {
               <div className={cx('flex gap-2.5 items-center', hasFilters ? 'mb-2.5' : 'mb-4')}>
                 <div className="flex-1">
                   <Input
-                    placeholder="Search exercises, SUI, OAB…"
+                    placeholder="Search by name, description, or any tag"
                     value={search}
                     onChange={setSearch}
                     icon={Search}

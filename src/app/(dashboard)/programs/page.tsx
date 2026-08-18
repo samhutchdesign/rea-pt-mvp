@@ -162,12 +162,17 @@ function ProgramsPageContent() {
     return mockPrograms.filter((p) => {
       if (showFavoritesOnly && !favorites.has(p.id)) return false;
       if (showMyProgramsOnly && p.createdByEmpId !== currentIdentity.id) return false;
+      const exs = p.exercises.map((pe) => mockExercises.find((e) => e.id === pe.exerciseId)).filter(Boolean);
       if (search) {
         const q = search.toLowerCase();
-        if (!p.name.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q) && !p.tags.some((t) => t.toLowerCase().includes(q))) return false;
+        const matchesOwnFields = p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.tags.some((t) => t.toLowerCase().includes(q));
+        const matchesExerciseTags = exs.some((ex) => {
+          const t = ex!.tags;
+          return [...t.specialty, ...t.condition, ...t.surgery, ...t.muscle, ...t.bodyPart].some((tag) => tag.toLowerCase().includes(q));
+        });
+        if (!matchesOwnFields && !matchesExerciseTags) return false;
       }
       if (filterConditions.length || filterCategories.length || filterLevels.length || filterEquipment.length || filterMovementTypes.length || filterEffortTypes.length) {
-        const exs = p.exercises.map((pe) => mockExercises.find((e) => e.id === pe.exerciseId)).filter(Boolean);
         if (filterConditions.length && !filterConditions.some((c) => exs.some((ex) => ex!.tags.condition.some((ec) => toTitleCase(ec) === c)))) return false;
         if (filterCategories.length && !filterCategories.some((c) => exs.some((ex) => ex!.category === c))) return false;
         if (filterLevels.length && !filterLevels.some((l) => exs.some((ex) => ex!.level === l))) return false;
@@ -294,7 +299,7 @@ function ProgramsPageContent() {
             <div className={cx('flex gap-2.5 items-center', hasFilters ? 'mb-2.5' : 'mb-4')}>
               <div className="flex-1">
                 <Input
-                  placeholder="Search programs…"
+                  placeholder="Search by name, description, or any tag"
                   value={search}
                   onChange={(v) => guardFilter(() => setSearch(v))}
                   onFocus={() => { if (filtersInactive) setShowSignUpModal(true); }}
