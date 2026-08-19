@@ -31,8 +31,8 @@ export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorit
       <AriaButton
         aria-label="More actions"
         className={cx(
-          'flex h-7 w-7 items-center justify-center rounded-md bg-white/85 text-tertiary transition-colors outline-none hover:bg-white',
-          isOpen && 'bg-white'
+          'flex h-7 w-7 items-center justify-center rounded-md text-tertiary transition-colors outline-none hover:bg-secondary',
+          isOpen && 'bg-secondary'
         )}
       >
         <MoreVertical size={15} />

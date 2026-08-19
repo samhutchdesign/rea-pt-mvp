@@ -18,7 +18,6 @@ import { canManageProgram } from '@/lib/permissions';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import type { Patient, Program } from '@/lib/types';
 import { Plus, Search, X } from 'lucide-react';
-import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import ProgramCardMenu from '@/components/programs/ProgramCardMenu';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
 
@@ -345,7 +344,6 @@ function ProgramsPageContent() {
             ) : (
               <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
                 {filtered.slice(0, visibleCount).map((prog) => {
-                  const firstEx = mockExercises.find((e) => e.id === prog.exercises[0]?.exerciseId);
                   return (
                   <div
                     key={prog.id}
@@ -369,22 +367,21 @@ function ProgramsPageContent() {
                       router.push(`/programs/${prog.id}?back=${back}`);
                     }}
                   >
-                    <div className="relative h-28 shrink-0 overflow-hidden bg-brand-50">
-                      <ExerciseThumbnail src={firstEx?.imageUrl} alt={prog.name} iconSize={32} />
-                      <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                        <ProgramCardMenu
-                          isFavorite={favorites.has(prog.id)}
-                          canManage={canManageProgram(prog, role, currentIdentity.id)}
-                          onToggleFavorite={() => toggleFavorite(prog.id)}
-                          onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
-                          onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
-                          onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}
-                          onDuplicate={() => guardFilter(() => router.push(`/programs/new?duplicate=${prog.id}`))}
-                        />
-                      </div>
-                    </div>
                     <div className="px-3.5 py-3 flex flex-col flex-1">
-                      <span className="block mb-1 text-sm font-semibold text-primary leading-snug">{prog.name}</span>
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <span className="text-sm font-semibold text-primary leading-snug">{prog.name}</span>
+                        <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <ProgramCardMenu
+                            isFavorite={favorites.has(prog.id)}
+                            canManage={canManageProgram(prog, role, currentIdentity.id)}
+                            onToggleFavorite={() => toggleFavorite(prog.id)}
+                            onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
+                            onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
+                            onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}
+                            onDuplicate={() => guardFilter(() => router.push(`/programs/new?duplicate=${prog.id}`))}
+                          />
+                        </div>
+                      </div>
                       <span className="block text-xs text-secondary leading-snug">{prog.description}</span>
                       <div className="mt-auto pt-1.5">
                         <span className="text-xs text-tertiary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
