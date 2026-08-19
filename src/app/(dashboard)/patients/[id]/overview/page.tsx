@@ -23,7 +23,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const [uploadBannerDismissed, setUploadBannerDismissed] = useState(false);
 
   useEffect(() => {
-    if (searchParams.get('welcome') === '1') toast.success('Success! The patient has received their documents.');
+    if (searchParams.get('welcome') === '1') toast.success('New patient created! An email was sent to them for account creation.');
   }, [searchParams]);
 
   const [transferOpen, setTransferOpen] = useState(false);
