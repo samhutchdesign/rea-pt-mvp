@@ -147,6 +147,11 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                     {copySuccess ? 'Copied!' : 'Copy'}
                   </Button>
                 )}
+                {isChartWriter && selectedSession.signedAt && (
+                  <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?amend=1`)}>
+                    Amend
+                  </Button>
+                )}
                 {canEditSelected && (
                   <>
                     <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?edit=1`)}>

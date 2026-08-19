@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { SignatureFontPicker } from '@/components/ui/signature-font-picker';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import {
-  emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
+  inputCls, emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
   ChartFormBody, HistoryCard, ChartSessionReadPanel,
 } from '@/components/charts/chart-form-sections';
 import { copyChartSessionToClipboard } from '@/lib/chartExport';
@@ -43,6 +43,12 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const [copySuccess, setCopySuccess] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [signOpen, setSignOpen] = useState(false);
+  const [amendOpen, setAmendOpen] = useState(false);
+  const [sessionDate, setSessionDate] = useState(() => session?.date.slice(0, 10) ?? '');
+  const [sessionTime, setSessionTime] = useState(() =>
+    session?.date.includes('T') ? session.date.slice(11, 16) : new Date().toTimeString().slice(0, 5)
+  );
+  const dateSigned = new Date().toISOString().slice(0, 10);
   const [amendmentText, setAmendmentText] = useState('');
   const [pendingSignatureFont, setPendingSignatureFont] = useState<string>(SIGNATURE_FONTS[0].id);
 
@@ -72,7 +78,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   // Deep-links from the inline Chart tab view: ?edit=1 opens straight into edit mode,
-  // ?sign=1 opens straight into the Sign & Lock confirmation, so there's no redundant second click.
+  // ?sign=1 opens straight into the Sign & Lock confirmation, ?amend=1 opens the amendment
+  // box, so there's no redundant second click.
   useEffect(() => {
     if (searchParams.get('edit') === '1' && canEdit) startEditing();
   }, [searchParams, canEdit]);
@@ -80,6 +87,10 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   useEffect(() => {
     if (searchParams.get('sign') === '1') setSignOpen(true);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (searchParams.get('amend') === '1' && isChartWriter) setAmendOpen(true);
+  }, [searchParams, isChartWriter]);
 
   if (!patient || !session) {
     return <span className="block p-8 text-secondary">Session not found.</span>;
@@ -130,6 +141,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       name: `${currentIdentity.firstName} ${currentIdentity.lastName}`,
       initials: currentIdentity.avatarInitials,
       signatureFontId,
+      date: sessionDate ? `${sessionDate}T${sessionTime || '00:00'}:00` : undefined,
     });
     setSignOpen(false);
     toast.success('Chart signed and locked.');
@@ -159,6 +171,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       text: amendmentText.trim(),
     });
     setAmendmentText('');
+    setAmendOpen(false);
     toast.success('Amendment added.');
   };
 
@@ -181,6 +194,11 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           {isSigned && (
             <Button color="secondary" size="md" iconLeading={copySuccess ? Check : Copy} onPress={handleCopy}>
               {copySuccess ? 'Copied!' : 'Copy'}
+            </Button>
+          )}
+          {isChartWriter && isSigned && !editing && (
+            <Button color="secondary" size="md" onPress={() => setAmendOpen((v) => !v)}>
+              Amend
             </Button>
           )}
           {!editing ? (
@@ -241,11 +259,12 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             <Textarea rows={6} value={summary} onChange={(e) => setSummary(e.target.value)} />
           </div>
 
-          <p className="mt-2 text-sm font-semibold text-primary">H-SOAPIER Chart</p>
+          <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIER Chart' : 'SOAPIER Chart'}</p>
 
           {session.isIntakeSession && <HistoryCard patient={patient} />}
 
           <ChartFormBody
+            isIntake={session.isIntakeSession}
             subjective={subjective} setSubjective={setSubjective}
             objective={objective} setObjective={setObjective}
             showGeneralScreen={showGeneralScreen} setShowGeneralScreen={setShowGeneralScreen}
@@ -260,7 +279,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         <ChartSessionReadPanel patient={patient} session={session} />
       )}
 
-      {isChartWriter && isSigned && !editing && (
+      {isChartWriter && isSigned && !editing && amendOpen && (
         <div className="mt-4 rounded-xl border border-secondary bg-primary p-5 shadow-xs">
           <span className="mb-2 block text-sm font-semibold text-primary">Add Amendment</span>
           <Textarea
@@ -297,6 +316,17 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
               <p className="mb-4 text-sm text-secondary">
                 Once signed, <strong>{sessionLabel}</strong> becomes locked and can no longer be edited directly. Any future correction will be added as a separate, dated amendment.
               </p>
+              <div className="mb-4">
+                <span className="mb-1 block text-xs text-secondary">Date of Session</span>
+                <div className="flex gap-2">
+                  <input type="date" value={sessionDate} onChange={(e) => setSessionDate(e.target.value)} className={inputCls} />
+                  <input type="time" value={sessionTime} onChange={(e) => setSessionTime(e.target.value)} className={inputCls} />
+                </div>
+              </div>
+              <div className="mb-4">
+                <span className="mb-1 block text-xs text-secondary">Date Signed</span>
+                <input type="date" value={dateSigned} disabled className={inputCls + ' cursor-not-allowed opacity-60'} />
+              </div>
               {signatureFont && (
                 <div className="mb-6 rounded-lg border border-secondary bg-secondary_alt px-4 py-3">
                   <span className="mb-1 block text-xs text-secondary">This will be stamped as your signature:</span>

@@ -6779,6 +6779,23 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
   ],
 };
 
+// Demo: lock the intake session with a signature whenever a follow-up session exists, so every
+// multi-session patient shows a real example of the amendment workflow on a signed chart.
+const AMENDMENT_DEMO_SIGNATURE_FONTS = ['dancing-script', 'great-vibes', 'caveat', 'sacramento'];
+Object.values(mockChartSessions).forEach((sessions) => {
+  if (sessions.length < 2) return;
+  const intake = sessions.find((s) => s.isIntakeSession);
+  if (!intake || intake.signedAt) return;
+  const patient = mockPatients.find((p) => p.id === intake.patientId);
+  const empIndex = Math.max(0, mockEmployees.findIndex((e) => e.id === patient?.assignedEmployeeId));
+  const employee = mockEmployees[empIndex] ?? mockEmployees[0];
+  intake.signedAt = `${intake.date}T18:00:00`;
+  intake.signedByEmpId = employee.id;
+  intake.signedByName = `${employee.firstName} ${employee.lastName}`;
+  intake.signedByInitials = employee.avatarInitials;
+  intake.signatureFontId = AMENDMENT_DEMO_SIGNATURE_FONTS[empIndex % AMENDMENT_DEMO_SIGNATURE_FONTS.length];
+});
+
 export const mockNotifications: Notification[] = [
   {
     id: 'n1',

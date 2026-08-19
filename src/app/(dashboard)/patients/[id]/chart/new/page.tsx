@@ -9,11 +9,9 @@ import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
 import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { Button } from '@/components/base/buttons/button';
-import { NativeSelect } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
-import { Field } from '@/components/ui/field';
 import {
-  inputCls, emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
+  emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
   ChartFormBody, HistoryCard,
 } from '@/components/charts/chart-form-sections';
 import type {
@@ -21,10 +19,6 @@ import type {
   SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection,
 } from '@/lib/types';
 import { Unlock } from 'lucide-react';
-
-const PAIN_LEVELS: PainLevel[] = ['No Pain', 'Low Pain', 'Moderate Pain', 'High Pain'];
-const ADHERENCE_LEVELS: AdherenceLevel[] = ['High Adherence', 'Moderate Adherence', 'Low Adherence'];
-const IMPROVEMENT_LEVELS: ImprovementLevel[] = ['Significant Improvement', 'Some Improvement', 'No Improvement', 'Worsening'];
 
 export default function NewChartPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -38,12 +32,13 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const sessions = useChartSessions(id);
   const isIntake = sessions.length === 0;
   const lastSession = [...sessions].sort((a, b) => a.date.localeCompare(b.date)).at(-1);
+  const intakeSession = sessions.find((s) => s.isIntakeSession);
 
   const [summary, setSummary] = useState('');
-  const [painLevel, setPainLevel] = useState<PainLevel>('No Pain');
-  const [adherenceLevel, setAdherenceLevel] = useState<AdherenceLevel>('High Adherence');
-  const [improvementLevel, setImprovementLevel] = useState<ImprovementLevel>('Some Improvement');
-  const [exercisesPerDay, setExercisesPerDay] = useState(0);
+  const painLevel: PainLevel = 'No Pain';
+  const adherenceLevel: AdherenceLevel = 'High Adherence';
+  const improvementLevel: ImprovementLevel = 'Some Improvement';
+  const exercisesPerDay = 0;
 
   const [subjective, setSubjective] = useState<SubjectiveSection>(emptySubjective);
   const [objective, setObjective] = useState<ObjectiveSection>(emptyObjective);
@@ -53,8 +48,12 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
       ? { bodyStructures: lastSession.analysis.bodyStructures, problemList: lastSession.analysis.problemList, ptDiagnosis: lastSession.analysis.ptDiagnosis, goals: lastSession.analysis.goals, notes: '' }
       : emptyAnalysis()
   );
-  const [plan, setPlan] = useState<PlanSection>(emptyPlan);
-  const [interventions, setInterventions] = useState<InterventionItem[]>([]);
+  const [plan, setPlan] = useState<PlanSection>(() =>
+    !isIntake && intakeSession ? structuredClone(intakeSession.plan) : emptyPlan()
+  );
+  const [interventions, setInterventions] = useState<InterventionItem[]>(() =>
+    !isIntake && intakeSession ? structuredClone(intakeSession.interventions) : []
+  );
   const [evaluation, setEvaluation] = useState<EvaluationSection>(emptyEvaluation);
   const [recommendations, setRecommendations] = useState<{ text: string }[]>([]);
 
@@ -134,37 +133,14 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
           />
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Field label="Pain Level">
-              <NativeSelect value={painLevel} onChange={(e) => setPainLevel(e.target.value as PainLevel)}>
-                {PAIN_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-              </NativeSelect>
-            </Field>
-            {!isIntake && (
-              <>
-                <Field label="Adherence">
-                  <NativeSelect value={adherenceLevel} onChange={(e) => setAdherenceLevel(e.target.value as AdherenceLevel)}>
-                    {ADHERENCE_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-                  </NativeSelect>
-                </Field>
-                <Field label="Improvement">
-                  <NativeSelect value={improvementLevel} onChange={(e) => setImprovementLevel(e.target.value as ImprovementLevel)}>
-                    {IMPROVEMENT_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-                  </NativeSelect>
-                </Field>
-              </>
-            )}
-            <Field label="Exercises / Day">
-              <input type="number" min={0} className={inputCls} value={exercisesPerDay} onChange={(e) => setExercisesPerDay(Number(e.target.value))} />
-            </Field>
-          </div>
         </div>
 
-        <p className="mt-2 text-sm font-semibold text-primary">H-SOAPIER Chart</p>
+        <p className="mt-2 text-sm font-semibold text-primary">{isIntake ? 'H-SOAPIER Chart' : 'SOAPIER Chart'}</p>
 
         {isIntake && <HistoryCard patient={patient} />}
 
         <ChartFormBody
+          isIntake={isIntake}
           subjective={subjective} setSubjective={setSubjective}
           objective={objective} setObjective={setObjective}
           showGeneralScreen={showGeneralScreen} setShowGeneralScreen={setShowGeneralScreen}

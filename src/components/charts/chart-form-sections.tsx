@@ -8,7 +8,8 @@ import { RepeatableList } from '@/components/ui/repeatable-list';
 import { BodyMap } from '@/components/charts/body-map';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
-import { MapPin } from 'lucide-react';
+import { cx } from '@/utils/cx';
+import { ChevronDown, MapPin } from 'lucide-react';
 import type {
   Patient, ChartSession, PainPoint, RomEntry, ProblemListItem, GoalItem, PlanItem, InterventionItem,
   SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, EvaluationSection,
@@ -35,16 +36,22 @@ export const emptyAnalysis = (): AnalysisSection => ({ bodyStructures: '', probl
 export const emptyPlan = (): PlanSection => ({ items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '' });
 export const emptyEvaluation = (): EvaluationSection => ({ patientReaction: '', objectiveResponse: '' });
 
-export function SectionCard({ letter, label, children }: { letter: string; label: string; children: React.ReactNode }) {
+export function SectionCard({ letter, label, defaultOpen = true, children }: { letter: string; label: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
-      <div className="mb-4 flex items-center gap-3">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={cx('flex w-full items-center gap-3 bg-transparent border-none p-0 cursor-pointer text-left', open && 'mb-4')}
+      >
         <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-brand-600">
           <span className="text-[0.8rem] font-bold leading-none text-white">{letter}</span>
         </div>
-        <span className="text-sm font-semibold text-primary">{label}</span>
-      </div>
-      <div className="flex flex-col gap-4">{children}</div>
+        <span className="flex-1 text-sm font-semibold text-primary">{label}</span>
+        <ChevronDown size={16} className={cx('shrink-0 text-tertiary transition-transform', open && 'rotate-180')} />
+      </button>
+      {open && <div className="flex flex-col gap-4">{children}</div>}
     </div>
   );
 }
@@ -90,6 +97,7 @@ export function HistoryCard({ patient }: { patient: Patient }) {
 }
 
 interface ChartFormBodyProps {
+  isIntake: boolean;
   subjective: SubjectiveSection;
   setSubjective: (updater: (s: SubjectiveSection) => SubjectiveSection) => void;
   objective: ObjectiveSection;
@@ -109,7 +117,7 @@ interface ChartFormBodyProps {
 }
 
 export function ChartFormBody({
-  subjective, setSubjective, objective, setObjective, showGeneralScreen, setShowGeneralScreen,
+  isIntake, subjective, setSubjective, objective, setObjective, showGeneralScreen, setShowGeneralScreen,
   analysis, setAnalysis, plan, setPlan, interventions, setInterventions, evaluation, setEvaluation,
   recommendations, setRecommendations,
 }: ChartFormBodyProps) {
@@ -287,7 +295,7 @@ export function ChartFormBody({
       </SectionCard>
 
       {/* Plan */}
-      <SectionCard letter="P" label="Plan">
+      <SectionCard letter="P" label="Plan" defaultOpen={isIntake}>
         <Field label="Treatment Plan (per problem)">
           <RepeatableList
             items={plan.items}
@@ -318,7 +326,7 @@ export function ChartFormBody({
       </SectionCard>
 
       {/* Interventions */}
-      <SectionCard letter="I" label="Intervention">
+      <SectionCard letter="I" label="Intervention" defaultOpen={isIntake}>
         <RepeatableList
           items={interventions}
           onChange={setInterventions}
@@ -389,6 +397,7 @@ function PainPointBadge({ index }: { index: number }) {
 }
 
 interface ChartReadOnlyBodyProps {
+  isIntake: boolean;
   subjective: SubjectiveSection;
   objective: ObjectiveSection;
   analysis: AnalysisSection;
@@ -398,7 +407,7 @@ interface ChartReadOnlyBodyProps {
   recommendations: string[];
 }
 
-export function ChartReadOnlyBody({ subjective, objective, analysis, plan, interventions, evaluation, recommendations }: ChartReadOnlyBodyProps) {
+export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, plan, interventions, evaluation, recommendations }: ChartReadOnlyBodyProps) {
   const pf = objective.pelvicFloorExam;
   const hasPfExam = pf.power || pf.endurance || pf.repetitions || pf.fastContractions || pf.tone || pf.tenderness;
 
@@ -518,7 +527,7 @@ export function ChartReadOnlyBody({ subjective, objective, analysis, plan, inter
       </SectionCard>
 
       {/* Plan */}
-      <SectionCard letter="P" label="Plan">
+      <SectionCard letter="P" label="Plan" defaultOpen={isIntake}>
         {plan.items.length > 0 && (
           <div className="flex flex-col gap-2">
             {plan.items.map((item, i) => (
@@ -539,7 +548,7 @@ export function ChartReadOnlyBody({ subjective, objective, analysis, plan, inter
       </SectionCard>
 
       {/* Interventions */}
-      <SectionCard letter="I" label="Intervention">
+      <SectionCard letter="I" label="Intervention" defaultOpen={isIntake}>
         {interventions.length === 0 ? (
           <ReadEmpty>No interventions recorded.</ReadEmpty>
         ) : (
@@ -589,11 +598,12 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
         <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
       </div>
 
-      <p className="mt-2 text-sm font-semibold text-primary">H-SOAPIER Chart</p>
+      <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIER Chart' : 'SOAPIER Chart'}</p>
 
       {session.isIntakeSession && <HistoryCard patient={patient} />}
 
       <ChartReadOnlyBody
+        isIntake={session.isIntakeSession}
         subjective={session.subjective}
         objective={session.objective}
         analysis={session.analysis}
@@ -609,9 +619,18 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
           <span style={{ fontFamily: signatureFont?.variable }} className="block text-3xl text-primary">
             {session.signedByName}
           </span>
-          <span className="mt-1 block text-xs text-tertiary">
-            {new Date(session.signedAt).toLocaleString()}
-          </span>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:max-w-xs sm:grid-cols-2">
+            <div>
+              <span className="mb-0.5 block text-xs text-secondary">Date of Session</span>
+              <span className="block text-xs text-tertiary">
+                {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+            <div>
+              <span className="mb-0.5 block text-xs text-secondary">Date Signed</span>
+              <span className="block text-xs text-tertiary">{new Date(session.signedAt).toLocaleString()}</span>
+            </div>
+          </div>
         </div>
       )}
 
