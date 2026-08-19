@@ -206,6 +206,7 @@ function SettingsContent() {
   const currentIdentity = useCurrentIdentity();
   const signatureFontId = useSignatureFontId(currentIdentity.id);
   const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
+  const [language, setLanguage] = useState('English');
 
   useEffect(() => {
     if (searchParams.get('transfer') === '1' && role === 'owner') setTransferOpen(true);
@@ -218,13 +219,20 @@ function SettingsContent() {
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Settings</h2>
         <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-4">
           <span className="font-semibold text-sm text-primary block mb-4">Preferences</span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-4">
             <Toggle
               isSelected={mode === 'dark'}
               onChange={(checked) => setThemeMode(checked ? 'dark' : 'light')}
               size="sm"
             />
             <span className="text-sm text-primary">Dark mode</span>
+          </div>
+          <div>
+            <label className="block text-sm text-primary mb-2">Language</label>
+            <NativeSelect value={language} onChange={(e) => setLanguage(e.target.value)} wrapperClassName="max-w-[220px]">
+              <option value="English">English</option>
+              <option value="French">French</option>
+            </NativeSelect>
           </div>
         </div>
 
