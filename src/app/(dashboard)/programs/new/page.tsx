@@ -286,7 +286,9 @@ function NewProgramContent() {
         <div className="justify-self-start">
           <Button color="secondary" size="sm" onPress={() => router.push('/programs')}>Cancel</Button>
         </div>
-        <div />
+        <h1 className="text-2xl font-semibold text-primary m-0 text-center">
+          {editingProgram ? 'Edit Program' : 'Create New Program'}
+        </h1>
         <div className="flex gap-3 justify-self-end">
           {step === 0 ? (
             <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => setStep(1)}>Next</Button>
@@ -442,11 +444,12 @@ function NewProgramContent() {
                       >
                         <div className="relative h-28 overflow-hidden bg-brand-50">
                           <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={32} />
-                          {isAdded && (
-                            <div className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600">
-                              <Check size={13} className="text-white" strokeWidth={3} />
-                            </div>
-                          )}
+                          <div className={cx(
+                            'absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full',
+                            isAdded ? 'bg-brand-600' : 'bg-white border border-secondary'
+                          )}>
+                            {isAdded && <Check size={13} className="text-white" strokeWidth={3} />}
+                          </div>
                           <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
@@ -498,7 +501,7 @@ function NewProgramContent() {
             <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
               {programRows.length === 0 ? (
                 <div className="py-12 text-center">
-                  <span className="text-sm text-secondary">Add exercises from the library</span>
+                  <span className="text-sm text-secondary">Click on exercises to add them to the program</span>
                 </div>
               ) : programRows.map((row, idx) => {
                 const ex = mockExercises.find((e) => e.id === row.exerciseId);

@@ -493,7 +493,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
               {programRows.length === 0 ? (
                 <div className="py-12 text-center">
-                  <span className="text-sm text-secondary">Add exercises from the library</span>
+                  <span className="text-sm text-secondary">Click on exercises to add them to the program</span>
                 </div>
               ) : programRows.map((row, idx) => {
                 const ex = mockExercises.find((e) => e.id === row.exerciseId);
