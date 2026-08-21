@@ -383,6 +383,7 @@ export interface PMHx {
   allergies?: string;
   referringPhysician?: string;
   referralReason?: string;
+  otherConditions?: string;
 }
 
 export interface SOHx {
@@ -394,16 +395,10 @@ export interface SOHx {
 }
 
 export interface LifestyleHabits {
-  otherConditions: string;
   diet: string;
   exercise: string;
   smoker: string;
   alcohol: string;
-}
-
-export interface MedicalHistory {
-  otherConditions: string;
-  attachments: string[];
 }
 
 export interface Patient {
@@ -432,7 +427,6 @@ export interface Patient {
   pmhx?: PMHx;
   sohx?: SOHx;
   lifestyle?: LifestyleHabits;
-  medicalHistory?: MedicalHistory;
   emergencyContact?: EmergencyContact;
   documents: PatientDocument[];
 }

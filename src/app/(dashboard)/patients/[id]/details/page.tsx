@@ -7,7 +7,7 @@ import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/mod
 import { Alert } from '@/components/ui/alert';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
-import type { PatientMetrics, InjuryHistory, ObstetricPelvicHealth, PMHx, SOHx, LifestyleHabits, MedicalHistory } from '@/lib/types';
+import type { PatientMetrics, InjuryHistory, ObstetricPelvicHealth, PMHx, SOHx, LifestyleHabits } from '@/lib/types';
 import { Pencil, Star } from 'lucide-react';
 
 function InfoField({ label, value, hideEmpty }: { label: string; value?: string; hideEmpty: boolean }) {
@@ -41,7 +41,6 @@ const SECTION_TITLES: Record<string, string> = {
   pmhx: 'PMHx (Past Medical / Hospitalization History)',
   sohx: 'SOHx (Social History)',
   lifestyle: 'Lifestyle & Habits',
-  medical: 'Medical History',
 };
 
 const fieldLabel = (label: string) => <div className="mb-1 text-[13px] text-secondary">{label}</div>;
@@ -101,7 +100,6 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
 
   const initialLifestyle: LifestyleHabits | undefined = uploaded
     ? {
-        otherConditions: '',
         diet: uploaded.diet,
         exercise: uploaded.exercise,
         smoker: uploaded.smoker,
@@ -119,7 +117,6 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
   const [localPmhx, setLocalPmhx] = useState<PMHx | undefined>(initialPmhx);
   const [localSohx, setLocalSohx] = useState<SOHx | undefined>(initialSohx);
   const [localLifestyle, setLocalLifestyle] = useState<LifestyleHabits | undefined>(initialLifestyle);
-  const [localMedical, setLocalMedical] = useState<MedicalHistory | undefined>(patient?.medicalHistory);
 
   if (!patient) return null;
 
@@ -162,6 +159,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         previousTreatments: localPmhx?.previousTreatments ?? '',
         medicationList: localPmhx?.medicationList ?? '',
         exams: localPmhx?.exams ?? '',
+        otherConditions: localPmhx?.otherConditions ?? '',
       };
     } else if (section === 'sohx') {
       values = {
@@ -173,14 +171,11 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
       };
     } else if (section === 'lifestyle') {
       values = {
-        otherConditions: localLifestyle?.otherConditions ?? '',
         diet: localLifestyle?.diet ?? '',
         exercise: localLifestyle?.exercise ?? '',
         smoker: localLifestyle?.smoker ?? '',
         alcohol: localLifestyle?.alcohol ?? '',
       };
-    } else if (section === 'medical') {
-      values = { otherConditions: localMedical?.otherConditions ?? '' };
     }
     setDraftValues(values);
     setEditSection(section);
@@ -222,6 +217,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         allergies: draftValues.allergies,
         referringPhysician: draftValues.referringPhysician,
         referralReason: draftValues.referralReason,
+        otherConditions: draftValues.otherConditions,
       });
     } else if (editSection === 'sohx') {
       setLocalSohx({
@@ -233,14 +229,11 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
       });
     } else if (editSection === 'lifestyle') {
       setLocalLifestyle({
-        otherConditions: draftValues.otherConditions,
         diet: draftValues.diet,
         exercise: draftValues.exercise,
         smoker: draftValues.smoker,
         alcohol: draftValues.alcohol,
       });
-    } else if (editSection === 'medical') {
-      setLocalMedical((prev) => ({ otherConditions: draftValues.otherConditions, attachments: prev?.attachments ?? [] }));
     }
     setEditSection(null);
     toast.success('Changes saved.');
@@ -301,6 +294,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         {area('Previous Treatments', 'previousTreatments')}
         {area('Medication List', 'medicationList')}
         {area('Exams, Diagnostics, Tests', 'exams')}
+        {area('Other Conditions', 'otherConditions', 3)}
       </div>
     );
 
@@ -315,15 +309,8 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
 
     if (editSection === 'lifestyle') return (
       <div className="flex flex-col gap-4">
-        {area('Other Conditions', 'otherConditions')}
         <div className="flex gap-4">{txt('Diet', 'diet')}{txt('Exercise', 'exercise')}</div>
         <div className="flex gap-4">{txt('Smoker?', 'smoker')}{txt('Drink Alcohol?', 'alcohol')}</div>
-      </div>
-    );
-
-    if (editSection === 'medical') return (
-      <div className="flex flex-col gap-4">
-        {area('Other Conditions', 'otherConditions', 3)}
       </div>
     );
 
@@ -386,13 +373,6 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         </div>
       </SectionCard>
 
-      <SectionCard title="Obstetric & Pelvic Health" onEdit={() => openEdit('obstetric')}>
-        <div className="grid grid-cols-1 gap-4">
-          <InfoField label="Obstetric History" value={localObstetric?.obstetricsHistory} hideEmpty={hideEmpty} />
-          <InfoField label="Bladder & Bowel Symptoms" value={localObstetric?.bladderBowelSymptoms} hideEmpty={hideEmpty} />
-        </div>
-      </SectionCard>
-
       <SectionCard title="PMHx (Past Medical / Hospitalization History)" onEdit={() => openEdit('pmhx')}>
         <div className="grid grid-cols-2 gap-4">
           <InfoField label="Referring Physician" value={localPmhx?.referringPhysician} hideEmpty={hideEmpty} />
@@ -405,6 +385,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
           <InfoField label="Previous Treatments" value={localPmhx?.previousTreatments} hideEmpty={hideEmpty} />
           <InfoField label="Medication List" value={localPmhx?.medicationList} hideEmpty={hideEmpty} />
           <InfoField label="Exams, Diagnostics, Tests" value={localPmhx?.exams} hideEmpty={hideEmpty} />
+          <InfoField label="Other Conditions" value={localPmhx?.otherConditions} hideEmpty={hideEmpty} />
         </div>
       </SectionCard>
 
@@ -421,10 +402,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
       </SectionCard>
 
       <SectionCard title="Lifestyle & Habits" onEdit={() => openEdit('lifestyle')}>
-        <div className="grid grid-cols-1 gap-4">
-          <InfoField label="Other Conditions" value={localLifestyle?.otherConditions} hideEmpty={hideEmpty} />
-        </div>
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-2 gap-4">
           <InfoField label="Diet" value={localLifestyle?.diet} hideEmpty={hideEmpty} />
           <InfoField label="Exercise" value={localLifestyle?.exercise} hideEmpty={hideEmpty} />
           <InfoField label="Smoker?" value={localLifestyle?.smoker} hideEmpty={hideEmpty} />
@@ -432,15 +410,11 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         </div>
       </SectionCard>
 
-      <SectionCard title="Medical History" onEdit={() => openEdit('medical')}>
-        <InfoField label="Other Conditions" value={localMedical?.otherConditions} hideEmpty={hideEmpty} />
-        {localMedical?.attachments && localMedical.attachments.length > 0 && (
-          <div className="mt-4">
-            {localMedical.attachments.map((file) => (
-              <span key={file} className="block text-sm text-brand-700 cursor-pointer">📎 {file}</span>
-            ))}
-          </div>
-        )}
+      <SectionCard title="Obstetric & Pelvic Health" onEdit={() => openEdit('obstetric')}>
+        <div className="grid grid-cols-1 gap-4">
+          <InfoField label="Obstetric History" value={localObstetric?.obstetricsHistory} hideEmpty={hideEmpty} />
+          <InfoField label="Bladder & Bowel Symptoms" value={localObstetric?.bladderBowelSymptoms} hideEmpty={hideEmpty} />
+        </div>
       </SectionCard>
 
       <ModalOverlay isOpen={!!editSection} onOpenChange={(open) => { if (!open) setEditSection(null); }}>
