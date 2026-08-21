@@ -11,7 +11,7 @@ import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientConta
 import { Button } from '@/components/base/buttons/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
+  emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation, emptyProblem, emptyGoal,
   ChartFormBody, HistoryCard,
 } from '@/components/charts/chart-form-sections';
 import type {
@@ -42,10 +42,15 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
 
   const [subjective, setSubjective] = useState<SubjectiveSection>(emptySubjective);
   const [objective, setObjective] = useState<ObjectiveSection>(emptyObjective);
-  const [showGeneralScreen, setShowGeneralScreen] = useState(isIntake);
   const [analysis, setAnalysis] = useState<AnalysisSection>(() =>
     !isIntake && lastSession
-      ? { bodyStructures: lastSession.analysis.bodyStructures, problemList: lastSession.analysis.problemList, ptDiagnosis: lastSession.analysis.ptDiagnosis, goals: lastSession.analysis.goals, notes: '' }
+      ? {
+          bodyStructures: lastSession.analysis.bodyStructures,
+          problemList: lastSession.analysis.problemList.length ? lastSession.analysis.problemList : [emptyProblem()],
+          ptDiagnosis: lastSession.analysis.ptDiagnosis,
+          goals: lastSession.analysis.goals.length ? lastSession.analysis.goals : [emptyGoal()],
+          notes: '',
+        }
       : emptyAnalysis()
   );
   const [plan, setPlan] = useState<PlanSection>(() =>
@@ -143,7 +148,6 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
           isIntake={isIntake}
           subjective={subjective} setSubjective={setSubjective}
           objective={objective} setObjective={setObjective}
-          showGeneralScreen={showGeneralScreen} setShowGeneralScreen={setShowGeneralScreen}
           analysis={analysis} setAnalysis={setAnalysis}
           plan={plan} setPlan={setPlan}
           interventions={interventions} setInterventions={setInterventions}

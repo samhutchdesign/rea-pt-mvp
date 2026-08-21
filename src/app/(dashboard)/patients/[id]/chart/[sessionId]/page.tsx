@@ -55,7 +55,6 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const [summary, setSummary] = useState(session?.summary ?? '');
   const [subjective, setSubjective] = useState<SubjectiveSection>(session?.subjective ?? emptySubjective());
   const [objective, setObjective] = useState<ObjectiveSection>(session?.objective ?? emptyObjective());
-  const [showGeneralScreen, setShowGeneralScreen] = useState(true);
   const [analysis, setAnalysis] = useState<AnalysisSection>(session?.analysis ?? emptyAnalysis());
   const [plan, setPlan] = useState<PlanSection>(session?.plan ?? emptyPlan());
   const [interventions, setInterventions] = useState<InterventionItem[]>(session?.interventions ?? []);
@@ -267,7 +266,6 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             isIntake={session.isIntakeSession}
             subjective={subjective} setSubjective={setSubjective}
             objective={objective} setObjective={setObjective}
-            showGeneralScreen={showGeneralScreen} setShowGeneralScreen={setShowGeneralScreen}
             analysis={analysis} setAnalysis={setAnalysis}
             plan={plan} setPlan={setPlan}
             interventions={interventions} setInterventions={setInterventions}

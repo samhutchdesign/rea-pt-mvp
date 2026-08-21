@@ -167,9 +167,12 @@ export interface PainPoint {
   location: string;
   description: string;
   nprs: number;
+  nprsContext: string;
   pattern: 'constant' | 'intermittent';
   aggravating: string;
   easing: string;
+  upPain: string;
+  downPain: string;
   bodyView?: 'front' | 'back';
   x?: number;
   y?: number;
@@ -181,35 +184,57 @@ export interface SubjectiveSection {
   pmSymptoms: string;
   nightPain: boolean;
   sleepingPosition: string;
-  bladderBowelUpdate: string;
   notes: string;
 }
 
-export interface PelvicFloorExam {
-  power: number;
-  endurance: number;
-  repetitions: number;
-  fastContractions: number;
-  tone: 'hypertonic' | 'normal' | 'hypotonic' | '';
-  tenderness: string;
-}
+export const JOINT_MOVEMENTS = [
+  'Flexion/PF', 'Extension/DF', 'IR/Pronation', 'ER/Supination', 'Abduction', 'Adduction', 'Other',
+] as const;
+export type JointMovementOption = typeof JOINT_MOVEMENTS[number];
 
 export interface RomEntry {
-  joint: string;
-  side: string;
-  aromNotes: string;
-  strengthNotes: string;
+  jointName: string;
+  movement: JointMovementOption | '';
+  movementOther: string;
+  leftArom: string;
+  leftAromPain: number | '';
+  leftProm: string;
+  leftPromPain: number | '';
+  rightArom: string;
+  rightAromPain: number | '';
+  rightProm: string;
+  rightPromPain: number | '';
+  endFeel: string;
+}
+
+export interface StrengthEntry {
+  jointName: string;
+  movement: JointMovementOption | '';
+  movementOther: string;
+  isometric: 'strong' | 'weak' | '';
+  isometricPain: number | '';
+  mmtMuscle: string;
 }
 
 export interface ObjectiveSection {
-  observation: string;
-  functionalTests: string;
-  romStrength: RomEntry[];
-  pelvicFloorExam: PelvicFloorExam;
-  prolapseGrade: string;
-  diastasisRecti: string;
-  specialTests: string;
-  palpation: string;
+  generalObservation: string;
+  posture: string;
+  atrophyHypertrophy: string;
+  edema: string;
+  skinCondition: string;
+  deformities: string;
+  observationOther: string;
+  mobility: string[];
+  weightBearing: string;
+  upOnToes: string;
+  wbdf: string;
+  torsionTest: string;
+  squat: string;
+  functionalOther: string;
+  rom: RomEntry[];
+  strengthUnaffectedSide: 'normal' | 'abnormal' | '';
+  strengthUnaffectedNotes: string;
+  strength: StrengthEntry[];
   notes: string;
 }
 

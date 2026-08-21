@@ -9,30 +9,67 @@ import { BodyMap } from '@/components/charts/body-map';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { cx } from '@/utils/cx';
-import { ChevronDown, MapPin } from 'lucide-react';
+import { ChevronDown, MapPin, X } from 'lucide-react';
 import type {
-  Patient, ChartSession, PainPoint, RomEntry, ProblemListItem, GoalItem, PlanItem, InterventionItem,
-  SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, EvaluationSection,
+  Patient, ChartSession, PainPoint, RomEntry, StrengthEntry, ProblemListItem, GoalItem, PlanItem, InterventionItem,
+  SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, EvaluationSection, JointMovementOption,
 } from '@/lib/types';
+import { JOINT_MOVEMENTS } from '@/lib/types';
+
+const tableInputCls = 'w-full rounded border border-secondary px-1.5 py-1 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300';
+const th = 'px-2 py-2 text-left text-xs font-semibold text-secondary whitespace-nowrap';
+const td = 'px-2 py-1.5 align-top';
+
+function movementLabel(movement: JointMovementOption | '', movementOther: string): string {
+  if (!movement) return '';
+  return movement === 'Other' ? (movementOther || 'Other') : movement;
+}
+
+function MovementSelect({ movement, movementOther, onMovementChange, onMovementOtherChange }: {
+  movement: JointMovementOption | ''; movementOther: string;
+  onMovementChange: (v: JointMovementOption | '') => void; onMovementOtherChange: (v: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <NativeSelect className="pl-2 pr-6 py-1 text-xs" value={movement} onChange={(e) => onMovementChange(e.target.value as JointMovementOption | '')}>
+        <option value="">—</option>
+        {JOINT_MOVEMENTS.map((m) => <option key={m} value={m}>{m}</option>)}
+      </NativeSelect>
+      {movement === 'Other' && (
+        <input className={tableInputCls} placeholder="Specify movement" value={movementOther} onChange={(e) => onMovementOtherChange(e.target.value)} />
+      )}
+    </div>
+  );
+}
 
 export const inputCls = 'w-full rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300';
 
 export const INTERVENTION_TYPES: InterventionItem['type'][] = ['Manual Therapy', 'Exercise', 'Modality', 'Education', 'Other'];
 
-export const emptyPainPoint = (): PainPoint => ({ location: '', description: '', nprs: 0, pattern: 'intermittent', aggravating: '', easing: '' });
-export const emptyRomEntry = (): RomEntry => ({ joint: '', side: '', aromNotes: '', strengthNotes: '' });
+export const emptyPainPoint = (): PainPoint => ({ location: '', description: '', nprs: 0, nprsContext: '', pattern: 'intermittent', aggravating: '', easing: '', upPain: '', downPain: '' });
+export const emptyRomEntry = (): RomEntry => ({
+  jointName: '', movement: '', movementOther: '',
+  leftArom: '', leftAromPain: '', leftProm: '', leftPromPain: '',
+  rightArom: '', rightAromPain: '', rightProm: '', rightPromPain: '',
+  endFeel: '',
+});
+export const emptyStrengthEntry = (): StrengthEntry => ({
+  jointName: '', movement: '', movementOther: '', isometric: '', isometricPain: '', mmtMuscle: '',
+});
 export const emptyProblem = (): ProblemListItem => ({ bodyFunction: '', activityParticipation: '', environment: '' });
 export const emptyGoal = (): GoalItem => ({ problem: '', shortTerm: '', longTerm: '' });
 export const emptyPlanItem = (): PlanItem => ({ problemRef: '', treatment: '' });
 export const emptyIntervention = (): InterventionItem => ({ type: 'Exercise', details: '' });
 
-export const emptySubjective = (): SubjectiveSection => ({ painPoints: [], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', bladderBowelUpdate: '', notes: '' });
+export const emptySubjective = (): SubjectiveSection => ({ painPoints: [], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', notes: '' });
 export const emptyObjective = (): ObjectiveSection => ({
-  observation: '', functionalTests: '', romStrength: [],
-  pelvicFloorExam: { power: 0, endurance: 0, repetitions: 0, fastContractions: 0, tone: '', tenderness: '' },
-  prolapseGrade: '', diastasisRecti: '', specialTests: '', palpation: '', notes: '',
+  generalObservation: '',
+  posture: '', atrophyHypertrophy: '', edema: '', skinCondition: '', deformities: '', observationOther: '',
+  mobility: [''], weightBearing: '', upOnToes: '', wbdf: '', torsionTest: '', squat: '', functionalOther: '',
+  rom: [emptyRomEntry()], strengthUnaffectedSide: '', strengthUnaffectedNotes: '', strength: [emptyStrengthEntry()],
+  notes: '',
 });
-export const emptyAnalysis = (): AnalysisSection => ({ bodyStructures: '', problemList: [], ptDiagnosis: '', goals: [], notes: '' });
+export const emptyAnalysis = (): AnalysisSection => ({ bodyStructures: '', problemList: [emptyProblem()], ptDiagnosis: '', goals: [emptyGoal()], notes: '' });
 export const emptyPlan = (): PlanSection => ({ items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '' });
 export const emptyEvaluation = (): EvaluationSection => ({ patientReaction: '', objectiveResponse: '' });
 
@@ -102,8 +139,6 @@ interface ChartFormBodyProps {
   setSubjective: (updater: (s: SubjectiveSection) => SubjectiveSection) => void;
   objective: ObjectiveSection;
   setObjective: (updater: (o: ObjectiveSection) => ObjectiveSection) => void;
-  showGeneralScreen: boolean;
-  setShowGeneralScreen: (v: boolean) => void;
   analysis: AnalysisSection;
   setAnalysis: (updater: (a: AnalysisSection) => AnalysisSection) => void;
   plan: PlanSection;
@@ -117,7 +152,7 @@ interface ChartFormBodyProps {
 }
 
 export function ChartFormBody({
-  isIntake, subjective, setSubjective, objective, setObjective, showGeneralScreen, setShowGeneralScreen,
+  isIntake, subjective, setSubjective, objective, setObjective,
   analysis, setAnalysis, plan, setPlan, interventions, setInterventions, evaluation, setEvaluation,
   recommendations, setRecommendations,
 }: ChartFormBodyProps) {
@@ -139,10 +174,18 @@ export function ChartFormBody({
     }));
   };
 
+  const updateRom = (i: number, patch: Partial<RomEntry>) => setObjective((o) => ({ ...o, rom: o.rom.map((r, ri) => (ri === i ? { ...r, ...patch } : r)) }));
+  const removeRom = (i: number) => setObjective((o) => ({ ...o, rom: o.rom.filter((_, ri) => ri !== i) }));
+  const addRom = () => setObjective((o) => ({ ...o, rom: [...o.rom, emptyRomEntry()] }));
+
+  const updateStrength = (i: number, patch: Partial<StrengthEntry>) => setObjective((o) => ({ ...o, strength: o.strength.map((s, si) => (si === i ? { ...s, ...patch } : s)) }));
+  const removeStrength = (i: number) => setObjective((o) => ({ ...o, strength: o.strength.filter((_, si) => si !== i) }));
+  const addStrength = () => setObjective((o) => ({ ...o, strength: [...o.strength, emptyStrengthEntry()] }));
+
   return (
     <>
       {/* Subjective */}
-      <SectionCard letter="S" label="Subjective">
+      <SectionCard letter="S" label="Subjective" defaultOpen={isIntake}>
         <Field label="Pain Points">
           <BodyMap painPoints={subjective.painPoints} armedIndex={armedIndex} onPlace={handlePlace} onCreate={handleCreate} />
           <div className="mt-3">
@@ -159,7 +202,12 @@ export function ChartFormBody({
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <Field label="Location"><input className={inputCls} value={pp.location} onChange={(e) => update({ location: e.target.value })} /></Field>
                     <Field label="Description"><input className={inputCls} value={pp.description} onChange={(e) => update({ description: e.target.value })} /></Field>
-                    <Field label="NPRS (0-10)"><input type="number" min={0} max={10} className={inputCls} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} /></Field>
+                    <Field label="NPRS (0-10)">
+                      <div className="flex gap-2 min-w-0">
+                        <input type="number" min={0} max={10} placeholder="/10" className={cx(inputCls, 'w-16 shrink-0')} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} />
+                        <input className={cx(inputCls, 'min-w-0 flex-1 w-auto')} value={pp.nprsContext} onChange={(e) => update({ nprsContext: e.target.value })} />
+                      </div>
+                    </Field>
                     <Field label="Pattern">
                       <NativeSelect value={pp.pattern} onChange={(e) => update({ pattern: e.target.value as PainPoint['pattern'] })}>
                         <option value="constant">Constant</option>
@@ -168,6 +216,8 @@ export function ChartFormBody({
                     </Field>
                     <Field label="Aggravating Factors"><input className={inputCls} value={pp.aggravating} onChange={(e) => update({ aggravating: e.target.value })} /></Field>
                     <Field label="Easing Factors"><input className={inputCls} value={pp.easing} onChange={(e) => update({ easing: e.target.value })} /></Field>
+                    <Field label="↑ P"><input className={inputCls} value={pp.upPain} onChange={(e) => update({ upPain: e.target.value })} /></Field>
+                    <Field label="↓ P"><input className={inputCls} value={pp.downPain} onChange={(e) => update({ downPain: e.target.value })} /></Field>
                   </div>
                   <button
                     type="button"
@@ -191,78 +241,211 @@ export function ChartFormBody({
             <label htmlFor="nightPain" className="text-sm text-primary">Night pain</label>
           </div>
         </div>
-        <Field label="Bladder / Bowel Update">
-          <Textarea rows={2} value={subjective.bladderBowelUpdate} onChange={(e) => setSubjective((s) => ({ ...s, bladderBowelUpdate: e.target.value }))} placeholder="Voiding frequency, urgency, leakage episodes, bowel symptoms…" />
-        </Field>
         <Field label="Additional Notes">
           <Textarea rows={3} value={subjective.notes} onChange={(e) => setSubjective((s) => ({ ...s, notes: e.target.value }))} placeholder="Anything else the patient reports…" />
         </Field>
       </SectionCard>
 
       {/* Objective */}
-      <SectionCard letter="O" label="Objective">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Field label="Power (0-5)"><input type="number" min={0} max={5} className={inputCls} value={objective.pelvicFloorExam.power} onChange={(e) => setObjective((o) => ({ ...o, pelvicFloorExam: { ...o.pelvicFloorExam, power: Number(e.target.value) } }))} /></Field>
-          <Field label="Endurance (sec)"><input type="number" min={0} className={inputCls} value={objective.pelvicFloorExam.endurance} onChange={(e) => setObjective((o) => ({ ...o, pelvicFloorExam: { ...o.pelvicFloorExam, endurance: Number(e.target.value) } }))} /></Field>
-          <Field label="Repetitions"><input type="number" min={0} className={inputCls} value={objective.pelvicFloorExam.repetitions} onChange={(e) => setObjective((o) => ({ ...o, pelvicFloorExam: { ...o.pelvicFloorExam, repetitions: Number(e.target.value) } }))} /></Field>
-          <Field label="Fast Contractions"><input type="number" min={0} className={inputCls} value={objective.pelvicFloorExam.fastContractions} onChange={(e) => setObjective((o) => ({ ...o, pelvicFloorExam: { ...o.pelvicFloorExam, fastContractions: Number(e.target.value) } }))} /></Field>
-          <Field label="Tone">
-            <NativeSelect value={objective.pelvicFloorExam.tone} onChange={(e) => setObjective((o) => ({ ...o, pelvicFloorExam: { ...o.pelvicFloorExam, tone: e.target.value as ObjectiveSection['pelvicFloorExam']['tone'] } }))}>
-              <option value="">—</option>
-              <option value="hypertonic">Hypertonic</option>
-              <option value="normal">Normal</option>
-              <option value="hypotonic">Hypotonic</option>
-            </NativeSelect>
-          </Field>
-          <Field label="Tenderness"><input className={inputCls} value={objective.pelvicFloorExam.tenderness} onChange={(e) => setObjective((o) => ({ ...o, pelvicFloorExam: { ...o.pelvicFloorExam, tenderness: e.target.value } }))} /></Field>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="Prolapse Grade"><input className={inputCls} value={objective.prolapseGrade} onChange={(e) => setObjective((o) => ({ ...o, prolapseGrade: e.target.value }))} placeholder="e.g. Grade I cystocele" /></Field>
-          <Field label="Diastasis Recti"><input className={inputCls} value={objective.diastasisRecti} onChange={(e) => setObjective((o) => ({ ...o, diastasisRecti: e.target.value }))} placeholder="e.g. 2cm supra-umbilical, doming" /></Field>
-        </div>
-        <Field label="Special Tests"><Textarea rows={2} value={objective.specialTests} onChange={(e) => setObjective((o) => ({ ...o, specialTests: e.target.value }))} placeholder="Cough/stress test, Q-tip test, etc…" /></Field>
-        <Field label="Palpation / Circulation / Sensation"><Textarea rows={2} value={objective.palpation} onChange={(e) => setObjective((o) => ({ ...o, palpation: e.target.value }))} /></Field>
+      <SectionCard letter="O" label="Objective" defaultOpen={isIntake}>
+        <Field label="General Observation"><Textarea rows={2} value={objective.generalObservation} onChange={(e) => setObjective((o) => ({ ...o, generalObservation: e.target.value }))} /></Field>
 
-        {!showGeneralScreen ? (
-          <button type="button" onClick={() => setShowGeneralScreen(true)} className="w-fit text-xs font-medium text-brand-600 hover:underline">
-            + Add general musculoskeletal screen (posture, ROM, functional tests)
-          </button>
-        ) : (
-          <>
-            <Field label="Observation"><Textarea rows={2} value={objective.observation} onChange={(e) => setObjective((o) => ({ ...o, observation: e.target.value }))} placeholder="Posture, atrophy/hypertrophy, edema, skin condition, deformities…" /></Field>
-            <Field label="Functional Tests"><Textarea rows={2} value={objective.functionalTests} onChange={(e) => setObjective((o) => ({ ...o, functionalTests: e.target.value }))} placeholder="Gait, weight-bearing, squat, other…" /></Field>
-            <Field label="ROM / Strength Screen">
-              <RepeatableList
-                items={objective.romStrength}
-                onChange={(romStrength) => setObjective((o) => ({ ...o, romStrength }))}
-                newItem={emptyRomEntry}
-                addLabel="Add Joint"
-                emptyLabel="No general MSK findings recorded."
-                renderRow={(r, update) => (
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
-                    <Field label="Joint"><input className={inputCls} value={r.joint} onChange={(e) => update({ joint: e.target.value })} /></Field>
-                    <Field label="Side"><input className={inputCls} value={r.side} onChange={(e) => update({ side: e.target.value })} /></Field>
-                    <Field label="AROM / PROM"><input className={inputCls} value={r.aromNotes} onChange={(e) => update({ aromNotes: e.target.value })} /></Field>
-                    <Field label="Strength"><input className={inputCls} value={r.strengthNotes} onChange={(e) => update({ strengthNotes: e.target.value })} /></Field>
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">Observation</span>
+          <div className="flex flex-col gap-3">
+            <Field label="Posture"><input className={inputCls} value={objective.posture} onChange={(e) => setObjective((o) => ({ ...o, posture: e.target.value }))} /></Field>
+            <Field label="Atrophy/Hypertrophy (girth)"><input className={inputCls} value={objective.atrophyHypertrophy} onChange={(e) => setObjective((o) => ({ ...o, atrophyHypertrophy: e.target.value }))} /></Field>
+            <Field label="Edema"><input className={inputCls} value={objective.edema} onChange={(e) => setObjective((o) => ({ ...o, edema: e.target.value }))} /></Field>
+            <Field label="Skin condition, color, scar(s)"><input className={inputCls} value={objective.skinCondition} onChange={(e) => setObjective((o) => ({ ...o, skinCondition: e.target.value }))} /></Field>
+            <Field label="Deformities"><input className={inputCls} value={objective.deformities} onChange={(e) => setObjective((o) => ({ ...o, deformities: e.target.value }))} /></Field>
+            <Field label="Other"><input className={inputCls} value={objective.observationOther} onChange={(e) => setObjective((o) => ({ ...o, observationOther: e.target.value }))} /></Field>
+          </div>
+        </div>
+
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">Functional Tests</span>
+          <div className="flex flex-col gap-3">
+            <Field label="Mobility (gait, transfer, stairs)">
+              <div className="flex flex-col gap-2">
+                {objective.mobility.map((item, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="text-tertiary">•</span>
+                    <input
+                      className={inputCls + ' max-w-[240px]'}
+                      value={item}
+                      onChange={(e) => setObjective((o) => ({ ...o, mobility: o.mobility.map((m, mi) => (mi === i ? e.target.value : m)) }))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setObjective((o) => ({ ...o, mobility: o.mobility.filter((_, mi) => mi !== i) }))}
+                      aria-label="Remove"
+                      className="shrink-0 text-tertiary hover:text-error-600"
+                    >
+                      <X size={14} />
+                    </button>
                   </div>
-                )}
-              />
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setObjective((o) => ({ ...o, mobility: [...o.mobility, ''] }))}
+                  className="w-fit text-xs font-medium text-brand-600 hover:underline"
+                >
+                  + Add line
+                </button>
+              </div>
             </Field>
-          </>
-        )}
+            <Field label="WB (unilateral, bilateral)"><input className={inputCls} value={objective.weightBearing} onChange={(e) => setObjective((o) => ({ ...o, weightBearing: e.target.value }))} /></Field>
+            <Field label="Up on toes"><input className={inputCls} value={objective.upOnToes} onChange={(e) => setObjective((o) => ({ ...o, upOnToes: e.target.value }))} /></Field>
+            <Field label="WBDF (weight bearing dorsiflexion)"><input className={inputCls} value={objective.wbdf} onChange={(e) => setObjective((o) => ({ ...o, wbdf: e.target.value }))} /></Field>
+            <Field label="Torsion test (body torque)"><input className={inputCls} value={objective.torsionTest} onChange={(e) => setObjective((o) => ({ ...o, torsionTest: e.target.value }))} /></Field>
+            <Field label="Squat"><input className={inputCls} value={objective.squat} onChange={(e) => setObjective((o) => ({ ...o, squat: e.target.value }))} /></Field>
+            <Field label="Others"><input className={inputCls} value={objective.functionalOther} onChange={(e) => setObjective((o) => ({ ...o, functionalOther: e.target.value }))} /></Field>
+          </div>
+        </div>
+
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">ROM</span>
+          <div className="overflow-x-auto rounded-lg border border-secondary">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-secondary bg-secondary_alt">
+                  <th className={th}>Joint</th>
+                  <th className={th}>Movement</th>
+                  <th className={th}>L AROM°</th>
+                  <th className={th}>L PROM°</th>
+                  <th className={th}>R AROM°</th>
+                  <th className={th}>R PROM°</th>
+                  <th className={th}>EF</th>
+                  <th className={th} />
+                </tr>
+              </thead>
+              <tbody>
+                {objective.rom.map((r, i) => (
+                  <tr key={i} className="border-b border-secondary last:border-0">
+                    <td className={td}><input className={tableInputCls} style={{ width: 80 }} value={r.jointName} onChange={(e) => updateRom(i, { jointName: e.target.value })} /></td>
+                    <td className={td} style={{ minWidth: 110 }}>
+                      <MovementSelect
+                        movement={r.movement} movementOther={r.movementOther}
+                        onMovementChange={(movement) => updateRom(i, { movement })}
+                        onMovementOtherChange={(movementOther) => updateRom(i, { movementOther })}
+                      />
+                    </td>
+                    <td className={td}>
+                      <div className="flex gap-1">
+                        <input className={tableInputCls} style={{ width: 44 }} placeholder="°" value={r.leftArom} onChange={(e) => updateRom(i, { leftArom: e.target.value })} />
+                        <input type="number" min={0} max={10} className={tableInputCls} style={{ width: 44 }} placeholder="/10" value={r.leftAromPain} onChange={(e) => updateRom(i, { leftAromPain: e.target.value === '' ? '' : Number(e.target.value) })} />
+                      </div>
+                    </td>
+                    <td className={td}>
+                      <div className="flex gap-1">
+                        <input className={tableInputCls} style={{ width: 44 }} placeholder="°" value={r.leftProm} onChange={(e) => updateRom(i, { leftProm: e.target.value })} />
+                        <input type="number" min={0} max={10} className={tableInputCls} style={{ width: 44 }} placeholder="/10" value={r.leftPromPain} onChange={(e) => updateRom(i, { leftPromPain: e.target.value === '' ? '' : Number(e.target.value) })} />
+                      </div>
+                    </td>
+                    <td className={td}>
+                      <div className="flex gap-1">
+                        <input className={tableInputCls} style={{ width: 44 }} placeholder="°" value={r.rightArom} onChange={(e) => updateRom(i, { rightArom: e.target.value })} />
+                        <input type="number" min={0} max={10} className={tableInputCls} style={{ width: 44 }} placeholder="/10" value={r.rightAromPain} onChange={(e) => updateRom(i, { rightAromPain: e.target.value === '' ? '' : Number(e.target.value) })} />
+                      </div>
+                    </td>
+                    <td className={td}>
+                      <div className="flex gap-1">
+                        <input className={tableInputCls} style={{ width: 44 }} placeholder="°" value={r.rightProm} onChange={(e) => updateRom(i, { rightProm: e.target.value })} />
+                        <input type="number" min={0} max={10} className={tableInputCls} style={{ width: 44 }} placeholder="/10" value={r.rightPromPain} onChange={(e) => updateRom(i, { rightPromPain: e.target.value === '' ? '' : Number(e.target.value) })} />
+                      </div>
+                    </td>
+                    <td className={td}><input className={tableInputCls} style={{ width: 70 }} value={r.endFeel} onChange={(e) => updateRom(i, { endFeel: e.target.value })} /></td>
+                    <td className={td}>
+                      <button type="button" onClick={() => removeRom(i)} aria-label="Remove" className="text-tertiary hover:text-error-600">
+                        <X size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <button type="button" onClick={addRom} className="mt-2 w-fit text-xs font-medium text-brand-600 hover:underline">+ Add Measurement</button>
+        </div>
+
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">Strength</span>
+          <div className="mb-3 flex items-end gap-3">
+            <div className="w-40 shrink-0">
+              <span className="mb-1 block text-xs text-secondary">Unaffected Side</span>
+              <NativeSelect
+                value={objective.strengthUnaffectedSide}
+                onChange={(e) => setObjective((o) => ({ ...o, strengthUnaffectedSide: e.target.value as ObjectiveSection['strengthUnaffectedSide'] }))}
+              >
+                <option value="">—</option>
+                <option value="normal">Normal</option>
+                <option value="abnormal">Abnormal</option>
+              </NativeSelect>
+            </div>
+            <div className="flex-1">
+              <span className="mb-1 block text-xs text-secondary">Notes (if abnormal)</span>
+              <input className={inputCls} value={objective.strengthUnaffectedNotes} onChange={(e) => setObjective((o) => ({ ...o, strengthUnaffectedNotes: e.target.value }))} />
+            </div>
+          </div>
+          <div className="overflow-x-auto rounded-lg border border-secondary">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-secondary bg-secondary_alt">
+                  <th className={th}>Joint</th>
+                  <th className={th}>Movement</th>
+                  <th className={th}>RISOM</th>
+                  <th className={th}>Isometric Pain</th>
+                  <th className={th}>MMT</th>
+                  <th className={th} />
+                </tr>
+              </thead>
+              <tbody>
+                {objective.strength.map((s, i) => (
+                  <tr key={i} className="border-b border-secondary last:border-0">
+                    <td className={td}><input className={tableInputCls} style={{ width: 80 }} value={s.jointName} onChange={(e) => updateStrength(i, { jointName: e.target.value })} /></td>
+                    <td className={td} style={{ minWidth: 110 }}>
+                      <MovementSelect
+                        movement={s.movement} movementOther={s.movementOther}
+                        onMovementChange={(movement) => updateStrength(i, { movement })}
+                        onMovementOtherChange={(movementOther) => updateStrength(i, { movementOther })}
+                      />
+                    </td>
+                    <td className={td}>
+                      <NativeSelect className="pl-2 pr-6 py-1 text-xs" value={s.isometric} onChange={(e) => updateStrength(i, { isometric: e.target.value as StrengthEntry['isometric'] })}>
+                        <option value="">—</option>
+                        <option value="strong">Strong</option>
+                        <option value="weak">Weak</option>
+                      </NativeSelect>
+                    </td>
+                    <td className={td}><input type="number" min={0} max={10} className={tableInputCls} style={{ width: 48 }} value={s.isometricPain} onChange={(e) => updateStrength(i, { isometricPain: e.target.value === '' ? '' : Number(e.target.value) })} /></td>
+                    <td className={td}><input className={tableInputCls} style={{ width: 120 }} value={s.mmtMuscle} onChange={(e) => updateStrength(i, { mmtMuscle: e.target.value })} /></td>
+                    <td className={td}>
+                      <button type="button" onClick={() => removeStrength(i)} aria-label="Remove" className="text-tertiary hover:text-error-600">
+                        <X size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <button type="button" onClick={addStrength} className="mt-2 w-fit text-xs font-medium text-brand-600 hover:underline">+ Add Measurement</button>
+        </div>
         <Field label="Additional Notes"><Textarea rows={2} value={objective.notes} onChange={(e) => setObjective((o) => ({ ...o, notes: e.target.value }))} /></Field>
       </SectionCard>
 
       {/* Analysis */}
-      <SectionCard letter="A" label="Analysis">
+      <SectionCard letter="A" label="Analysis" defaultOpen={isIntake}>
         <Field label="Body Structure(s)"><input className={inputCls} value={analysis.bodyStructures} onChange={(e) => setAnalysis((a) => ({ ...a, bodyStructures: e.target.value }))} placeholder="Specific structure(s) that are the source of symptoms/limitations" /></Field>
-        <Field label="Problem List (by priority)">
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">Problem List (by priority)</span>
           <RepeatableList
             items={analysis.problemList}
             onChange={(problemList) => setAnalysis((a) => ({ ...a, problemList }))}
             newItem={emptyProblem}
             addLabel="Add Problem"
             emptyLabel="No problems listed yet."
+            reorderable
             renderRow={(p, update) => (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <Field label="Body Function (impairment)"><input className={inputCls} value={p.bodyFunction} onChange={(e) => update({ bodyFunction: e.target.value })} /></Field>
@@ -271,17 +454,20 @@ export function ChartFormBody({
               </div>
             )}
           />
-        </Field>
-        <Field label="PT Diagnosis">
+        </div>
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">PT Diagnosis</span>
           <Textarea rows={2} value={analysis.ptDiagnosis} onChange={(e) => setAnalysis((a) => ({ ...a, ptDiagnosis: e.target.value }))} placeholder="[age] y.o. [sex] presenting with [nature/severity/phase] dt [impairments] affecting [activity/participation limitations]." />
-        </Field>
-        <Field label="Goals">
+        </div>
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">PT Goals</span>
           <RepeatableList
             items={analysis.goals}
             onChange={(goals) => setAnalysis((a) => ({ ...a, goals }))}
             newItem={emptyGoal}
             addLabel="Add Goal"
             emptyLabel="No goals set yet."
+            reorderable
             renderRow={(g, update) => (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <Field label="Problem"><input className={inputCls} value={g.problem} onChange={(e) => update({ problem: e.target.value })} /></Field>
@@ -290,13 +476,14 @@ export function ChartFormBody({
               </div>
             )}
           />
-        </Field>
+        </div>
         <Field label="Additional Notes"><Textarea rows={2} value={analysis.notes} onChange={(e) => setAnalysis((a) => ({ ...a, notes: e.target.value }))} /></Field>
       </SectionCard>
 
       {/* Plan */}
       <SectionCard letter="P" label="Plan" defaultOpen={isIntake}>
-        <Field label="Treatment Plan (per problem)">
+        <div>
+          <span className="mb-3 block text-sm font-semibold text-primary">Treatment Plan (per problem)</span>
           <RepeatableList
             items={plan.items}
             onChange={(items) => setPlan((p) => ({ ...p, items }))}
@@ -312,7 +499,7 @@ export function ChartFormBody({
               </div>
             )}
           />
-        </Field>
+        </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Expected Frequency"><input className={inputCls} value={plan.frequency} onChange={(e) => setPlan((p) => ({ ...p, frequency: e.target.value }))} placeholder="e.g. 6 sessions × 1×/wk" /></Field>
           <Field label="Reassessment Plan"><input className={inputCls} value={plan.reassessmentPlan} onChange={(e) => setPlan((p) => ({ ...p, reassessmentPlan: e.target.value }))} /></Field>
@@ -326,13 +513,14 @@ export function ChartFormBody({
       </SectionCard>
 
       {/* Interventions */}
-      <SectionCard letter="I" label="Intervention" defaultOpen={isIntake}>
+      <SectionCard letter="I" label="Intervention">
         <RepeatableList
           items={interventions}
           onChange={setInterventions}
           newItem={emptyIntervention}
           addLabel="Add Intervention"
           emptyLabel="No interventions recorded yet."
+          reorderable
           renderRow={(item, update) => (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Field label="Type">
@@ -408,13 +596,10 @@ interface ChartReadOnlyBodyProps {
 }
 
 export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, plan, interventions, evaluation, recommendations }: ChartReadOnlyBodyProps) {
-  const pf = objective.pelvicFloorExam;
-  const hasPfExam = pf.power || pf.endurance || pf.repetitions || pf.fastContractions || pf.tone || pf.tenderness;
-
   return (
     <>
       {/* Subjective */}
-      <SectionCard letter="S" label="Subjective">
+      <SectionCard letter="S" label="Subjective" defaultOpen={isIntake}>
         {subjective.painPoints.some((p) => p.bodyView) && (
           <BodyMap painPoints={subjective.painPoints} interactive={false} />
         )}
@@ -428,10 +613,12 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
                 <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
                   <ReadField label="Location" value={pp.location} />
                   <ReadField label="Description" value={pp.description} />
-                  <ReadField label="NPRS" value={`${pp.nprs}/10`} />
+                  <ReadField label="NPRS" value={pp.nprsContext ? `${pp.nprs}/10 — ${pp.nprsContext}` : `${pp.nprs}/10`} />
                   <ReadField label="Pattern" value={pp.pattern} />
                   <ReadField label="Aggravating Factors" value={pp.aggravating} />
                   <ReadField label="Easing Factors" value={pp.easing} />
+                  <ReadField label="↑ P" value={pp.upPain} />
+                  <ReadField label="↓ P" value={pp.downPain} />
                 </div>
               </div>
             ))}
@@ -443,53 +630,118 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
           <ReadField label="Sleeping Position" value={subjective.sleepingPosition} />
           <ReadField label="Night Pain" value={subjective.nightPain ? 'Yes' : 'No'} />
         </div>
-        <ReadField label="Bladder / Bowel Update" value={subjective.bladderBowelUpdate} />
         <ReadField label="Additional Notes" value={subjective.notes} />
       </SectionCard>
 
       {/* Objective */}
-      <SectionCard letter="O" label="Objective">
-        {hasPfExam && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <ReadField label="Power" value={pf.power ? `${pf.power}/5` : undefined} />
-            <ReadField label="Endurance" value={pf.endurance ? `${pf.endurance} sec` : undefined} />
-            <ReadField label="Repetitions" value={pf.repetitions || undefined} />
-            <ReadField label="Fast Contractions" value={pf.fastContractions || undefined} />
-            <ReadField label="Tone" value={pf.tone} />
-            <ReadField label="Tenderness" value={pf.tenderness} />
+      <SectionCard letter="O" label="Objective" defaultOpen={isIntake}>
+        <ReadField label="General Observation" value={objective.generalObservation} />
+        {(objective.posture || objective.atrophyHypertrophy || objective.edema || objective.skinCondition || objective.deformities || objective.observationOther) && (
+          <div>
+            <span className="mb-2 block text-xs text-secondary">Observation</span>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <ReadField label="Posture" value={objective.posture} />
+              <ReadField label="Atrophy/Hypertrophy (girth)" value={objective.atrophyHypertrophy} />
+              <ReadField label="Edema" value={objective.edema} />
+              <ReadField label="Skin condition, color, scar(s)" value={objective.skinCondition} />
+              <ReadField label="Deformities" value={objective.deformities} />
+              <ReadField label="Other" value={objective.observationOther} />
+            </div>
           </div>
         )}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <ReadField label="Prolapse Grade" value={objective.prolapseGrade} />
-          <ReadField label="Diastasis Recti" value={objective.diastasisRecti} />
-        </div>
-        <ReadField label="Special Tests" value={objective.specialTests} />
-        <ReadField label="Palpation / Circulation / Sensation" value={objective.palpation} />
-        <ReadField label="Observation" value={objective.observation} />
-        <ReadField label="Functional Tests" value={objective.functionalTests} />
-        {objective.romStrength.length > 0 && (
+        {(objective.mobility.some(Boolean) || objective.weightBearing || objective.upOnToes || objective.wbdf || objective.torsionTest || objective.squat || objective.functionalOther) && (
           <div>
-            <span className="mb-2 block text-xs text-secondary">ROM / Strength Screen</span>
-            <div className="flex flex-col gap-2">
-              {objective.romStrength.map((r, i) => (
-                <div key={i} className="grid grid-cols-1 gap-2 rounded-lg border border-secondary p-3 sm:grid-cols-4">
-                  <ReadField label="Joint" value={r.joint} />
-                  <ReadField label="Side" value={r.side} />
-                  <ReadField label="AROM / PROM" value={r.aromNotes} />
-                  <ReadField label="Strength" value={r.strengthNotes} />
+            <span className="mb-2 block text-xs text-secondary">Functional Tests</span>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {objective.mobility.filter(Boolean).length > 0 && (
+                <div>
+                  <span className="mb-0.5 block text-xs text-secondary">Mobility (gait, transfer, stairs)</span>
+                  <ul className="list-disc pl-4 text-sm text-primary">
+                    {objective.mobility.filter(Boolean).map((item, i) => <li key={i}>{item}</li>)}
+                  </ul>
                 </div>
-              ))}
+              )}
+              <ReadField label="WB (unilateral, bilateral)" value={objective.weightBearing} />
+              <ReadField label="Up on toes" value={objective.upOnToes} />
+              <ReadField label="WBDF (weight bearing dorsiflexion)" value={objective.wbdf} />
+              <ReadField label="Torsion test (body torque)" value={objective.torsionTest} />
+              <ReadField label="Squat" value={objective.squat} />
+              <ReadField label="Others" value={objective.functionalOther} />
+            </div>
+          </div>
+        )}
+        {objective.rom.length > 0 && (
+          <div>
+            <span className="mb-2 block text-xs text-secondary">ROM</span>
+            <div className="overflow-x-auto rounded-lg border border-secondary">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b border-secondary bg-secondary_alt">
+                    <th className={th}>Joint</th>
+                    <th className={th}>Movement</th>
+                    <th className={th}>L AROM°</th>
+                    <th className={th}>L PROM°</th>
+                    <th className={th}>R AROM°</th>
+                    <th className={th}>R PROM°</th>
+                    <th className={th}>EF</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {objective.rom.map((r, i) => (
+                    <tr key={i} className="border-b border-secondary text-sm text-primary last:border-0">
+                      <td className={td}>{r.jointName || '—'}</td>
+                      <td className={td}>{movementLabel(r.movement, r.movementOther) || '—'}</td>
+                      <td className={td}>{r.leftArom ? `${r.leftArom}° (${r.leftAromPain || 0}/10)` : '—'}</td>
+                      <td className={td}>{r.leftProm ? `${r.leftProm}° (${r.leftPromPain || 0}/10)` : '—'}</td>
+                      <td className={td}>{r.rightArom ? `${r.rightArom}° (${r.rightAromPain || 0}/10)` : '—'}</td>
+                      <td className={td}>{r.rightProm ? `${r.rightProm}° (${r.rightPromPain || 0}/10)` : '—'}</td>
+                      <td className={td}>{r.endFeel || '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        {(objective.strengthUnaffectedSide || objective.strengthUnaffectedNotes || objective.strength.length > 0) && (
+          <div>
+            <span className="mb-2 block text-xs text-secondary">Strength</span>
+            <div className="mb-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <ReadField label="Unaffected Side" value={objective.strengthUnaffectedSide} />
+              <ReadField label="Notes" value={objective.strengthUnaffectedNotes} />
+            </div>
+            <div className="overflow-x-auto rounded-lg border border-secondary">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b border-secondary bg-secondary_alt">
+                    <th className={th}>Joint</th>
+                    <th className={th}>Movement</th>
+                    <th className={th}>RISOM</th>
+                    <th className={th}>MMT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {objective.strength.map((s, i) => (
+                    <tr key={i} className="border-b border-secondary text-sm text-primary last:border-0">
+                      <td className={td}>{s.jointName || '—'}</td>
+                      <td className={td}>{movementLabel(s.movement, s.movementOther) || '—'}</td>
+                      <td className={td}>{s.isometric ? `${s.isometric} (Pain ${s.isometricPain || 0}/10)` : '—'}</td>
+                      <td className={td}>{s.mmtMuscle || '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
         <ReadField label="Additional Notes" value={objective.notes} />
-        {!hasPfExam && !objective.observation && !objective.functionalTests && !objective.prolapseGrade && !objective.diastasisRecti && !objective.specialTests && !objective.palpation && !objective.notes && objective.romStrength.length === 0 && (
+        {!objective.generalObservation && !objective.posture && !objective.atrophyHypertrophy && !objective.edema && !objective.skinCondition && !objective.deformities && !objective.observationOther && !objective.mobility.some(Boolean) && !objective.weightBearing && !objective.upOnToes && !objective.wbdf && !objective.torsionTest && !objective.squat && !objective.functionalOther && !objective.notes && objective.rom.length === 0 && !objective.strengthUnaffectedSide && !objective.strengthUnaffectedNotes && objective.strength.length === 0 && (
           <ReadEmpty>Not recorded</ReadEmpty>
         )}
       </SectionCard>
 
       {/* Analysis */}
-      <SectionCard letter="A" label="Analysis">
+      <SectionCard letter="A" label="Analysis" defaultOpen={isIntake}>
         <ReadField label="Body Structure(s)" value={analysis.bodyStructures} />
         {analysis.problemList.length > 0 && (
           <div>
@@ -508,7 +760,7 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
         <ReadField label="PT Diagnosis" value={analysis.ptDiagnosis} />
         {analysis.goals.length > 0 && (
           <div>
-            <span className="mb-2 block text-xs text-secondary">Goals</span>
+            <span className="mb-2 block text-xs text-secondary">PT Goals</span>
             <div className="flex flex-col gap-2">
               {analysis.goals.map((g, i) => (
                 <div key={i} className="grid grid-cols-1 gap-2 rounded-lg border border-secondary p-3 sm:grid-cols-3">
@@ -548,7 +800,7 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
       </SectionCard>
 
       {/* Interventions */}
-      <SectionCard letter="I" label="Intervention" defaultOpen={isIntake}>
+      <SectionCard letter="I" label="Intervention">
         {interventions.length === 0 ? (
           <ReadEmpty>No interventions recorded.</ReadEmpty>
         ) : (

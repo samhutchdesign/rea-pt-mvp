@@ -86,27 +86,30 @@ export function buildChartExport(
         const lines = [
           textField('Location', p.location),
           textField('Description', p.description),
-          `NPRS: ${p.nprs}/10`,
+          `NPRS: ${p.nprs}/10${p.nprsContext ? ` — ${p.nprsContext}` : ''}`,
           textField('Pattern', p.pattern),
           textField('Aggravating Factors', p.aggravating),
           textField('Easing Factors', p.easing),
+          textField('↑ P', p.upPain),
+          textField('↓ P', p.downPain),
         ].filter((l): l is string => !!l);
         text.push(`  P${i + 1}: ${lines.join(' | ')}`);
         html.push(`<div style="${SUBBOX}"><strong>P${i + 1}</strong> ${[
-          htmlField('Location', p.location), htmlField('Description', p.description), htmlField('NPRS', `${p.nprs}/10`),
+          htmlField('Location', p.location), htmlField('Description', p.description), htmlField('NPRS', `${p.nprs}/10${p.nprsContext ? ` — ${p.nprsContext}` : ''}`),
           htmlField('Pattern', p.pattern), htmlField('Aggravating Factors', p.aggravating), htmlField('Easing Factors', p.easing),
+          htmlField('↑ P', p.upPain), htmlField('↓ P', p.downPain),
         ].join('')}</div>`);
       });
     }
     [
       textField('AM Symptoms', s.amSymptoms), textField('PM Symptoms', s.pmSymptoms),
       textField('Sleeping Position', s.sleepingPosition), `Night Pain: ${s.nightPain ? 'Yes' : 'No'}`,
-      textField('Bladder / Bowel Update', s.bladderBowelUpdate), textField('Additional Notes', s.notes),
+      textField('Additional Notes', s.notes),
     ].filter((l): l is string => !!l).forEach((l) => text.push(l));
     html.push(
       htmlField('AM Symptoms', s.amSymptoms), htmlField('PM Symptoms', s.pmSymptoms),
       htmlField('Sleeping Position', s.sleepingPosition), htmlField('Night Pain', s.nightPain ? 'Yes' : 'No'),
-      htmlField('Bladder / Bowel Update', s.bladderBowelUpdate), htmlField('Additional Notes', s.notes),
+      htmlField('Additional Notes', s.notes),
     );
     text.push('');
   }
@@ -114,36 +117,59 @@ export function buildChartExport(
   // Objective
   {
     const o = session.objective;
-    const pf = o.pelvicFloorExam;
+    const mobility = o.mobility.filter(Boolean).join('; ');
     text.push('O — OBJECTIVE');
     html.push(`<h2 style="${H2}">O — Objective</h2>`);
-    const hasPf = pf.power || pf.endurance || pf.repetitions || pf.fastContractions || pf.tone || pf.tenderness;
-    if (hasPf) {
-      [
-        pf.power ? `Power: ${pf.power}/5` : null, pf.endurance ? `Endurance: ${pf.endurance} sec` : null,
-        pf.repetitions ? `Repetitions: ${pf.repetitions}` : null, pf.fastContractions ? `Fast Contractions: ${pf.fastContractions}` : null,
-        textField('Tone', pf.tone), textField('Tenderness', pf.tenderness),
-      ].filter((l): l is string => !!l).forEach((l) => text.push(l));
-      html.push(
-        htmlField('Power', pf.power ? `${pf.power}/5` : undefined), htmlField('Endurance', pf.endurance ? `${pf.endurance} sec` : undefined),
-        htmlField('Repetitions', pf.repetitions || undefined), htmlField('Fast Contractions', pf.fastContractions || undefined),
-        htmlField('Tone', pf.tone), htmlField('Tenderness', pf.tenderness),
-      );
-    }
     [
-      textField('Prolapse Grade', o.prolapseGrade), textField('Diastasis Recti', o.diastasisRecti),
-      textField('Special Tests', o.specialTests), textField('Palpation / Circulation / Sensation', o.palpation),
-      textField('Observation', o.observation), textField('Functional Tests', o.functionalTests),
+      textField('General Observation', o.generalObservation),
+      textField('Posture', o.posture), textField('Atrophy/Hypertrophy (girth)', o.atrophyHypertrophy),
+      textField('Edema', o.edema), textField('Skin condition, color, scar(s)', o.skinCondition),
+      textField('Deformities', o.deformities), textField('Observation — Other', o.observationOther),
+      textField('Mobility (gait, transfer, stairs)', mobility), textField('WB (unilateral, bilateral)', o.weightBearing),
+      textField('Up on toes', o.upOnToes), textField('WBDF (weight bearing dorsiflexion)', o.wbdf),
+      textField('Torsion test (body torque)', o.torsionTest), textField('Squat', o.squat),
+      textField('Functional Tests — Others', o.functionalOther),
     ].filter((l): l is string => !!l).forEach((l) => text.push(l));
     html.push(
-      htmlField('Prolapse Grade', o.prolapseGrade), htmlField('Diastasis Recti', o.diastasisRecti),
-      htmlField('Special Tests', o.specialTests), htmlField('Palpation / Circulation / Sensation', o.palpation),
-      htmlField('Observation', o.observation), htmlField('Functional Tests', o.functionalTests),
+      htmlField('General Observation', o.generalObservation),
+      htmlField('Posture', o.posture), htmlField('Atrophy/Hypertrophy (girth)', o.atrophyHypertrophy),
+      htmlField('Edema', o.edema), htmlField('Skin condition, color, scar(s)', o.skinCondition),
+      htmlField('Deformities', o.deformities), htmlField('Observation — Other', o.observationOther),
+      htmlField('Mobility (gait, transfer, stairs)', mobility), htmlField('WB (unilateral, bilateral)', o.weightBearing),
+      htmlField('Up on toes', o.upOnToes), htmlField('WBDF (weight bearing dorsiflexion)', o.wbdf),
+      htmlField('Torsion test (body torque)', o.torsionTest), htmlField('Squat', o.squat),
+      htmlField('Functional Tests — Others', o.functionalOther),
     );
-    if (o.romStrength.length > 0) {
-      text.push('ROM / Strength Screen:');
-      o.romStrength.forEach((r) => text.push(`  ${[r.joint, r.side, r.aromNotes, r.strengthNotes].filter(Boolean).join(' | ')}`));
-      html.push(`<p style="${LABEL}margin:8px 0 4px;">ROM / Strength Screen</p><ul style="margin:0;padding-left:20px;">${o.romStrength.map((r) => `<li>${esc([r.joint, r.side, r.aromNotes, r.strengthNotes].filter(Boolean).join(' — '))}</li>`).join('')}</ul>`);
+    const movementLabel = (movement: string, movementOther: string) => (movement === 'Other' ? movementOther || 'Other' : movement);
+    const entryLabel = (jointName: string, movement: string, movementOther: string) => [jointName, movementLabel(movement, movementOther)].filter(Boolean).join(' — ') || 'Entry';
+    if (o.rom.length > 0) {
+      text.push('ROM:');
+      o.rom.forEach((r) => text.push(`  ${entryLabel(r.jointName, r.movement, r.movementOther)}: ${[
+        r.leftArom && `L AROM ${r.leftArom}° (Pain ${r.leftAromPain || 0}/10)`,
+        r.rightArom && `R AROM ${r.rightArom}° (Pain ${r.rightAromPain || 0}/10)`,
+        r.leftProm && `L PROM ${r.leftProm}° (Pain ${r.leftPromPain || 0}/10)`,
+        r.rightProm && `R PROM ${r.rightProm}° (Pain ${r.rightPromPain || 0}/10)`,
+        r.endFeel && `EF ${r.endFeel}`,
+      ].filter(Boolean).join(' | ')}`));
+      html.push(`<p style="${LABEL}margin:8px 0 4px;">ROM</p><ul style="margin:0;padding-left:20px;">${o.rom.map((r) => `<li>${esc(entryLabel(r.jointName, r.movement, r.movementOther))}: ${esc([
+        r.leftArom && `L AROM ${r.leftArom}° (Pain ${r.leftAromPain || 0}/10)`,
+        r.rightArom && `R AROM ${r.rightArom}° (Pain ${r.rightAromPain || 0}/10)`,
+        r.leftProm && `L PROM ${r.leftProm}° (Pain ${r.leftPromPain || 0}/10)`,
+        r.rightProm && `R PROM ${r.rightProm}° (Pain ${r.rightPromPain || 0}/10)`,
+        r.endFeel && `EF ${r.endFeel}`,
+      ].filter(Boolean).join(' — '))}</li>`).join('')}</ul>`);
+    }
+    if (o.strengthUnaffectedSide || o.strengthUnaffectedNotes || o.strength.length > 0) {
+      text.push('Strength:');
+      if (o.strengthUnaffectedSide) text.push(`  Unaffected Side: ${o.strengthUnaffectedSide}${o.strengthUnaffectedNotes ? ` — ${o.strengthUnaffectedNotes}` : ''}`);
+      o.strength.forEach((s) => text.push(`  ${entryLabel(s.jointName, s.movement, s.movementOther)}: ${[
+        s.isometric && `Isometric ${s.isometric} (Pain ${s.isometricPain || 0}/10)`,
+        s.mmtMuscle && `MMT ${s.mmtMuscle}`,
+      ].filter(Boolean).join(' | ')}`));
+      html.push(`<p style="${LABEL}margin:8px 0 4px;">Strength</p>${o.strengthUnaffectedSide ? `<p style="margin:2px 0;">${esc(`Unaffected Side: ${o.strengthUnaffectedSide}${o.strengthUnaffectedNotes ? ` — ${o.strengthUnaffectedNotes}` : ''}`)}</p>` : ''}<ul style="margin:0;padding-left:20px;">${o.strength.map((s) => `<li>${esc(entryLabel(s.jointName, s.movement, s.movementOther))}: ${esc([
+        s.isometric && `Isometric ${s.isometric} (Pain ${s.isometricPain || 0}/10)`,
+        s.mmtMuscle && `MMT ${s.mmtMuscle}`,
+      ].filter(Boolean).join(' — '))}</li>`).join('')}</ul>`);
     }
     if (o.notes) { text.push(`Additional Notes: ${o.notes}`); html.push(htmlField('Additional Notes', o.notes)); }
     text.push('');
