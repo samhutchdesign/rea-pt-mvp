@@ -1,6 +1,7 @@
 'use client';
-import { useState, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
 import { cx } from '@/utils/cx';
+import { X } from 'lucide-react';
 import type { PainPoint } from '@/lib/types';
 
 type BodyView = 'front' | 'back';
@@ -15,29 +16,73 @@ interface BodyMapProps {
   armedIndex?: number | null;
   onPlace?: (view: BodyView, x: number, y: number) => void;
   onCreate?: (view: BodyView, x: number, y: number) => void;
+  onMove?: (index: number, x: number, y: number) => void;
+  onDelete?: (index: number) => void;
   interactive?: boolean;
+  /** Unlabeled circle markers (no number), used on the dictation-template diagram. */
+  simplified?: boolean;
 }
 
-export function BodyMap({ painPoints, armedIndex = null, onPlace, onCreate, interactive = true }: BodyMapProps) {
+export function BodyMap({
+  painPoints, armedIndex = null, onPlace, onCreate, onMove, onDelete, interactive = true, simplified = false,
+}: BodyMapProps) {
   const [view, setView] = useState<BodyView>('front');
   const [imgError, setImgError] = useState<Partial<Record<BodyView, boolean>>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const draggingIndex = useRef<number | null>(null);
+  const didDrag = useRef(false);
 
   const activeView = VIEWS.find((v) => v.id === view)!;
   const pins = painPoints
     .map((p, i) => ({ p, i }))
     .filter(({ p }) => p.bodyView === view && p.x !== undefined && p.y !== undefined);
 
+  const posFromPoint = (clientX: number, clientY: number) => {
+    const rect = containerRef.current!.getBoundingClientRect();
+    return {
+      x: Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100)),
+      y: Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100)),
+    };
+  };
+
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
-    if (!interactive) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
-    const y = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
+    if (!interactive || didDrag.current) {
+      didDrag.current = false;
+      return;
+    }
+    const { x, y } = posFromPoint(e.clientX, e.clientY);
     if (armedIndex !== null && onPlace) {
       onPlace(view, x, y);
     } else if (armedIndex === null && onCreate) {
       onCreate(view, x, y);
     }
   };
+
+  const handlePinPointerDown = (e: PointerEvent<HTMLDivElement>, index: number) => {
+    if (!simplified || !onMove) return;
+    e.stopPropagation();
+    draggingIndex.current = index;
+  };
+
+  useEffect(() => {
+    if (!simplified || !onMove) return;
+    const handleMove = (e: globalThis.PointerEvent) => {
+      if (draggingIndex.current === null) return;
+      didDrag.current = true;
+      const { x, y } = posFromPoint(e.clientX, e.clientY);
+      onMove(draggingIndex.current, x, y);
+    };
+    const handleUp = () => {
+      draggingIndex.current = null;
+    };
+    window.addEventListener('pointermove', handleMove);
+    window.addEventListener('pointerup', handleUp);
+    return () => {
+      window.removeEventListener('pointermove', handleMove);
+      window.removeEventListener('pointerup', handleUp);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simplified, !!onMove]);
 
   return (
     <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
@@ -62,11 +107,14 @@ export function BodyMap({ painPoints, armedIndex = null, onPlace, onCreate, inte
 
       {interactive && (
         <p className="mb-2 text-xs font-medium text-brand-600">
-          {armedIndex !== null ? `Click the diagram to place P${armedIndex + 1}` : 'Click the diagram to add a pain point'}
+          {simplified
+            ? 'Click the diagram to add a pain point — drag to move, click × to remove'
+            : armedIndex !== null ? `Click the diagram to place P${armedIndex + 1}` : 'Click the diagram to add a pain point'}
         </p>
       )}
 
       <div
+        ref={containerRef}
         onClick={handleClick}
         className={cx(
           'relative mx-auto aspect-[3/4] max-w-[320px] select-none rounded-lg',
@@ -92,11 +140,29 @@ export function BodyMap({ painPoints, armedIndex = null, onPlace, onCreate, inte
         {pins.map(({ p, i }) => (
           <div
             key={i}
-            title={p.location || `P${i + 1}`}
-            style={{ left: `${p.x}%`, top: `${p.y}%` }}
-            className="absolute flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-brand-600 text-[11px] font-bold text-white shadow-md ring-2 ring-white"
+            title={simplified ? undefined : (p.location || `P${i + 1}`)}
+            onPointerDown={(e) => handlePinPointerDown(e, i)}
+            onClick={(e) => { if (simplified) e.stopPropagation(); }}
+            style={{ left: `${p.x}%`, top: `${p.y}%`, touchAction: simplified ? 'none' : undefined }}
+            className={cx(
+              'group absolute -translate-x-1/2 -translate-y-1/2 rounded-full shadow-md',
+              simplified
+                ? cx('h-9 w-9 border-2 border-brand-600 bg-brand-600/20', interactive && onMove && 'cursor-grab active:cursor-grabbing')
+                : 'flex h-6 w-6 items-center justify-center bg-brand-600 text-[11px] font-bold text-white ring-2 ring-white',
+            )}
           >
-            {i + 1}
+            {!simplified && (i + 1)}
+            {simplified && interactive && onDelete && (
+              <button
+                type="button"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); onDelete(i); }}
+                aria-label="Remove pain point"
+                className="absolute left-full top-1/2 ml-1.5 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full bg-black text-white opacity-0 shadow ring-2 ring-white transition-opacity group-hover:opacity-100"
+              >
+                <X size={9} strokeWidth={3} />
+              </button>
+            )}
           </div>
         ))}
       </div>
