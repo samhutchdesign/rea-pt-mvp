@@ -11,23 +11,55 @@ export const DICTATION_NOTES_STUB =
   "Plan going forward: progress the home program, move core work into standing and dynamic positions, start light plyometric loading — marching, step-ups — as tolerated. Keep her at once a week for about four more weeks, then reassess with a repeat bladder diary and functional testing. If she keeps trending this way, looking at discharge within about six sessions total.\n\n" +
   "She tolerated everything well, no adverse response. Post-session pain down to a one out of ten, from a three out of ten at the start. Much better awareness of pelvic floor engagement — by the end of the session she held that contraction through single-leg stance without compensating, which she couldn't do reliably before.";
 
+/** Section outputs are short bulleted fragments (one data point per line), not prose — matches how AI-scribe SOAP output and this app's own structured chart fields read. Read view renders these lines as a real bulleted list. */
 export const DICTATION_SUBJECTIVE_STUB =
-  'Patient reports ↓ urinary urgency since last visit, now 1-2 episodes/day (down from 4-5). Denies leakage with coughing or sneezing this week. AM stiffness in low back resolves within 15 min of waking. Sleeping on left side with pillow between knees, improved comfort. No night pain reported. Overall feeling more confident with bladder control during exercise.';
+  '- ↓ urinary urgency since last visit — now 1-2 episodes/day (down from 4-5)\n' +
+  '- Denies leakage with coughing or sneezing this week\n' +
+  '- AM low back stiffness resolves within 15 min of waking\n' +
+  '- Sleeping on left side with pillow between knees — improved comfort\n' +
+  '- No night pain reported\n' +
+  '- Feeling more confident with bladder control during exercise';
 
 export const DICTATION_OBJECTIVE_STUB =
-  'General observation: patient ambulates without assistive device, normal gait pattern. Posture: mild anterior pelvic tilt, improved from prior session. No visible atrophy or edema. Scar well-healed, mobile, non-tender. Functional tests: able to perform single-leg stance 20s bilaterally without compensation. WBDF within normal limits. Squat to 90° with good control, no pain reported. Transitions sit-to-stand independently.';
+  '- Ambulates without assistive device, normal gait pattern\n' +
+  '- Posture: mild anterior pelvic tilt, improved from prior session\n' +
+  '- No visible atrophy or edema\n' +
+  '- Scar well-healed, mobile, non-tender\n' +
+  '- Single-leg stance 20s bilaterally without compensation\n' +
+  '- WBDF within normal limits\n' +
+  '- Squat to 90° with good control, no pain\n' +
+  '- Transitions sit-to-stand independently';
 
 export const DICTATION_ANALYSIS_STUB =
-  'Body structures: pelvic floor musculature, transverse abdominis, low back paraspinals. Problem list: 1) mild pelvic floor muscle weakness affecting bladder control during high-impact activity, 2) residual low back stiffness limiting AM function. PT diagnosis: patient presenting with mild stress urinary incontinence and postural low back stiffness, improving with current POC. Goals: short-term — reduce urinary urgency episodes to <1/day within 2 weeks; long-term — return to running program without leakage within 6 weeks.';
+  '- Body structures: pelvic floor musculature, transverse abdominis, low back paraspinals\n' +
+  '- Problem: mild pelvic floor weakness affecting bladder control during high-impact activity\n' +
+  '- Problem: residual low back stiffness limiting AM function\n' +
+  '- PT diagnosis: mild stress urinary incontinence and postural low back stiffness, improving with current POC\n' +
+  '- Short-term goal: reduce urinary urgency episodes to <1/day within 2 weeks\n' +
+  '- Long-term goal: return to running program without leakage within 6 weeks';
 
 export const DICTATION_PLAN_STUB =
-  'Continue current HEP focusing on pelvic floor activation and coordination with breath. Progress core stability exercises to standing/dynamic positions. Add light plyometric loading (marching, step-ups) as tolerated. Expected frequency: 1×/wk for 4 more weeks, then reassess for discharge planning. Reassessment plan: repeat bladder diary and functional testing at week 4. Discharge plan: anticipate D/C within 6 sessions pending continued progress toward goals.';
+  '- Continue HEP — pelvic floor activation and coordination with breath\n' +
+  '- Progress core stability exercises to standing/dynamic positions\n' +
+  '- Add light plyometric loading (marching, step-ups) as tolerated\n' +
+  '- Expected frequency: 1×/wk for 4 more weeks, then reassess\n' +
+  '- Reassessment: repeat bladder diary and functional testing at week 4\n' +
+  '- Discharge plan: anticipate D/C within 6 sessions pending continued progress';
 
 export const DICTATION_INTERVENTION_STUB =
-  'Manual therapy to low back paraspinals and QL, 10 min. Therapeutic exercise: pelvic floor contraction/relaxation cycles 3×10, standing marches with PF coordination 2×10, bridge progression 3×12. Patient education on bladder diary tracking and impact-activity pacing. Verbal and tactile cueing for proper pelvic floor activation throughout session.';
+  '- Manual therapy to low back paraspinals and QL, 10 min\n' +
+  '- Pelvic floor contraction/relaxation cycles, 3×10\n' +
+  '- Standing marches with PF coordination, 2×10\n' +
+  '- Bridge progression, 3×12\n' +
+  '- Patient education: bladder diary tracking and impact-activity pacing\n' +
+  '- Verbal and tactile cueing for pelvic floor activation throughout session';
 
 export const DICTATION_EVALUATION_STUB =
-  "Post-session NPRS 1/10 (down from 3/10 at start of session). Patient tolerated all interventions well with no adverse response. Reports improved awareness of pelvic floor engagement during functional movement. Objective response: demonstrated improved coordination of PF contraction with exhalation by end of session, able to maintain contraction through single-leg stance without compensation.";
+  '- Post-session NPRS 1/10 (down from 3/10 at start of session)\n' +
+  '- Tolerated all interventions well, no adverse response\n' +
+  '- Improved awareness of pelvic floor engagement during functional movement\n' +
+  '- Demonstrated improved coordination of PF contraction with exhalation\n' +
+  '- Maintained contraction through single-leg stance without compensation';
 
 /**
  * Follow-up scenario (isIntake === false) — Analysis/Plan/Intervention/Evaluation are carried
@@ -40,7 +72,16 @@ export const DICTATION_FOLLOWUP_NOTES_STUB =
   "On exam, the scar is fully mobile now, no adhesion left even in that deeper medial section we'd been tracking. Skin looks healthy, no irritation. She demonstrated the modified curl-up with good form, no compensation, and tolerated adding a few reps of dead bug without any scar discomfort. No abdominal guarding like we saw early on, and she's moving through trunk rotation freely now.";
 
 export const DICTATION_FOLLOWUP_SUBJECTIVE_STUB =
-  'Patient reports scar tightness essentially resolved — no pulling sensation with twisting or reaching overhead. Residual numbness around the incision continuing to fade. Home scar massage maintained 2-3×/wk, easily incorporated into routine. No pain reported today. Attempted light ab workout at home over the weekend without issues or discomfort.';
+  '- Scar tightness essentially resolved — no pulling sensation with twisting or reaching overhead\n' +
+  '- Residual numbness around the incision continuing to fade\n' +
+  '- Home scar massage maintained 2-3×/wk, easily incorporated into routine\n' +
+  '- No pain reported today\n' +
+  '- Attempted light ab workout at home over the weekend without issues or discomfort';
 
 export const DICTATION_FOLLOWUP_OBJECTIVE_STUB =
-  'Scar fully mobile, no residual adhesion including previously noted deep medial third restriction. Skin healthy, no irritation. Demonstrated modified curl-up with good form, no compensation. Tolerated added dead bug reps without scar discomfort or pulling. No abdominal guarding observed. Full, comfortable trunk rotation — notably improved from intake presentation.';
+  '- Scar fully mobile, no residual adhesion (incl. previously noted deep medial third restriction)\n' +
+  '- Skin healthy, no irritation\n' +
+  '- Demonstrated modified curl-up with good form, no compensation\n' +
+  '- Tolerated added dead bug reps without scar discomfort or pulling\n' +
+  '- No abdominal guarding observed\n' +
+  '- Full, comfortable trunk rotation — notably improved from intake presentation';

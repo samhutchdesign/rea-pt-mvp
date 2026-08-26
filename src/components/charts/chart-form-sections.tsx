@@ -661,6 +661,20 @@ function ReadEmpty({ children }: { children: React.ReactNode }) {
   return <span className="text-sm italic text-tertiary">{children}</span>;
 }
 
+/** Renders a dictation section's rawText as a real bulleted list — splits on newlines and strips any leading -/•/* marker. */
+function ReadBulletedText({ text, emptyLabel }: { text?: string; emptyLabel: string }) {
+  const lines = (text ?? '')
+    .split('\n')
+    .map((l) => l.trim().replace(/^[-•*]\s*/, ''))
+    .filter(Boolean);
+  if (lines.length === 0) return <ReadEmpty>{emptyLabel}</ReadEmpty>;
+  return (
+    <ul className="list-disc space-y-1 pl-4 text-sm text-primary">
+      {lines.map((line, i) => <li key={i}>{line}</li>)}
+    </ul>
+  );
+}
+
 function PainPointBadge({ index }: { index: number }) {
   return (
     <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-600 text-[11px] font-bold text-white">
@@ -690,11 +704,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
             {subjective.painPoints.some((p) => p.bodyView) && (
               <BodyMap painPoints={subjective.painPoints} interactive={false} simplified />
             )}
-            {subjective.rawText ? (
-              <span className="whitespace-pre-wrap text-sm text-primary">{subjective.rawText}</span>
-            ) : (
-              <ReadEmpty>No subjective notes recorded.</ReadEmpty>
-            )}
+            <ReadBulletedText text={subjective.rawText} emptyLabel="No subjective notes recorded." />
           </>
         ) : (
           <>
@@ -736,11 +746,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
       {/* Objective */}
       <SectionCard letter="O" label="Objective">
         {isDictation ? (
-          objective.rawText ? (
-            <span className="whitespace-pre-wrap text-sm text-primary">{objective.rawText}</span>
-          ) : (
-            <ReadEmpty>No observation notes recorded.</ReadEmpty>
-          )
+          <ReadBulletedText text={objective.rawText} emptyLabel="No observation notes recorded." />
         ) : (
           <>
         <ReadField label="General Observation" value={objective.generalObservation} />
@@ -853,11 +859,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
       {/* Analysis */}
       <SectionCard letter="A" label="Analysis">
         {isDictation ? (
-          analysis.rawText ? (
-            <span className="whitespace-pre-wrap text-sm text-primary">{analysis.rawText}</span>
-          ) : (
-            <ReadEmpty>No analysis notes recorded.</ReadEmpty>
-          )
+          <ReadBulletedText text={analysis.rawText} emptyLabel="No analysis notes recorded." />
         ) : (
           <>
         <ReadField label="Body Structure(s)" value={analysis.bodyStructures} />
@@ -901,11 +903,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
       {/* Plan */}
       <SectionCard letter="P" label="Plan">
         {isDictation ? (
-          plan.rawText ? (
-            <span className="whitespace-pre-wrap text-sm text-primary">{plan.rawText}</span>
-          ) : (
-            <ReadEmpty>No plan notes recorded.</ReadEmpty>
-          )
+          <ReadBulletedText text={plan.rawText} emptyLabel="No plan notes recorded." />
         ) : (
           <>
         {plan.items.length > 0 && (
@@ -932,11 +930,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
       {/* Interventions */}
       <SectionCard letter="I" label="Intervention">
         {isDictation ? (
-          interventionsRawText ? (
-            <span className="whitespace-pre-wrap text-sm text-primary">{interventionsRawText}</span>
-          ) : (
-            <ReadEmpty>No interventions recorded.</ReadEmpty>
-          )
+          <ReadBulletedText text={interventionsRawText} emptyLabel="No interventions recorded." />
         ) : interventions.length === 0 ? (
           <ReadEmpty>No interventions recorded.</ReadEmpty>
         ) : (
@@ -954,11 +948,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
       {/* Evaluation */}
       <SectionCard letter="E" label="Evaluation (post-intervention)">
         {isDictation ? (
-          evaluation.rawText ? (
-            <span className="whitespace-pre-wrap text-sm text-primary">{evaluation.rawText}</span>
-          ) : (
-            <ReadEmpty>No evaluation notes recorded.</ReadEmpty>
-          )
+          <ReadBulletedText text={evaluation.rawText} emptyLabel="No evaluation notes recorded." />
         ) : (
           <>
         <ReadField label="Post-Session NPRS" value={evaluation.postNprs !== undefined ? `${evaluation.postNprs}/10` : undefined} />
