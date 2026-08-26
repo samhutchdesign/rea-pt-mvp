@@ -100,13 +100,6 @@ notesMap.set('pat5:ex4', [
   { id: 'n-pat5-ex4-p', authorId: 'patient-pat5', authorName: 'Diane Morrison', authorRole: 'patient', content: "Love this one! I actually feel it in my glutes now, not my back. Big difference from week one.", createdAt: '2026-05-14' },
 ]);
 
-// pat_van8 – Chloe Tanaka (prog2)
-notesMap.set('pat_van8:ex2', [
-  { id: 'n-van8-ex2-p', authorId: 'patient-pat_van8', authorName: 'Chloe Tanaka', authorRole: 'patient', content: "I'm not sure I'm isolating the right muscles. It feels like my whole core tightens. Should I feel it more specifically?", createdAt: '2026-05-10' },
-]);
-notesMap.set('pat_van8:ex4', [
-  { id: 'n-van8-ex4-p', authorId: 'patient-pat_van8', authorName: 'Chloe Tanaka', authorRole: 'patient', content: "I do these on my lunch break at home — the carpet works fine! My cat keeps coming to investigate.", createdAt: '2026-05-17' },
-]);
 
 // pat_nyc4 – Keisha Williams (prog2)
 notesMap.set('pat_nyc4:ex2', [

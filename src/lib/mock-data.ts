@@ -447,7 +447,7 @@ export const mockEmployees: Employee[] = [
     role: 'editor',
     avatarInitials: 'SR',
     avatarUrl: 'https://randomuser.me/api/portraits/women/10.jpg',
-    patientIds: ['pat_van8', 'pat_uth4'],
+    patientIds: ['pat_van8', 'pat_uth4', 'pat_van39'],
     clinicId: 'clinic1',
     locationIds: ['loc1', 'loc3'],
     joinedAt: '2023-09-01',
@@ -2557,14 +2557,13 @@ export const mockPatients: Patient[] = [
     address: '2150 Yew St, Vancouver, BC V6K 3J7',
     location: 'Vancouver, BC',
     avatarInitials: 'CT',
-    status: 'active',
+    status: 'new',
     lastModified: '2026-05-14',
-    createdAt: '2026-02-17',
-    programId: 'prog2',
+    createdAt: '2026-05-14',
     assignedEmployeeId: 'emp_user2',
     archived: false,
     sessionsPerWeek: 1,
-    totalSessions: 6,
+    totalSessions: 0,
     clinicId: 'clinic1',
     injuryHistory: { mechanism: 'Stress urinary incontinence with return to marathon training', dateOfOnset: 'February 2026', surgeryType: 'N/A', surgeryDate: 'N/A', symptomEvolution: 'Leakage with running >5 km. No rest symptoms.', functionalMobility: 'Highly active.', management: 'Sports physio referral.', homeEquipment: 'Resistance bands' },
     documents: [],
@@ -5751,7 +5750,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Initiate PFMT (3 exercises). Pt ed: PF anatomy, bladder habits, hydration. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Manual Rx: gentle CT mobilization. HEP: diaphragmatic breathing, TA activation, sustained Kegel 5 sec × 10 reps. Verbal + visual anatomy ed. Handout provided.' }],
       evaluation: { patientReaction: 'Pt demonstrated correct Kegel technique by EOSession ✓. Good comprehension of anatomy. NPRS 2/10 — unchanged; expected at this stage.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Avoid ↑ impact activity × 6/52 p/o. F/u w/ OB/GYN at 6-wk postpartum appt. ↑ hydration → 2L/day; ↓ caffeine.'],
     },
     {
       id: 'cs1-2',
@@ -5769,7 +5767,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ HEP → 4 exercises. Address adherence via habit stacking. Reassess in 2/52.' },
       interventions: [{ type: 'Other', details: 'Added hip bridge 3×10. Habit stacking — linked HEP to AM + PM infant feeding schedule.' }],
       evaluation: { patientReaction: 'Pt engaged c/ habit planning ✓. Confident c/ new exercise. Technique ✓.', objectiveResponse: '' },
-      recommendations: ['Link HEP to AM + PM feeds. Journal leakage episodes. Return 2/52.'],
     },
     {
       id: 'cs1-3',
@@ -5787,7 +5784,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → functional movements (BW squat c/ PF cue). Discuss RTS yoga timeline. Target D/C: 2/52.' },
       interventions: [{ type: 'Other', details: 'Added BW squat c/ PF cue 3×10. Pt ed: impact loading progression; ↑ IAP management. Handout provided.' }],
       evaluation: { patientReaction: 'Excellent session — pt very motivated. Technique ✓ all exercises. NPRS 0/10. Target RTS yoga in 4/52.', objectiveResponse: '' },
-      recommendations: ['Begin low-impact yoga per handout (next week). Avoid running × 4/52. To GP (Dr. Patel): pt progressing well; anticipate D/C in 2 sessions.'],
     },
   ],
   pat2: [
@@ -5805,7 +5801,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Prioritize motor control + coordination before ↑ strength. Bladder retraining protocol. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF awareness, diaphragmatic breathing, quick flick Kegels 10×. Bladder retraining ed (delay techniques). Handout provided.' }],
       evaluation: { patientReaction: '↓ Difficulty isolating PF by EOSession ✓. Good comprehension. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['Bladder diary × 2/52 (template provided). ↓ caffeine + carbonated beverages. HEP 3×/day. Avoid urgency suppression strategies.'],
     },
     {
       id: 'cs2-2',
@@ -5823,7 +5818,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↓ HEP complexity → 3 key exercises. Set phone reminders. Reassess 2/52.' },
       interventions: [{ type: 'Other', details: '↓ HEP → 3 exercises. Phone reminders set during session. Motivational interviewing.' }],
       evaluation: { patientReaction: '↑ Confidence c/ simplified plan. Pt optimistic. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['Continue simplified HEP c/ phone reminders. ↓ fluids after 7 PM. Reassess 2/52 — escalate to urogynecology if no ↑ in 4 sessions.'],
     },
     {
       id: 'cs2-3',
@@ -5841,7 +5835,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → sustained holds (10 sec) + functional squat. Target tennis RTS in 6/52.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 10 sec × 10 reps. Introduced BW squat c/ PF cue 3×10.' }],
       evaluation: { patientReaction: '↑ Strong session. Pt very motivated. Technique ✓. Target RTS tennis in 6/52.', objectiveResponse: '' },
-      recommendations: ['↑ → sustained holds + functional squat at home. Monitor RTS tennis readiness at next session. Continue bladder diary.'],
     },
   ],
   pat3: [
@@ -5859,7 +5852,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Prioritize relaxation + pain ed. NO strengthening until hypertonicity ↓. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain neuroscience ed. Diaphragmatic breathing 3×10. Cat-cow 3×10. Gentle CT stretching.' }],
       evaluation: { patientReaction: 'Pt responded ✓ to pain ed — visible tension ↓ c/ breathing exercises. NPRS: 5/10 pre → 4/10 post.', objectiveResponse: '' },
-      recommendations: ['Avoid sitting > 30 min — use timer. Moist heat to pelvis PRN. HEP 2×/day. To GP: initiated PT for post-TAH pelvic pain.'],
     },
     {
       id: 'cs3-2',
@@ -5877,7 +5869,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Continue relaxation program. Introduce scar massage (self-technique). Reassess 2/52.' },
       interventions: [{ type: 'Other', details: 'Scar tissue mobilization — pt educated on self-massage ✓. Added pelvic tilt 3×10.' }],
       evaluation: { patientReaction: 'Pt comfortable c/ scar massage technique ✓. Optimistic re: progress. NPRS 3/10.', objectiveResponse: '' },
-      recommendations: ['Scar self-massage 2×/day as instructed. HEP as prescribed. F/u c/ GP if NPRS ↑ or returns to baseline.'],
     },
   ],
   pat4: [
@@ -5895,7 +5886,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Prescribe foundational program. Focus: PF coordination c/ ↑ activity. Rx: 4 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Ed: the knack maneuver ✓. Diaphragmatic breathing + TA activation 3×10. PF coordination drill.' }],
       evaluation: { patientReaction: '↑ Motivated; quick learner. Technique ✓ by EOSession. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['HEP daily. Practice knack × running + box jumps. Log leakage episodes. Return 2/52 c/ exercise log.'],
     },
   ],
   pat5: [
@@ -5913,7 +5903,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT c/ POP precautions. Avoid Valsalva + ↑ IAP activities. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Ed: POP mechanics + lifting technique ✓. Initiated gentle PFMT 3×10 (2 sec hold). POP precautions handout provided.' }],
       evaluation: { patientReaction: 'Pt understands conservative Rx approach ✓. Motivated to avoid surgical intervention. NPRS 3/10.', objectiveResponse: '' },
-      recommendations: ['Pessary per urogynecologist protocol (Dr. Nguyen). Avoid lifting > 5 lbs + Valsalva. HEP as prescribed. F/u c/ Dr. Nguyen as scheduled.'],
     },
     {
       id: 'cs5-2',
@@ -5931,7 +5920,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ program. Add supine exercises for PM routine. Reassess 2/52.' },
       interventions: [{ type: 'Other', details: 'Added hip bridge 3×10 + clamshell 3×15 B/L. Supine HEP evening routine established.' }],
       evaluation: { patientReaction: 'Technique ✓ all exercises. ↑ Progressing well. NPRS 2/10.', objectiveResponse: '' },
-      recommendations: ['Continue POP precautions (no ↑ lifting, avoid prolonged standing). Add supine exercise routine (evenings). F/u c/ Dr. Nguyen as scheduled.'],
     },
   ],
   pat6: [
@@ -5949,7 +5937,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Scar ed + early mobility. Diastasis rehab program. PFMT for UUI. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Scar desensitization Rx. Diaphragmatic breathing + TA activation 3×10. Diastasis precautions ed. Handout provided.' }],
       evaluation: { patientReaction: 'Pt responded ✓. Good understanding of diastasis precautions. NPRS 2/10 post.', objectiveResponse: '' },
-      recommendations: ['Scar desensitization 2×/day. Avoid sit-ups, crunches + loaded flexion. Begin 10–15 min walks this week. F/u c/ OB/GYN at 6-wk check.'],
     },
     {
       id: 'cs6-2',
@@ -5967,7 +5954,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → functional movements. Begin RTS hiking discussion. Target RTS: short hikes in 4/52.' },
       interventions: [{ type: 'Other', details: 'Added dead bug 3×10. TA activation ↑ → standing. RTS hiking protocol discussed.' }],
       evaluation: { patientReaction: '↑ Strong session. Technique ✓ all exercises. NPRS 1/10. Target RTS short hikes in 4/52.', objectiveResponse: '' },
-      recommendations: ['RTS hiking: begin 15 min flat trail next week; ↑ by 5 min/wk. Continue HEP. To GP: diastasis ↓ to 1.5 cm; scar mobile; cleared for ↑ low-impact activity.'],
     },
   ],
 
@@ -5984,7 +5970,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT programme. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF awareness, diaphragmatic breathing, quick flicks × 10. PF anatomy ed. Handout provided.' }],
       evaluation: { patientReaction: 'Correct technique demonstrated ✓. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Avoid high-impact activity. ↑ hydration, ↓ caffeine.'],
     },
     {
       id: 'cs-van5-2', patientId: 'pat_van5', date: '2026-02-26', isIntakeSession: false,
@@ -5996,7 +5981,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Add sustained Kegels. Reassess 2/52.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 5 sec × 10. Habit stacking discussed.' }],
       evaluation: { patientReaction: 'Technique ✓. Pt confident. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['Link HEP to morning routine. Return 2/52.'],
     },
   ],
 
@@ -6011,7 +5995,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT foundation. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF awareness, diaphragmatic breathing, quick flicks × 10. Anatomy ed. Handout provided.' }],
       evaluation: { patientReaction: 'Technique ✓ by EOSession. Good engagement.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Avoid high-impact RTS × 6/52 p/o. ↑ hydration.'],
     },
     {
       id: 'cs-nyc4-2', patientId: 'pat_nyc4', date: '2026-03-05', isIntakeSession: false,
@@ -6023,7 +6006,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Progress sustained holds + functional activity.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 5 sec × 10. Hip bridge 3×10.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10. Pt confident.', objectiveResponse: '' },
-      recommendations: ['Continue HEP c/ reminders. Return 2/52.'],
     },
   ],
 
@@ -6038,7 +6020,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT foundation. Rx: 6 sessions × 1×/wk. Spanish-language materials provided.' },
       interventions: [{ type: 'Other', details: 'Diaphragmatic breathing, quick flick Kegels × 10. PF anatomy ed (Spanish handout).' }],
       evaluation: { patientReaction: 'Technique ✓ ✓. Good comprehension.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. ↑ agua, ↓ cafeína. Return 2/52.'],
     },
     {
       id: 'cs-nyc7-2', patientId: 'pat_nyc7', date: '2026-03-26', isIntakeSession: false,
@@ -6050,7 +6031,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → sustained holds 8 sec + BW squat.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 8 sec × 10. BW squat c/ PF cue 3×10.' }],
       evaluation: { patientReaction: 'Excellent technique ✓. NPRS 0/10. Pt very engaged.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Return 2/52 for functional progression.'],
     },
   ],
 
@@ -6065,7 +6045,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT + bladder retraining. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF awareness, breathing, quick flick Kegels × 10. Bladder retraining ed.' }],
       evaluation: { patientReaction: 'Technique ✓. Good comprehension. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Bladder diary × 2/52. ↓ caffeine.'],
     },
     {
       id: 'cs-uth1-2', patientId: 'pat_uth1', date: '2026-02-19', isIntakeSession: false,
@@ -6077,7 +6056,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → sustained holds. Continue bladder retraining.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 5 sec × 10. Pelvic tilt 3×10.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10. Pt optimistic.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Hydrotherapy group approved — share PF precautions. Return 2/52.'],
     },
   ],
 
@@ -6092,7 +6070,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT foundation → functional progression. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF awareness, breathing, quick flick Kegels × 10. Anatomy ed. Running RTS timeline discussed.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10. Patient highly motivated.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. No running yet. Return 2/52.'],
     },
     {
       id: 'cs-uth7-2', patientId: 'pat_uth7', date: '2026-04-16', isIntakeSession: false,
@@ -6104,7 +6081,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ sustained holds + BW squat. Running RTS protocol introduced.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 6 sec × 10. BW squat c/ PF cue 3×10.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. No running yet — return 2/52. Travel note: HEP summary provided.'],
     },
   ],
 
@@ -6121,7 +6097,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Diaphragmatic breathing + PF relaxation. Pain ed. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain neuroscience ed. Diaphragmatic breathing 3×10. Cat-cow 3×10. CT stretch.' }],
       evaluation: { patientReaction: 'NPRS 5/10 pre → 4/10 post. Visible tension ↓ c/ breathing ✓.', objectiveResponse: '' },
-      recommendations: ['Avoid sitting > 20 min. Moist heat PRN. HEP 2×/day. F/U c/ gynaecologist re: endo management.'],
     },
     {
       id: 'cs-van6-2', patientId: 'pat_van6', date: '2026-03-04', isIntakeSession: false,
@@ -6133,7 +6108,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Add pelvic tilt. Continue relaxation. Reassess 2/52.' },
       interventions: [{ type: 'Other', details: 'Added pelvic tilt 3×10. Continued CT stretching. Diaphragmatic breathing.' }],
       evaluation: { patientReaction: 'NPRS 3/10. Pt optimistic re: progress.', objectiveResponse: '' },
-      recommendations: ['Add pelvic tilt to HEP. Continue heat PRN. Return 2/52.'],
     },
   ],
 
@@ -6148,7 +6122,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Relaxation-focused Rx. Pain ed. Rx: 8–10 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain neuroscience ed. Diaphragmatic breathing 3×10. Cat-cow 3×10.' }],
       evaluation: { patientReaction: 'NPRS 6/10 pre → 5/10 post. Pt responded ✓ to pain ed.', objectiveResponse: '' },
-      recommendations: ['Avoid aggravating postures. HEP 2×/day. F/U c/ vulvodynia specialist.'],
     },
     {
       id: 'cs-nyc3-2', patientId: 'pat_nyc3', date: '2026-02-05', isIntakeSession: false,
@@ -6160,7 +6133,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Add pelvic tilt + gentle scar/CT work. Continue relaxation.' },
       interventions: [{ type: 'Other', details: 'Added pelvic tilt 3×10. Gentle perineal desensitisation protocol introduced.' }],
       evaluation: { patientReaction: 'NPRS 3/10. Pt very engaged. Excellent adherence.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Begin desensitisation protocol at home. Return 2/52.'],
     },
     {
       id: 'cs-nyc3-3', patientId: 'pat_nyc3', date: '2026-02-19', isIntakeSession: false,
@@ -6172,7 +6144,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Progress desensitisation. Begin gentle PFMT. D/C planning: 2 sessions.' },
       interventions: [{ type: 'Other', details: 'Added gentle Kegel 3 sec × 5 reps (first strengthening). Progression protocol.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 1/10. Pt reports ↑ QoL significantly.', objectiveResponse: '' },
-      recommendations: ['Advance desensitisation. HEP updated. Target D/C in 2 sessions. Insurance receipts sent.'],
     },
   ],
 
@@ -6187,7 +6158,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Relaxation + TA activation + scar ed. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain ed. Diaphragmatic breathing. Cat-cow 3×10. Scar massage technique taught.' }],
       evaluation: { patientReaction: 'NPRS 4/10 → 3/10 post. Good comprehension of scar massage.', objectiveResponse: '' },
-      recommendations: ['Scar massage 2×/day. Avoid sit-ups + crunches. Return 2/52.'],
     },
     {
       id: 'cs-nyc5-2', patientId: 'pat_nyc5', date: '2026-03-12', isIntakeSession: false,
@@ -6199,7 +6169,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Add TA activation + pelvic tilt.' },
       interventions: [{ type: 'Other', details: 'Added TA activation 3×10. Pelvic tilt 3×10.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 2/10.', objectiveResponse: '' },
-      recommendations: ['Continue scar massage + new HEP. Return 2/52.'],
     },
   ],
 
@@ -6214,7 +6183,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Relaxation + desensitisation programme. Rx: 8–10 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain neuroscience ed. Diaphragmatic breathing 3×10. Graded dilator ed (not initiated today).' }],
       evaluation: { patientReaction: 'NPRS 6/10 → 5/10 post. Pt engaged c/ pain ed. Building therapeutic alliance.', objectiveResponse: '' },
-      recommendations: ['HEP: breathing 2×/day. Consider psychology referral. Return 2/52.'],
     },
     {
       id: 'cs-nyc8-2', patientId: 'pat_nyc8', date: '2026-03-19', isIntakeSession: false,
@@ -6226,7 +6194,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Begin grade 1 dilator at home. Continue breathing.' },
       interventions: [{ type: 'Other', details: 'Dilator grade 1 introduced in-session ✓. Cat-cow added. Breathing continued.' }],
       evaluation: { patientReaction: 'NPRS 4/10. Pt tolerated grade 1 ✓. Positive response.', objectiveResponse: '' },
-      recommendations: ['Dilator grade 1 at home 2×/wk. Continue breathing. Return 2/52.'],
     },
   ],
 
@@ -6241,7 +6208,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Pain ed + relaxation + scar massage. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain neuroscience ed. Diaphragmatic breathing. Cat-cow 3×10. Scar massage taught.' }],
       evaluation: { patientReaction: 'NPRS 5/10 → 4/10 post. Good response to breathing.', objectiveResponse: '' },
-      recommendations: ['Scar massage 2×/day. Sit < 30 min. HEP 2×/day.'],
     },
     {
       id: 'cs-nyc9-2', patientId: 'pat_nyc9', date: '2026-02-26', isIntakeSession: false,
@@ -6253,7 +6219,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Add pelvic tilt. Discuss RTS activities. Continue relaxation.' },
       interventions: [{ type: 'Other', details: 'Added pelvic tilt 3×10. Scar massage ↑ depth. Relaxation continued.' }],
       evaluation: { patientReaction: 'NPRS 2/10. Pt very pleased. Insurance pre-auth renewed.', objectiveResponse: '' },
-      recommendations: ['Continue all HEP. Begin longer walks. Return 2/52.'],
     },
   ],
 
@@ -6268,7 +6233,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Relaxation-focused Rx + stress management ed. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain ed. Diaphragmatic breathing 3×10. Cat-cow 3×10. Mindfulness resource provided.' }],
       evaluation: { patientReaction: 'NPRS 4/10 → 3/10 post. Visible relaxation ✓.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Use standing desk. Mindfulness resource shared. Return 2/52.'],
     },
     {
       id: 'cs-uth3-2', patientId: 'pat_uth3', date: '2026-04-09', isIntakeSession: false,
@@ -6280,7 +6244,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Add pelvic tilt. Discuss gentle strengthening when tone normalises.' },
       interventions: [{ type: 'Other', details: 'Added pelvic tilt 3×10. Continued breathing + cat-cow.' }],
       evaluation: { patientReaction: 'NPRS 2/10. Technique ✓.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Session moved to Thursdays per request. Return 2/52.'],
     },
   ],
 
@@ -6295,7 +6258,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Relaxation Rx + bladder retraining. Rx: 8 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Pain ed. Diaphragmatic breathing. Bladder retraining: delay techniques. Cat-cow 3×10.' }],
       evaluation: { patientReaction: 'NPRS 4/10 → 3/10 post. Good response to breathing.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. ↓ caffeine. Urgency diary × 2/52.'],
     },
     {
       id: 'cs-uth8-2', patientId: 'pat_uth8', date: '2026-03-26', isIntakeSession: false,
@@ -6307,7 +6269,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Add pelvic tilt. Consider gentle PFMT if tone normalises next session.' },
       interventions: [{ type: 'Other', details: 'Added pelvic tilt 3×10. Urgency delay technique reinforced.' }],
       evaluation: { patientReaction: 'NPRS 2/10. Technique ✓. GP updated — new GP recorded.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Urgency diary shows ↑ improvement. Return 2/52.'],
     },
   ],
 
@@ -6324,7 +6285,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT programme. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF awareness, diaphragmatic breathing, quick flicks × 10. Anatomy ed. Handout provided.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Avoid high-impact. ↑ hydration, ↓ caffeine.'],
     },
     {
       id: 'cs-van9-2', patientId: 'pat_van9', date: '2026-04-02', isIntakeSession: false,
@@ -6336,7 +6296,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → sustained Kegels 5 sec + pelvic tilt.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 5 sec × 10. Pelvic tilt 3×10.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10. Travel HEP summary provided.', objectiveResponse: '' },
-      recommendations: ['HEP during travel. Return June 10 after Shanghai trip.'],
     },
   ],
 
@@ -6351,7 +6310,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT foundation. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF awareness, diaphragmatic breathing, quick flicks × 10. Bladder ed. Handout provided.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Bladder diary × 2/52. ↓ caffeine.'],
     },
     {
       id: 'cs-uth2-2', patientId: 'pat_uth2', date: '2026-03-05', isIntakeSession: false,
@@ -6363,7 +6321,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ sustained holds 8 sec + pelvic tilt.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 8 sec × 10. Pelvic tilt 3×10.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10. Invoice sent for zorgverzekering.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. ↑ → sustained holds at home. Return 2/52.'],
     },
   ],
 
@@ -6378,7 +6335,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT + relaxation. Adjusted intensity for high-stress period. Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Diaphragmatic breathing, PF relaxation, quick flicks × 10. Stress link education.' }],
       evaluation: { patientReaction: 'NPRS 2/10. Technique ✓. Good comprehension of stress-PF link.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day (timed to commute). Breathing on train. Return 2/52.'],
     },
     {
       id: 'cs-uth5-2', patientId: 'pat_uth5', date: '2026-03-19', isIntakeSession: false,
@@ -6390,7 +6346,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ sustained holds + TA activation.' },
       interventions: [{ type: 'Other', details: 'Added sustained Kegel 5 sec × 10. TA activation 3×10. Breathing reinforced.' }],
       evaluation: { patientReaction: 'NPRS 1/10. Technique ✓.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Nutritionist referral sent. Return 2/52.'],
     },
   ],
 
@@ -6405,7 +6360,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'PFMT programme (continuing from Heidelberg protocol). Rx: 6 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'Diaphragmatic breathing, PF relaxation, quick flicks × 10. Dutch-language handout provided.' }],
       evaluation: { patientReaction: 'Technique ✓. NPRS 0/10. Good continuity from prior Rx.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Dutch handout provided. ↑ hydration, ↓ caffeine.'],
     },
     {
       id: 'cs-uth10-2', patientId: 'pat_uth10', date: '2026-04-23', isIntakeSession: false,
@@ -6417,7 +6371,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → add TA activation + pelvic tilt.' },
       interventions: [{ type: 'Other', details: 'Added TA activation 3×10. Pelvic tilt 3×10. Sustained Kegel confirmed ✓.' }],
       evaluation: { patientReaction: 'Technique ✓ all exercises. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Return 2/52.'],
     },
   ],
   pat9: [
@@ -6431,7 +6384,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Initiate reverse Kegel + diaphragmatic breathing. Rx: 10 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF down-training ed. HEP: diaphragmatic breathing, PF drop 5×10, reverse Kegel 5×10.' }],
       evaluation: { patientReaction: 'Pt demonstrated PF drop c/ cueing ✓. NPRS 5/10 — unchanged, expected at baseline.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Standing desk trial at work. F/u 1/52.'],
     },
     {
       id: 'cs9-2', patientId: 'pat9', date: '2026-01-15', isIntakeSession: false,
@@ -6443,7 +6395,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ HEP → add hip flexor + figure-4 stretch. Reassess in 3/52.' },
       interventions: [{ type: 'Other', details: 'Added hip flexor stretch, figure-4 stretch 3×30sec hold.' }],
       evaluation: { patientReaction: 'Technique ✓ all exercises. NPRS 2/10.', objectiveResponse: '' },
-      recommendations: ['Continue standing desk. HEP 2×/day. Return 3/52.'],
     },
     {
       id: 'cs9-3', patientId: 'pat9', date: '2026-04-02', isIntakeSession: false,
@@ -6455,7 +6406,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'D/C to home program. Maintenance HEP 3×/wk.' },
       interventions: [{ type: 'Other', details: 'Final review of full HEP. Maintenance schedule provided.' }],
       evaluation: { patientReaction: 'Pt confident c/ independent management. NPRS 0/10.', objectiveResponse: '' },
-      recommendations: ['Maintenance HEP 3×/wk. Return PRN if symptoms recur.'],
     },
   ],
   pat10: [
@@ -6469,7 +6419,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'Initiate PFMT. Rx: 9 sessions × 1×/wk.' },
       interventions: [{ type: 'Other', details: 'PF anatomy ed. HEP: quick contraction 5×10, sustained hold 3sec×10, sit-to-stand PF cue.' }],
       evaluation: { patientReaction: 'Pt demonstrated correct contraction c/ cueing ✓.', objectiveResponse: '' },
-      recommendations: ['HEP 2×/day. Pad count log. F/u 1/52.'],
     },
     {
       id: 'cs10-2', patientId: 'pat10', date: '2025-12-20', isIntakeSession: false,
@@ -6481,7 +6430,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '↑ → functional loading (squat, gentle golf swing simulation c/ PF cue).' },
       interventions: [{ type: 'Other', details: 'Added squat c/ PF cue 3×10, functional lifting mechanics review.' }],
       evaluation: { patientReaction: 'Technique ✓ all exercises.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Return 3/52.'],
     },
     {
       id: 'cs10-3', patientId: 'pat10', date: '2026-03-18', isIntakeSession: false,
@@ -6493,35 +6441,9 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: 'D/C to home program. Maintenance HEP 3×/wk.' },
       interventions: [{ type: 'Other', details: 'Final review of full HEP. Maintenance schedule provided.' }],
       evaluation: { patientReaction: 'Pt confident c/ independent management. Pad-free.', objectiveResponse: '' },
-      recommendations: ['Maintenance HEP 3×/wk. Return PRN if symptoms recur.'],
     },
   ],
-  pat_van8: [
-    {
-      id: 'cs_van8-intake', patientId: 'pat_van8', date: '2026-02-17', isIntakeSession: true,
-      summary: 'Intake for SUI with return to marathon training. Bladder diary reviewed. PF strength/endurance deficits identified as primary limiting factor for mileage progression.',
-      painLevel: 'No Pain', exercisesPerDay: 2,
-      subjective: { painPoints: [], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', notes: 'Pt c/o leakage c/ running >5km, 2-3x/wk during long runs. No leakage at rest or ADLs. No urgency. Highly motivated — training for fall marathon.' },
-      objective: { generalObservation: '', posture: '', atrophyHypertrophy: '', edema: '', skinCondition: '', deformities: '', observationOther: '', mobility: [], weightBearing: '', upOnToes: '', wbdf: '', torsionTest: '', squat: '', functionalOther: '', rom: [], strengthUnaffectedSide: '', strengthUnaffectedNotes: '', strength: [], notes: 'External: WNL. Internal: PF power 2/5, endurance hold 4 sec, quick flicks 6/10. Good voluntary control, ↓ endurance under load.' },
-      analysis: { bodyStructures: '', problemList: [{ bodyFunction: 'PF power 2/5, endurance 4 sec', activityParticipation: 'Unable to run >5km without leakage', environment: 'Resumed marathon training at prior mileage' }], ptDiagnosis: '32 yo ♀ SUI 2° postpartum (remote), returning to marathon training, presenting c/ ↓ PF power/endurance affecting ability to run >5km pad-free.', goals: [{ problem: 'SUI with running', shortTerm: 'Leakage-free runs up to 5km within 3 weeks', longTerm: 'Return to full marathon mileage (15km+) pad-free within 8 weeks' }], notes: 'Postpartum-remote SUI, load-dependent. Good rehab potential given full voluntary control.' },
-      plan: { items: [{ problemRef: '1', treatment: 'PFMT: sustained holds → quick flicks → functional loaded PF activation (jump/run simulation)' }], frequency: '1x/week x 6 sessions', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: 'D/C when pad-free at target mileage', consentObtained: true, notes: 'Progressive PFMT c/ load-matched exercise progression. Temporarily cap mileage until improved.' },
-      interventions: [{ type: 'Exercise', details: 'Sustained Kegel 5s x10, quick flicks x10, standing marching c/ PF cue 3x10' }, { type: 'Education', details: 'Load management: cap runs at 3km until endurance improves; PF cueing strategy before impact' }],
-      evaluation: { patientReaction: 'Demonstrated correct PF activation technique both supine and standing. Understood load management rationale.', objectiveResponse: '' },
-      recommendations: ['Cap runs at 3km x 2 weeks. HEP 2x/day.'],
-    },
-    {
-      id: 'cs_van8-2', patientId: 'pat_van8', date: '2026-05-14', isIntakeSession: false,
-      summary: 'Follow-up — significant improvement. Pad-free at 8km. Progressing toward full marathon mileage.',
-      painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Significant Improvement', exercisesPerDay: 3,
-      subjective: { painPoints: [], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', notes: 'Pt reports pad-free running up to 8km, no leakage. HEP adherence 6/7 days. Confident returning to full training block.' },
-      objective: { generalObservation: '', posture: '', atrophyHypertrophy: '', edema: '', skinCondition: '', deformities: '', observationOther: '', mobility: [], weightBearing: '', upOnToes: '', wbdf: '', torsionTest: '', squat: '', functionalOther: '', rom: [], strengthUnaffectedSide: '', strengthUnaffectedNotes: '', strength: [], notes: 'PF power 4/5, endurance hold 9 sec, quick flicks 9/10. Jump landing c/ PF cue — no leakage sensation reported.' },
-      analysis: { bodyStructures: '', problemList: [], ptDiagnosis: '', goals: [], notes: 'Excellent Rx response. On track for D/C within 2 sessions at full mileage.' },
-      plan: { items: [], frequency: 'Return in 3 weeks', reassessmentPlan: 'Final reassessment at 15km long run', dischargePlan: '', consentObtained: true, notes: 'Progress to full marathon-mileage long runs c/ maintenance PFMT.' },
-      interventions: [{ type: 'Exercise', details: 'Progressed to loaded squat jumps c/ PF cue 3x10, running-cadence PF activation drills' }],
-      evaluation: { patientReaction: 'Pt very motivated, technique excellent under load.', objectiveResponse: '' },
-      recommendations: ['Progress long runs to 12km over next 2 weeks. Maintain HEP 3x/wk once pad-free at full distance.'],
-    },
-  ],
+  pat_van8: [],
   pat_uth4: [
     {
       id: 'cs_uth4-intake', patientId: 'pat_uth4', date: '2026-06-15', isIntakeSession: true,
@@ -6533,7 +6455,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'Diaphragmatic breathing, PF down-training, gentle internal myofascial release, dilator therapy progression' }], frequency: '1x/week x 8 sessions', reassessmentPlan: 'Reassess in 4 weeks', dischargePlan: 'D/C when pain-free c/ intercourse and sitting tolerance normalized', consentObtained: true, notes: 'Down-training PF program, manual therapy, co-management c/ psychosomatic physio for pain education/desensitization.' },
       interventions: [{ type: 'Manual Therapy', details: 'Gentle external + internal myofascial release to levator ani, connective tissue mobilization' }, { type: 'Education', details: 'Pain neuroscience education, dilator set introduced c/ graded exposure protocol' }],
       evaluation: { patientReaction: 'Pt tearful but relieved to have explanation for symptoms. Understood down-training rationale.', objectiveResponse: '' },
-      recommendations: ['Referral to psychosomatic physio for co-management. Begin dilator protocol per handout. Sitting breaks q30min at work.'],
     },
     {
       id: 'cs_uth4-2', patientId: 'pat_uth4', date: '2026-08-03', isIntakeSession: false,
@@ -6545,7 +6466,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: 'Reassess in 4 weeks', dischargePlan: '', consentObtained: true, notes: 'Progress dilator size, continue down-training + manual therapy. Introduce couples education handout.' },
       interventions: [{ type: 'Manual Therapy', details: 'Continued internal myofascial release, ↓ guarding noted on palpation' }, { type: 'Education', details: 'Couples communication handout re: pacing intimacy resumption' }],
       evaluation: { patientReaction: 'Pt encouraged by progress. More confident with dilator use independently.', objectiveResponse: '' },
-      recommendations: ['Progress to dilator size 3 as tolerated. Continue sitting breaks. Consider trial of gentle intimacy per handout pacing.'],
     },
   ],
   pat_van37: [
@@ -6559,7 +6479,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'PFMT: sustained holds, quick flicks, functional PF cueing (the Knack)' }], frequency: '1x/week x 6 sessions', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Standard PFMT progression.' },
       interventions: [{ type: 'Exercise', details: 'Sustained Kegel 5s x10, quick flicks x10' }, { type: 'Education', details: 'The Knack technique — pre-contraction before cough/sneeze/lift' }],
       evaluation: { patientReaction: 'Correct technique demonstrated. Good understanding of the Knack.', objectiveResponse: '' },
-      recommendations: ['HEP 2x/day. Practice the Knack with daily coughs/sneezes.'],
     },
     {
       id: 'cs_van37-2', patientId: 'pat_van37', date: '2026-07-01', isIntakeSession: false,
@@ -6571,7 +6490,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Progress HEP, add functional loaded exercises (squat, light jumping).' },
       interventions: [{ type: 'Exercise', details: 'Added squat c/ PF cue 3x10' }],
       evaluation: { patientReaction: 'Pt confident, technique solid.', objectiveResponse: '' },
-      recommendations: ['Continue HEP + Knack. Return 3/52.'],
     },
   ],
   pat_uth35: [
@@ -6585,7 +6503,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'TA activation, PFMT, breath-core coordination' }], frequency: '1x/week x 6 sessions', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Progressive core + PF rehab — TA activation, PFMT, avoid heavy loading until doming resolves.' },
       interventions: [{ type: 'Exercise', details: 'TA activation supine 3x10, diaphragmatic breathing, sustained Kegel 5s x10' }, { type: 'Education', details: 'Avoid crunches/heavy lifting until doming resolves; safe core-loading progression handout' }],
       evaluation: { patientReaction: 'Correct TA activation demonstrated. Good understanding of loading precautions.', objectiveResponse: '' },
-      recommendations: ['Avoid heavy lifting/crunches x 3 weeks. HEP 1x/day.'],
     },
     {
       id: 'cs_uth35-2', patientId: 'pat_uth35', date: '2026-01-26', isIntakeSession: false,
@@ -6597,7 +6514,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Progress to functional loaded core work (dead bug, bird dog), light jogging trial.' },
       interventions: [{ type: 'Exercise', details: 'Added dead bug 3x10, bird dog 3x10 each side' }],
       evaluation: { patientReaction: 'Pt very pleased with progress, technique excellent.', objectiveResponse: '' },
-      recommendations: ['Trial light jogging intervals. Continue HEP.'],
     },
   ],
   pat_van38: [
@@ -6611,7 +6527,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'TA activation, postural retraining, progressive core loading' }], frequency: '2x/week x 6 sessions', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Postural education, TA activation progression, core rehab.' },
       interventions: [{ type: 'Exercise', details: 'TA activation supine 3x10, pelvic tilts 3x10' }, { type: 'Education', details: 'Postural cueing for standing, safe transfer mechanics (log roll)' }],
       evaluation: { patientReaction: 'Correct TA activation demonstrated. Understood transfer mechanics cueing.', objectiveResponse: '' },
-      recommendations: ['Practice log-roll transfers. HEP 1x/day.'],
     },
     {
       id: 'cs_van38-2', patientId: 'pat_van38', date: '2026-03-08', isIntakeSession: false,
@@ -6623,7 +6538,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Progress to functional core loading (dead bug, plank progression).' },
       interventions: [{ type: 'Exercise', details: 'Added dead bug 3x10, modified plank hold 3x20sec' }],
       evaluation: { patientReaction: 'Pt pain-free, confident with new exercises.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Return 3/52.'],
     },
   ],
   pat_uth36: [
@@ -6637,33 +6551,41 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'Bladder retraining protocol, urge-suppression (quick flicks + distraction), caffeine reduction' }], frequency: '1x/week x 6 sessions', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Bladder retraining, urge-suppression strategies, dietary modification.' },
       interventions: [{ type: 'Education', details: 'Bladder retraining education, urge-suppression technique (5x quick PF flicks + distraction), fluid/caffeine modification plan' }],
       evaluation: { patientReaction: 'Good comprehension of urge-suppression technique. Motivated to reduce caffeine.', objectiveResponse: '' },
-      recommendations: ['Bladder diary x 2 weeks. Reduce caffeine to ≤2 cups/day. Practice urge-suppression technique.'],
     },
   ],
   pat_van39: [
     {
       id: 'cs_van39-intake', patientId: 'pat_van39', date: '2026-04-20', isIntakeSession: true,
-      summary: 'Intake for post-C-section scar restriction. Scar assessment and mobilization program initiated.',
+      template: 'default-dictation',
+      summary: "This is an intake session for post-C-section scar restriction, six months post-op. Patient reports tightness and a pulling sensation at the incision site, especially with twisting, reaching overhead, or stretching. Rates it about a two out of ten with those movements, resting comfortably otherwise. She also describes some mild numbness right around the scar. No urinary or bowel symptoms reported, no pelvic pain. She's been avoiding core exercise because she's worried about aggravating the area, and reaching overhead for things like putting dishes away has become uncomfortable.\n\n" +
+        "On exam, the scar itself is well healed on the surface, mobile through the superficial layers, but there's clear adhesion to the deeper fascia along the medial third. There's mild hypoesthesia in the skin surrounding the incision, consistent with what she's describing. No signs of infection or delayed healing. Posture and general movement look otherwise unremarkable.\n\n" +
+        "Given all this, we're looking at scar adhesion with reduced tissue glide specifically at that medial third, which is limiting her ability to twist, reach, and get back into core work. Diagnosis is a thirty-three-year-old female, six months post C-section, presenting with an adhered abdominal scar and fascial restriction affecting rotation, reaching, and return to exercise. Short-term goal is pain-free stretching within three weeks along with improved scar mobility on exam. Long-term goal is full return to core exercise without discomfort within about six weeks.\n\n" +
+        "For today, treatment plan is manual scar mobilization — cross-friction technique and skin rolling over the scar, plus myofascial release to the surrounding tissue. I also went through home desensitization massage technique with her and she practiced it a few times during the session, good technique. We'll see her twice a week for about four sessions and reassess in two weeks.\n\n" +
+        "She tolerated the manual therapy well, no excessive tenderness with the cross-friction work. Demonstrated the home massage technique correctly by the end of the visit and felt confident doing it on her own.",
       painLevel: 'Low Pain', exercisesPerDay: 0,
-      subjective: { painPoints: [{ location: 'Lower abdominal C-section scar', description: 'Tight, pulling', nprs: 2, nprsContext: '', pattern: 'intermittent', aggravating: 'Twisting, reaching overhead, stretching', easing: 'Rest, warmth', upPain: '', downPain: '' }], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', notes: 'Pt c/o scar tightness and mild numbness at incision site × 6/12 p/o C-section. NPRS 2/10 c/ stretching/twisting. No urinary/bowel symptoms.' },
-      objective: { generalObservation: '', posture: '', atrophyHypertrophy: '', edema: '', skinCondition: '', deformities: '', observationOther: '', mobility: [], weightBearing: '', upOnToes: '', wbdf: '', torsionTest: '', squat: '', functionalOther: '', rom: [], strengthUnaffectedSide: '', strengthUnaffectedNotes: '', strength: [], notes: 'Scar: well-healed, mobile superficially but adhered to deeper fascia at medial third. Mild hypoesthesia surrounding scar.' },
-      analysis: { bodyStructures: '', problemList: [{ bodyFunction: 'Scar adhesion, ↓ tissue glide medial third', activityParticipation: 'Discomfort c/ twisting/reaching, avoids core exercise', environment: 'N/A' }], ptDiagnosis: '33 yo ♀ 6-months post C-section presenting c/ adhered abdominal scar and fascial restriction affecting ability to twist/reach and resume core exercise.', goals: [{ problem: 'Scar adhesion', shortTerm: 'NPRS 0/10 c/ stretching within 3 weeks; improved scar mobility', longTerm: 'Full return to core exercise without discomfort within 6 weeks' }], notes: 'C-section scar adhesion c/ fascial restriction, mild sensory change.' },
-      plan: { items: [{ problemRef: '1', treatment: 'Manual scar mobilization, home desensitization massage' }], frequency: '2x/week x 4 sessions', reassessmentPlan: 'Reassess in 2 weeks', dischargePlan: '', consentObtained: true, notes: 'Scar mobilization program, desensitization.' },
+      subjective: { painPoints: [{ location: 'Lower abdominal C-section scar', description: 'Tight, pulling', nprs: 2, nprsContext: '', pattern: 'intermittent', aggravating: 'Twisting, reaching overhead, stretching', easing: 'Rest, warmth', upPain: '', downPain: '' }], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', notes: '', rawText: 'Pt c/o tightness and pulling sensation at C-section incision site × 6/12 p/o. NPRS 2/10 c/ twisting, reaching overhead, or stretching; resting comfortably otherwise. Mild numbness surrounding scar. No urinary or bowel symptoms, no pelvic pain. Avoiding core exercise due to concern re: aggravating area. Overhead reaching (e.g. cupboards) increasingly uncomfortable.' },
+      objective: { generalObservation: '', posture: '', atrophyHypertrophy: '', edema: '', skinCondition: '', deformities: '', observationOther: '', mobility: [], weightBearing: '', upOnToes: '', wbdf: '', torsionTest: '', squat: '', functionalOther: '', rom: [], strengthUnaffectedSide: '', strengthUnaffectedNotes: '', strength: [], notes: '', rawText: 'Scar well-healed superficially, mobile through superficial layers; adhered to deeper fascia at medial third. Mild hypoesthesia surrounding incision. No signs of infection or delayed healing. Posture and general movement otherwise unremarkable. Restricted tissue glide specifically at medial third on manual assessment.' },
+      analysis: { bodyStructures: '', problemList: [{ bodyFunction: 'Scar adhesion, ↓ tissue glide medial third', activityParticipation: 'Discomfort c/ twisting/reaching, avoids core exercise', environment: 'N/A' }], ptDiagnosis: '33 yo ♀ 6-months post C-section presenting c/ adhered abdominal scar and fascial restriction affecting ability to twist/reach and resume core exercise.', goals: [{ problem: 'Scar adhesion', shortTerm: 'NPRS 0/10 c/ stretching within 3 weeks; improved scar mobility', longTerm: 'Full return to core exercise without discomfort within 6 weeks' }], notes: '', rawText: 'Body structures: abdominal scar tissue, deep fascia, anterior abdominal wall. Problem list: 1) scar adhesion c/ ↓ tissue glide medial third limiting twist/reach, 2) avoidance of core exercise due to guarding. PT diagnosis: 33 yo ♀, 6-months post C-section, presenting c/ adhered abdominal scar and fascial restriction affecting ability to twist/reach overhead and resume core exercise. Goals: short-term — pain-free stretching within 3 weeks c/ improved scar mobility on exam; long-term — full return to core exercise without discomfort within 6 weeks.' },
+      plan: { items: [{ problemRef: '1', treatment: 'Manual scar mobilization, home desensitization massage' }], frequency: '2x/week x 4 sessions', reassessmentPlan: 'Reassess in 2 weeks', dischargePlan: '', consentObtained: true, notes: '', rawText: 'Manual scar mobilization program — cross-friction and skin rolling technique to incision, myofascial release to surrounding tissue. Home desensitization massage technique reviewed and practiced. Expected frequency: 2×/wk × 4 sessions. Reassessment: 2 weeks. Discharge plan: TBD pending response to scar mobilization.' },
       interventions: [{ type: 'Manual Therapy', details: 'Scar mobilization — cross-friction and skin rolling technique, myofascial release surrounding tissue' }, { type: 'Education', details: 'Home scar massage technique demonstrated, desensitization strategies for numbness' }],
-      evaluation: { patientReaction: 'Tolerated manual therapy well. Demonstrated home massage technique correctly.', objectiveResponse: '' },
-      recommendations: ['Home scar massage 2x/day. Avoid harsh twisting x 2 weeks.'],
+      interventionsRawText: 'Manual therapy: scar mobilization — cross-friction and skin rolling technique, myofascial release to surrounding tissue, ~15 min. Education: home scar massage technique demonstrated and practiced with patient; desensitization strategies discussed for numbness.',
+      evaluation: { patientReaction: 'Tolerated manual therapy well. Demonstrated home massage technique correctly.', objectiveResponse: '', rawText: 'Tolerated manual therapy well, no excessive tenderness with cross-friction work. Demonstrated home massage technique correctly by end of session, confident performing independently. No adverse response.' },
     },
     {
       id: 'cs_van39-2', patientId: 'pat_van39', date: '2026-05-11', isIntakeSession: false,
-      summary: 'Follow-up — improved scar mobility, near-resolved discomfort. Progressing to core exercise reintroduction.',
+      template: 'default-dictation',
+      summary: "Follow-up visit, three weeks after the initial session. Patient reports the pulling sensation with twisting and reaching overhead has almost completely resolved — she's noticing it maybe once or twice this week, and only with a really deep stretch, rating it about a zero to one out of ten now. The numbness around the incision is improving too, she says it's less noticeable day to day. She's been consistent with the home scar massage and finds it easy to fit into her routine, usually right before bed.\n\n" +
+        "On exam today, scar glide is much improved overall — still a little residual restriction right at that deep medial third we were tracking, but noticeably better than three weeks ago. The hypoesthesia is reducing as well, she's regaining more normal sensation across the area. Given how well she's responding, I think we're ready to start moving her into some graded core reintroduction rather than just continuing pure scar work.\n\n" +
+        "For treatment today, we did gentle transverse abdominis activation, three sets of ten, and I introduced a modified curl-up while keeping an eye on the scar for any pulling or discomfort — she tolerated that really well, no adverse reaction. She's excited to start rebuilding some core strength again.\n\n" +
+        "Plan going forward is to keep progressing this graded core program over the next few visits, continue monitoring the scar as we load it more, and reassess in about three weeks to check in on both scar mobility and core strength progress.",
       painLevel: 'No Pain', adherenceLevel: 'High Adherence', improvementLevel: 'Significant Improvement', exercisesPerDay: 1,
-      subjective: { painPoints: [], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', notes: 'Pt reports minimal pulling sensation, NPRS 0-1/10. Sensory change improving. Home massage well-tolerated.' },
-      objective: { generalObservation: '', posture: '', atrophyHypertrophy: '', edema: '', skinCondition: '', deformities: '', observationOther: '', mobility: [], weightBearing: '', upOnToes: '', wbdf: '', torsionTest: '', squat: '', functionalOther: '', rom: [], strengthUnaffectedSide: '', strengthUnaffectedNotes: '', strength: [], notes: 'Scar glide much improved, mild residual restriction deep medial third. Hypoesthesia reducing.' },
-      analysis: { bodyStructures: '', problemList: [], ptDiagnosis: '', goals: [], notes: 'Excellent response to scar mobilization. Ready to begin graded core reintroduction.' },
-      plan: { items: [], frequency: '', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Begin graded core exercise reintroduction.' },
+      subjective: { painPoints: [], amSymptoms: '', pmSymptoms: '', nightPain: false, sleepingPosition: '', notes: '', rawText: 'Pt reports pulling sensation c/ twisting/reaching overhead almost fully resolved — occurring 1-2×/wk, only c/ deep stretch, NPRS 0-1/10 (↓ from 2/10 at intake). Numbness around incision improving, less noticeable day-to-day. Home scar massage consistent, incorporated into evening routine, well-tolerated.' },
+      objective: { generalObservation: '', posture: '', atrophyHypertrophy: '', edema: '', skinCondition: '', deformities: '', observationOther: '', mobility: [], weightBearing: '', upOnToes: '', wbdf: '', torsionTest: '', squat: '', functionalOther: '', rom: [], strengthUnaffectedSide: '', strengthUnaffectedNotes: '', strength: [], notes: '', rawText: 'Scar glide much improved overall; mild residual restriction persists at deep medial third (↓ from moderate at intake). Hypoesthesia reducing, regaining more normal sensation across area. No signs of irritation or complication c/ ongoing manual therapy.' },
+      analysis: { bodyStructures: '', problemList: [], ptDiagnosis: '', goals: [], notes: '', rawText: 'Excellent response to scar mobilization program — tissue glide and sensation both trending toward normal. Ready to progress from isolated scar work into graded core reintroduction given resolving restriction and absence of discomfort c/ light loading.' },
+      plan: { items: [], frequency: '', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: '', rawText: 'Begin graded core exercise reintroduction c/ continued scar monitoring under load. Progress TA activation → modified curl-up → further core loading as tolerated. Reassessment: 3 weeks — reassess scar mobility and core strength progress.' },
       interventions: [{ type: 'Exercise', details: 'Gentle TA activation 3x10, introduced modified curl-up c/ scar monitoring' }],
-      evaluation: { patientReaction: 'No adverse reaction to core exercise introduction.', objectiveResponse: '' },
-      recommendations: ['Continue home massage 1x/day. Progress core exercises as tolerated.'],
+      interventionsRawText: 'Therapeutic exercise: TA activation 3×10, modified curl-up introduced c/ scar monitoring for pulling/discomfort — tolerated well, no adverse reaction.',
+      evaluation: { patientReaction: 'No adverse reaction to core exercise introduction.', objectiveResponse: '', rawText: 'No adverse reaction to core exercise introduction. Pt tolerated modified curl-up well throughout. Encouraged by progress and excited to begin rebuilding core strength. No pain or pulling reported post-session.' },
     },
   ],
   pat_uth37: [
@@ -6677,7 +6599,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'Scar mobilization, TA activation progression' }], frequency: '1x/week x 5 sessions', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: '', consentObtained: true, notes: 'Scar mobilization, gentle progressive core rehab.' },
       interventions: [{ type: 'Manual Therapy', details: 'Gentle scar mobilization' }, { type: 'Exercise', details: 'TA activation supine 3x10, diaphragmatic breathing' }],
       evaluation: { patientReaction: 'Tolerated manual therapy well. Correct TA activation demonstrated.', objectiveResponse: '' },
-      recommendations: ['Home scar massage 1x/day. HEP 1x/day.'],
     },
     {
       id: 'cs_uth37-2', patientId: 'pat_uth37', date: '2026-04-07', isIntakeSession: false,
@@ -6689,7 +6610,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: 'Anticipate D/C in 1-2 sessions', consentObtained: true, notes: 'Progress to functional core loading, prepare for D/C.' },
       interventions: [{ type: 'Exercise', details: 'Added dead bug 3x10, bird dog 3x10' }],
       evaluation: { patientReaction: 'Pt confident, back to most pre-surgical activities.', objectiveResponse: '' },
-      recommendations: ['Continue HEP. Return to full activity as tolerated.'],
     },
   ],
   pat_van40: [
@@ -6703,7 +6623,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'Scar mobilization, TA activation progression' }], frequency: '1x/week', reassessmentPlan: 'Reassess in 3 weeks', dischargePlan: 'D/C when pain-free and core strength restored', consentObtained: true, notes: 'Scar mobilization, gentle progressive core rehab.' },
       interventions: [{ type: 'Manual Therapy', details: 'Gentle scar mobilization' }, { type: 'Exercise', details: 'TA activation supine 3x10' }],
       evaluation: { patientReaction: 'Tolerated manual therapy well.', objectiveResponse: '' },
-      recommendations: ['Home scar massage 1x/day. HEP 1x/day.'],
     },
     {
       id: 'cs_van40-dc', patientId: 'pat_van40', date: '2026-04-19', isIntakeSession: false,
@@ -6715,7 +6634,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: 'Discharged — home maintenance program provided', consentObtained: true, notes: 'Discharge c/ home maintenance program.' },
       interventions: [{ type: 'Education', details: 'Final review of maintenance exercises, return-to-PT criteria if symptoms recur' }],
       evaluation: { patientReaction: 'Pt confident and independent in self-management.', objectiveResponse: '' },
-      recommendations: ['Continue maintenance exercises 2x/wk. Return PRN if symptoms recur.'],
     },
   ],
   pat_uth38: [
@@ -6729,7 +6647,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'Diaphragmatic breathing, PF down-training, manual release, ergonomic modification' }], frequency: '1x/week x 8 sessions', reassessmentPlan: 'Reassess in 4 weeks', dischargePlan: '', consentObtained: true, notes: 'Down-training program, manual therapy, ergonomic/stress management education.' },
       interventions: [{ type: 'Manual Therapy', details: 'Internal + external myofascial release to levator ani and obturator internus' }, { type: 'Education', details: 'Diaphragmatic breathing for down-training, ergonomic workstation review, movement break schedule' }],
       evaluation: { patientReaction: 'Pt relieved to have explanation. Some difficulty initially relaxing PF on command — improved by end of session.', objectiveResponse: '' },
-      recommendations: ['Heating pad PRN. Movement breaks q45min at desk. Down-training breathing 2x/day.'],
     },
     {
       id: 'cs_uth38-dc', patientId: 'pat_uth38', date: '2026-07-17', isIntakeSession: false,
@@ -6741,7 +6658,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: 'Discharged — self-management plan provided', consentObtained: true, notes: 'Discharge c/ home maintenance and self-management strategies.' },
       interventions: [{ type: 'Education', details: 'Final review of down-training techniques and ergonomic strategies for long-term self-management' }],
       evaluation: { patientReaction: 'Pt confident managing symptoms independently.', objectiveResponse: '' },
-      recommendations: ['Continue movement breaks and down-training breathing. Return PRN if symptoms recur.'],
     },
   ],
   pat_van41: [
@@ -6755,7 +6671,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [{ problemRef: '1', treatment: 'PFMT: sustained holds, quick flicks, the Knack' }], frequency: '2x/week x 4 sessions', reassessmentPlan: 'Reassess in 2 weeks', dischargePlan: 'D/C when pad-free', consentObtained: true, notes: 'Standard PFMT progression.' },
       interventions: [{ type: 'Exercise', details: 'Sustained Kegel 5s x10, quick flicks x10' }, { type: 'Education', details: 'The Knack technique' }],
       evaluation: { patientReaction: 'Correct technique demonstrated.', objectiveResponse: '' },
-      recommendations: ['HEP 2x/day. Practice the Knack.'],
     },
     {
       id: 'cs_van41-dc', patientId: 'pat_van41', date: '2026-02-06', isIntakeSession: false,
@@ -6767,7 +6682,6 @@ export const mockChartSessions: Record<string, ChartSession[]> = {
       plan: { items: [], frequency: '', reassessmentPlan: '', dischargePlan: 'Discharged — maintenance program provided', consentObtained: true, notes: 'Discharge c/ maintenance HEP.' },
       interventions: [{ type: 'Education', details: 'Maintenance HEP schedule provided' }],
       evaluation: { patientReaction: 'Pt very pleased, fully independent in self-management.', objectiveResponse: '' },
-      recommendations: ['Maintenance HEP 3x/wk. Return PRN if symptoms recur.'],
     },
   ],
 };
@@ -6878,9 +6792,6 @@ const _mockPatientComments = {
   pat_van6: [
     { id: 'v6c1', patientId: 'pat_van6', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Rachel starting a new job next week — renegotiated session time to 7am Thursdays. Updated recurring booking.', createdAt: '2026-05-16T08:30:00', pinned: false },
     { id: 'v6c2', patientId: 'pat_van6', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Rachel finally completing 10-sec holds pain-free. Encouraged her to keep tracking and celebrate the milestone.', createdAt: '2026-05-09T11:00:00', pinned: false },
-  ],
-  pat_van8: [
-    { id: 'v8c1', patientId: 'pat_van8', authorId: 'emp2', authorName: 'James Wilson', authorInitials: 'JW', content: 'Chloe asked about doing Pilates alongside PT. Approved — recommended she share the HEP with her Pilates instructor to avoid conflicting cues.', createdAt: '2026-05-12T13:15:00', pinned: false },
   ],
   pat_van9: [
     { id: 'v9c1', patientId: 'pat_van9', authorId: 'emp_van3', authorName: 'Sophie Kim', authorInitials: 'SK', content: 'Mei was a no-show on May 6 — called to reschedule. No charge as it was a first occurrence. Booked for May 13.', createdAt: '2026-05-06T12:00:00', pinned: false },
