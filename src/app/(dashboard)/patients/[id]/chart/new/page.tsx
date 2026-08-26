@@ -1,7 +1,6 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
 import { useChartSessions, addChartSession } from '@/lib/chartSessionStore';
@@ -14,11 +13,18 @@ import {
   emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation, emptyProblem, emptyGoal,
   ChartFormBody, HistoryCard,
 } from '@/components/charts/chart-form-sections';
+import { ChartTemplateSelect } from '@/components/charts/chart-template-select';
+import { DictateButton } from '@/components/charts/dictate-button';
+import { useDictation } from '@/components/charts/use-dictation';
+import { applyDictationStubs } from '@/components/charts/apply-dictation-stubs';
+import { useAddToChart } from '@/components/charts/use-add-to-chart';
+import { deriveDictationCarryForward } from '@/components/charts/dictation-carry-forward';
+import { DICTATION_NOTES_STUB, DICTATION_FOLLOWUP_NOTES_STUB } from '@/components/charts/dictation-stubs';
 import type {
-  ChartSession, PainLevel, AdherenceLevel, ImprovementLevel,
+  ChartSession, ChartTemplateId, PainLevel, AdherenceLevel, ImprovementLevel,
   SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection,
 } from '@/lib/types';
-import { Unlock } from 'lucide-react';
+import { Sparkles, Unlock } from 'lucide-react';
 
 export default function NewChartPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -34,7 +40,14 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const lastSession = [...sessions].sort((a, b) => a.date.localeCompare(b.date)).at(-1);
   const intakeSession = sessions.find((s) => s.isIntakeSession);
 
+  const [step, setStep] = useState(0);
+  const [template, setTemplate] = useState<ChartTemplateId | null>(null);
+
   const [summary, setSummary] = useState('');
+  const { dictating, dictSecs, toggle: toggleDictation } = useDictation(
+    (text) => setSummary((prev) => (prev ? prev + ' ' + text : text)),
+    isIntake ? DICTATION_NOTES_STUB : DICTATION_FOLLOWUP_NOTES_STUB
+  );
   const painLevel: PainLevel = 'No Pain';
   const adherenceLevel: AdherenceLevel = 'High Adherence';
   const improvementLevel: ImprovementLevel = 'Some Improvement';
@@ -59,16 +72,17 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const [interventions, setInterventions] = useState<InterventionItem[]>(() =>
     !isIntake && intakeSession ? structuredClone(intakeSession.interventions) : []
   );
+  const [interventionsRawText, setInterventionsRawText] = useState('');
   const [evaluation, setEvaluation] = useState<EvaluationSection>(emptyEvaluation);
-  const [recommendations, setRecommendations] = useState<{ text: string }[]>([]);
 
   const handleSave = () => {
-    if (!patient) return;
+    if (!patient || !template) return;
     const session: ChartSession = {
       id: `cs_${id}_${Date.now()}`,
       patientId: id,
       date: new Date().toISOString().slice(0, 10),
       isIntakeSession: isIntake,
+      template,
       summary,
       painLevel,
       exercisesPerDay,
@@ -77,13 +91,30 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
       analysis,
       plan,
       interventions,
+      interventionsRawText,
       evaluation,
-      recommendations: recommendations.map((r) => r.text).filter(Boolean),
       ...(isIntake ? {} : { adherenceLevel, improvementLevel }),
     };
     addChartSession(id, session);
     toast.success('Chart saved successfully.');
     router.push(`/patients/${id}/chart`);
+  };
+
+  const { isLoading: isAddingToChart, run: handleAddToChart } = useAddToChart(() => {
+    applyDictationStubs({ isIntake, setSubjective, setObjective, setAnalysis, setPlan, setInterventionsRawText, setEvaluation });
+    toast.success('Chart sections filled in from dictation.');
+  });
+
+  const handleSelectTemplate = (t: ChartTemplateId) => {
+    setTemplate(t);
+    if (t === 'default-dictation' && !isIntake && lastSession) {
+      const carryForward = deriveDictationCarryForward(lastSession);
+      setAnalysis((a) => ({ ...a, rawText: carryForward.analysisText }));
+      setPlan((p) => ({ ...p, rawText: carryForward.planText }));
+      setInterventionsRawText(carryForward.interventionText);
+      setEvaluation((e) => ({ ...e, rawText: carryForward.evaluationText }));
+    }
+    setStep(1);
   };
 
   if (!patient || !contact) return null;
@@ -106,9 +137,9 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
       {/* Full-screen header */}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-4 border-b border-secondary shrink-0">
         <div>
-          <Link href={`/patients/${id}/chart`} className="text-sm font-medium text-secondary hover:text-primary">
-            &lt; Back
-          </Link>
+          <Button color="secondary" size="md" onPress={() => router.push(`/patients/${id}/chart`)}>
+            Cancel
+          </Button>
         </div>
         <div className="flex items-center gap-3 justify-self-center">
           <Unlock size={26} className="shrink-0 text-primary" />
@@ -117,45 +148,66 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
           </h1>
         </div>
         <div className="flex items-center justify-end gap-3">
-          <Button color="secondary" size="md" onPress={() => router.push(`/patients/${id}/chart`)}>
-            Cancel
-          </Button>
-          <Button color="primary" size="md" onPress={handleSave}>
-            Save New Chart
-          </Button>
+          {step === 1 && (
+            <Button color="primary" size="md" onPress={handleSave}>
+              Save New Chart
+            </Button>
+          )}
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-6">
+        {step === 0 ? (
+          <ChartTemplateSelect onSelect={handleSelectTemplate} />
+        ) : (
         <div className="max-w-[820px] mx-auto">
       <div className="flex flex-col gap-4">
         {/* Notes */}
         <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
-          <span className="mb-3 block text-sm font-semibold text-primary">Notes</span>
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm font-semibold text-primary">Notes</span>
+            {template === 'default-dictation' && (
+              <DictateButton dictating={dictating} dictSecs={dictSecs} onPress={toggleDictation} />
+            )}
+          </div>
           <Textarea
             rows={6}
-            placeholder="Add notes about this session — shown in the chart list…"
+            placeholder={dictating ? 'Listening…' : 'Add notes about this session — shown in the chart list…'}
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
+            className={dictating ? 'border-red-400 bg-red-50' : undefined}
           />
+          {template === 'default-dictation' && (
+            <div className="mt-3 flex justify-end">
+              <Button
+                color="secondary" size="sm" iconLeading={Sparkles}
+                isLoading={isAddingToChart} showTextWhileLoading
+                isDisabled={!summary.trim() || isAddingToChart}
+                onPress={handleAddToChart}
+              >
+                {isAddingToChart ? 'Adding to Chart…' : 'Add to Chart'}
+              </Button>
+            </div>
+          )}
         </div>
 
-        <p className="mt-2 text-sm font-semibold text-primary">{isIntake ? 'H-SOAPIER Chart' : 'SOAPIER Chart'}</p>
+        <p className="mt-2 text-sm font-semibold text-primary">{isIntake ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
 
         {isIntake && <HistoryCard patient={patient} />}
 
         <ChartFormBody
-          isIntake={isIntake}
+          isDictation={template === 'default-dictation'}
           subjective={subjective} setSubjective={setSubjective}
           objective={objective} setObjective={setObjective}
           analysis={analysis} setAnalysis={setAnalysis}
           plan={plan} setPlan={setPlan}
           interventions={interventions} setInterventions={setInterventions}
+          interventionsRawText={interventionsRawText} setInterventionsRawText={setInterventionsRawText}
           evaluation={evaluation} setEvaluation={setEvaluation}
-          recommendations={recommendations} setRecommendations={setRecommendations}
         />
       </div>
         </div>
+        )}
       </div>
     </div>
   );

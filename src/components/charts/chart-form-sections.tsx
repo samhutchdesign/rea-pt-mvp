@@ -134,7 +134,7 @@ export function HistoryCard({ patient }: { patient: Patient }) {
 }
 
 interface ChartFormBodyProps {
-  isIntake: boolean;
+  isDictation?: boolean;
   subjective: SubjectiveSection;
   setSubjective: (updater: (s: SubjectiveSection) => SubjectiveSection) => void;
   objective: ObjectiveSection;
@@ -145,16 +145,16 @@ interface ChartFormBodyProps {
   setPlan: (updater: (p: PlanSection) => PlanSection) => void;
   interventions: InterventionItem[];
   setInterventions: (items: InterventionItem[]) => void;
+  interventionsRawText?: string;
+  setInterventionsRawText?: (text: string) => void;
   evaluation: EvaluationSection;
   setEvaluation: (updater: (e: EvaluationSection) => EvaluationSection) => void;
-  recommendations: { text: string }[];
-  setRecommendations: (items: { text: string }[]) => void;
 }
 
 export function ChartFormBody({
-  isIntake, subjective, setSubjective, objective, setObjective,
-  analysis, setAnalysis, plan, setPlan, interventions, setInterventions, evaluation, setEvaluation,
-  recommendations, setRecommendations,
+  isDictation, subjective, setSubjective, objective, setObjective,
+  analysis, setAnalysis, plan, setPlan, interventions, setInterventions,
+  interventionsRawText, setInterventionsRawText, evaluation, setEvaluation,
 }: ChartFormBodyProps) {
   const [armedIndex, setArmedIndex] = useState<number | null>(null);
 
@@ -174,6 +174,16 @@ export function ChartFormBody({
     }));
   };
 
+  const handleMovePainPoint = (index: number, x: number, y: number) => setSubjective((s) => ({
+    ...s,
+    painPoints: s.painPoints.map((p, i) => (i === index ? { ...p, x, y } : p)),
+  }));
+
+  const handleDeletePainPoint = (index: number) => setSubjective((s) => ({
+    ...s,
+    painPoints: s.painPoints.filter((_, i) => i !== index),
+  }));
+
   const updateRom = (i: number, patch: Partial<RomEntry>) => setObjective((o) => ({ ...o, rom: o.rom.map((r, ri) => (ri === i ? { ...r, ...patch } : r)) }));
   const removeRom = (i: number) => setObjective((o) => ({ ...o, rom: o.rom.filter((_, ri) => ri !== i) }));
   const addRom = () => setObjective((o) => ({ ...o, rom: [...o.rom, emptyRomEntry()] }));
@@ -185,7 +195,29 @@ export function ChartFormBody({
   return (
     <>
       {/* Subjective */}
-      <SectionCard letter="S" label="Subjective" defaultOpen={isIntake}>
+      <SectionCard letter="S" label="Subjective">
+        {isDictation ? (
+          <>
+            <Field label="Pain Points">
+              <BodyMap
+                painPoints={subjective.painPoints}
+                onCreate={handleCreate}
+                onMove={handleMovePainPoint}
+                onDelete={handleDeletePainPoint}
+                simplified
+              />
+            </Field>
+            <Field label="Subjective">
+              <Textarea
+                rows={8}
+                value={subjective.rawText ?? ''}
+                onChange={(e) => setSubjective((s) => ({ ...s, rawText: e.target.value }))}
+                placeholder="Dictate or type everything the patient reports — pain points, AM/PM symptoms, sleeping position, night pain, etc…"
+              />
+            </Field>
+          </>
+        ) : (
+          <>
         <Field label="Pain Points">
           <BodyMap painPoints={subjective.painPoints} armedIndex={armedIndex} onPlace={handlePlace} onCreate={handleCreate} />
           <div className="mt-3">
@@ -244,10 +276,23 @@ export function ChartFormBody({
         <Field label="Additional Notes">
           <Textarea rows={3} value={subjective.notes} onChange={(e) => setSubjective((s) => ({ ...s, notes: e.target.value }))} placeholder="Anything else the patient reports…" />
         </Field>
+          </>
+        )}
       </SectionCard>
 
       {/* Objective */}
-      <SectionCard letter="O" label="Objective" defaultOpen={isIntake}>
+      <SectionCard letter="O" label="Objective">
+        {isDictation ? (
+          <Field label="Observation & Functional Tests">
+            <Textarea
+              rows={6}
+              value={objective.rawText ?? ''}
+              onChange={(e) => setObjective((o) => ({ ...o, rawText: e.target.value }))}
+              placeholder="Dictate or type general observation, posture, edema, skin condition, functional tests, etc…"
+            />
+          </Field>
+        ) : (
+          <>
         <Field label="General Observation"><Textarea rows={2} value={objective.generalObservation} onChange={(e) => setObjective((o) => ({ ...o, generalObservation: e.target.value }))} /></Field>
 
         <div>
@@ -302,6 +347,8 @@ export function ChartFormBody({
             <Field label="Others"><input className={inputCls} value={objective.functionalOther} onChange={(e) => setObjective((o) => ({ ...o, functionalOther: e.target.value }))} /></Field>
           </div>
         </div>
+          </>
+        )}
 
         <div>
           <span className="mb-3 block text-sm font-semibold text-primary">ROM</span>
@@ -431,11 +478,24 @@ export function ChartFormBody({
           </div>
           <button type="button" onClick={addStrength} className="mt-2 w-fit text-xs font-medium text-brand-600 hover:underline">+ Add Measurement</button>
         </div>
-        <Field label="Additional Notes"><Textarea rows={2} value={objective.notes} onChange={(e) => setObjective((o) => ({ ...o, notes: e.target.value }))} /></Field>
+        {!isDictation && (
+          <Field label="Additional Notes"><Textarea rows={2} value={objective.notes} onChange={(e) => setObjective((o) => ({ ...o, notes: e.target.value }))} /></Field>
+        )}
       </SectionCard>
 
       {/* Analysis */}
-      <SectionCard letter="A" label="Analysis" defaultOpen={isIntake}>
+      <SectionCard letter="A" label="Analysis">
+        {isDictation ? (
+          <Field label="Analysis">
+            <Textarea
+              rows={6}
+              value={analysis.rawText ?? ''}
+              onChange={(e) => setAnalysis((a) => ({ ...a, rawText: e.target.value }))}
+              placeholder="Dictate or type body structures, problem list, PT diagnosis, PT goals, etc…"
+            />
+          </Field>
+        ) : (
+          <>
         <Field label="Body Structure(s)"><input className={inputCls} value={analysis.bodyStructures} onChange={(e) => setAnalysis((a) => ({ ...a, bodyStructures: e.target.value }))} placeholder="Specific structure(s) that are the source of symptoms/limitations" /></Field>
         <div>
           <span className="mb-3 block text-sm font-semibold text-primary">Problem List (by priority)</span>
@@ -478,10 +538,23 @@ export function ChartFormBody({
           />
         </div>
         <Field label="Additional Notes"><Textarea rows={2} value={analysis.notes} onChange={(e) => setAnalysis((a) => ({ ...a, notes: e.target.value }))} /></Field>
+          </>
+        )}
       </SectionCard>
 
       {/* Plan */}
-      <SectionCard letter="P" label="Plan" defaultOpen={isIntake}>
+      <SectionCard letter="P" label="Plan">
+        {isDictation ? (
+          <Field label="Plan">
+            <Textarea
+              rows={6}
+              value={plan.rawText ?? ''}
+              onChange={(e) => setPlan((p) => ({ ...p, rawText: e.target.value }))}
+              placeholder="Dictate or type treatment plan, expected frequency, reassessment plan, discharge plan, etc…"
+            />
+          </Field>
+        ) : (
+          <>
         <div>
           <span className="mb-3 block text-sm font-semibold text-primary">Treatment Plan (per problem)</span>
           <RepeatableList
@@ -505,15 +578,27 @@ export function ChartFormBody({
           <Field label="Reassessment Plan"><input className={inputCls} value={plan.reassessmentPlan} onChange={(e) => setPlan((p) => ({ ...p, reassessmentPlan: e.target.value }))} /></Field>
         </div>
         <Field label="Discharge Plan"><input className={inputCls} value={plan.dischargePlan} onChange={(e) => setPlan((p) => ({ ...p, dischargePlan: e.target.value }))} /></Field>
+        <Field label="Additional Notes"><Textarea rows={2} value={plan.notes} onChange={(e) => setPlan((p) => ({ ...p, notes: e.target.value }))} /></Field>
+          </>
+        )}
         <div className="flex items-center gap-2">
           <input id="consent" type="checkbox" checked={plan.consentObtained} onChange={(e) => setPlan((p) => ({ ...p, consentObtained: e.target.checked }))} />
           <label htmlFor="consent" className="text-sm text-primary">Treatment plan explained, understood & accepted by client</label>
         </div>
-        <Field label="Additional Notes"><Textarea rows={2} value={plan.notes} onChange={(e) => setPlan((p) => ({ ...p, notes: e.target.value }))} /></Field>
       </SectionCard>
 
       {/* Interventions */}
       <SectionCard letter="I" label="Intervention">
+        {isDictation ? (
+          <Field label="Intervention">
+            <Textarea
+              rows={6}
+              value={interventionsRawText ?? ''}
+              onChange={(e) => setInterventionsRawText?.(e.target.value)}
+              placeholder="Dictate or type interventions performed this session…"
+            />
+          </Field>
+        ) : (
         <RepeatableList
           items={interventions}
           onChange={setInterventions}
@@ -534,29 +619,29 @@ export function ChartFormBody({
             </div>
           )}
         />
+        )}
       </SectionCard>
 
       {/* Evaluation */}
       <SectionCard letter="E" label="Evaluation (post-intervention)">
+        {isDictation ? (
+          <Field label="Evaluation">
+            <Textarea
+              rows={6}
+              value={evaluation.rawText ?? ''}
+              onChange={(e) => setEvaluation((ev) => ({ ...ev, rawText: e.target.value }))}
+              placeholder="Dictate or type post-session NPRS, patient's reaction to treatment, objective response, etc…"
+            />
+          </Field>
+        ) : (
+          <>
         <Field label="Post-Session NPRS (0-10)">
           <input type="number" min={0} max={10} className={inputCls + ' max-w-[120px]'} value={evaluation.postNprs ?? ''} onChange={(e) => setEvaluation((ev) => ({ ...ev, postNprs: e.target.value === '' ? undefined : Number(e.target.value) }))} />
         </Field>
         <Field label="Patient's Reaction to Treatment"><Textarea rows={3} value={evaluation.patientReaction} onChange={(e) => setEvaluation((ev) => ({ ...ev, patientReaction: e.target.value }))} /></Field>
         <Field label="Objective Response"><Textarea rows={2} value={evaluation.objectiveResponse} onChange={(e) => setEvaluation((ev) => ({ ...ev, objectiveResponse: e.target.value }))} /></Field>
-      </SectionCard>
-
-      {/* Recommendations */}
-      <SectionCard letter="R" label="Recommendations">
-        <RepeatableList
-          items={recommendations}
-          onChange={setRecommendations}
-          newItem={() => ({ text: '' })}
-          addLabel="Add Recommendation"
-          emptyLabel="No recommendations yet."
-          renderRow={(r, update) => (
-            <input className={inputCls} value={r.text} onChange={(e) => update({ text: e.target.value })} placeholder="To client / family / caregiver / other health professional…" />
-          )}
-        />
+          </>
+        )}
       </SectionCard>
     </>
   );
@@ -585,21 +670,34 @@ function PainPointBadge({ index }: { index: number }) {
 }
 
 interface ChartReadOnlyBodyProps {
-  isIntake: boolean;
+  isDictation?: boolean;
   subjective: SubjectiveSection;
   objective: ObjectiveSection;
   analysis: AnalysisSection;
   plan: PlanSection;
   interventions: InterventionItem[];
+  interventionsRawText?: string;
   evaluation: EvaluationSection;
-  recommendations: string[];
 }
 
-export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, plan, interventions, evaluation, recommendations }: ChartReadOnlyBodyProps) {
+export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis, plan, interventions, interventionsRawText, evaluation }: ChartReadOnlyBodyProps) {
   return (
     <>
       {/* Subjective */}
-      <SectionCard letter="S" label="Subjective" defaultOpen={isIntake}>
+      <SectionCard letter="S" label="Subjective">
+        {isDictation ? (
+          <>
+            {subjective.painPoints.some((p) => p.bodyView) && (
+              <BodyMap painPoints={subjective.painPoints} interactive={false} simplified />
+            )}
+            {subjective.rawText ? (
+              <span className="whitespace-pre-wrap text-sm text-primary">{subjective.rawText}</span>
+            ) : (
+              <ReadEmpty>No subjective notes recorded.</ReadEmpty>
+            )}
+          </>
+        ) : (
+          <>
         {subjective.painPoints.some((p) => p.bodyView) && (
           <BodyMap painPoints={subjective.painPoints} interactive={false} />
         )}
@@ -631,10 +729,20 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
           <ReadField label="Night Pain" value={subjective.nightPain ? 'Yes' : 'No'} />
         </div>
         <ReadField label="Additional Notes" value={subjective.notes} />
+          </>
+        )}
       </SectionCard>
 
       {/* Objective */}
-      <SectionCard letter="O" label="Objective" defaultOpen={isIntake}>
+      <SectionCard letter="O" label="Objective">
+        {isDictation ? (
+          objective.rawText ? (
+            <span className="whitespace-pre-wrap text-sm text-primary">{objective.rawText}</span>
+          ) : (
+            <ReadEmpty>No observation notes recorded.</ReadEmpty>
+          )
+        ) : (
+          <>
         <ReadField label="General Observation" value={objective.generalObservation} />
         {(objective.posture || objective.atrophyHypertrophy || objective.edema || objective.skinCondition || objective.deformities || objective.observationOther) && (
           <div>
@@ -669,6 +777,8 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
               <ReadField label="Others" value={objective.functionalOther} />
             </div>
           </div>
+        )}
+          </>
         )}
         {objective.rom.length > 0 && (
           <div>
@@ -734,14 +844,22 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
             </div>
           </div>
         )}
-        <ReadField label="Additional Notes" value={objective.notes} />
-        {!objective.generalObservation && !objective.posture && !objective.atrophyHypertrophy && !objective.edema && !objective.skinCondition && !objective.deformities && !objective.observationOther && !objective.mobility.some(Boolean) && !objective.weightBearing && !objective.upOnToes && !objective.wbdf && !objective.torsionTest && !objective.squat && !objective.functionalOther && !objective.notes && objective.rom.length === 0 && !objective.strengthUnaffectedSide && !objective.strengthUnaffectedNotes && objective.strength.length === 0 && (
+        {!isDictation && <ReadField label="Additional Notes" value={objective.notes} />}
+        {!isDictation && !objective.generalObservation && !objective.posture && !objective.atrophyHypertrophy && !objective.edema && !objective.skinCondition && !objective.deformities && !objective.observationOther && !objective.mobility.some(Boolean) && !objective.weightBearing && !objective.upOnToes && !objective.wbdf && !objective.torsionTest && !objective.squat && !objective.functionalOther && !objective.notes && objective.rom.length === 0 && !objective.strengthUnaffectedSide && !objective.strengthUnaffectedNotes && objective.strength.length === 0 && (
           <ReadEmpty>Not recorded</ReadEmpty>
         )}
       </SectionCard>
 
       {/* Analysis */}
-      <SectionCard letter="A" label="Analysis" defaultOpen={isIntake}>
+      <SectionCard letter="A" label="Analysis">
+        {isDictation ? (
+          analysis.rawText ? (
+            <span className="whitespace-pre-wrap text-sm text-primary">{analysis.rawText}</span>
+          ) : (
+            <ReadEmpty>No analysis notes recorded.</ReadEmpty>
+          )
+        ) : (
+          <>
         <ReadField label="Body Structure(s)" value={analysis.bodyStructures} />
         {analysis.problemList.length > 0 && (
           <div>
@@ -776,10 +894,20 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
         {!analysis.bodyStructures && analysis.problemList.length === 0 && !analysis.ptDiagnosis && analysis.goals.length === 0 && !analysis.notes && (
           <ReadEmpty>Not recorded</ReadEmpty>
         )}
+          </>
+        )}
       </SectionCard>
 
       {/* Plan */}
-      <SectionCard letter="P" label="Plan" defaultOpen={isIntake}>
+      <SectionCard letter="P" label="Plan">
+        {isDictation ? (
+          plan.rawText ? (
+            <span className="whitespace-pre-wrap text-sm text-primary">{plan.rawText}</span>
+          ) : (
+            <ReadEmpty>No plan notes recorded.</ReadEmpty>
+          )
+        ) : (
+          <>
         {plan.items.length > 0 && (
           <div className="flex flex-col gap-2">
             {plan.items.map((item, i) => (
@@ -795,13 +923,21 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
           <ReadField label="Reassessment Plan" value={plan.reassessmentPlan} />
         </div>
         <ReadField label="Discharge Plan" value={plan.dischargePlan} />
-        <ReadField label="Client Consent" value={plan.consentObtained ? 'Treatment plan explained, understood & accepted' : 'Not yet obtained'} />
         <ReadField label="Additional Notes" value={plan.notes} />
+          </>
+        )}
+        <ReadField label="Client Consent" value={plan.consentObtained ? 'Treatment plan explained, understood & accepted' : 'Not yet obtained'} />
       </SectionCard>
 
       {/* Interventions */}
       <SectionCard letter="I" label="Intervention">
-        {interventions.length === 0 ? (
+        {isDictation ? (
+          interventionsRawText ? (
+            <span className="whitespace-pre-wrap text-sm text-primary">{interventionsRawText}</span>
+          ) : (
+            <ReadEmpty>No interventions recorded.</ReadEmpty>
+          )
+        ) : interventions.length === 0 ? (
           <ReadEmpty>No interventions recorded.</ReadEmpty>
         ) : (
           <div className="flex flex-col gap-2">
@@ -817,52 +953,62 @@ export function ChartReadOnlyBody({ isIntake, subjective, objective, analysis, p
 
       {/* Evaluation */}
       <SectionCard letter="E" label="Evaluation (post-intervention)">
+        {isDictation ? (
+          evaluation.rawText ? (
+            <span className="whitespace-pre-wrap text-sm text-primary">{evaluation.rawText}</span>
+          ) : (
+            <ReadEmpty>No evaluation notes recorded.</ReadEmpty>
+          )
+        ) : (
+          <>
         <ReadField label="Post-Session NPRS" value={evaluation.postNprs !== undefined ? `${evaluation.postNprs}/10` : undefined} />
         <ReadField label="Patient's Reaction to Treatment" value={evaluation.patientReaction} />
         <ReadField label="Objective Response" value={evaluation.objectiveResponse} />
         {evaluation.postNprs === undefined && !evaluation.patientReaction && !evaluation.objectiveResponse && <ReadEmpty>Not recorded</ReadEmpty>}
-      </SectionCard>
-
-      {/* Recommendations */}
-      <SectionCard letter="R" label="Recommendations">
-        {recommendations.length === 0 ? (
-          <ReadEmpty>No recommendations recorded.</ReadEmpty>
-        ) : (
-          <ul className="list-disc space-y-1 pl-5">
-            {recommendations.map((r, i) => <li key={i} className="text-sm text-primary">{r}</li>)}
-          </ul>
+          </>
         )}
       </SectionCard>
     </>
   );
 }
 
-/** Read-only body for a single chart session — Notes, History (intake only), H-SOAPIER sections,
+/** Read-only body for a single chart session — Notes, History (intake only), H-SOAPIE sections,
  *  Signed card, and Amendments. Shared between the full-screen chart page and the inline Chart tab view. */
 export function ChartSessionReadPanel({ patient, session }: { patient: Patient; session: ChartSession }) {
   const amendments = session.amendments ?? [];
   const signatureFont = SIGNATURE_FONTS.find((f) => f.id === session.signatureFontId);
+  const isDictation = session.template === 'default-dictation';
+  const [notesOpen, setNotesOpen] = useState(!isDictation);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
-        <span className="mb-2 block text-sm font-semibold text-primary">Notes</span>
-        <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
+        <button
+          type="button"
+          onClick={() => setNotesOpen((v) => !v)}
+          className={cx('flex w-full items-center gap-2 bg-transparent border-none p-0 cursor-pointer text-left', notesOpen && 'mb-2')}
+        >
+          <span className="flex-1 text-sm font-semibold text-primary">Notes</span>
+          <ChevronDown size={16} className={cx('shrink-0 text-tertiary transition-transform', notesOpen && 'rotate-180')} />
+        </button>
+        {notesOpen && (
+          <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
+        )}
       </div>
 
-      <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIER Chart' : 'SOAPIER Chart'}</p>
+      <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
 
       {session.isIntakeSession && <HistoryCard patient={patient} />}
 
       <ChartReadOnlyBody
-        isIntake={session.isIntakeSession}
+        isDictation={session.template === 'default-dictation'}
         subjective={session.subjective}
         objective={session.objective}
         analysis={session.analysis}
         plan={session.plan}
         interventions={session.interventions}
+        interventionsRawText={session.interventionsRawText}
         evaluation={session.evaluation}
-        recommendations={session.recommendations}
       />
 
       {session.signedAt && (

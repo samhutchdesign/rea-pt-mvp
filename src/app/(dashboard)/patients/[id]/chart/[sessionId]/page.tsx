@@ -17,9 +17,14 @@ import {
   inputCls, emptySubjective, emptyObjective, emptyAnalysis, emptyPlan, emptyEvaluation,
   ChartFormBody, HistoryCard, ChartSessionReadPanel,
 } from '@/components/charts/chart-form-sections';
+import { DictateButton } from '@/components/charts/dictate-button';
+import { useDictation } from '@/components/charts/use-dictation';
+import { applyDictationStubs } from '@/components/charts/apply-dictation-stubs';
+import { useAddToChart } from '@/components/charts/use-add-to-chart';
+import { DICTATION_NOTES_STUB, DICTATION_FOLLOWUP_NOTES_STUB } from '@/components/charts/dictation-stubs';
 import { copyChartSessionToClipboard } from '@/lib/chartExport';
 import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
-import { Trash2, Lock, Unlock, Copy, Check } from 'lucide-react';
+import { Trash2, Lock, Unlock, Copy, Check, Sparkles } from 'lucide-react';
 
 export default function ChartDetailPage({ params }: { params: Promise<{ id: string; sessionId: string }> }) {
   const { id, sessionId } = use(params);
@@ -53,15 +58,17 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
   const [pendingSignatureFont, setPendingSignatureFont] = useState<string>(SIGNATURE_FONTS[0].id);
 
   const [summary, setSummary] = useState(session?.summary ?? '');
+  const { dictating, dictSecs, toggle: toggleDictation } = useDictation(
+    (text) => setSummary((prev) => (prev ? prev + ' ' + text : text)),
+    (session?.isIntakeSession ?? true) ? DICTATION_NOTES_STUB : DICTATION_FOLLOWUP_NOTES_STUB
+  );
   const [subjective, setSubjective] = useState<SubjectiveSection>(session?.subjective ?? emptySubjective());
   const [objective, setObjective] = useState<ObjectiveSection>(session?.objective ?? emptyObjective());
   const [analysis, setAnalysis] = useState<AnalysisSection>(session?.analysis ?? emptyAnalysis());
   const [plan, setPlan] = useState<PlanSection>(session?.plan ?? emptyPlan());
   const [interventions, setInterventions] = useState<InterventionItem[]>(session?.interventions ?? []);
+  const [interventionsRawText, setInterventionsRawText] = useState(session?.interventionsRawText ?? '');
   const [evaluation, setEvaluation] = useState<EvaluationSection>(session?.evaluation ?? emptyEvaluation());
-  const [recommendations, setRecommendations] = useState<{ text: string }[]>(
-    (session?.recommendations ?? []).map((text) => ({ text }))
-  );
 
   const startEditing = () => {
     if (!session) return;
@@ -71,8 +78,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     setAnalysis(session.analysis);
     setPlan(session.plan);
     setInterventions(session.interventions);
+    setInterventionsRawText(session.interventionsRawText ?? '');
     setEvaluation(session.evaluation);
-    setRecommendations(session.recommendations.map((text) => ({ text })));
     setEditing(true);
   };
 
@@ -108,10 +115,15 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       analysis,
       plan,
       interventions,
+      interventionsRawText,
       evaluation,
-      recommendations: recommendations.map((r) => r.text).filter(Boolean),
     });
   };
+
+  const { isLoading: isAddingToChart, run: handleAddToChart } = useAddToChart(() => {
+    applyDictationStubs({ isIntake: session?.isIntakeSession ?? true, setSubjective, setObjective, setAnalysis, setPlan, setInterventionsRawText, setEvaluation });
+    toast.success('Chart sections filled in from dictation.');
+  });
 
   const handleSaveEdits = () => {
     persistEdits();
@@ -254,23 +266,46 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         <div className="flex flex-col gap-4">
           {/* Notes */}
           <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
-            <span className="mb-2 block text-sm font-semibold text-primary">Notes</span>
-            <Textarea rows={6} value={summary} onChange={(e) => setSummary(e.target.value)} />
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm font-semibold text-primary">Notes</span>
+              {session.template === 'default-dictation' && (
+                <DictateButton dictating={dictating} dictSecs={dictSecs} onPress={toggleDictation} />
+              )}
+            </div>
+            <Textarea
+              rows={6}
+              placeholder={dictating ? 'Listening…' : undefined}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              className={dictating ? 'border-red-400 bg-red-50' : undefined}
+            />
+            {session.template === 'default-dictation' && (
+              <div className="mt-3 flex justify-end">
+                <Button
+                  color="secondary" size="sm" iconLeading={Sparkles}
+                  isLoading={isAddingToChart} showTextWhileLoading
+                  isDisabled={!summary.trim() || isAddingToChart}
+                  onPress={handleAddToChart}
+                >
+                  {isAddingToChart ? 'Adding to Chart…' : 'Add to Chart'}
+                </Button>
+              </div>
+            )}
           </div>
 
-          <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIER Chart' : 'SOAPIER Chart'}</p>
+          <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
 
           {session.isIntakeSession && <HistoryCard patient={patient} />}
 
           <ChartFormBody
-            isIntake={session.isIntakeSession}
+            isDictation={session.template === 'default-dictation'}
             subjective={subjective} setSubjective={setSubjective}
             objective={objective} setObjective={setObjective}
             analysis={analysis} setAnalysis={setAnalysis}
             plan={plan} setPlan={setPlan}
             interventions={interventions} setInterventions={setInterventions}
+            interventionsRawText={interventionsRawText} setInterventionsRawText={setInterventionsRawText}
             evaluation={evaluation} setEvaluation={setEvaluation}
-            recommendations={recommendations} setRecommendations={setRecommendations}
           />
         </div>
       ) : (

@@ -185,6 +185,7 @@ export interface SubjectiveSection {
   nightPain: boolean;
   sleepingPosition: string;
   notes: string;
+  rawText?: string;
 }
 
 export const JOINT_MOVEMENTS = [
@@ -236,6 +237,7 @@ export interface ObjectiveSection {
   strengthUnaffectedNotes: string;
   strength: StrengthEntry[];
   notes: string;
+  rawText?: string;
 }
 
 export interface ProblemListItem {
@@ -256,6 +258,7 @@ export interface AnalysisSection {
   ptDiagnosis: string;
   goals: GoalItem[];
   notes: string;
+  rawText?: string;
 }
 
 export interface PlanItem {
@@ -270,6 +273,7 @@ export interface PlanSection {
   dischargePlan: string;
   consentObtained: boolean;
   notes: string;
+  rawText?: string;
 }
 
 export interface InterventionItem {
@@ -281,6 +285,7 @@ export interface EvaluationSection {
   postNprs?: number;
   patientReaction: string;
   objectiveResponse: string;
+  rawText?: string;
 }
 
 export interface ChartAmendment {
@@ -292,11 +297,14 @@ export interface ChartAmendment {
   createdAt: string;
 }
 
+export type ChartTemplateId = 'default' | 'default-dictation' | 'pelvic-floor';
+
 export interface ChartSession {
   id: string;
   patientId: string;
   date: string;
   isIntakeSession: boolean;
+  template?: ChartTemplateId;
   summary: string;
   painLevel: PainLevel;
   adherenceLevel?: AdherenceLevel;
@@ -307,8 +315,8 @@ export interface ChartSession {
   analysis: AnalysisSection;
   plan: PlanSection;
   interventions: InterventionItem[];
+  interventionsRawText?: string;
   evaluation: EvaluationSection;
-  recommendations: string[];
   signedAt?: string;
   signedByEmpId?: string;
   signedByName?: string;

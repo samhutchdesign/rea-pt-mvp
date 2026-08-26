@@ -19,7 +19,7 @@ function textField(label: string, value?: string | number | null): string | null
   return `${label}: ${value}`;
 }
 
-/** Builds both a plain-text and an HTML representation of everything shown under the H-SOAPIER chart, for clipboard export. */
+/** Builds both a plain-text and an HTML representation of everything shown under the H-SOAPIE chart, for clipboard export. */
 export function buildChartExport(
   session: ChartSession,
   patient: Patient,
@@ -244,19 +244,6 @@ export function buildChartExport(
       htmlField('Post-Session NPRS', e.postNprs !== undefined ? `${e.postNprs}/10` : undefined),
       htmlField("Patient's Reaction to Treatment", e.patientReaction), htmlField('Objective Response', e.objectiveResponse),
     );
-    text.push('');
-  }
-
-  // Recommendations
-  {
-    text.push('R — RECOMMENDATIONS');
-    html.push(`<h2 style="${H2}">R — Recommendations</h2>`);
-    if (session.recommendations.length === 0) {
-      text.push('None recorded.');
-    } else {
-      session.recommendations.forEach((r) => text.push(`  • ${r}`));
-      html.push(`<ul style="margin:0;padding-left:20px;">${session.recommendations.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`);
-    }
     text.push('');
   }
 
