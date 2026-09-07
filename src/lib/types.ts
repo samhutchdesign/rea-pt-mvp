@@ -136,6 +136,7 @@ export interface Program {
   createdAt: string;
   userCreated?: boolean;
   createdByEmpId?: string;
+  imageUrl?: string;
 }
 
 export interface ExerciseComment {

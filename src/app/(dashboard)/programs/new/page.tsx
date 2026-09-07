@@ -13,9 +13,14 @@ import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
-import { Check, Eye, GripVertical, Heart, Search, X } from 'lucide-react';
+import { ChevronLeft, Check, Eye, Heart, Search, X } from 'lucide-react';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { ProgramStepper } from '@/components/programs/ProgramStepper';
+import { ExerciseEditTable } from '@/components/programs/ExerciseEditTable';
+import { ProgramOverviewList } from '@/components/programs/ProgramOverviewList';
+import { ProgramImageUpload } from '@/components/programs/ProgramImageUpload';
+import { type ProgramRow, PROGRAM_BUILDER_STEPS } from '@/components/programs/programBuilder';
 
 const SEARCH_ALIASES: Record<string, string> = {
   sui: 'Stress Urinary Incontinence', uui: 'Urge Urinary Incontinence',
@@ -28,24 +33,11 @@ const ALL_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
 const ALL_EQUIPMENT = ['None', 'Ball', 'Elastic Band', 'Weights', 'Wall', 'Footstool', 'Chair / Wall'];
 const SORT_OPTIONS = ['A → Z', 'Z → A', 'Your Most Used', 'Newest Added'];
 const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'];
-const CUES = [
-  { key: 'relaxation', label: 'Relaxation Cue' },
-  { key: 'contraction', label: 'Pelvic Floor Contraction Cue' },
-  { key: 'pressure', label: 'Pressure Management Cue' },
-];
 
 const ALL_CONDITIONS = [...new Set(mockExercises.flatMap((e) => e.tags.condition).map(toTitleCase))].sort();
 const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort();
 
 function expandSearch(q: string) { return SEARCH_ALIASES[q.toLowerCase().trim()] ?? q; }
-
-interface ProgramRow {
-  exerciseId: string;
-  sets: number;
-  reps: number;
-  holdSecs: number;
-  cue: string;
-}
 
 function FilterSection({ title, activeCount, onClear, children }: { title: string; activeCount: number; onClear: () => void; children: React.ReactNode }) {
   return (
@@ -100,21 +92,6 @@ function FilterSearchBox({ value, onChange, placeholder }: { value: string; onCh
   );
 }
 
-function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
-  return (
-    <div className="flex items-center gap-2 rounded-lg border border-secondary bg-primary pl-3 pr-5 py-2.5 shadow-xs">
-      <input
-        type="number"
-        min={0}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-8 bg-transparent text-base text-primary text-center outline-none"
-      />
-      <span className="text-base text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
-    </div>
-  );
-}
-
 function NewProgramContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -126,11 +103,18 @@ function NewProgramContent() {
   const prefillSource = editingProgram ?? duplicateSource;
 
   const [step, setStep] = useState(0);
+  const [maxReachedStep, setMaxReachedStep] = useState(prefillSource ? 2 : 0);
   const [programName, setProgramName] = useState(
     editingProgram ? editingProgram.name : duplicateSource ? `${duplicateSource.name} (Copy)` : ''
   );
   const [description, setDescription] = useState(prefillSource?.description ?? '');
   const [frequency, setFrequency] = useState(prefillSource?.frequency ?? FREQUENCIES[0]);
+  const [imageUrl, setImageUrl] = useState<string | null>(prefillSource?.imageUrl ?? null);
+
+  const goToStep = (target: number) => {
+    setStep(target);
+    setMaxReachedStep((prev) => Math.max(prev, target));
+  };
 
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('A → Z');
@@ -212,9 +196,7 @@ function NewProgramContent() {
       if (hasTagFilters && !(matchesCondition || matchesCategory || matchesLevel || matchesEquipment || matchesMovementType || matchesEffortType)) return false;
       return true;
     }).sort((a, b) => {
-      const aFav = favorites.has(a.id) ? 1 : 0;
-      const bFav = favorites.has(b.id) ? 1 : 0;
-      if (sortBy === 'A → Z') return aFav !== bFav ? bFav - aFav : a.name.localeCompare(b.name);
+      if (sortBy === 'A → Z') return a.name.localeCompare(b.name);
       if (sortBy === 'Z → A') return b.name.localeCompare(a.name);
       if (sortBy === 'Your Most Used') return (yourUsage[b.id] ?? 0) - (yourUsage[a.id] ?? 0);
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -255,6 +237,7 @@ function NewProgramContent() {
           description: description.trim(),
           frequency,
           exercises,
+          imageUrl: imageUrl ?? undefined,
         };
       }
       toast.success('Program updated');
@@ -272,6 +255,7 @@ function NewProgramContent() {
       createdAt: new Date().toISOString().slice(0, 10),
       userCreated: true,
       createdByEmpId: currentIdentity.id,
+      imageUrl: imageUrl ?? undefined,
     };
     mockPrograms.push(newProgram);
     toast.success('Program created');
@@ -284,22 +268,41 @@ function NewProgramContent() {
       {/* Full-screen header */}
       <div className="grid grid-cols-3 items-center px-6 py-4 border-b border-secondary shrink-0">
         <div className="justify-self-start">
-          <Button color="secondary" size="sm" onPress={() => router.push('/programs')}>Cancel</Button>
+          {step === 1 ? (
+            <button
+              type="button"
+              onClick={() => goToStep(0)}
+              className="inline-flex items-center gap-1 bg-transparent border-none p-0 text-sm font-medium text-secondary hover:text-primary cursor-pointer transition-colors"
+            >
+              <ChevronLeft size={16} />
+              Back
+            </button>
+          ) : (
+            <Button color="secondary" size="sm" onPress={() => router.push('/programs')}>Cancel</Button>
+          )}
         </div>
         <h1 className="text-2xl font-semibold text-primary m-0 text-center">
           {editingProgram ? 'Edit Program' : 'Create New Program'}
         </h1>
         <div className="flex gap-3 justify-self-end">
-          {step === 0 ? (
-            <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => setStep(1)}>Next</Button>
-          ) : (
-            <>
-              <Button color="secondary" size="sm" onPress={() => setStep(0)}>Back</Button>
-              <Button color="primary" size="sm" onPress={handleSave}>Save</Button>
-            </>
+          {step === 0 && (
+            <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => goToStep(1)}>Next</Button>
+          )}
+          {step === 1 && (
+            <Button color="primary" size="sm" onPress={() => goToStep(2)}>Next</Button>
+          )}
+          {step === 2 && (
+            <Button color="primary" size="sm" onPress={handleSave}>Save</Button>
           )}
         </div>
       </div>
+
+      <ProgramStepper
+        steps={PROGRAM_BUILDER_STEPS}
+        currentStep={step}
+        maxReachedStep={maxReachedStep}
+        onStepClick={goToStep}
+      />
 
       {step === 0 ? (
         /* Three-column content */
@@ -490,109 +493,53 @@ function NewProgramContent() {
             </div>
           </div>
 
-          <Divider vertical />
-
-          {/* Right: Program builder */}
-          <div className="flex flex-col gap-3 min-h-0 flex-1 min-w-0" style={{ maxWidth: 520 }}>
-            <span className="text-sm font-semibold text-primary shrink-0">
-              {programRows.length} exercise{programRows.length !== 1 ? 's' : ''} in program
-            </span>
-
-            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3">
-              {programRows.length === 0 ? (
-                <div className="py-12 text-center">
-                  <span className="text-sm text-secondary">Click on exercises to add them to the program</span>
-                </div>
-              ) : programRows.map((row, idx) => {
-                const ex = mockExercises.find((e) => e.id === row.exerciseId);
-                if (!ex) return null;
-                const isDragging = dragIndex === idx;
-                const isDropTarget = dragOverIndex === idx && dragIndex !== idx;
-                return (
-                  <div
-                    key={row.exerciseId}
-                    className={cx(
-                      'flex items-center gap-4 shrink-0 min-w-[450px] rounded-xl border bg-primary shadow-xs p-5 transition-opacity',
-                      isDragging ? 'opacity-40' : 'opacity-100',
-                      isDropTarget ? 'border-brand-600 border-dashed' : 'border-secondary'
-                    )}
-                    draggable
-                    onDragStart={() => handleDragStart(idx)}
-                    onDragOver={(e) => handleDragOver(e, idx)}
-                    onDrop={(e) => handleDrop(e, idx)}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <GripVertical size={18} className="shrink-0 cursor-grab text-quaternary" />
-                    <div className="flex-1 min-w-0 flex flex-col gap-3">
-                      <div className="flex items-center gap-2">
-                        <div className="relative size-10 shrink-0 rounded-md overflow-hidden">
-                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={14} />
-                        </div>
-                        <span className="flex-1 min-w-0 text-sm font-semibold text-primary truncate">{ex.name}</span>
-                        <button
-                          onClick={() => removeExercise(row.exerciseId)}
-                          className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
-                        >
-                          <X size={18} />
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-2 items-center">
-                        <CompactField value={row.sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => updateRow(row.exerciseId, 'sets', v)} />
-                        <CompactField value={row.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => updateRow(row.exerciseId, 'reps', v)} />
-                        <CompactField value={row.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => updateRow(row.exerciseId, 'holdSecs', v)} />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <NativeSelect
-                          wrapperClassName="flex-1 max-w-[360px]"
-                          value={row.cue}
-                          onChange={(e) => updateRow(row.exerciseId, 'cue', e.target.value)}
-                        >
-                          <option value="">No Cue</option>
-                          {CUES.map((c) => (
-                            <option key={c.key} value={c.key}>{c.label}</option>
-                          ))}
-                        </NativeSelect>
-                        <button
-                          title="Preview"
-                          onClick={() => setPreviewExercise(ex)}
-                          className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
-                        >
-                          <Eye size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
         </div>
+      ) : step === 1 ? (
+        /* Step 2: Edit exercises */
+        <ExerciseEditTable
+          rows={programRows}
+          getExercise={(id) => mockExercises.find((e) => e.id === id)}
+          dragIndex={dragIndex}
+          dragOverIndex={dragOverIndex}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onDragEnd={handleDragEnd}
+          onUpdateRow={updateRow}
+          onRemoveRow={removeExercise}
+          onPreview={setPreviewExercise}
+        />
       ) : (
-        /* Step 2: Program details */
-        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-10">
-          <div className="max-w-lg mx-auto flex flex-col gap-5">
-            <Input
-              label="Program name"
-              placeholder="New program"
-              value={programName}
-              onChange={setProgramName}
-            />
-            <div>
-              <label className="block text-sm font-medium text-secondary mb-1.5">Description</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add a description for this program…"
-                rows={5}
-                className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+        /* Step 3: Program details */
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <div className="w-80 shrink-0 overflow-y-auto border-r border-secondary bg-secondary_alt px-6 py-6">
+            <ProgramOverviewList rows={programRows} getExercise={(id) => mockExercises.find((e) => e.id === id)} />
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
+            <div className="max-w-lg flex flex-col gap-5">
+              <ProgramImageUpload value={imageUrl} onChange={setImageUrl} />
+              <Input
+                label="Program name"
+                placeholder="New program"
+                value={programName}
+                onChange={setProgramName}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-secondary mb-1.5">Frequency</label>
-              <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)}>
-                {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
-              </NativeSelect>
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-1.5">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Add a description for this program…"
+                  rows={5}
+                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-1.5">Frequency</label>
+                <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)}>
+                  {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+                </NativeSelect>
+              </div>
             </div>
           </div>
         </div>
