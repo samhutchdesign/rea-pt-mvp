@@ -62,7 +62,7 @@ export default function DocumentsPage() {
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="font-semibold text-primary text-sm">{doc.name}</span>
                     {favorites.has(doc.id) && (
-                      <Heart size={14} fill="currentColor" className="text-pink-500" />
+                      <Heart size={14} fill="currentColor" className="text-favorite" />
                     )}
                     {doc.isDefault && (
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
@@ -89,7 +89,7 @@ export default function DocumentsPage() {
                   className="p-1.5 rounded-lg text-tertiary hover:bg-secondary transition-colors"
                 >
                   {favorites.has(doc.id) ? (
-                    <Heart size={16} fill="currentColor" className="text-pink-500" />
+                    <Heart size={16} fill="currentColor" className="text-favorite" />
                   ) : (
                     <Heart size={16} />
                   )}

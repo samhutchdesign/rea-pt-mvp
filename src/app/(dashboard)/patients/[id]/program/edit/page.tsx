@@ -452,7 +452,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                               onClick={() => toggleFavorite(ex.id)}
                             >
                               {favorites.has(ex.id)
-                                ? <Heart size={14} className="text-pink-500" fill="currentColor" />
+                                ? <Heart size={14} className="text-favorite" fill="currentColor" />
                                 : <Heart size={14} className="text-tertiary" />}
                             </button>
                           </div>

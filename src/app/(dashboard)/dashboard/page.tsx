@@ -240,7 +240,7 @@ function StaffDashboard({ empId }: { empId: string }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className="text-sm font-medium text-primary leading-tight">{prog.name}</p>
-                  {prog.isFavorite && <Heart size={12} className="text-pink-500 shrink-0" fill="currentColor" />}
+                  {prog.isFavorite && <Heart size={12} className="text-favorite shrink-0" fill="currentColor" />}
                 </div>
                 <div className="flex gap-1 mt-0.5 flex-wrap">
                   {prog.tags.slice(0, 2).map((t) => (

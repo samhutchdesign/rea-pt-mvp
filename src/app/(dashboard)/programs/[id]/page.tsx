@@ -157,7 +157,7 @@ function ProgramDetailContent({ id }: { id: string }) {
                   size="sm"
                   iconLeading={Heart}
                   onPress={() => setIsFavorite((v) => !v)}
-                  className={isFavorite ? '[&_svg]:fill-pink-500 [&_svg]:text-pink-500' : undefined}
+                  className={isFavorite ? '[&_svg]:fill-favorite [&_svg]:text-favorite' : undefined}
                 >
                   {isFavorite ? 'Favorited' : 'Favorite'}
                 </Button>
