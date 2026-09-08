@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
-import { useLocationScope } from '@/lib/locationScope';
+import { useLocationScope, useCurrentIdentity } from '@/lib/locationScope';
 import { useRole } from '@/lib/roleStore';
 import { usePermissions } from '@/lib/permissionsHook';
 import type { Employee, UserRole } from '@/lib/types';
@@ -30,8 +30,11 @@ export default function EmployeesPage() {
   const [overrides, setOverrides] = useState<Record<string, Partial<Employee>>>({});
   const role = useRole();
   const can = usePermissions();
+  const currentIdentity = useCurrentIdentity();
 
-  const employees = scopedEmployees.map((e) => overrides[e.id] ? { ...e, ...overrides[e.id] } : e);
+  const employees = scopedEmployees
+    .filter((e) => e.id !== currentIdentity.id)
+    .map((e) => overrides[e.id] ? { ...e, ...overrides[e.id] } : e);
 
   const changeRole = (emp: Employee, newRole: UserRole) => {
     setOverrides((prev) => ({ ...prev, [emp.id]: { ...prev[emp.id], role: newRole } }));
