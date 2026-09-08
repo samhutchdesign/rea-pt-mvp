@@ -75,9 +75,9 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   const [interventionsRawText, setInterventionsRawText] = useState('');
   const [evaluation, setEvaluation] = useState<EvaluationSection>(emptyEvaluation);
 
-  const handleSave = () => {
-    if (!patient || !template) return;
-    const session: ChartSession = {
+  const buildSession = (): ChartSession | null => {
+    if (!patient || !template) return null;
+    return {
       id: `cs_${id}_${Date.now()}`,
       patientId: id,
       date: new Date().toISOString().slice(0, 10),
@@ -95,9 +95,21 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
       evaluation,
       ...(isIntake ? {} : { adherenceLevel, improvementLevel }),
     };
+  };
+
+  const handleSaveDraft = () => {
+    const session = buildSession();
+    if (!session) return;
     addChartSession(id, session);
-    toast.success('Chart saved successfully.');
+    toast.success('Chart saved as draft.');
     router.push(`/patients/${id}/chart`);
+  };
+
+  const handleSaveAndSign = () => {
+    const session = buildSession();
+    if (!session) return;
+    addChartSession(id, session);
+    router.push(`/patients/${id}/chart/${session.id}?sign=1`);
   };
 
   const { isLoading: isAddingToChart, run: handleAddToChart } = useAddToChart(() => {
@@ -149,9 +161,14 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
         </div>
         <div className="flex items-center justify-end gap-3">
           {step === 1 && (
-            <Button color="primary" size="md" onPress={handleSave}>
-              Save New Chart
-            </Button>
+            <>
+              <Button color="secondary" size="md" onPress={handleSaveDraft}>
+                Save Draft
+              </Button>
+              <Button color="primary" size="md" onPress={handleSaveAndSign}>
+                Save and Sign
+              </Button>
+            </>
           )}
         </div>
       </div>
