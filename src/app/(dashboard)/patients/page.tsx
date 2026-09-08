@@ -212,36 +212,31 @@ export default function PatientsPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Patients' }]} />
-      <div className="px-8 py-8">
+      <div className="p-10">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold text-primary m-0">Patients</h1>
-          <Button color="primary" iconLeading={Plus} onPress={() => setAddOpen(true)}>
+        <div className="flex items-center justify-between mb-10">
+          <h1 className="font-display text-[40px] leading-[48px] font-normal text-primary m-0">Patients</h1>
+          <Button color="primary" size="lg" iconLeading={Plus} onPress={() => setAddOpen(true)}>
             Add New Patient
           </Button>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-0 border-b border-secondary mb-6">
+        <div className="flex gap-10 border-b border-secondary mb-10">
           {tabItems.map((item) => (
             <button
               key={item.key}
               onClick={() => { setTab(item.key); setSearch(''); }}
               className={cx(
-                'flex items-center gap-2 px-1 pb-3 pt-0 mr-6 text-sm font-semibold border-b-2 -mb-px transition-colors duration-100',
+                'flex items-center gap-2 pb-4 pt-0 text-base -mb-px border-b-[3px] transition-colors duration-100',
                 tab === item.key
-                  ? 'border-brand-600 text-brand-700'
-                  : 'border-transparent text-tertiary hover:text-secondary hover:border-secondary'
+                  ? 'border-b-[#9b9897] text-primary font-medium'
+                  : 'border-transparent text-primary font-normal hover:text-secondary'
               )}
             >
               {item.label}
-              <span className={cx(
-                'inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
-                tab === item.key
-                  ? 'bg-utility-brand-50 text-utility-brand-700 ring-utility-brand-200'
-                  : 'bg-utility-neutral-50 text-utility-neutral-600 ring-utility-neutral-200'
-              )}>
+              <span className="inline-flex items-center justify-center rounded-full bg-secondary_alt px-3 py-1 text-xs text-primary">
                 {item.count}
               </span>
             </button>
@@ -249,21 +244,23 @@ export default function PatientsPage() {
         </div>
 
         {/* Search + Sort */}
-        <div className="flex gap-3 mb-6">
-          <Input
-            icon={SearchMd}
-            placeholder={searchPlaceholders[tab]}
-            value={search}
-            onChange={setSearch}
-            size="sm"
-            wrapperClassName="max-w-xs"
-          />
+        <div className="mb-5 flex gap-4 items-start">
+          <div className="flex-1">
+            <Input
+              size="lg"
+              wrapperClassName="h-12 shadow-none ring-secondary"
+              icon={SearchMd}
+              placeholder={searchPlaceholders[tab]}
+              value={search}
+              onChange={setSearch}
+            />
+          </div>
           {tab !== archivedTabIndex && (
             <NativeSelect
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              wrapperClassName="w-36 shrink-0"
-              className="font-medium text-secondary"
+              wrapperClassName="w-[200px] shrink-0"
+              className="h-12"
             >
               {SORT_OPTIONS.filter((o) =>
                 (viewMode === 'full' || o.value !== 'upcoming') &&
@@ -284,16 +281,16 @@ export default function PatientsPage() {
             <p className="text-sm text-secondary">{emptyMessages[tab]}</p>
           </div>
         ) : (
-          <div className="flex flex-col">
-            <div className={cx('grid items-center gap-4 px-6 pb-2 text-xs font-semibold text-tertiary', gridCols)}>
-              <span>Patient</span>
-              {isManagerView && <span>Assigned Doctor</span>}
-              <span>Location</span>
-              <span>Date</span>
+          <div className="flex flex-col gap-5">
+            <div className={cx('grid items-center gap-4 border-b border-secondary px-5 pb-3', gridCols)}>
+              <span className="text-xs text-primary">Patient</span>
+              {isManagerView && <span className="text-xs text-primary">Assigned Doctor</span>}
+              <span className="text-xs text-primary">Location</span>
+              <span className="text-xs text-primary">Date</span>
               <span />
               <span />
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-5">
               {displayed.map((patient) => {
                 const { lastSeen, count } = sessionInfo(patient);
                 const condition = conditionChip(patient);
@@ -304,21 +301,21 @@ export default function PatientsPage() {
                     key={patient.id}
                     onClick={() => router.push(`/patients/${patient.id}/overview`)}
                     className={cx(
-                      'items-center gap-4 px-6 py-4 bg-primary rounded-xl border border-secondary shadow-xs cursor-pointer',
-                      'hover:bg-primary_hover transition-colors duration-100',
+                      'items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer',
+                      'hover:bg-secondary_alt transition-colors duration-100',
                       patient.archived && 'opacity-60',
                       gridCols
                     )}
                   >
-                    <div className="flex items-center gap-4 min-w-0">
-                      <Avatar initials={patient.avatarInitials} size="md" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar initials={patient.avatarInitials} size="lg" />
                       <div className="min-w-0">
-                        <p className="font-display text-sm font-semibold text-primary">
+                        <p className="font-display text-md font-medium text-primary">
                           {contact.firstName} {contact.lastName}
                         </p>
-                        <p className="text-sm text-tertiary mt-0.5">{contact.email}</p>
+                        <p className="text-xs text-primary">{contact.email}</p>
                         {condition && !isStaffPersona && !isManagerView && (
-                          <div className="mt-2">
+                          <div className="mt-1.5">
                             <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
                           </div>
                         )}
@@ -326,16 +323,16 @@ export default function PatientsPage() {
                     </div>
 
                     {isManagerView && (
-                      <span className="text-sm text-tertiary whitespace-nowrap">
+                      <span className="text-xs text-primary whitespace-nowrap">
                         {assignedEmp ? `${assignedEmp.firstName} ${assignedEmp.lastName}` : 'Unassigned'}
                       </span>
                     )}
 
-                    <span className="w-fit rounded-full bg-secondary_alt px-2.5 py-1 text-xs font-medium text-secondary whitespace-nowrap">
+                    <span className="w-fit rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary whitespace-nowrap">
                       {getEffectiveLocationString(patient, locationOverrides)}
                     </span>
 
-                    <span className="text-sm text-tertiary whitespace-nowrap">
+                    <span className="text-xs text-primary whitespace-nowrap">
                       {viewMode === 'full' ? (lastSeen ?? 'No sessions yet') : '—'}
                     </span>
 
@@ -353,7 +350,7 @@ export default function PatientsPage() {
                         </Button>
                       </div>
                     ) : (
-                      <ChevronRight className="size-4 text-quaternary shrink-0 justify-self-end" />
+                      <ChevronRight className="size-5 text-primary shrink-0 justify-self-end" />
                     )}
                   </div>
                 );
