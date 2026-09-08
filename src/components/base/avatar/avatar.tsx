@@ -104,7 +104,7 @@ export const Avatar = ({
         }
 
         if (initials) {
-            return <span className={cx("font-display text-quaternary", styles[size].initials)}>{initials}</span>;
+            return <span className={cx("font-display text-primary", styles[size].initials)}>{initials}</span>;
         }
 
         if (PlaceholderIcon) {
@@ -146,7 +146,8 @@ export const Avatar = ({
         >
             <div
                 className={cx(
-                    "relative inline-flex size-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-tertiary outline-[0.5px] -outline-offset-[0.5px] outline-black/16 before:inset-[0.5px]",
+                    "relative inline-flex size-full shrink-0 items-center justify-center overflow-hidden rounded-md outline-[0.5px] -outline-offset-[0.5px] outline-black/16 before:inset-[0.5px]",
+                    canShowImage ? "bg-tertiary" : "bg-brand-100",
                     rounded && "rounded-full",
                     canShowImage &&
                         size !== "xs" &&

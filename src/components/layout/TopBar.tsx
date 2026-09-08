@@ -1,7 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { mockClinicLocations, mockNotifications, mockEmployees } from '@/lib/mock-data';
 import { roleLabel } from '@/lib/permissions';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -12,14 +11,14 @@ import { useLocationId, setLocationId } from '@/lib/locationStore';
 import { useStaffPersona } from '@/lib/staffPersonaStore';
 import { useOrgId } from '@/lib/orgStore';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { Bell, ChevronRight, ChevronDown, MapPin } from 'lucide-react';
+import { Bell, ChevronDown, MapPin } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 interface TopBarProps {
   breadcrumbs: { label: string; href?: string }[];
 }
 
-export default function TopBar({ breadcrumbs }: TopBarProps) {
+export default function TopBar({}: TopBarProps) {
   const router = useRouter();
   const can = usePermissions();
   const role = useRole();
@@ -68,33 +67,9 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
   ];
 
   return (
-    <div className="fixed top-10 left-60 z-[99] flex h-14 w-[calc(100%-240px)] items-center border-b border-secondary bg-primary px-6">
-      {viewMode === 'mvp' && (
-        <span className="mr-3 shrink-0 rounded-full bg-brand-800 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-brand-100">
-          MVP
-        </span>
-      )}
-
-      {/* Breadcrumbs */}
-      <nav className="flex flex-1 items-center gap-1 min-w-0">
-        {breadcrumbs.map((crumb, i) => {
-          const isLast = i === breadcrumbs.length - 1;
-          return (
-            <span key={i} className="flex items-center gap-1 min-w-0">
-              {i > 0 && <ChevronRight size={10} className="shrink-0 text-quaternary" />}
-              {crumb.href && !isLast ? (
-                <Link href={crumb.href} className="truncate text-sm text-tertiary underline hover:text-secondary">
-                  {crumb.label}
-                </Link>
-              ) : (
-                <span className={cx('truncate text-sm', isLast ? 'font-medium text-primary' : 'text-tertiary')}>
-                  {crumb.label}
-                </span>
-              )}
-            </span>
-          );
-        })}
-      </nav>
+    <div className="fixed top-10 left-60 z-[99] flex h-14 w-[calc(100%-240px)] items-center bg-transparent px-6">
+      {/* Breadcrumbs hidden for now */}
+      <nav className="flex flex-1 items-center gap-1 min-w-0" />
 
       {/* Location pill */}
       <div className="relative shrink-0 mr-3" ref={locMenuRef}>

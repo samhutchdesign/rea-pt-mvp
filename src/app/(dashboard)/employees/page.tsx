@@ -22,6 +22,7 @@ export default function EmployeesPage() {
   const router = useRouter();
   const dataState = useDataState();
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<'az' | 'za'>('az');
   const [tab, setTab] = useState('0');
   const [addOpen, setAddOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -54,7 +55,12 @@ export default function EmployeesPage() {
     );
   };
 
-  const displayed = applySearch(tab === '0' ? activeEmployees : archivedEmployees);
+  const applySort = (list: Employee[]) => {
+    const sorted = [...list].sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
+    return sort === 'za' ? sorted.reverse() : sorted;
+  };
+
+  const displayed = applySort(applySearch(tab === '0' ? activeEmployees : archivedEmployees));
 
   const restore = (emp: Employee) => {
     setOverrides((prev) => ({ ...prev, [emp.id]: { archived: false } }));
@@ -79,15 +85,15 @@ export default function EmployeesPage() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'Employees' }]} />
-      <div className="p-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-primary m-0">Employees</h2>
+      <div className="p-10">
+        <div className="flex justify-between items-center mb-10">
+          <h1 className="font-display text-[40px] leading-[48px] font-normal text-primary m-0">Employees</h1>
           {can.canInviteUsers && (
-            <Button color="primary" size="sm" iconLeading={Plus} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add Employee</Button>
+            <Button color="primary" size="lg" iconLeading={Plus} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add New Employee</Button>
           )}
         </div>
 
-        <div className="flex border-b border-secondary mb-6">
+        <div className="flex gap-10 border-b border-secondary mb-10">
           {[
             { key: '0', label: 'All Employees', count: activeEmployees.length },
             { key: '1', label: 'Archived', count: archivedEmployees.length },
@@ -96,32 +102,40 @@ export default function EmployeesPage() {
               key={key}
               onClick={() => setTab(key)}
               className={cx(
-                'flex items-center gap-2 px-1 pb-3 pt-0 mr-6 text-sm font-semibold border-b-2 -mb-px transition-colors duration-100',
+                'flex items-center gap-2 pb-4 pt-0 text-base -mb-px border-b-[3px] transition-colors duration-100',
                 tab === key
-                  ? 'border-brand-600 text-brand-700'
-                  : 'border-transparent text-tertiary hover:text-secondary hover:border-secondary'
+                  ? 'border-b-[#9b9897] text-primary font-medium'
+                  : 'border-transparent text-primary font-normal hover:text-secondary'
               )}
             >
               {label}
-              <span className={cx(
-                'inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
-                tab === key
-                  ? 'bg-utility-brand-50 text-utility-brand-700 ring-utility-brand-200'
-                  : 'bg-utility-neutral-50 text-utility-neutral-600 ring-utility-neutral-200'
-              )}>
+              <span className="inline-flex items-center justify-center rounded-full bg-secondary_alt px-3 py-1 text-xs text-primary">
                 {count}
               </span>
             </button>
           ))}
         </div>
 
-        <div className="mb-6 w-[340px]">
-          <Input
-            placeholder={tab === '0' ? 'Search active employees…' : 'Search archived employees…'}
-            value={search}
-            onChange={(v) => setSearch(v)}
-            icon={Search}
-          />
+        <div className="mb-5 flex gap-4 items-start">
+          <div className="flex-1">
+            <Input
+              size="lg"
+              wrapperClassName="h-12 shadow-none ring-secondary"
+              placeholder="Search by name or email"
+              value={search}
+              onChange={(v) => setSearch(v)}
+              icon={Search}
+            />
+          </div>
+          <NativeSelect
+            wrapperClassName="w-[200px] shrink-0"
+            className="h-12"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as 'az' | 'za')}
+          >
+            <option value="az">A-Z</option>
+            <option value="za">Z-A</option>
+          </NativeSelect>
         </div>
 
         {empty ? (
@@ -132,15 +146,15 @@ export default function EmployeesPage() {
             </span>
           </div>
         ) : (
-          <div className="flex flex-col">
-            <div className="grid grid-cols-[minmax(0,1fr)_120px_140px_170px_24px] gap-4 px-6 pb-2 text-xs font-semibold text-tertiary">
-              <span>Practitioner</span>
-              <span># of Patients</span>
-              <span>Location</span>
-              <span>Assigned Role</span>
+          <div className="flex flex-col gap-5">
+            <div className="grid grid-cols-[minmax(0,1fr)_100px_140px_180px_24px] gap-4 border-b border-secondary px-5 pb-3">
+              <span className="text-xs text-primary">Practitioner</span>
+              <span className="text-xs text-primary"># of Patients</span>
+              <span className="text-xs text-primary">Location</span>
+              <span className="text-xs text-primary">Assigned Role</span>
               <span />
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-5">
               {displayed.map((emp) => {
                 const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
                 const location = mockClinicLocations.find((l) => emp.locationIds.includes(l.id));
@@ -148,49 +162,39 @@ export default function EmployeesPage() {
                   <div
                     key={emp.id}
                     className={cx(
-                      'grid grid-cols-[minmax(0,1fr)_120px_140px_170px_24px] items-center gap-4 rounded-xl border border-secondary bg-primary px-6 py-4 shadow-xs cursor-pointer hover:bg-secondary_alt transition-colors',
+                      'grid grid-cols-[minmax(0,1fr)_100px_140px_180px_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors',
                       emp.archived && 'opacity-75'
                     )}
                     onClick={() => router.push(`/employees/${emp.id}`)}
                   >
-                    <div className="flex items-center gap-4 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
                       <Avatar
-                        size="xl"
+                        size="lg"
                         src={emp.avatarUrl}
                         alt={`${emp.firstName} ${emp.lastName}`}
                         initials={emp.avatarInitials}
                         className="shrink-0"
                       />
                       <div className="min-w-0">
-                        <div className="flex items-center gap-3 mb-0.5">
-                          <span className="font-display text-sm font-semibold text-primary">{emp.firstName} {emp.lastName}</span>
-                          <span className="text-tertiary text-sm">{emp.credentials}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-display text-md font-medium text-primary">{emp.firstName} {emp.lastName}</span>
+                          <span className="text-xs text-primary">{emp.credentials}</span>
                         </div>
-                        <span className="block text-tertiary text-sm mb-1.5">{emp.title}</span>
-                        {emp.specialties.length > 0 && (
-                          <div className="flex gap-1.5 flex-wrap">
-                            {emp.specialties.map((s) => (
-                              <span
-                                key={s}
-                                className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
-                              >
-                                {s}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                        <span className="block text-xs text-primary">{emp.title}</span>
                       </div>
                     </div>
 
-                    <span className="text-sm text-tertiary">{`${patientCount} Patient${patientCount !== 1 ? 's' : ''}`}</span>
+                    <span className="text-xs text-primary">{`${patientCount} Patient${patientCount !== 1 ? 's' : ''}`}</span>
 
-                    <span className="w-fit rounded-full bg-secondary_alt px-2.5 py-1 text-xs font-medium text-secondary">
+                    <span className="w-fit rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary">
                       {location?.city ?? '—'}
                     </span>
 
                     {role === 'owner' && emp.role !== 'owner' ? (
                       <div onClick={(e) => e.stopPropagation()}>
                         <NativeSelect
+                          wrapperClassName="w-40"
+                          className="h-12 text-base"
                           value={emp.role}
                           onChange={(e) => changeRole(emp, e.target.value as UserRole)}
                         >
@@ -211,12 +215,12 @@ export default function EmployeesPage() {
                         </Button>
                       </div>
                     ) : (
-                      <span className="text-sm text-secondary capitalize">
+                      <span className="text-base text-primary capitalize">
                         {emp.role === 'admin' ? 'Manager' : emp.role === 'editor' ? 'Practitioner' : emp.role === 'limited' ? 'Staff' : emp.role}
                       </span>
                     )}
 
-                    <ChevronRight size={16} className="text-quaternary shrink-0 justify-self-end" />
+                    <ChevronRight size={20} className="text-primary shrink-0 justify-self-end" />
                   </div>
                 );
               })}
