@@ -1,7 +1,14 @@
 import type { Metadata } from 'next';
-import { Poppins, Dancing_Script, Great_Vibes, Caveat, Sacramento } from 'next/font/google';
+import { Poppins, Dancing_Script, Great_Vibes, Caveat, Sacramento, Source_Serif_4 } from 'next/font/google';
 import Providers from './providers';
 import './globals.css';
+
+const sourceSerif4 = Source_Serif_4({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-source-serif-4',
+  display: 'swap',
+});
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -45,7 +52,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${poppins.variable} ${dancingScript.variable} ${greatVibes.variable} ${caveat.variable} ${sacramento.variable}`}>
+    <html lang="en" className={`${sourceSerif4.variable} ${poppins.variable} ${dancingScript.variable} ${greatVibes.variable} ${caveat.variable} ${sacramento.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>

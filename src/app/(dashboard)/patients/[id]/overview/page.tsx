@@ -243,7 +243,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
               className="flex items-center gap-3 p-3 border border-secondary rounded-lg cursor-pointer hover:border-brand-600 transition-colors min-w-[220px]"
               onClick={() => router.push(`/employees/${assignedEmployee.id}`)}
             >
-              <div className="w-10 h-10 rounded-full bg-[#EDE7F6] flex items-center justify-center shrink-0 font-bold text-sm text-[#6750A4]">
+              <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center shrink-0 font-bold text-sm text-brand-700">
                 {assignedEmployee.avatarInitials}
               </div>
               <div>

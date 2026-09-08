@@ -4,7 +4,7 @@ interface Pin {
   label: string;
 }
 
-const BRAND_600 = '#6750A4';
+const BRAND_600 = '#476B5A';
 
 /** Flattens a body-map SVG plus its pin markers into a single PNG data URL, for embedding in clipboard/export output where separately-positioned DOM pins can't be represented. */
 export function renderBodyMapSnapshot(imgSrc: string, pins: Pin[]): Promise<string | null> {

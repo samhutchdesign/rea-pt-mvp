@@ -59,7 +59,7 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
             return (
               <div key={pe.exerciseId}>
                 <div className="flex items-center gap-3">
-                  <div className="relative h-9 w-9 shrink-0 rounded-lg overflow-hidden bg-[#EDE7F6]">
+                  <div className="relative h-9 w-9 shrink-0 rounded-lg overflow-hidden bg-brand-100">
                     <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={18} />
                   </div>
                   <div className="flex-1">

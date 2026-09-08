@@ -41,7 +41,7 @@ function CompactField({ value, onChange, unitSingular, unitPlural }: { value: nu
 function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => void }) {
   return (
     <div className="flex gap-3 cursor-pointer group" onClick={onClick}>
-      <div className="w-[130px] h-[80px] rounded-xl bg-[#EDE7F6] flex items-center justify-center shrink-0 overflow-hidden">
+      <div className="w-[130px] h-[80px] rounded-xl bg-brand-50 flex items-center justify-center shrink-0 overflow-hidden">
         <div className="w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center">
           <Play size={16} fill="white" color="white" className="ml-0.5" />
         </div>
@@ -167,7 +167,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />
             </div>
           ) : (
-            <div className="mb-5 w-full aspect-video rounded-2xl bg-[#EDE7F6] flex items-center justify-center">
+            <div className="mb-5 w-full aspect-video rounded-2xl bg-brand-50 flex items-center justify-center">
               <div className="w-14 h-14 rounded-full bg-brand-600 flex items-center justify-center">
                 <Play size={24} fill="white" color="white" className="ml-1" />
               </div>

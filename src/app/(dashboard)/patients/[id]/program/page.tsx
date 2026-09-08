@@ -35,7 +35,7 @@ function ExerciseCard({
     <div className="rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden">
       <div className="p-4">
         <div className="flex items-center gap-5">
-          <div className="relative w-20 h-16 shrink-0 rounded-lg overflow-hidden bg-[#EDE7F6]">
+          <div className="relative w-20 h-16 shrink-0 rounded-lg overflow-hidden bg-brand-50">
             <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={28} />
           </div>
           <div className="flex-1">

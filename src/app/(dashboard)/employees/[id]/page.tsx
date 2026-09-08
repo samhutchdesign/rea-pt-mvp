@@ -196,7 +196,7 @@ function ArchiveEmployeeDialog({
                         <div className="flex items-center gap-3">
                           <div
                             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-semibold text-sm"
-                            style={{ background: '#EDE7F6', color: '#6750A4' }}
+                            style={{ background: '#D9E8E1', color: '#25382F' }}
                           >
                             {p.avatarInitials}
                           </div>
@@ -372,7 +372,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               <h2 className="text-xl font-semibold text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h2>
               <span
                 className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                style={{ background: '#EDE7F6', color: '#6750A4' }}
+                style={{ background: '#D9E8E1', color: '#25382F' }}
               >
                 {savedProfessional.credentials}
               </span>
@@ -532,7 +532,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                       >
                         <div
                           className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
-                          style={{ background: '#EDE7F6', color: '#6750A4' }}
+                          style={{ background: '#D9E8E1', color: '#25382F' }}
                         >
                           {p.avatarInitials}
                         </div>
@@ -562,7 +562,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   <div className="flex items-center gap-5 px-6 py-4">
                     <div
                       className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base"
-                      style={{ background: '#EDE7F6', color: '#6750A4' }}
+                      style={{ background: '#D9E8E1', color: '#25382F' }}
                     >
                       {p.avatarInitials}
                     </div>

@@ -76,24 +76,30 @@ export default function Sidebar() {
   const navItems = can.canViewEmployeesTab ? ownerNavItems : baseNavItems;
 
   return (
-    <nav className="fixed top-10 left-0 z-[100] flex h-[calc(100vh-40px)] w-20 shrink-0 flex-col items-center border-r border-secondary bg-primary py-4">
+    <nav className="fixed top-10 left-0 z-[100] flex h-[calc(100vh-40px)] w-60 shrink-0 flex-col border-r border-secondary bg-primary px-4 py-6">
+      {/* Wordmark */}
+      <Link href="/" className="mb-1 block">
+        <span className="font-display text-2xl font-bold text-primary">Rea</span>
+      </Link>
+
       {/* Org logo / switcher */}
-      <div ref={orgMenuRef} className="relative mb-6 mt-2">
+      <div ref={orgMenuRef} className="relative mb-6">
         <button
           onClick={() => hasMultipleOrgs && setOrgMenuOpen((v) => !v)}
-          className={cx('flex flex-col items-center gap-0.5', hasMultipleOrgs && 'cursor-pointer')}
+          className={cx('flex items-center gap-2 rounded-lg py-1', hasMultipleOrgs && 'cursor-pointer')}
         >
           <div className={cx(
-            'flex size-9 items-center justify-center rounded-full text-sm font-bold text-white',
+            'flex size-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white',
             ORG_COLORS[activeOrgId] ?? 'bg-brand-600'
           )}>
             {activeClinic.logoInitials}
           </div>
-          {hasMultipleOrgs && <ChevronDown size={10} className="text-quaternary" />}
+          <span className="truncate text-xs text-tertiary">{activeClinic.name}</span>
+          {hasMultipleOrgs && <ChevronDown size={12} className="shrink-0 text-quaternary" />}
         </button>
 
         {orgMenuOpen && (
-          <div className="absolute left-full top-0 ml-3 z-[200] w-52 rounded-xl border border-secondary bg-primary shadow-lg py-1">
+          <div className="absolute left-0 top-full mt-1 z-[200] w-52 rounded-xl border border-secondary bg-primary shadow-lg py-1">
             <p className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
               Switch Organization
             </p>
@@ -124,23 +130,25 @@ export default function Sidebar() {
         )}
       </div>
 
-      {navItems.filter((item) => !(viewMode === 'mvp' && item.mvpHide)).map(({ label, href, mvpHref, icon: Icon }) => {
-        const resolvedHref = viewMode === 'mvp' && mvpHref ? mvpHref : href;
-        const isActive = resolvedHref === '/' ? pathname === '/' : pathname.startsWith(resolvedHref);
-        return (
-          <Link key={href} href={resolvedHref} title={label} className="mb-1 w-full px-2">
-            <div className={cx(
-              'flex flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 transition-colors duration-150 cursor-pointer',
-              isActive ? 'bg-brand-50' : 'hover:bg-secondary'
-            )}>
-              <Icon className={cx('size-5', isActive ? 'text-brand-600' : 'text-quaternary')} />
-              <span className={cx('text-[10px] font-medium leading-none text-center', isActive ? 'text-brand-700 font-semibold' : 'text-quaternary')}>
-                {label}
-              </span>
-            </div>
-          </Link>
-        );
-      })}
+      <div className="flex flex-col gap-1">
+        {navItems.filter((item) => !(viewMode === 'mvp' && item.mvpHide)).map(({ label, href, mvpHref, icon: Icon }) => {
+          const resolvedHref = viewMode === 'mvp' && mvpHref ? mvpHref : href;
+          const isActive = resolvedHref === '/' ? pathname === '/' : pathname.startsWith(resolvedHref);
+          return (
+            <Link key={href} href={resolvedHref} title={label}>
+              <div className={cx(
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 cursor-pointer',
+                isActive ? 'bg-brand-50' : 'hover:bg-secondary'
+              )}>
+                <Icon className={cx('size-5 shrink-0', isActive ? 'text-brand-700' : 'text-quaternary')} />
+                <span className={cx('text-sm', isActive ? 'font-semibold text-brand-700' : 'font-medium text-secondary')}>
+                  {label}
+                </span>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

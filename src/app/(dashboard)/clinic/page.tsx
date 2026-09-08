@@ -222,7 +222,7 @@ export default function ClinicPage() {
                         </div>
                         <span
                           className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
-                          style={{ background: '#EDE7F6', color: '#6750A4' }}
+                          style={{ background: '#D9E8E1', color: '#25382F' }}
                         >
                           {`${patientCount}p`}
                         </span>

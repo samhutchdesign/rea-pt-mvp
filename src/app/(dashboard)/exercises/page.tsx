@@ -33,7 +33,7 @@ const SPECIALTIES: {
   id: string; name: string; apta: string; description: string;
   icon: IconType; color: string; bg: string; available: boolean; count: number;
 }[] = [
-  { id: 'pelvic-health', name: 'Pelvic Health', apta: "Pelvic & Women's Health", description: 'Pelvic floor, incontinence, prolapse, pain with sex, postpartum & pregnancy', icon: Heart, color: '#6750A4', bg: '#EDE7F6', available: true, count: 266 },
+  { id: 'pelvic-health', name: 'Pelvic Health', apta: "Pelvic & Women's Health", description: 'Pelvic floor, incontinence, prolapse, pain with sex, postpartum & pregnancy', icon: Heart, color: '#25382F', bg: '#D9E8E1', available: true, count: 266 },
   { id: 'orthopaedics', name: 'Orthopaedics', apta: 'Orthopaedics', description: 'Spine, hip, knee, shoulder, and extremity rehabilitation', icon: User, color: '#0277BD', bg: '#E1F5FE', available: false, count: 0 },
   { id: 'sports', name: 'Sports & Performance', apta: 'Sports', description: 'Return to sport, athletic performance, and injury prevention', icon: Trophy, color: '#2E7D32', bg: '#E8F5E9', available: false, count: 0 },
   { id: 'neurology', name: 'Neurological Rehab', apta: 'Neurology', description: "Stroke, MS, Parkinson's, and spinal cord conditions", icon: Lightbulb, color: '#E65100', bg: '#FFF3E0', available: false, count: 0 },

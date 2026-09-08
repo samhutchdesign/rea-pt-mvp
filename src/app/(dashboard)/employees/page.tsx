@@ -169,7 +169,7 @@ export default function EmployeesPage() {
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                       <span
                         className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                        style={{ background: '#EDE7F6', color: '#6750A4' }}
+                        style={{ background: '#D9E8E1', color: '#25382F' }}
                       >
                         {`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
                       </span>

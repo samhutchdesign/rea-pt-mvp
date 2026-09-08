@@ -109,7 +109,7 @@ function PaymentMethodTab() {
             <span className="block font-semibold text-primary text-sm">Visa ending in 4242</span>
             <span className="text-tertiary text-xs">Expires 08 / 2028</span>
           </div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#EDE7F6', color: '#6750A4' }}>Default</span>
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#D9E8E1', color: '#25382F' }}>Default</span>
         </div>
         <div className="flex gap-2">
           <Button color="secondary" size="xs" onPress={() => {}}>Update Card</Button>

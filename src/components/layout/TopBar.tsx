@@ -68,9 +68,9 @@ export default function TopBar({ breadcrumbs }: TopBarProps) {
   ];
 
   return (
-    <div className="fixed top-10 left-20 z-[99] flex h-14 w-[calc(100%-80px)] items-center border-b border-secondary bg-primary px-6">
+    <div className="fixed top-10 left-60 z-[99] flex h-14 w-[calc(100%-240px)] items-center border-b border-secondary bg-primary px-6">
       {viewMode === 'mvp' && (
-        <span className="mr-3 shrink-0 rounded-full bg-[#1E4D2B] px-2 py-0.5 text-[11px] font-semibold tracking-wide text-[#A8D5A2]">
+        <span className="mr-3 shrink-0 rounded-full bg-brand-800 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-brand-100">
           MVP
         </span>
       )}
