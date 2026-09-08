@@ -20,7 +20,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import type { Patient } from '@/lib/types';
-import { ChevronRight, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
+import { ChevronRight, Plus, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
 
 function computeEstimatedNext(patientId: string): number {
   const sessions = mockChartSessions[patientId] ?? [];
@@ -96,8 +96,8 @@ export default function PatientsPage() {
   const isStaffPersona = role === 'limited';
   const isManagerView = role === 'owner' || role === 'admin';
   const gridCols = isManagerView
-    ? 'grid-cols-[minmax(0,1fr)_160px_130px_140px_auto_24px]'
-    : 'grid-cols-[minmax(0,1fr)_130px_140px_auto_24px]';
+    ? 'grid-cols-[minmax(0,1fr)_140px_120px_140px_24px]'
+    : 'grid-cols-[minmax(0,1fr)_120px_140px_24px]';
   // Practitioners (editor role) only see patients assigned to them — no "All" tab, and useYourEmpId
   // already returns null for Owner/Limited so showYoursTab naturally excludes them too.
   const showYoursTab = yourEmpId !== null;
@@ -288,11 +288,10 @@ export default function PatientsPage() {
               <span className="text-xs text-primary">Location</span>
               <span className="text-xs text-primary">Date</span>
               <span />
-              <span />
             </div>
             <div className="flex flex-col gap-5">
               {displayed.map((patient) => {
-                const { lastSeen, count } = sessionInfo(patient);
+                const { lastSeen } = sessionInfo(patient);
                 const condition = conditionChip(patient);
                 const assignedEmp = mockEmployees.find((e) => e.id === getEffectiveAssignedEmployeeId(patient, locationOverrides));
                 const contact = getEffectiveContactInfo(patient, contactOverrides);
@@ -301,7 +300,7 @@ export default function PatientsPage() {
                     key={patient.id}
                     onClick={() => router.push(`/patients/${patient.id}/overview`)}
                     className={cx(
-                      'items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer',
+                      'grid items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer',
                       'hover:bg-secondary_alt transition-colors duration-100',
                       patient.archived && 'opacity-60',
                       gridCols
@@ -309,15 +308,13 @@ export default function PatientsPage() {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <Avatar initials={patient.avatarInitials} size="lg" />
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex flex-col gap-2">
                         <p className="font-display text-md font-medium text-primary">
                           {contact.firstName} {contact.lastName}
                         </p>
                         <p className="text-xs text-primary">{contact.email}</p>
                         {condition && !isStaffPersona && !isManagerView && (
-                          <div className="mt-1.5">
-                            <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
-                          </div>
+                          <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
                         )}
                       </div>
                     </div>
@@ -335,13 +332,6 @@ export default function PatientsPage() {
                     <span className="text-xs text-primary whitespace-nowrap">
                       {viewMode === 'full' ? (lastSeen ?? 'No sessions yet') : '—'}
                     </span>
-
-                    {viewMode === 'full' ? (
-                      <span className="hidden xl:flex items-center gap-1 text-xs text-tertiary whitespace-nowrap">
-                        <RefreshCw01 className="size-3.5 text-quaternary" />
-                        {count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—'}
-                      </span>
-                    ) : <span />}
 
                     {tab === archivedTabIndex ? (
                       <div onClick={(e) => e.stopPropagation()} className="justify-self-end">
