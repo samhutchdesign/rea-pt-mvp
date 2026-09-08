@@ -97,21 +97,31 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
                 className={cx(
                   'rounded-xl border p-4 cursor-pointer transition-colors',
-                  isSelected ? 'border-brand-600 bg-brand-50' : 'border-secondary bg-primary hover:bg-secondary_alt'
+                  isSelected
+                    ? cx('bg-secondary_alt border-l-4', session.signedAt ? 'border-[#206020]/30 border-l-[#206020]' : 'border-[#BF9540]/30 border-l-[#BF9540]')
+                    : 'border-secondary bg-primary hover:bg-secondary_alt'
                 )}
               >
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className={cx('flex items-center gap-1 text-xs font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
-                    {session.signedAt ? <Lock size={12} /> : <Unlock size={12} />}
-                    {session.signedAt ? 'Signed' : 'Draft'}
-                  </span>
-                  <span className="text-xs text-tertiary">
-                    {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                  </span>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={cx('text-xs font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                        {session.signedAt ? 'Signed' : 'Draft'}
+                      </span>
+                      <span className="text-xs text-tertiary">
+                        {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+                    <span className="font-display mt-1 block font-semibold text-sm text-primary">
+                      {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
+                    </span>
+                  </div>
+                  {session.signedAt ? (
+                    <Lock size={14} className="shrink-0 text-tertiary mt-0.5" />
+                  ) : (
+                    <Unlock size={14} className="shrink-0 text-[#BF9540] mt-0.5" />
+                  )}
                 </div>
-                <span className="mt-1 block font-semibold text-sm text-primary">
-                  {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
-                </span>
                 {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
                   const s = ADHERENCE_STYLE[session.adherenceLevel];
                   return (

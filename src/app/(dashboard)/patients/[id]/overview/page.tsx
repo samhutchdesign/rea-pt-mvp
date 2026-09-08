@@ -14,7 +14,8 @@ import { useRole } from '@/lib/roleStore';
 import { useAvailableLocationIds } from '@/lib/locationScope';
 import { useLocationState, transferPatient } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
-import { ArrowLeftRight, Building2, Calendar, Plus, X, Zap } from 'lucide-react';
+import { ArrowLeftRight, Building2, Calendar, ChevronRight, Plus, X, Zap } from 'lucide-react';
+import { cx } from '@/utils/cx';
 
 export default function PatientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -39,6 +40,8 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const uploadedData = getUploadedData(id);
   const sessions = mockChartSessions[id] ?? [];
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
+  const latestSessionIndex = latestSession ? sessions.findIndex((s) => s.id === latestSession.id) : -1;
+  const latestSessionTitle = latestSession?.isIntakeSession ? 'Intake Session' : `Session ${sessions.length - latestSessionIndex}`;
   const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
   const locationState = useLocationState(id);
   const assignedEmployee = mockEmployees.find((e) => e.id === locationState.assignedEmployeeId) ?? null;
@@ -144,7 +147,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         {/* Recent Session */}
         <div className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-semibold text-primary">Latest Session</span>
+            <span className="font-display text-sm font-semibold text-primary">Latest Session</span>
             <Button size="xs" color="primary" iconLeading={Plus} onPress={() => router.push(`/patients/${id}/chart/new`)}>
               Add New Chart
             </Button>
@@ -153,25 +156,39 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
             <>
               <div
                 onClick={() => router.push(`/patients/${id}/chart/${latestSession.id}`)}
-                className="rounded-lg border border-secondary p-3 mb-4 cursor-pointer hover:bg-secondary_alt hover:border-brand-300 transition-colors"
-              >
-                <p className="text-sm text-secondary">
-                  {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                </p>
-                {viewMode === 'full' && (
-                  <div className="flex gap-2 flex-wrap mt-2">
-                    {latestSession.painLevel && (
-                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
-                        {latestSession.painLevel}
-                      </span>
-                    )}
-                    {latestSession.improvementLevel && (
-                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
-                        {latestSession.improvementLevel}
-                      </span>
-                    )}
-                  </div>
+                className={cx(
+                  'flex items-center gap-3 rounded-lg border-y border-r p-3 mb-4 cursor-pointer transition-colors border-l-4',
+                  latestSession.signedAt
+                    ? 'border-[#206020]/30 border-l-[#206020] hover:bg-secondary_alt'
+                    : 'border-[#BF9540]/30 border-l-[#BF9540] hover:bg-secondary_alt'
                 )}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={cx('text-xs font-semibold', latestSession.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                      {latestSession.signedAt ? 'Signed' : 'Draft'}
+                    </span>
+                    <span className="text-xs text-tertiary">
+                      {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  </div>
+                  <p className="font-display font-semibold text-sm text-primary mt-1">{latestSessionTitle}</p>
+                  {viewMode === 'full' && (
+                    <div className="flex gap-2 flex-wrap mt-2">
+                      {latestSession.painLevel && (
+                        <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                          {latestSession.painLevel}
+                        </span>
+                      )}
+                      {latestSession.improvementLevel && (
+                        <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                          {latestSession.improvementLevel}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <ChevronRight size={16} className="text-quaternary shrink-0" />
               </div>
               <button
                 className="text-xs text-brand-700 hover:underline"
@@ -188,7 +205,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         {/* Current Program */}
         <div className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-semibold text-primary">
+            <span className="font-display text-sm font-semibold text-primary">
               Current Program{program ? ` (${program.exercises.length})` : ''}
             </span>
             <Button size="xs" color="tertiary" onPress={() => router.push(`/patients/${id}/program`)}>
@@ -197,7 +214,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           </div>
           {program ? (
             <>
-              <p className="text-sm font-semibold text-primary mb-4">{program.name}</p>
+              <p className="font-display text-sm font-semibold text-primary mb-4">{program.name}</p>
               <div className="max-h-48 overflow-y-auto">
                 {program.exercises.map((pe) => {
                   const ex = mockExercises.find((e) => e.id === pe.exerciseId);
@@ -229,7 +246,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
       {/* Care Team */}
       <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mt-6">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-sm font-semibold text-primary">Assigned PT</span>
+          <span className="font-display text-sm font-semibold text-primary">Assigned PT</span>
           {can.canTransferPatient && (
             <Button size="xs" color="secondary" iconLeading={ArrowLeftRight} onPress={() => setTransferOpen(true)}>
               Transfer Patient
@@ -247,7 +264,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                 {assignedEmployee.avatarInitials}
               </div>
               <div>
-                <p className="text-sm font-semibold text-primary">{assignedEmployee.firstName} {assignedEmployee.lastName}</p>
+                <p className="font-display text-sm font-semibold text-primary">{assignedEmployee.firstName} {assignedEmployee.lastName}</p>
                 <p className="text-xs text-secondary">{assignedEmployee.credentials} · {assignedEmployee.title}</p>
               </div>
             </div>
