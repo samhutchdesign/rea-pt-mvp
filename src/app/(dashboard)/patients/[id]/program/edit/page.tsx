@@ -458,7 +458,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                           </div>
                         </div>
                         <div className="px-3 py-2.5">
-                          <p className="font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
+                          <p className="font-display font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
                           <div className="flex gap-1 flex-wrap mb-2">
                             <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
                           </div>

@@ -20,8 +20,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import type { Patient } from '@/lib/types';
-import { ChevronRight, Map01, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
-import { BadgeWithIcon } from '@/components/base/badges/badges';
+import { ChevronRight, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
 
 function computeEstimatedNext(patientId: string): number {
   const sessions = mockChartSessions[patientId] ?? [];
@@ -96,6 +95,9 @@ export default function PatientsPage() {
   // "User: Staff" (Limited Access) behaves like Owner/Admin here: All + Archived, no Your Patients.
   const isStaffPersona = role === 'limited';
   const isManagerView = role === 'owner' || role === 'admin';
+  const gridCols = isManagerView
+    ? 'grid-cols-[minmax(0,1fr)_160px_130px_140px_auto_24px]'
+    : 'grid-cols-[minmax(0,1fr)_130px_140px_auto_24px]';
   // Practitioners (editor role) only see patients assigned to them — no "All" tab, and useYourEmpId
   // already returns null for Owner/Limited so showYoursTab naturally excludes them too.
   const showYoursTab = yourEmpId !== null;
@@ -282,69 +284,81 @@ export default function PatientsPage() {
             <p className="text-sm text-secondary">{emptyMessages[tab]}</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {displayed.map((patient) => {
-              const { lastSeen, count } = sessionInfo(patient);
-              const condition = conditionChip(patient);
-              const assignedEmp = mockEmployees.find((e) => e.id === getEffectiveAssignedEmployeeId(patient, locationOverrides));
-              const contact = getEffectiveContactInfo(patient, contactOverrides);
-              return (
-                <div
-                  key={patient.id}
-                  onClick={() => router.push(`/patients/${patient.id}/overview`)}
-                  className={cx(
-                    'flex items-center gap-5 px-6 py-5 bg-primary rounded-xl border border-secondary shadow-xs cursor-pointer',
-                    'hover:bg-primary_hover transition-colors duration-100',
-                    patient.archived && 'opacity-60'
-                  )}
-                >
-                  <Avatar initials={patient.avatarInitials} size="md" />
-
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-primary">
-                      {contact.firstName} {contact.lastName}
-                    </p>
-                    <p className="text-sm text-tertiary mt-0.5">{contact.email}</p>
-                    {condition && !isStaffPersona && !isManagerView && (
-                      <div className="mt-2">
-                        <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
+          <div className="flex flex-col">
+            <div className={cx('grid items-center gap-4 px-6 pb-2 text-xs font-semibold text-tertiary', gridCols)}>
+              <span>Patient</span>
+              {isManagerView && <span>Assigned Doctor</span>}
+              <span>Location</span>
+              <span>Date</span>
+              <span />
+              <span />
+            </div>
+            <div className="flex flex-col gap-3">
+              {displayed.map((patient) => {
+                const { lastSeen, count } = sessionInfo(patient);
+                const condition = conditionChip(patient);
+                const assignedEmp = mockEmployees.find((e) => e.id === getEffectiveAssignedEmployeeId(patient, locationOverrides));
+                const contact = getEffectiveContactInfo(patient, contactOverrides);
+                return (
+                  <div
+                    key={patient.id}
+                    onClick={() => router.push(`/patients/${patient.id}/overview`)}
+                    className={cx(
+                      'items-center gap-4 px-6 py-4 bg-primary rounded-xl border border-secondary shadow-xs cursor-pointer',
+                      'hover:bg-primary_hover transition-colors duration-100',
+                      patient.archived && 'opacity-60',
+                      gridCols
+                    )}
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <Avatar initials={patient.avatarInitials} size="md" />
+                      <div className="min-w-0">
+                        <p className="font-display text-sm font-semibold text-primary">
+                          {contact.firstName} {contact.lastName}
+                        </p>
+                        <p className="text-sm text-tertiary mt-0.5">{contact.email}</p>
+                        {condition && !isStaffPersona && !isManagerView && (
+                          <div className="mt-2">
+                            <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
                     {isManagerView && (
-                      <BadgeWithIcon size="sm" color="gray" iconLeading={User01}>
+                      <span className="text-sm text-tertiary whitespace-nowrap">
                         {assignedEmp ? `${assignedEmp.firstName} ${assignedEmp.lastName}` : 'Unassigned'}
-                      </BadgeWithIcon>
-                    )}
-                    <BadgeWithIcon size="sm" color="gray" iconLeading={Map01}>
-                      {getEffectiveLocationString(patient, locationOverrides)}
-                    </BadgeWithIcon>
-                    {viewMode === 'full' && (
-                      <span className="hidden lg:inline text-xs text-tertiary whitespace-nowrap">
-                        {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
                       </span>
                     )}
-                    {viewMode === 'full' && (
+
+                    <span className="w-fit rounded-full bg-secondary_alt px-2.5 py-1 text-xs font-medium text-secondary whitespace-nowrap">
+                      {getEffectiveLocationString(patient, locationOverrides)}
+                    </span>
+
+                    <span className="text-sm text-tertiary whitespace-nowrap">
+                      {viewMode === 'full' ? (lastSeen ?? 'No sessions yet') : '—'}
+                    </span>
+
+                    {viewMode === 'full' ? (
                       <span className="hidden xl:flex items-center gap-1 text-xs text-tertiary whitespace-nowrap">
                         <RefreshCw01 className="size-3.5 text-quaternary" />
                         {count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—'}
                       </span>
-                    )}
+                    ) : <span />}
+
                     {tab === archivedTabIndex ? (
-                      <div onClick={(e) => e.stopPropagation()}>
+                      <div onClick={(e) => e.stopPropagation()} className="justify-self-end">
                         <Button size="xs" color="secondary" iconLeading={RefreshCcw01} onPress={() => openRestore(patient)}>
                           Restore
                         </Button>
                       </div>
                     ) : (
-                      <ChevronRight className="size-4 text-quaternary shrink-0" />
+                      <ChevronRight className="size-4 text-quaternary shrink-0 justify-self-end" />
                     )}
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { mockPatients } from '@/lib/mock-data';
+import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { useLocationScope } from '@/lib/locationScope';
 import { useRole } from '@/lib/roleStore';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -16,7 +16,7 @@ import { cx } from '@/utils/cx';
 import { useDataState } from '@/lib/dataStateStore';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
-import { ChevronRight, Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
+import { ChevronRight, Plus, RotateCcw, Search, Users } from 'lucide-react';
 
 export default function EmployeesPage() {
   const router = useRouter();
@@ -86,7 +86,7 @@ export default function EmployeesPage() {
 
         <div className="flex border-b border-secondary mb-6">
           {[
-            { key: '0', label: 'Active', count: activeEmployees.length },
+            { key: '0', label: 'All Employees', count: activeEmployees.length },
             { key: '1', label: 'Archived', count: archivedEmployees.length },
           ].map(({ key, label, count }) => (
             <button
@@ -129,56 +129,65 @@ export default function EmployeesPage() {
             </span>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {displayed.map((emp) => {
-              const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
-              return (
-                <div
-                  key={emp.id}
-                  className={cx(
-                    'rounded-xl border border-secondary bg-primary shadow-xs cursor-pointer hover:bg-secondary_alt transition-colors',
-                    emp.archived && 'opacity-75'
-                  )}
-                  onClick={() => router.push(`/employees/${emp.id}`)}
-                >
-                  <div className="flex items-center gap-5 px-6 py-4">
-                    <Avatar
-                      size="xl"
-                      src={emp.avatarUrl}
-                      alt={`${emp.firstName} ${emp.lastName}`}
-                      initials={emp.avatarInitials}
-                      className="shrink-0"
-                    />
-                    <div className="grow">
-                      <div className="flex items-center gap-3 mb-0.5">
-                        <span className="font-semibold text-primary text-sm">{emp.firstName} {emp.lastName}</span>
-                        <span className="text-tertiary text-sm">{emp.credentials}</span>
-                      </div>
-                      <span className="block text-tertiary text-sm mb-1.5">{emp.title}</span>
-                      <div className="flex gap-1.5 flex-wrap">
-                        {emp.specialties.map((s) => (
-                          <span
-                            key={s}
-                            className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
-                          >
-                            {s}
-                          </span>
-                        ))}
+          <div className="flex flex-col">
+            <div className="grid grid-cols-[minmax(0,1fr)_120px_140px_170px_24px] gap-4 px-6 pb-2 text-xs font-semibold text-tertiary">
+              <span>Practitioner</span>
+              <span># of Patients</span>
+              <span>Location</span>
+              <span>Assigned Role</span>
+              <span />
+            </div>
+            <div className="flex flex-col gap-3">
+              {displayed.map((emp) => {
+                const patientCount = mockPatients.filter((p) => emp.patientIds.includes(p.id)).length;
+                const location = mockClinicLocations.find((l) => emp.locationIds.includes(l.id));
+                return (
+                  <div
+                    key={emp.id}
+                    className={cx(
+                      'grid grid-cols-[minmax(0,1fr)_120px_140px_170px_24px] items-center gap-4 rounded-xl border border-secondary bg-primary px-6 py-4 shadow-xs cursor-pointer hover:bg-secondary_alt transition-colors',
+                      emp.archived && 'opacity-75'
+                    )}
+                    onClick={() => router.push(`/employees/${emp.id}`)}
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <Avatar
+                        size="xl"
+                        src={emp.avatarUrl}
+                        alt={`${emp.firstName} ${emp.lastName}`}
+                        initials={emp.avatarInitials}
+                        className="shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-3 mb-0.5">
+                          <span className="font-display text-sm font-semibold text-primary">{emp.firstName} {emp.lastName}</span>
+                          <span className="text-tertiary text-sm">{emp.credentials}</span>
+                        </div>
+                        <span className="block text-tertiary text-sm mb-1.5">{emp.title}</span>
+                        {emp.specialties.length > 0 && (
+                          <div className="flex gap-1.5 flex-wrap">
+                            {emp.specialties.map((s) => (
+                              <span
+                                key={s}
+                                className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
+                              >
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-100 text-brand-700">
-                        {`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <Mail size={13} className="text-tertiary" />
-                        <span className="text-tertiary text-xs">{emp.email}</span>
-                      </div>
-                    </div>
-                    {role === 'owner' && emp.role !== 'owner' && (
-                      <div onClick={(e) => e.stopPropagation()} className="shrink-0 ml-2">
+
+                    <span className="text-sm text-tertiary">{`${patientCount} Patient${patientCount !== 1 ? 's' : ''}`}</span>
+
+                    <span className="w-fit rounded-full bg-secondary_alt px-2.5 py-1 text-xs font-medium text-secondary">
+                      {location?.city ?? '—'}
+                    </span>
+
+                    {role === 'owner' && emp.role !== 'owner' ? (
+                      <div onClick={(e) => e.stopPropagation()}>
                         <NativeSelect
-                          wrapperClassName="w-32"
                           value={emp.role}
                           onChange={(e) => changeRole(emp, e.target.value as UserRole)}
                         >
@@ -187,9 +196,8 @@ export default function EmployeesPage() {
                           <option value="limited">Staff</option>
                         </NativeSelect>
                       </div>
-                    )}
-                    {tab === '1' && can.canArchiveEmployees && (
-                      <div onClick={(e) => e.stopPropagation()} className="shrink-0 ml-2">
+                    ) : tab === '1' && can.canArchiveEmployees ? (
+                      <div onClick={(e) => e.stopPropagation()}>
                         <Button
                           color="secondary"
                           size="xs"
@@ -199,12 +207,17 @@ export default function EmployeesPage() {
                           Restore
                         </Button>
                       </div>
+                    ) : (
+                      <span className="text-sm text-secondary capitalize">
+                        {emp.role === 'admin' ? 'Manager' : emp.role === 'editor' ? 'Practitioner' : emp.role === 'limited' ? 'Staff' : emp.role}
+                      </span>
                     )}
-                    <ChevronRight size={16} className="text-quaternary shrink-0 ml-1" />
+
+                    <ChevronRight size={16} className="text-quaternary shrink-0 justify-self-end" />
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

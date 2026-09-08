@@ -102,7 +102,7 @@ export function ExerciseEditTable({
                     <div className="relative size-12 shrink-0 overflow-hidden rounded-lg">
                       <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
                     </div>
-                    <span className="truncate text-sm font-semibold text-primary">{ex.name}</span>
+                    <span className="font-display truncate text-sm font-semibold text-primary">{ex.name}</span>
                   </button>
 
                   <TableField value={row.sets} unitLabel="Sets" onChange={(v) => onUpdateRow(row.exerciseId, 'sets', v)} />

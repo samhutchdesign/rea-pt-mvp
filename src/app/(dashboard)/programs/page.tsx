@@ -373,7 +373,7 @@ function ProgramsPageContent() {
                     </div>
                     <div className="px-3.5 py-3 flex flex-col flex-1">
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <span className="text-sm font-semibold text-primary leading-snug">{prog.name}</span>
+                        <span className="font-display text-base font-semibold text-primary leading-snug">{prog.name}</span>
                         <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
                           <ProgramCardMenu
                             isFavorite={favorites.has(prog.id)}

@@ -24,7 +24,7 @@ export function ProgramOverviewList({ rows, getExercise }: ProgramOverviewListPr
                 <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="mb-0.5 truncate text-sm font-semibold text-primary">{ex.name}</p>
+                <p className="font-display mb-0.5 truncate text-sm font-semibold text-primary">{ex.name}</p>
                 <p className="mb-1.5 text-xs text-tertiary">
                   {row.sets} Sets / {row.reps} Reps{row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}
                 </p>
