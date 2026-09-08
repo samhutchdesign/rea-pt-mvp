@@ -85,7 +85,7 @@ export function SectionCard({ letter, label, defaultOpen = true, children }: { l
         <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-brand-600">
           <span className="text-[0.8rem] font-bold leading-none text-white">{letter}</span>
         </div>
-        <span className="flex-1 text-sm font-semibold text-primary">{label}</span>
+        <span className="font-display flex-1 text-lg font-semibold text-primary">{label}</span>
         <ChevronDown size={16} className={cx('shrink-0 text-tertiary transition-transform', open && 'rotate-180')} />
       </button>
       {open && <div className="flex flex-col gap-4">{children}</div>}

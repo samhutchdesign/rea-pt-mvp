@@ -16,7 +16,7 @@ import { cx } from '@/utils/cx';
 import { useDataState } from '@/lib/dataStateStore';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
-import { Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
+import { ChevronRight, Mail, Plus, RotateCcw, Search, Users } from 'lucide-react';
 
 export default function EmployeesPage() {
   const router = useRouter();
@@ -167,10 +167,7 @@ export default function EmployeesPage() {
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      <span
-                        className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                        style={{ background: '#D9E8E1', color: '#25382F' }}
-                      >
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-100 text-brand-700">
                         {`${patientCount} patient${patientCount !== 1 ? 's' : ''}`}
                       </span>
                       <div className="flex items-center gap-1">
@@ -203,6 +200,7 @@ export default function EmployeesPage() {
                         </Button>
                       </div>
                     )}
+                    <ChevronRight size={16} className="text-quaternary shrink-0 ml-1" />
                   </div>
                 </div>
               );

@@ -19,6 +19,7 @@ import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import type { Patient, Program } from '@/lib/types';
 import { Plus, Search, X } from 'lucide-react';
 import ProgramCardMenu from '@/components/programs/ProgramCardMenu';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
 
 const PAGE_SIZE = 24;
@@ -367,12 +368,9 @@ function ProgramsPageContent() {
                       router.push(`/programs/${prog.id}?back=${back}`);
                     }}
                   >
-                    {prog.imageUrl && (
-                      <div className="h-28 w-full shrink-0 overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={prog.imageUrl} alt={prog.name} className="size-full object-cover" />
-                      </div>
-                    )}
+                    <div className="h-28 w-full shrink-0 overflow-hidden">
+                      <ExerciseThumbnail src={prog.imageUrl} alt={prog.name} iconSize={28} />
+                    </div>
                     <div className="px-3.5 py-3 flex flex-col flex-1">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <span className="text-sm font-semibold text-primary leading-snug">{prog.name}</span>

@@ -20,7 +20,8 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import type { Patient } from '@/lib/types';
-import { Calendar, Map01, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
+import { ChevronRight, Map01, Plus, RefreshCw01, RefreshCcw01, SearchMd, User01 } from '@untitledui/icons';
+import { BadgeWithIcon } from '@/components/base/badges/badges';
 
 function computeEstimatedNext(patientId: string): number {
   const sessions = mockChartSessions[patientId] ?? [];
@@ -311,43 +312,34 @@ export default function PatientsPage() {
                     )}
                   </div>
 
-                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     {isManagerView && (
-                      <div className="flex items-center gap-1.5">
-                        <User01 className="size-3.5 text-quaternary" />
-                        {assignedEmp ? (
-                          <span className="text-xs text-tertiary">{assignedEmp.firstName} {assignedEmp.lastName}</span>
-                        ) : (
-                          <span className="text-xs text-tertiary italic">Unassigned</span>
-                        )}
-                      </div>
+                      <BadgeWithIcon size="sm" color="gray" iconLeading={User01}>
+                        {assignedEmp ? `${assignedEmp.firstName} ${assignedEmp.lastName}` : 'Unassigned'}
+                      </BadgeWithIcon>
                     )}
-                    <div className="flex items-center gap-1.5">
-                      <Map01 className="size-3.5 text-quaternary" />
-                      <span className="text-xs text-tertiary">{getEffectiveLocationString(patient, locationOverrides)}</span>
-                    </div>
+                    <BadgeWithIcon size="sm" color="gray" iconLeading={Map01}>
+                      {getEffectiveLocationString(patient, locationOverrides)}
+                    </BadgeWithIcon>
                     {viewMode === 'full' && (
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="size-3.5 text-quaternary" />
-                        <span className="text-xs text-tertiary">
-                          {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
-                        </span>
-                      </div>
+                      <span className="hidden lg:inline text-xs text-tertiary whitespace-nowrap">
+                        {lastSeen ? `Last seen ${lastSeen}` : 'No sessions yet'}
+                      </span>
                     )}
                     {viewMode === 'full' && (
-                    <div className="flex items-center gap-1.5">
-                      <RefreshCw01 className="size-3.5 text-quaternary" />
-                      <span className="text-xs text-tertiary">
+                      <span className="hidden xl:flex items-center gap-1 text-xs text-tertiary whitespace-nowrap">
+                        <RefreshCw01 className="size-3.5 text-quaternary" />
                         {count > 0 ? `${count} session${count !== 1 ? 's' : ''}` : '—'}
                       </span>
-                    </div>
                     )}
-                    {tab === archivedTabIndex && (
-                      <div onClick={(e) => e.stopPropagation()} className="mt-1">
+                    {tab === archivedTabIndex ? (
+                      <div onClick={(e) => e.stopPropagation()}>
                         <Button size="xs" color="secondary" iconLeading={RefreshCcw01} onPress={() => openRestore(patient)}>
                           Restore
                         </Button>
                       </div>
+                    ) : (
+                      <ChevronRight className="size-4 text-quaternary shrink-0" />
                     )}
                   </div>
                 </div>

@@ -101,17 +101,16 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 )}
               >
                 <div className="flex items-center gap-2 flex-wrap">
-                  {session.signedAt ? (
-                    <Lock size={12} className="text-tertiary shrink-0" />
-                  ) : (
-                    <Unlock size={12} className="text-tertiary shrink-0" />
-                  )}
-                  <span className="font-semibold text-sm text-primary">
-                    {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
+                  <span className={cx('flex items-center gap-1 text-xs font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                    {session.signedAt ? <Lock size={12} /> : <Unlock size={12} />}
+                    {session.signedAt ? 'Signed' : 'Draft'}
+                  </span>
+                  <span className="text-xs text-tertiary">
+                    {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                   </span>
                 </div>
-                <span className="mt-1 block text-xs text-tertiary">
-                  {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                <span className="mt-1 block font-semibold text-sm text-primary">
+                  {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
                 </span>
                 {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
                   const s = ADHERENCE_STYLE[session.adherenceLevel];
