@@ -115,6 +115,7 @@ function ProgramsPageContent() {
   const [categorySearch, setCategorySearch] = useState('');
   const [showMoreConditions, setShowMoreConditions] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockPrograms.filter((p) => p.isFavorite).map((p) => p.id)));
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
   const [assignTargetProgram, setAssignTargetProgram] = useState<Program | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -377,8 +378,8 @@ function ProgramsPageContent() {
                       aria-label={favorites.has(prog.id) ? 'Unfavorite' : 'Favorite'}
                       onClick={(e) => { e.stopPropagation(); toggleFavorite(prog.id); }}
                       className={cx(
-                        'absolute left-4 top-4 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary shadow-md transition-opacity',
-                        favorites.has(prog.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                        'absolute left-4 top-4 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary transition-opacity',
+                        favorites.has(prog.id) || openMenuId === prog.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                       )}
                     >
                       <Heart
@@ -388,13 +389,17 @@ function ProgramsPageContent() {
                       />
                     </button>
                     <div
-                      className="absolute right-2 top-2 z-10 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                      className={cx(
+                        'absolute right-2 top-2 z-10 rounded-full transition-opacity',
+                        openMenuId === prog.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      )}
                       onClick={(e) => e.stopPropagation()}
                     >
                       <ProgramCardMenu
                         isFavorite={favorites.has(prog.id)}
                         canManage={canManageProgram(prog, role, currentIdentity.id)}
                         onToggleFavorite={() => toggleFavorite(prog.id)}
+                        onOpenChange={(open) => setOpenMenuId(open ? prog.id : null)}
                         onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
                         onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
                         onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}

@@ -13,10 +13,16 @@ interface ProgramCardMenuProps {
   onEdit: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorite, onAssign, onEdit, onDelete, onDuplicate }: ProgramCardMenuProps) {
+export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorite, onAssign, onEdit, onDelete, onDuplicate, onOpenChange }: ProgramCardMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    onOpenChange?.(open);
+  };
 
   const handleAction = (key: React.Key) => {
     if (key === 'favorite') onToggleFavorite();
@@ -27,11 +33,11 @@ export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorit
   };
 
   return (
-    <Dropdown.Root isOpen={isOpen} onOpenChange={setIsOpen}>
+    <Dropdown.Root isOpen={isOpen} onOpenChange={handleOpenChange}>
       <AriaButton
         aria-label="More actions"
         className={cx(
-          'flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary shadow-md transition-colors outline-none hover:bg-secondary',
+          'flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary transition-colors outline-none hover:bg-secondary',
           isOpen && 'bg-secondary'
         )}
       >
