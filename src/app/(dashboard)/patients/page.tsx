@@ -6,7 +6,6 @@ import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { Badge } from '@/components/base/badges/badges';
 import { Input } from '@/components/base/input/input';
 import { cx } from '@/utils/cx';
 import { mockChartSessions, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
@@ -38,12 +37,6 @@ function computeEstimatedNext(patientId: string): number {
     avgGapDays = total / (sorted.length - 1);
   }
   return lastTs + avgGapDays * 86400000;
-}
-
-function conditionChip(patient: Patient): string | null {
-  const text = patient.injuryHistory?.mechanism;
-  if (!text) return null;
-  return text.length > 32 ? text.slice(0, 32).replace(/\s\S*$/, '') + '…' : text;
 }
 
 function sessionInfo(patient: Patient): { lastSeen: string | null; count: number } {
@@ -93,7 +86,6 @@ export default function PatientsPage() {
   const archived = patients.filter((p) => p.archived);
 
   // "User: Staff" (Limited Access) behaves like Owner/Admin here: All + Archived, no Your Patients.
-  const isStaffPersona = role === 'limited';
   const isManagerView = role === 'owner' || role === 'admin';
   const gridCols = isManagerView
     ? 'grid-cols-[minmax(0,1fr)_140px_120px_140px_24px]'
@@ -223,6 +215,7 @@ export default function PatientsPage() {
         </div>
 
         {/* Tabs */}
+        {tabItems.length > 1 && (
         <div className="flex gap-10 border-b border-secondary mb-10">
           {tabItems.map((item) => (
             <button
@@ -242,6 +235,7 @@ export default function PatientsPage() {
             </button>
           ))}
         </div>
+        )}
 
         {/* Search + Sort */}
         <div className="mb-5 flex gap-4 items-start">
@@ -292,7 +286,6 @@ export default function PatientsPage() {
             <div className="flex flex-col gap-5">
               {displayed.map((patient) => {
                 const { lastSeen } = sessionInfo(patient);
-                const condition = conditionChip(patient);
                 const assignedEmp = mockEmployees.find((e) => e.id === getEffectiveAssignedEmployeeId(patient, locationOverrides));
                 const contact = getEffectiveContactInfo(patient, contactOverrides);
                 return (
@@ -313,9 +306,6 @@ export default function PatientsPage() {
                           {contact.firstName} {contact.lastName}
                         </p>
                         <p className="text-xs text-primary">{contact.email}</p>
-                        {condition && !isStaffPersona && !isManagerView && (
-                          <Badge type="pill-color" color="brand" size="sm">{condition}</Badge>
-                        )}
                       </div>
                     </div>
 
