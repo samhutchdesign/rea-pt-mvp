@@ -31,11 +31,11 @@ export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorit
       <AriaButton
         aria-label="More actions"
         className={cx(
-          'flex h-7 w-7 items-center justify-center rounded-md text-tertiary transition-colors outline-none hover:bg-secondary',
+          'flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary shadow-md transition-colors outline-none hover:bg-secondary',
           isOpen && 'bg-secondary'
         )}
       >
-        <MoreVertical size={15} />
+        <MoreVertical size={24} />
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>

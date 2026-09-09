@@ -372,10 +372,25 @@ function ProgramsPageContent() {
                     <div className="aspect-[320/180] w-full shrink-0 overflow-hidden">
                       <ExerciseThumbnail src={prog.imageUrl} alt={prog.name} iconSize={28} />
                     </div>
-                    {favorites.has(prog.id) && (
-                      <Heart className="absolute left-4 top-4 z-10 size-6 text-favorite drop-shadow" fill="currentColor" />
-                    )}
-                    <div className="absolute right-2 top-2 z-10 rounded-full bg-primary" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      type="button"
+                      aria-label={favorites.has(prog.id) ? 'Unfavorite' : 'Favorite'}
+                      onClick={(e) => { e.stopPropagation(); toggleFavorite(prog.id); }}
+                      className={cx(
+                        'absolute left-4 top-4 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary shadow-md transition-opacity',
+                        favorites.has(prog.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      )}
+                    >
+                      <Heart
+                        className={favorites.has(prog.id) ? 'text-favorite' : 'text-primary'}
+                        size={24}
+                        fill={favorites.has(prog.id) ? 'currentColor' : 'none'}
+                      />
+                    </button>
+                    <div
+                      className="absolute right-2 top-2 z-10 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <ProgramCardMenu
                         isFavorite={favorites.has(prog.id)}
                         canManage={canManageProgram(prog, role, currentIdentity.id)}
