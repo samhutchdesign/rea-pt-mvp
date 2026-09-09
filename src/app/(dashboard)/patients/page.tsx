@@ -286,7 +286,7 @@ export default function PatientsPage() {
               <span className="text-xs text-primary">Patient</span>
               {isManagerView && <span className="text-xs text-primary">Assigned Doctor</span>}
               <span className="text-xs text-primary">Location</span>
-              <span className="text-xs text-primary">Date</span>
+              <span className="text-xs text-primary ml-4">Date</span>
               <span />
             </div>
             <div className="flex flex-col gap-5">
@@ -329,7 +329,7 @@ export default function PatientsPage() {
                       {getEffectiveLocationString(patient, locationOverrides)}
                     </span>
 
-                    <span className="text-xs text-primary whitespace-nowrap">
+                    <span className="text-xs text-primary whitespace-nowrap ml-4">
                       {viewMode === 'full' ? (lastSeen ?? 'No sessions yet') : '—'}
                     </span>
 
