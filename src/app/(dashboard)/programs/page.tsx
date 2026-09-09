@@ -52,7 +52,7 @@ function CheckRow({ label, checked, onChange, inactive }: { label: string; check
       type="button"
       onClick={onChange}
       className={cx(
-        'flex w-full items-center gap-3 mb-2 text-left bg-transparent border-none p-0',
+        'flex w-full items-center gap-3 mb-4 text-left bg-transparent border-none p-0',
         inactive ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
       )}
     >
