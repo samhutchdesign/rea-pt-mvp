@@ -17,7 +17,7 @@ import { useCurrentIdentity } from '@/lib/locationScope';
 import { canManageProgram } from '@/lib/permissions';
 import { MOVEMENT_TYPES, EFFORT_TYPES } from '@/lib/types';
 import type { Patient, Program } from '@/lib/types';
-import { Plus, Search, X } from 'lucide-react';
+import { Heart, Plus, Search, X } from 'lucide-react';
 import ProgramCardMenu from '@/components/programs/ProgramCardMenu';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
@@ -34,7 +34,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
   return (
     <div className="mb-5 pb-5 border-b border-secondary">
       <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-semibold text-primary">{title}</span>
+        <span className="font-display text-md font-medium text-primary tracking-[0.1px]">{title}</span>
         {activeCount > 0 && (
           <button onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary cursor-pointer bg-transparent border-0 leading-none flex">
             <X size={13} />
@@ -52,21 +52,21 @@ function CheckRow({ label, checked, onChange, inactive }: { label: string; check
       type="button"
       onClick={onChange}
       className={cx(
-        'flex w-full items-center gap-2 mb-2 text-left bg-transparent border-none p-0',
+        'flex w-full items-center gap-3 mb-2 text-left bg-transparent border-none p-0',
         inactive ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
       )}
     >
       <span className={cx(
-        'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
-        checked ? 'bg-brand-600 border-brand-600' : 'border-secondary bg-primary'
+        'flex size-6 shrink-0 items-center justify-center rounded-[4px] border',
+        checked ? 'bg-brand-100 border-brand-300' : 'border-secondary bg-secondary_alt'
       )}>
         {checked && (
-          <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 10 8" fill="none">
+          <svg className="size-3.5 text-primary" viewBox="0 0 10 8" fill="none">
             <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </span>
-      <span className="text-sm text-primary leading-tight">{label}</span>
+      <span className="text-base text-primary leading-tight">{label}</span>
     </button>
   );
 }
@@ -199,22 +199,46 @@ function ProgramsPageContent() {
   return (
     <>
       <TopBar breadcrumbs={[{ label: 'All Programs' }]} />
-      <div className="px-8 py-8">
+      <div className="p-10">
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-primary m-0">Programs</h2>
-          <Button color="primary" size="md" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
-            Create New Program
+        <div className="flex items-center justify-between mb-10">
+          <h1 className="font-display text-[40px] leading-[48px] font-normal text-primary m-0">Programs</h1>
+          <Button color="primary" size="lg" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
+            Create Program
           </Button>
         </div>
 
-        <div className="flex gap-0 items-start">
+        <div className="mb-10 flex gap-4 items-start">
+          <div className="flex-1">
+            <Input
+              size="lg"
+              wrapperClassName="h-12 shadow-none ring-secondary"
+              placeholder="Search by name, exercise, or key words"
+              value={search}
+              onChange={(v) => guardFilter(() => setSearch(v))}
+              onFocus={() => { if (filtersInactive) setShowSignUpModal(true); }}
+              icon={Search}
+              inputClassName={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
+            />
+          </div>
+          <NativeSelect
+            value={sortBy}
+            onChange={(e) => guardFilter(() => setSortBy(e.target.value))}
+            onMouseDown={(e) => { if (filtersInactive) { e.preventDefault(); setShowSignUpModal(true); } }}
+            wrapperClassName="w-[200px] shrink-0"
+            className={cx('h-12', filtersInactive && 'cursor-not-allowed opacity-50')}
+          >
+            {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+          </NativeSelect>
+        </div>
+
+        <div className="flex gap-10 items-start">
 
           {/* Left filter panel */}
-          <div className="w-56 shrink-0 pr-6 border-r border-secondary mr-7">
+          <div className="w-[280px] shrink-0 pr-10 border-r border-secondary">
 
-            <div className="flex justify-between items-center mb-5 pb-4 border-b border-secondary">
-              <span className="font-semibold text-sm text-primary">Filters</span>
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-display text-xl font-medium text-primary">Filter By</span>
               {hasFilters && (
                 <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
               )}
@@ -296,29 +320,6 @@ function ProgramsPageContent() {
           {/* Right content */}
           <div className="flex-1 min-w-0">
 
-            <div className={cx('flex gap-2.5 items-center', hasFilters ? 'mb-2.5' : 'mb-4')}>
-              <div className="flex-1">
-                <Input
-                  placeholder="Search by name, description, or any tag"
-                  value={search}
-                  onChange={(v) => guardFilter(() => setSearch(v))}
-                  onFocus={() => { if (filtersInactive) setShowSignUpModal(true); }}
-                  icon={Search}
-                  size="sm"
-                  inputClassName={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
-                />
-              </div>
-              <NativeSelect
-                value={sortBy}
-                onChange={(e) => guardFilter(() => setSortBy(e.target.value))}
-                onMouseDown={(e) => { if (filtersInactive) { e.preventDefault(); setShowSignUpModal(true); } }}
-                wrapperClassName="w-40 shrink-0"
-                className={filtersInactive ? 'cursor-not-allowed opacity-50' : undefined}
-              >
-                {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-              </NativeSelect>
-            </div>
-
             {hasFilters && (
               <div className="flex gap-1.5 flex-wrap mb-3">
                 {search && <FilterTag label={`"${search}"`} onRemove={() => setSearch('')} />}
@@ -333,7 +334,7 @@ function ProgramsPageContent() {
               </div>
             )}
 
-            <span className="block mb-4 text-xs text-tertiary">
+            <span className="block mb-4 text-xs text-primary">
               {filtered.length} of {mockPrograms.length} programs
             </span>
 
@@ -343,12 +344,12 @@ function ProgramsPageContent() {
                 <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
               </div>
             ) : (
-              <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+              <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 360px))' }}>
                 {filtered.slice(0, visibleCount).map((prog) => {
                   return (
                   <div
                     key={prog.id}
-                    className="group flex flex-col cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
+                    className="group relative flex flex-col cursor-pointer overflow-hidden rounded-xl border border-primary bg-secondary_alt transition-shadow hover:shadow-md"
                     onClick={() => {
                       const p = new URLSearchParams();
                       if (search) p.set('q', search);
@@ -368,28 +369,27 @@ function ProgramsPageContent() {
                       router.push(`/programs/${prog.id}?back=${back}`);
                     }}
                   >
-                    <div className="h-28 w-full shrink-0 overflow-hidden">
+                    <div className="aspect-[320/180] w-full shrink-0 overflow-hidden">
                       <ExerciseThumbnail src={prog.imageUrl} alt={prog.name} iconSize={28} />
                     </div>
-                    <div className="px-3.5 py-3 flex flex-col flex-1">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <span className="font-display text-base font-semibold text-primary leading-snug">{prog.name}</span>
-                        <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
-                          <ProgramCardMenu
-                            isFavorite={favorites.has(prog.id)}
-                            canManage={canManageProgram(prog, role, currentIdentity.id)}
-                            onToggleFavorite={() => toggleFavorite(prog.id)}
-                            onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
-                            onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
-                            onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}
-                            onDuplicate={() => guardFilter(() => router.push(`/programs/new?duplicate=${prog.id}`))}
-                          />
-                        </div>
-                      </div>
-                      <span className="block text-xs text-secondary leading-snug">{prog.description}</span>
-                      <div className="mt-auto pt-1.5">
-                        <span className="text-xs text-tertiary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
-                      </div>
+                    {favorites.has(prog.id) && (
+                      <Heart className="absolute left-4 top-4 z-10 size-6 text-favorite drop-shadow" fill="currentColor" />
+                    )}
+                    <div className="absolute right-2 top-2 z-10 rounded-full bg-primary" onClick={(e) => e.stopPropagation()}>
+                      <ProgramCardMenu
+                        isFavorite={favorites.has(prog.id)}
+                        canManage={canManageProgram(prog, role, currentIdentity.id)}
+                        onToggleFavorite={() => toggleFavorite(prog.id)}
+                        onAssign={() => guardFilter(() => setAssignTargetProgram(prog))}
+                        onEdit={() => guardFilter(() => router.push(`/programs/new?edit=${prog.id}`))}
+                        onDelete={() => guardFilter(() => setDeleteTargetProgram(prog))}
+                        onDuplicate={() => guardFilter(() => router.push(`/programs/new?duplicate=${prog.id}`))}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-6 p-8 flex-1">
+                      <span className="font-display text-xl font-medium text-primary">{prog.name}</span>
+                      <span className="block text-base text-primary">{prog.description}</span>
+                      <span className="text-xs text-secondary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
                     </div>
                   </div>
                   );
