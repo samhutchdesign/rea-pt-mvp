@@ -87,14 +87,17 @@ export default function PatientsPage() {
 
   // "User: Staff" (Limited Access) behaves like Owner/Admin here: All + Archived, no Your Patients.
   const isManagerView = role === 'owner' || role === 'admin';
-  const gridCols = isManagerView
-    ? 'grid-cols-[minmax(0,1fr)_140px_120px_140px_24px]'
-    : 'grid-cols-[minmax(0,1fr)_120px_140px_24px]';
   // Practitioners (editor role) only see patients assigned to them — no "All" tab, and useYourEmpId
   // already returns null for Owner/Limited so showYoursTab naturally excludes them too.
   const showYoursTab = yourEmpId !== null;
   const showAllTab = role !== 'editor';
   const showArchivedTab = role !== 'editor';
+  // On an Admin's own "Your Patients" tab, they're the assigned doctor — the column is redundant there.
+  const isYourPatientsTab = showYoursTab && tab === 0;
+  const showDoctorCol = isManagerView && !isYourPatientsTab;
+  const gridCols = showDoctorCol
+    ? 'grid-cols-[minmax(0,1fr)_140px_120px_140px_24px]'
+    : 'grid-cols-[minmax(0,1fr)_120px_140px_24px]';
 
   const sections = [
     ...(showYoursTab ? [{ list: yourPatients, label: 'Your Patients', searchPlaceholder: 'Search your patients…', emptyMessage: 'No patients assigned to you yet' }] : []),
@@ -278,7 +281,7 @@ export default function PatientsPage() {
           <div className="flex flex-col gap-5">
             <div className={cx('grid items-center gap-4 border-b border-secondary px-5 pb-3', gridCols)}>
               <span className="text-xs text-primary">Patient</span>
-              {isManagerView && <span className="text-xs text-primary">Assigned Doctor</span>}
+              {showDoctorCol && <span className="text-xs text-primary">Assigned Doctor</span>}
               <span className="text-xs text-primary">Location</span>
               <span className="text-xs text-primary ml-4">Date</span>
               <span />
@@ -309,7 +312,7 @@ export default function PatientsPage() {
                       </div>
                     </div>
 
-                    {isManagerView && (
+                    {showDoctorCol && (
                       <span className="text-xs text-primary whitespace-nowrap">
                         {assignedEmp ? `${assignedEmp.firstName} ${assignedEmp.lastName}` : 'Unassigned'}
                       </span>
