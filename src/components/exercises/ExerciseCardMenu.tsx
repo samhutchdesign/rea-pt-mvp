@@ -18,9 +18,11 @@ interface ExerciseCardMenuProps {
   /** 'full' shows every exercise-page action (matches the detail page); 'mvp' shows only what's visible on the MVP exercises page today. */
   variant: 'full' | 'mvp';
   onOpenChange?: (isOpen: boolean) => void;
+  /** 'sm' (default) is the compact button used on the MVP exercises page; 'lg' matches ProgramCardMenu's 48px circular button. */
+  size?: 'sm' | 'lg';
 }
 
-export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorite, onAddToProgram, onAssign, onRecordAudio, variant, onOpenChange }: ExerciseCardMenuProps) {
+export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorite, onAddToProgram, onAssign, onRecordAudio, variant, onOpenChange, size = 'sm' }: ExerciseCardMenuProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,12 +46,19 @@ export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorit
     <Dropdown.Root isOpen={isOpen} onOpenChange={handleOpenChange}>
       <AriaButton
         aria-label="More actions"
-        className={cx(
-          'flex h-7 w-7 items-center justify-center rounded-md bg-white/85 text-tertiary transition-colors outline-none hover:bg-white',
-          isOpen && 'bg-white'
-        )}
+        className={
+          size === 'lg'
+            ? cx(
+                'flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary transition-colors outline-none hover:bg-secondary',
+                isOpen && 'bg-secondary'
+              )
+            : cx(
+                'flex h-7 w-7 items-center justify-center rounded-md bg-white/85 text-tertiary transition-colors outline-none hover:bg-white',
+                isOpen && 'bg-white'
+              )
+        }
       >
-        <MoreVertical size={15} />
+        <MoreVertical size={size === 'lg' ? 24 : 15} />
       </AriaButton>
       <Dropdown.Popover className="w-56">
         <Dropdown.Menu onAction={handleAction}>

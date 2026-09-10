@@ -647,9 +647,21 @@ function ExercisesPageContent() {
                       <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg">
                         <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                       </div>
-                      {favorites.has(ex.id) && (
-                        <Heart className="absolute left-4 top-4 z-10 size-6 text-favorite drop-shadow" fill="currentColor" />
-                      )}
+                      <button
+                        type="button"
+                        aria-label={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(ex.id); }}
+                        className={cx(
+                          'absolute left-4 top-4 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary transition-opacity',
+                          favorites.has(ex.id) || openMenuId === ex.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                        )}
+                      >
+                        <Heart
+                          className={favorites.has(ex.id) ? 'text-favorite' : 'text-primary'}
+                          size={24}
+                          fill={favorites.has(ex.id) ? 'currentColor' : 'none'}
+                        />
+                      </button>
                       <div
                         className={cx(
                           'absolute right-2 top-2 z-10 rounded-full transition-opacity',
@@ -660,6 +672,7 @@ function ExercisesPageContent() {
                         <ExerciseCardMenu
                           exercise={ex}
                           variant="full"
+                          size="lg"
                           isFavorite={favorites.has(ex.id)}
                           onToggleFavorite={() => toggleFavorite(ex.id)}
                           onOpenChange={(open) => setOpenMenuId(open ? ex.id : null)}
