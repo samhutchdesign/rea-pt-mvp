@@ -7,13 +7,13 @@ import { useViewMode } from '@/lib/viewModeStore';
 import { LayoutDashboard, Contact, ClipboardList, PersonStanding, Users } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
-type NavItem = { label: string; href: string; mvpHref?: string; mvpHide?: boolean; icon: ComponentType<{ className?: string }> };
+type NavItem = { label: string; href: string; mvpHide?: boolean; icon: ComponentType<{ className?: string }> };
 
 const baseNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', mvpHide: true, icon: LayoutDashboard },
   { label: 'Patients', href: '/patients', icon: Users },
   { label: 'Programs', href: '/programs', icon: ClipboardList },
-  { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: PersonStanding },
+  { label: 'Exercises', href: '/exercises', icon: PersonStanding },
 ];
 
 const ownerNavItems: NavItem[] = [
@@ -21,7 +21,7 @@ const ownerNavItems: NavItem[] = [
   { label: 'Employees', href: '/employees', icon: Contact },
   { label: 'Patients', href: '/patients', icon: Users },
   { label: 'Programs', href: '/programs', icon: ClipboardList },
-  { label: 'Exercises', href: '/exercises', mvpHref: '/exercises-mvp', icon: PersonStanding },
+  { label: 'Exercises', href: '/exercises', icon: PersonStanding },
 ];
 
 export default function Sidebar() {
@@ -39,11 +39,10 @@ export default function Sidebar() {
       </Link>
 
       <div className="flex flex-col gap-1">
-        {navItems.filter((item) => !(viewMode === 'mvp' && item.mvpHide)).map(({ label, href, mvpHref, icon: Icon }) => {
-          const resolvedHref = viewMode === 'mvp' && mvpHref ? mvpHref : href;
-          const isActive = resolvedHref === '/' ? pathname === '/' : pathname.startsWith(resolvedHref);
+        {navItems.filter((item) => !(viewMode === 'mvp' && item.mvpHide)).map(({ label, href, icon: Icon }) => {
+          const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
           return (
-            <Link key={href} href={resolvedHref} title={label}>
+            <Link key={href} href={href} title={label}>
               <div className={cx(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 cursor-pointer',
                 isActive ? 'bg-quaternary' : 'hover:bg-secondary'
