@@ -32,22 +32,20 @@ function ExerciseCard({
   const sorted = [...comments].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
   return (
-    <div className="rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden">
+    <div className="rounded-xl border border-secondary bg-primary overflow-hidden">
       <div className="p-4">
         <div className="flex items-center gap-5">
-          <div className="relative w-20 h-16 shrink-0 rounded-lg overflow-hidden bg-brand-50">
+          <div className="relative aspect-[320/180] w-40 shrink-0 rounded-lg overflow-hidden bg-brand-50">
             <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={28} />
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-primary mb-0.5">{ex.name}</p>
-            <p className="text-xs text-secondary mb-2">{ex.description}</p>
-            <div className="flex gap-1.5 flex-wrap">
-              <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.sets} Sets</span>
-              <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.reps} Reps</span>
-              {pe.holdSecs > 0 && (
-                <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{pe.holdSecs} Sec Hold</span>
-              )}
-            </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-display text-md font-medium text-primary tracking-[0.1px] mb-2">{ex.name}</p>
+            <p className="text-xs text-primary mb-2">
+              {pe.sets} Sets / {pe.reps} Reps{pe.holdSecs > 0 ? ` / ${pe.holdSecs} Sec Hold` : ''}
+            </p>
+            {pe.cue && (
+              <span className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-secondary">{pe.cue}</span>
+            )}
           </div>
           {viewMode === 'full' && pe.adherence != null && (
             <div className="flex flex-col items-center gap-1 min-w-[64px]">
@@ -96,7 +94,7 @@ function ExerciseCard({
 function HistoryEntry({ entry }: { entry: HepHistoryEntry }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden">
+    <div className="rounded-xl border border-secondary bg-primary overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-secondary transition-colors"
@@ -158,7 +156,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           {visiblePrograms.map((prog) => (
             <div
               key={prog.id}
-              className="rounded-xl border border-secondary bg-primary shadow-xs p-5 cursor-pointer hover:border-brand-600 transition-colors"
+              className="rounded-xl border border-secondary bg-primary p-5 cursor-pointer hover:border-brand-600 transition-colors"
               onClick={() => router.push(`/patients/${id}/program/edit`)}
             >
               <div className="flex justify-between items-start">
@@ -189,23 +187,23 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
     <div>
 
       {/* Current program header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-primary m-0">{program.name}</h3>
-          <p className="text-sm text-secondary mt-0.5">
+      <div className="flex justify-between items-start mb-10">
+        <div className="flex flex-col gap-4">
+          <h1 className="font-display text-display-xs font-medium text-primary m-0">{program.name}</h1>
+          <p className="text-base text-secondary m-0">
             {completedSessions} of {totalSessions} sessions
-            <span className="ml-3 text-xs text-tertiary">{program.frequency}</span>
+            <span className="ml-3 text-sm text-tertiary">{program.frequency}</span>
             {viewMode === 'full' && hep.programAssignedAt && (
-              <span className="ml-3 text-xs text-tertiary">Assigned {formatDate(hep.programAssignedAt)}</span>
+              <span className="ml-3 text-sm text-tertiary">Assigned {formatDate(hep.programAssignedAt)}</span>
             )}
           </p>
         </div>
         <div className="flex gap-3">
-          <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => router.push(`/patients/${id}/program/edit`)}>
-            Modify
+          <Button color="secondary" size="lg" iconLeading={Pencil} onPress={() => router.push(`/patients/${id}/program/edit`)}>
+            Modify Program
           </Button>
-          <Button color="primary" size="sm" iconLeading={Send} onPress={() => router.push(`/patients/${id}/program/send`)}>
-            Send Program to Patient
+          <Button color="primary" size="lg" iconLeading={Send} onPress={() => router.push(`/patients/${id}/program/send`)}>
+            Send to Patient
           </Button>
         </div>
       </div>
