@@ -62,26 +62,26 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   };
 
   return (
-    <div className="sticky top-[96px] grid h-[calc(100vh-128px)] grid-cols-[minmax(0,320px)_1fr] items-start gap-6">
+    <div className="sticky top-[96px] grid h-[calc(100vh-128px)] grid-cols-[minmax(0,320px)_1fr] items-start">
       {/* Left pane: session list */}
-      <div className="h-full overflow-y-auto flex flex-col gap-3">
-        {isChartWriter ? (
-          <Button
-            color="secondary"
-            size="sm"
-            iconLeading={Plus}
-            onPress={() => router.push(`/patients/${id}/chart/new`)}
-            className="w-full justify-center"
-          >
-            Create New Chart
-          </Button>
-        ) : (
-          <span className="text-xs text-tertiary italic">
-            {assignedEmpId ? 'Only the assigned practitioner can add chart entries.' : 'No practitioner is assigned to this patient yet.'}
-          </span>
-        )}
-
-        <div className="border-b border-secondary" />
+      <div className="h-full overflow-y-auto flex flex-col border-r border-secondary pr-10">
+        <div className="pb-5">
+          {isChartWriter ? (
+            <Button
+              color="secondary"
+              size="lg"
+              iconLeading={Plus}
+              onPress={() => router.push(`/patients/${id}/chart/new`)}
+              className="w-full justify-center"
+            >
+              Create New Chart Entry
+            </Button>
+          ) : (
+            <span className="text-xs text-tertiary italic">
+              {assignedEmpId ? 'Only the assigned practitioner can add chart entries.' : 'No practitioner is assigned to this patient yet.'}
+            </span>
+          )}
+        </div>
 
         {sessions.length === 0 ? (
           <span className="text-secondary text-sm">No sessions recorded yet.</span>
@@ -96,42 +96,39 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedSessionId(session.id)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
                 className={cx(
-                  'rounded-xl border p-4 cursor-pointer transition-colors',
-                  isSelected
-                    ? cx('bg-secondary_alt border-l-4', session.signedAt ? 'border-[#206020]/30 border-l-[#206020]' : 'border-[#BF9540]/30 border-l-[#BF9540]')
-                    : 'border-secondary bg-primary hover:bg-secondary_alt'
+                  'flex items-start justify-between gap-4 border-b border-secondary py-7 cursor-pointer transition-colors',
+                  isSelected ? 'bg-secondary_alt' : 'bg-primary hover:bg-secondary_alt'
                 )}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className={cx('text-xs font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
-                        {session.signedAt ? 'Signed' : 'Draft'}
-                      </span>
-                      <span className="text-xs text-tertiary">
-                        {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                      </span>
-                    </div>
-                    <span className="font-display mt-1 block font-semibold text-sm text-primary">
-                      {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={cx('text-base font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                      {session.signedAt ? 'Signed' : 'Draft'}
+                    </span>
+                    <span className="text-tertiary">•</span>
+                    <span className="text-base text-secondary">
+                      {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </span>
                   </div>
-                  {session.signedAt ? (
-                    <Lock size={14} className="shrink-0 text-tertiary mt-0.5" />
-                  ) : (
-                    <Unlock size={14} className="shrink-0 text-[#BF9540] mt-0.5" />
+                  <span className="font-display mt-2 block text-xl font-medium text-primary">
+                    {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
+                  </span>
+                  {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
+                    const s = ADHERENCE_STYLE[session.adherenceLevel];
+                    return (
+                      <span className={cx('mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold', s?.bg, s?.text)}>
+                        {session.adherenceLevel}
+                      </span>
+                    );
+                  })()}
+                  {viewMode === 'full' && session.summary && (
+                    <p className="text-xs text-tertiary mt-1.5 line-clamp-2">{session.summary}</p>
                   )}
                 </div>
-                {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
-                  const s = ADHERENCE_STYLE[session.adherenceLevel];
-                  return (
-                    <span className={cx('mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold', s?.bg, s?.text)}>
-                      {session.adherenceLevel}
-                    </span>
-                  );
-                })()}
-                {viewMode === 'full' && session.summary && (
-                  <p className="text-xs text-tertiary mt-1.5 line-clamp-2">{session.summary}</p>
+                {session.signedAt ? (
+                  <Lock size={20} className="shrink-0 text-primary" />
+                ) : (
+                  <Unlock size={20} className="shrink-0 text-[#BF9540]" />
                 )}
               </div>
             );
@@ -140,33 +137,33 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Right pane: selected session, read-only */}
-      <div className="h-full overflow-y-auto border-l border-secondary pl-6">
+      <div className="h-full overflow-y-auto pl-10">
         {selectedSession ? (
           <div className="flex flex-col gap-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold text-primary">{titleLabel}</h2>
+                <h2 className="font-display text-[32px] leading-[32px] font-normal text-primary">{titleLabel}</h2>
                 <span className="text-sm text-tertiary">
                   {new Date(selectedSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                {selectedSession.signedAt && (
-                  <Button color="secondary" size="sm" iconLeading={copySuccess ? Check : Copy} onPress={handleCopy}>
-                    {copySuccess ? 'Copied!' : 'Copy'}
+                {isChartWriter && selectedSession.signedAt && (
+                  <Button color="secondary" size="lg" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?amend=1`)}>
+                    Amend
                   </Button>
                 )}
-                {isChartWriter && selectedSession.signedAt && (
-                  <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?amend=1`)}>
-                    Amend
+                {selectedSession.signedAt && (
+                  <Button color="secondary" size="lg" iconLeading={copySuccess ? Check : Copy} onPress={handleCopy}>
+                    {copySuccess ? 'Copied!' : 'Copy'}
                   </Button>
                 )}
                 {canEditSelected && (
                   <>
-                    <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?edit=1`)}>
+                    <Button color="secondary" size="lg" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?edit=1`)}>
                       Edit
                     </Button>
-                    <Button color="primary" size="sm" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?sign=1`)}>
+                    <Button color="primary" size="lg" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?sign=1`)}>
                       Sign & Lock
                     </Button>
                   </>

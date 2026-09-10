@@ -76,7 +76,7 @@ export const emptyEvaluation = (): EvaluationSection => ({ patientReaction: '', 
 export function SectionCard({ letter, label, defaultOpen = true, children }: { letter: string; label: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+    <div className="rounded-xl border border-secondary bg-primary p-5">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -972,7 +972,7 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+      <div className="rounded-xl border border-secondary bg-primary p-5">
         <button
           type="button"
           onClick={() => setNotesOpen((v) => !v)}
@@ -1002,7 +1002,7 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
       />
 
       {session.signedAt && (
-        <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+        <div className="rounded-xl border border-secondary bg-primary p-5">
           <span className="mb-2 block text-sm font-semibold text-primary">Signed</span>
           <span style={{ fontFamily: signatureFont?.variable }} className="block text-3xl text-primary">
             {session.signedByName}
