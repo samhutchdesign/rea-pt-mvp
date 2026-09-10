@@ -97,7 +97,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
   if (!patient) {
     return (
-      <div className="px-8 py-8 pt-14">
+      <div className="p-10">
         <p className="text-sm text-secondary">Patient not found.</p>
       </div>
     );
@@ -160,35 +160,35 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           { label: currentTab.label },
         ]}
       />
-      <div className="pt-14">
+      <div>
         {archived && (
-          <Alert type="warning" className="rounded-none px-8">
+          <Alert type="warning" className="rounded-none px-10">
             This patient profile is archived. Restore it to resume active management.
           </Alert>
         )}
 
-        <div className="px-8 pt-0">
-          <div className="flex items-start gap-5 mb-6">
-            <Avatar initials={patient.avatarInitials} size="2xl" className={archived ? 'opacity-60' : ''} />
-            <div className="flex-1 min-w-0">
-              <h1 className="text-display-xs font-semibold text-primary">
-                {effectiveContact.firstName} {effectiveContact.lastName}
-              </h1>
-              <div className="flex gap-4 mt-1">
-                <div className="flex items-center gap-1.5">
-                  <Mail size={14} className="text-quaternary" />
-                  <span className="text-sm text-tertiary">{effectiveContact.email}</span>
+        <div className="p-10">
+          <div className="flex items-start justify-between gap-5 mb-10">
+            <div className="flex items-start gap-5">
+              <Avatar initials={patient.avatarInitials} size="2xl" className={archived ? 'opacity-60' : ''} />
+              <div className="flex flex-col gap-4 py-3">
+                <h1 className="font-display text-display-xs font-medium text-primary m-0">
+                  {effectiveContact.firstName} {effectiveContact.lastName}
+                </h1>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Mail size={24} className="text-tertiary" />
+                    <span className="text-base text-secondary">{effectiveContact.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin size={24} className="text-tertiary" />
+                    <span className="text-base text-secondary">{getEffectiveLocationString(patient, locationOverrides)}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <MapPin size={14} className="text-quaternary" />
-                  <span className="text-sm text-tertiary">{getEffectiveLocationString(patient, locationOverrides)}</span>
-                </div>
-              </div>
-              {chip && !isStaffPersona && (
-                <div className="mt-2">
+                {chip && !isStaffPersona && (
                   <Badge type="pill-color" color="brand" size="sm">{chip}</Badge>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {can.canArchivePatient && archived && (
@@ -212,25 +212,23 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-secondary pt-10">
+          <div className="flex gap-10 border-b border-secondary mb-10">
             {patientTabs.map((tab, i) => (
               <Link
                 key={tab.path}
                 href={`/patients/${id}/${tab.path}`}
                 className={cx(
-                  'mr-6 pb-3 pt-0 text-sm font-semibold border-b-2 -mb-px transition-colors duration-100',
+                  'pb-4 pt-0 text-base -mb-px border-b-[3px] transition-colors duration-100',
                   selectedIndex === i
-                    ? 'border-brand-600 text-brand-700'
-                    : 'border-transparent text-tertiary hover:text-secondary hover:border-secondary'
+                    ? 'border-b-[#9b9897] text-primary font-medium'
+                    : 'border-transparent text-primary font-normal hover:text-secondary'
                 )}
               >
                 {tab.label}
               </Link>
             ))}
           </div>
-        </div>
 
-        <div className="px-8 py-8">
           {children}
         </div>
       </div>

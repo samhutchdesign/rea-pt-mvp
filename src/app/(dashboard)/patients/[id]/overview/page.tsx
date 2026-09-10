@@ -1,20 +1,20 @@
 'use client';
 import { use, useState, useEffect } from 'react';
-import type { ComponentType } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/base/buttons/button';
+import { Avatar } from '@/components/base/avatar/avatar';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
-import { mockPatients, mockChartSessions, mockPrograms, mockExercises, mockEmployees, mockClinic, mockClinicLocations } from '@/lib/mock-data';
+import { mockPatients, mockChartSessions, mockEmployees, mockClinicLocations } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
 import { useAvailableLocationIds } from '@/lib/locationScope';
 import { useLocationState, transferPatient } from '@/lib/patientLocationStore';
 import { useViewMode } from '@/lib/viewModeStore';
-import { ArrowLeftRight, Building2, Calendar, ChevronRight, Plus, X, Zap } from 'lucide-react';
+import { ArrowLeftRight, ChevronRight, Plus, X } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 export default function PatientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -42,7 +42,6 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   const latestSession = sessions.filter((s) => !s.isIntakeSession)[0];
   const latestSessionIndex = latestSession ? sessions.findIndex((s) => s.id === latestSession.id) : -1;
   const latestSessionTitle = latestSession?.isIntakeSession ? 'Intake Session' : `Session ${sessions.length - latestSessionIndex}`;
-  const program = patient?.programId ? mockPrograms.find((p) => p.id === patient.programId) : null;
   const locationState = useLocationState(id);
   const assignedEmployee = mockEmployees.find((e) => e.id === locationState.assignedEmployeeId) ?? null;
   const can = usePermissions();
@@ -82,20 +81,6 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
     );
   };
 
-  const avgAdherence = (() => {
-    if (!program) return null;
-    const vals = program.exercises.map((e) => e.adherence).filter((v): v is number => v != null);
-    if (!vals.length) return null;
-    return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
-  })();
-
-  const stats: { label: string; value: number | string; icon: ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>; color: string }[] = [
-    ...(viewMode === 'full' ? [{ label: 'Total Sessions', value: sessions.length, icon: Calendar, color: '#0288D1' }] : []),
-    ...(viewMode === 'full' && avgAdherence != null
-      ? [{ label: 'Avg. Adherence', value: `${avgAdherence}%`, icon: Zap, color: avgAdherence >= 80 ? '#2E7D32' : avgAdherence >= 60 ? '#F57F17' : '#C62828' }]
-      : []),
-  ];
-
   if (!patient) return null;
 
   return (
@@ -121,60 +106,33 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         </Alert>
       )}
 
-      {stats.length > 0 && (
-      <div className="flex gap-4 mb-6">
-        {stats.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
-            <div className="flex items-center gap-4">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                style={{ background: color + '18' }}
-              >
-                <Icon size={20} color={color} />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-primary leading-none">{value}</p>
-                <p className="text-xs text-secondary mt-0.5">{label}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      )}
-
       {!isStaffPersona && (
-      <div className="flex gap-6">
-        {/* Recent Session */}
-        <div className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
-          <div className="flex justify-between items-center mb-4">
-            <span className="font-display text-sm font-semibold text-primary">Latest Session</span>
-            <Button size="xs" color="primary" iconLeading={Plus} onPress={() => router.push(`/patients/${id}/chart/new`)}>
-              Add New Chart
+      <div className="flex gap-10 items-start">
+        {/* Latest Session */}
+        <div className="flex-1 min-w-0 rounded-xl border border-primary bg-secondary_alt p-7">
+          <div className="flex justify-between items-center mb-5">
+            <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Latest Session</span>
+            <Button size="md" color="secondary" iconLeading={Plus} onPress={() => router.push(`/patients/${id}/chart/new`)}>
+              New Chart
             </Button>
           </div>
           {latestSession ? (
             <>
               <div
                 onClick={() => router.push(`/patients/${id}/chart/${latestSession.id}`)}
-                className={cx(
-                  'flex items-center gap-3 rounded-lg border-y border-r p-3 mb-4 cursor-pointer transition-colors border-l-4',
-                  latestSession.signedAt
-                    ? 'border-[#206020]/30 border-l-[#206020] hover:bg-secondary_alt'
-                    : 'border-[#BF9540]/30 border-l-[#BF9540] hover:bg-secondary_alt'
-                )}
+                className="relative flex items-center gap-5 rounded-xl border border-secondary bg-primary py-8 pl-6 pr-14 cursor-pointer hover:bg-secondary_alt transition-colors mb-4"
               >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={cx('text-xs font-semibold', latestSession.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
-                      {latestSession.signedAt ? 'Signed' : 'Draft'}
-                    </span>
-                    <span className="text-xs text-tertiary">
-                      {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                    </span>
-                  </div>
-                  <p className="font-display font-semibold text-sm text-primary mt-1">{latestSessionTitle}</p>
+                <div className={cx('self-stretch w-1 shrink-0 rounded-xl', latestSession.signedAt ? 'bg-[#206020]' : 'bg-[#BF9540]')} />
+                <div className="flex flex-col gap-5 min-w-0">
+                  <span className="font-display text-xl font-medium text-primary">{latestSessionTitle}</span>
+                  <span className="text-base text-secondary">
+                    {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </span>
+                  <span className={cx('text-base italic', latestSession.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                    {latestSession.signedAt ? 'Signed' : 'Draft'}
+                  </span>
                   {viewMode === 'full' && (
-                    <div className="flex gap-2 flex-wrap mt-2">
+                    <div className="flex gap-2 flex-wrap">
                       {latestSession.painLevel && (
                         <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
                           {latestSession.painLevel}
@@ -188,10 +146,10 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                     </div>
                   )}
                 </div>
-                <ChevronRight size={16} className="text-quaternary shrink-0" />
+                <ChevronRight size={24} className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" />
               </div>
               <button
-                className="text-xs text-brand-700 hover:underline"
+                className="text-sm text-brand-700 hover:underline"
                 onClick={() => router.push(`/patients/${id}/chart`)}
               >
                 See all sessions →
@@ -202,85 +160,56 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           )}
         </div>
 
-        {/* Current Program */}
-        <div className="flex-1 rounded-xl border border-secondary bg-primary shadow-xs p-5">
-          <div className="flex justify-between items-center mb-4">
-            <span className="font-display text-sm font-semibold text-primary">
-              Current Program{program ? ` (${program.exercises.length})` : ''}
-            </span>
-            <Button size="xs" color="tertiary" onPress={() => router.push(`/patients/${id}/program`)}>
-              View Program
-            </Button>
-          </div>
-          {program ? (
-            <>
-              <p className="font-display text-sm font-semibold text-primary mb-4">{program.name}</p>
-              <div className="max-h-48 overflow-y-auto">
-                {program.exercises.map((pe) => {
-                  const ex = mockExercises.find((e) => e.id === pe.exerciseId);
-                  if (!ex) return null;
-                  return (
-                    <div
-                      key={pe.exerciseId}
-                      className="flex justify-between items-center py-1.5 border-b border-secondary"
-                    >
-                      <span className="text-xs text-primary">{ex.name}</span>
-                      <span className="text-xs text-secondary">{pe.reps} reps · {pe.sets} sets</span>
-                    </div>
-                  );
-                })}
+        {/* Right column: Summary + Assigned Practitioner */}
+        <div className="flex flex-col gap-7 w-[380px] shrink-0">
+          <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-9">
+            <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Summary</span>
+            <div className="flex flex-col gap-9">
+              <div className="flex flex-col gap-3">
+                <span className="text-base font-semibold text-primary">Issue:</span>
+                <span className="text-base text-primary">{patient.injuryHistory?.mechanism || 'Not recorded'}</span>
               </div>
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-secondary mb-4">No program assigned yet.</p>
-              <Button size="xs" color="secondary" onPress={() => router.push(`/patients/${id}/program`)}>
-                Assign Program
-              </Button>
-            </>
-          )}
+              <div className="flex flex-col gap-3">
+                <span className="text-base font-semibold text-primary">Date of Onset:</span>
+                <span className="text-base text-primary">{patient.injuryHistory?.dateOfOnset || 'Not recorded'}</span>
+              </div>
+              <div className="flex flex-col gap-3">
+                <span className="text-base font-semibold text-primary">Patient Goals:</span>
+                <span className="text-base text-primary">{patient.sohx?.clientGoals || 'Not recorded'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-primary bg-primary p-4 flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+              <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Assigned Practitioner</span>
+              {can.canTransferPatient && (
+                <Button size="xs" color="link-color" iconLeading={ArrowLeftRight} onPress={() => setTransferOpen(true)}>
+                  Transfer
+                </Button>
+              )}
+            </div>
+            {assignedEmployee ? (
+              <div
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() => router.push(`/employees/${assignedEmployee.id}`)}
+              >
+                <Avatar initials={assignedEmployee.avatarInitials} size="lg" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-display text-md font-medium text-primary">{assignedEmployee.firstName} {assignedEmployee.lastName}</span>
+                    <span className="text-xs text-primary">{assignedEmployee.credentials}</span>
+                  </div>
+                  <span className="text-xs text-primary">{assignedEmployee.title}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-tertiary">No PT assigned yet.</p>
+            )}
+          </div>
         </div>
       </div>
       )}
-
-      {/* Care Team */}
-      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <span className="font-display text-sm font-semibold text-primary">Assigned PT</span>
-          {can.canTransferPatient && (
-            <Button size="xs" color="secondary" iconLeading={ArrowLeftRight} onPress={() => setTransferOpen(true)}>
-              Transfer Patient
-            </Button>
-          )}
-        </div>
-
-        <div className="flex gap-4 flex-wrap mb-4">
-          {assignedEmployee ? (
-            <div
-              className="flex items-center gap-3 p-3 border border-secondary rounded-lg cursor-pointer hover:border-brand-600 transition-colors min-w-[220px]"
-              onClick={() => router.push(`/employees/${assignedEmployee.id}`)}
-            >
-              <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center shrink-0 font-bold text-sm text-brand-700">
-                {assignedEmployee.avatarInitials}
-              </div>
-              <div>
-                <p className="font-display text-sm font-semibold text-primary">{assignedEmployee.firstName} {assignedEmployee.lastName}</p>
-                <p className="text-xs text-secondary">{assignedEmployee.credentials} · {assignedEmployee.title}</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-tertiary">No PT assigned yet.</p>
-          )}
-        </div>
-
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => router.push('/clinic')}
-        >
-          <Building2 size={16} className="text-secondary" />
-          <span className="text-sm text-brand-700 underline">{mockClinic.name}</span>
-        </div>
-      </div>
 
       {/* Transfer Patient Dialog */}
       <ModalOverlay isOpen={transferOpen} onOpenChange={(open) => { if (!open) closeTransfer(); }}>

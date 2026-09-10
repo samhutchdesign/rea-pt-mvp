@@ -26,11 +26,11 @@ export function PatientHeaderMenu({ onEditProfile, onArchive, onReassign, canArc
       <AriaButton
         aria-label="More actions"
         className={cx(
-          'flex h-9 w-9 items-center justify-center rounded-lg border border-secondary text-secondary transition-colors outline-none hover:bg-secondary_alt',
-          isOpen && 'bg-secondary_alt',
+          'flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary transition-colors outline-none hover:bg-secondary',
+          isOpen && 'bg-secondary',
         )}
       >
-        <MoreHorizontal size={18} />
+        <MoreHorizontal size={24} />
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>
