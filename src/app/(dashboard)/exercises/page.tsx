@@ -624,7 +624,7 @@ function ExercisesPageContent() {
                   {filtered.slice(0, visibleCount).map((ex) => (
                     <div
                       key={ex.id}
-                      className="group relative flex flex-col cursor-pointer"
+                      className="group relative flex flex-col cursor-pointer overflow-hidden rounded-xl border border-primary bg-secondary_alt transition-shadow hover:shadow-md"
                       onClick={() => {
                         const p = new URLSearchParams();
                         if (effectiveSelectedId !== 'all') p.set('specialty', effectiveSelectedId);
@@ -644,7 +644,7 @@ function ExercisesPageContent() {
                         router.push(`/exercises/${ex.id}?back=${back}`);
                       }}
                     >
-                      <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg">
+                      <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden">
                         <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                       </div>
                       <button
@@ -681,11 +681,11 @@ function ExercisesPageContent() {
                           onRecordAudio={() => block(() => setAudioTargetExercise(ex))}
                         />
                       </div>
-                      <div className="flex flex-col gap-2 pt-5">
+                      <div className="flex flex-col gap-2 px-4 pt-5 pb-4">
                         <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{ex.name}</p>
                         <div className="flex items-center gap-2">
                           <span className="flex-1 text-xs text-primary">{ex.category}</span>
-                          <span className="shrink-0 rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary whitespace-nowrap">{ex.level}</span>
+                          <span className="shrink-0 rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary whitespace-nowrap">{ex.level}</span>
                         </div>
                       </div>
                     </div>
