@@ -17,11 +17,17 @@ interface ExerciseCardMenuProps {
   onRecordAudio?: () => void;
   /** 'full' shows every exercise-page action (matches the detail page); 'mvp' shows only what's visible on the MVP exercises page today. */
   variant: 'full' | 'mvp';
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorite, onAddToProgram, onAssign, onRecordAudio, variant }: ExerciseCardMenuProps) {
+export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorite, onAddToProgram, onAssign, onRecordAudio, variant, onOpenChange }: ExerciseCardMenuProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    onOpenChange?.(open);
+  };
 
   const handleAction = (key: React.Key) => {
     if (key === 'favorite') onToggleFavorite();
@@ -35,7 +41,7 @@ export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorit
   };
 
   return (
-    <Dropdown.Root isOpen={isOpen} onOpenChange={setIsOpen}>
+    <Dropdown.Root isOpen={isOpen} onOpenChange={handleOpenChange}>
       <AriaButton
         aria-label="More actions"
         className={cx(

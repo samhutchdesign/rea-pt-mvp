@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { ComponentType } from 'react';
 import { toast } from 'sonner';
-import { Heart, Lightbulb, Plus, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
+import { Heart, Lightbulb, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
 import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import ExerciseCardMenu from '@/components/exercises/ExerciseCardMenu';
@@ -174,7 +174,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
   return (
     <div className="mb-5 pb-5 border-b border-secondary">
       <div className="flex justify-between items-center mb-3">
-        <span className="font-semibold text-sm text-primary">{title}</span>
+        <span className="font-display text-md font-medium text-primary tracking-[0.1px]">{title}</span>
         {activeCount > 0 && (
           <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
             <X size={13} />
@@ -191,19 +191,19 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
     <button
       type="button"
       onClick={onChange}
-      className="flex w-full items-center gap-2 mb-2 cursor-pointer text-left bg-transparent border-none p-0"
+      className="flex w-full items-center gap-3 mb-4 cursor-pointer text-left bg-transparent border-none p-0"
     >
       <span className={cx(
-        'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
-        checked ? 'bg-brand-600 border-brand-600' : 'border-secondary bg-primary'
+        'flex size-6 shrink-0 items-center justify-center rounded-[4px] border',
+        checked ? 'bg-brand-100 border-brand-300' : 'border-secondary bg-secondary_alt'
       )}>
         {checked && (
-          <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 10 8" fill="none">
+          <svg className="size-3.5 text-primary" viewBox="0 0 10 8" fill="none">
             <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </span>
-      <span className="text-sm text-primary leading-tight">{label}</span>
+      <span className="text-base text-primary leading-tight">{label}</span>
     </button>
   );
 }
@@ -228,7 +228,7 @@ function FilterSearchBox({ value, onChange, placeholder }: { value: string; onCh
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+        className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
       />
     </div>
   );
@@ -299,6 +299,7 @@ function ExercisesPageContent() {
   const [movementSearch, setMovementSearch] = useState('');
   const [effortSearch, setEffortSearch] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set(mockExercises.filter((e) => e.isFavorite).map((e) => e.id)));
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
 
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
@@ -384,12 +385,6 @@ function ExercisesPageContent() {
     setVisibleCount(PAGE_SIZE);
   }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly]);
 
-  const levelClasses = (l: string) =>
-    l === 'Beginner' ? 'bg-success-50 text-success-700' :
-    l === 'Intermediate' ? 'bg-warning-50 text-warning-700' :
-    'bg-error-50 text-error-700';
-
-
   const breadcrumbs = [{ label: 'Exercises' }];
 
   const filteredConditions = filterConfig
@@ -429,12 +424,11 @@ function ExercisesPageContent() {
   return (
     <>
       <TopBar breadcrumbs={breadcrumbs} />
-      <div className="p-8">
+      <div className="p-10">
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="m-0 text-xl font-semibold text-primary">Exercises</h2>
-          <Button color="primary" size="sm" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/exercises/new')}>Create New</Button>
+        <div className="flex items-center justify-between mb-10">
+          <h1 className="font-display text-[40px] leading-[48px] font-normal text-primary m-0">Exercises</h1>
         </div>
 
         {/* Specialty horizontal scroll */}
@@ -443,14 +437,38 @@ function ExercisesPageContent() {
         {specialty && !specialty.available && <ComingSoonState sp={specialty} />}
 
         {(isAllMode || (specialty && specialty.available)) && (
-          <div className="flex items-start">
+          <>
+            <div className="mb-10 flex gap-4 items-start">
+              <div className="flex-1">
+                <Input
+                  size="lg"
+                  wrapperClassName="h-12 shadow-none ring-secondary"
+                  placeholder="Search by name or key words"
+                  value={search}
+                  onChange={setSearch}
+                  icon={Search}
+                />
+              </div>
+              <NativeSelect
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                wrapperClassName="w-[200px] shrink-0"
+                className="h-12"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </NativeSelect>
+            </div>
+
+          <div className="flex gap-10 items-start">
 
             {/* ── Left filter panel ── */}
-            <div className="w-56 shrink-0 pr-6 border-r border-secondary mr-7">
+            <div className="w-[280px] shrink-0 pr-10 border-r border-secondary">
 
               {/* Panel header */}
-              <div className="flex justify-between items-center mb-5 pb-4 border-b border-secondary">
-                <span className="font-semibold text-sm text-primary">Filters</span>
+              <div className="flex justify-between items-center mb-4">
+                <span className="font-display text-xl font-medium text-primary">Filter By</span>
                 {hasFilters && (
                   <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
                 )}
@@ -565,28 +583,6 @@ function ExercisesPageContent() {
             {/* ── Right content ── */}
             <div className="flex-1 min-w-0">
 
-              {/* Top bar */}
-              <div className={cx('flex gap-2.5 items-center', hasFilters ? 'mb-2.5' : 'mb-4')}>
-                <div className="flex-1">
-                  <Input
-                    placeholder="Search by name, description, or any tag"
-                    value={search}
-                    onChange={setSearch}
-                    icon={Search}
-                    size="sm"
-                  />
-                </div>
-                <NativeSelect
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  wrapperClassName="w-40 shrink-0"
-                >
-                  {SORT_OPTIONS.map((o) => (
-                    <option key={o} value={o}>{o}</option>
-                  ))}
-                </NativeSelect>
-              </div>
-
               {/* Active filter tags */}
               {hasFilters && (
                 <div className="flex gap-1.5 flex-wrap mb-3">
@@ -613,7 +609,7 @@ function ExercisesPageContent() {
                 </div>
               )}
 
-              <p className="block mb-4 text-xs text-tertiary">
+              <p className="block mb-4 text-xs text-primary">
                 {filtered.length} exercise{filtered.length !== 1 ? 's' : ''} shown
               </p>
 
@@ -624,11 +620,11 @@ function ExercisesPageContent() {
                   <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
-                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+                <div className="grid gap-10" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 360px))' }}>
                   {filtered.slice(0, visibleCount).map((ex) => (
                     <div
                       key={ex.id}
-                      className="group cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
+                      className="group relative flex flex-col cursor-pointer"
                       onClick={() => {
                         const p = new URLSearchParams();
                         if (effectiveSelectedId !== 'all') p.set('specialty', effectiveSelectedId);
@@ -648,29 +644,36 @@ function ExercisesPageContent() {
                         router.push(`/exercises/${ex.id}?back=${back}`);
                       }}
                     >
-                      <div className="relative h-32 overflow-hidden bg-brand-50">
+                      <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg">
                         <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
-                        <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                          <ExerciseCardMenu
-                            exercise={ex}
-                            variant="full"
-                            isFavorite={favorites.has(ex.id)}
-                            onToggleFavorite={() => toggleFavorite(ex.id)}
-                            onAddToProgram={() => block(() => { resetRx(ex); setProgramTargetExercise(ex); })}
-                            onAssign={() => block(() => { resetRx(ex); setAssignTargetExercise(ex); })}
-                            onRecordAudio={() => block(() => setAudioTargetExercise(ex))}
-                          />
-                        </div>
                       </div>
-                      <div className="px-3.5 py-3">
-                        <p className="font-display text-sm font-semibold text-primary leading-tight mb-2">{ex.name}</p>
-                        <div className="flex gap-1 flex-wrap mb-2.5">
-                          <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
-                          {ex.equipment !== 'None' && (
-                            <span className="text-xs rounded px-1.5 py-0.5 bg-secondary text-secondary">{ex.equipment}</span>
-                          )}
+                      {favorites.has(ex.id) && (
+                        <Heart className="absolute left-4 top-4 z-10 size-6 text-favorite drop-shadow" fill="currentColor" />
+                      )}
+                      <div
+                        className={cx(
+                          'absolute right-2 top-2 z-10 rounded-full transition-opacity',
+                          openMenuId === ex.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                        )}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExerciseCardMenu
+                          exercise={ex}
+                          variant="full"
+                          isFavorite={favorites.has(ex.id)}
+                          onToggleFavorite={() => toggleFavorite(ex.id)}
+                          onOpenChange={(open) => setOpenMenuId(open ? ex.id : null)}
+                          onAddToProgram={() => block(() => { resetRx(ex); setProgramTargetExercise(ex); })}
+                          onAssign={() => block(() => { resetRx(ex); setAssignTargetExercise(ex); })}
+                          onRecordAudio={() => block(() => setAudioTargetExercise(ex))}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2 pt-5">
+                        <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{ex.name}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="flex-1 text-xs text-primary">{ex.category}</span>
+                          <span className="shrink-0 rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary whitespace-nowrap">{ex.level}</span>
                         </div>
-                        <span className="text-xs text-tertiary">{ex.category}</span>
                       </div>
                     </div>
                   ))}
@@ -686,6 +689,7 @@ function ExercisesPageContent() {
               )}
             </div>
           </div>
+          </>
         )}
       </div>
 
