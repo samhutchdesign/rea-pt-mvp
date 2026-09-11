@@ -96,7 +96,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedSessionId(session.id)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
                 className={cx(
-                  'flex items-center justify-between gap-6 border-b border-secondary py-7 pl-6 pr-4 cursor-pointer transition-colors',
+                  'group flex items-center justify-between gap-6 border-b border-secondary py-7 pl-6 pr-4 cursor-pointer transition-colors',
                   isSelected ? 'bg-secondary_alt' : 'bg-primary hover:bg-secondary_alt'
                 )}
               >
@@ -127,11 +127,18 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 </div>
                 <div className="flex items-center gap-4 self-stretch shrink-0">
                   {session.signedAt ? (
-                    <Lock size={20} className="shrink-0 text-primary" />
+                    <Lock
+                      size={20}
+                      fill={isSelected ? 'currentColor' : 'none'}
+                      className={cx('shrink-0 transition-colors', isSelected ? 'text-brand-400' : 'text-primary group-hover:text-brand-400')}
+                    />
                   ) : (
-                    <Unlock size={20} className="shrink-0 text-[#BF9540]" />
+                    <Unlock size={20} fill="currentColor" className="shrink-0 text-[#BF9540]" />
                   )}
-                  <div className={cx('h-full w-1 shrink-0 rounded-xl', !session.signedAt && isSelected ? 'bg-[#BF9540]' : 'bg-transparent')} />
+                  <div className={cx(
+                    'h-full w-1 shrink-0 rounded-xl',
+                    isSelected ? (session.signedAt ? 'bg-brand-600' : 'bg-[#BF9540]') : 'bg-transparent'
+                  )} />
                 </div>
               </div>
             );
