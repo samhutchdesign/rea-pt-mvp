@@ -66,7 +66,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
     <div className="sticky top-[96px] grid h-[calc(100vh-128px)] grid-cols-[minmax(0,320px)_1fr] items-start">
       {/* Left pane: session list */}
       <div className="h-full overflow-y-auto flex flex-col border-r border-secondary">
-        <div className="px-6 pb-5">
+        <div className="px-6 pt-10 pb-5">
           {isChartWriter ? (
             <Button
               color="secondary"
@@ -148,7 +148,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Right pane: selected session, read-only */}
-      <div className="h-full overflow-y-auto pl-10">
+      <div className="h-full overflow-y-auto pl-10 pt-10">
         {selectedSession ? (
           <div className="flex flex-col gap-4">
             <div className="flex items-start justify-between gap-4">
