@@ -97,7 +97,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedSessionId(session.id)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
                 className={cx(
-                  'group flex items-center justify-between gap-6 border-b border-secondary py-5 pl-6 pr-4 cursor-pointer transition-colors',
+                  'group relative flex items-center justify-between gap-6 border-b border-secondary py-5 pl-6 pr-4 cursor-pointer transition-colors',
                   isSelected ? 'bg-secondary_alt' : 'bg-primary hover:bg-secondary_alt'
                 )}
               >
@@ -126,21 +126,19 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                     <p className="text-xs text-tertiary line-clamp-2">{session.summary}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-4 self-stretch shrink-0">
-                  {session.signedAt ? (
-                    <LockIcon
-                      size={20}
-                      filled={isSelected}
-                      className={cx('shrink-0 transition-colors', isSelected ? 'text-brand-400' : 'text-primary group-hover:text-brand-400')}
-                    />
-                  ) : (
-                    <UnlockIcon size={20} filled className="shrink-0 text-[#BF9540]" />
-                  )}
-                  <div className={cx(
-                    'h-full w-1 shrink-0 rounded-xl',
-                    isSelected ? (session.signedAt ? 'bg-brand-600' : 'bg-[#BF9540]') : 'bg-transparent'
-                  )} />
-                </div>
+                {session.signedAt ? (
+                  <LockIcon
+                    size={20}
+                    filled={isSelected}
+                    className={cx('shrink-0 transition-colors', isSelected ? 'text-brand-400' : 'text-primary group-hover:text-brand-400')}
+                  />
+                ) : (
+                  <UnlockIcon size={20} filled className="shrink-0 text-[#BF9540]" />
+                )}
+                <div className={cx(
+                  'absolute right-0 top-0 bottom-0 w-1',
+                  isSelected ? (session.signedAt ? 'bg-brand-600' : 'bg-[#BF9540]') : 'bg-transparent'
+                )} />
               </div>
             );
           })
