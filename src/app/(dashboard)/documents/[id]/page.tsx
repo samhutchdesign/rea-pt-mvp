@@ -1,7 +1,6 @@
 'use client';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import TopBar from '@/components/layout/TopBar';
 import { mockDocuments } from '@/lib/mock-data';
 import { Button } from '@/components/base/buttons/button';
 import { Divider } from '@/components/ui/divider';
@@ -22,9 +21,6 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <TopBar
-        breadcrumbs={[{ label: 'All Documents', href: '/documents' }, { label: doc.name }]}
-      />
       <div className="p-8 max-w-[700px]">
         <div className="flex justify-between items-center mb-6">
           <div>

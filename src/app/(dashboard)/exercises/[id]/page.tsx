@@ -2,7 +2,6 @@
 import { use, useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
@@ -146,7 +145,6 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: ex.category, href: `/exercises?category=${encodeURIComponent(ex.category)}` }, { label: ex.name }]} />
 
       <div className="px-8 py-8 flex gap-10 items-start">
 

@@ -2,7 +2,6 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import { Toggle } from '@/components/base/toggle/toggle';
 import { Button } from '@/components/base/buttons/button';
 import { Divider } from '@/components/ui/divider';
@@ -214,7 +213,6 @@ function SettingsContent() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Account' }, { label: 'Settings' }]} />
       <div className="p-8 max-w-[600px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Settings</h2>
         <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-4">

@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -37,9 +36,6 @@ export default function NewDocumentPage() {
 
   return (
     <>
-      <TopBar
-        breadcrumbs={[{ label: 'All Documents', href: '/documents' }, { label: 'New Form' }]}
-      />
       <div className="p-8 max-w-[700px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Create New Form</h2>
 

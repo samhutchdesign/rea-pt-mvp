@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import AddPatientDialog from '@/components/patients/AddPatientDialog';
 import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
@@ -194,7 +193,6 @@ export default function PatientsPage() {
   if (dataState === 'empty') {
     return (
       <>
-        <TopBar breadcrumbs={[{ label: 'All Patients' }]} />
         <EmptyState
           icon={User01}
           title="No patients yet"
@@ -206,7 +204,6 @@ export default function PatientsPage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Patients' }]} />
       <div className="p-10">
 
         {/* Header */}

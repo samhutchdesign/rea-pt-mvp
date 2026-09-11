@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { useLocationScope, useCurrentIdentity } from '@/lib/locationScope';
@@ -72,7 +71,6 @@ export default function EmployeesPage() {
   if (dataState === 'empty') {
     return (
       <>
-        <TopBar breadcrumbs={[{ label: 'Employees' }]} />
         <EmptyState
           icon={Users}
           title="No team members yet"
@@ -84,7 +82,6 @@ export default function EmployeesPage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Employees' }]} />
       <div className="p-10">
         <div className="flex justify-between items-center mb-10">
           <h1 className="font-display text-[40px] leading-[48px] font-normal text-primary m-0">Employees</h1>

@@ -2,7 +2,6 @@
 import { useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building2, MapPin, Users, Heart, Zap } from 'lucide-react';
-import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { mockPatients, mockEmployees, mockClinicLocations, mockPrograms, mockChartSessions } from '@/lib/mock-data';
 import { useRole } from '@/lib/roleStore';
@@ -280,7 +279,6 @@ export default function DashboardPage() {
   if (dataState === 'empty') {
     return (
       <>
-        <TopBar breadcrumbs={[{ label: 'Dashboard' }]} />
         <div className="p-8 flex flex-col items-center justify-center min-h-[calc(100vh-56px)]">
           <div className="w-full max-w-sm">
             <div className="text-center mb-8">
@@ -312,7 +310,6 @@ export default function DashboardPage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Dashboard' }]} />
       <div className="p-8 max-w-4xl">
         <h2 className="text-xl font-semibold text-primary mb-6 mt-0">
           {role === 'owner' ? 'Practice Overview' : role === 'admin' ? 'Clinic Overview' : 'My Dashboard'}

@@ -1,6 +1,5 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Input } from '@/components/base/input/input';
 import { Button } from '@/components/base/buttons/button';
@@ -20,7 +19,6 @@ export default function ProfilePage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Account' }, { label: 'Your Profile' }]} />
       <div className="p-8 max-w-[640px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Your Profile</h2>
 

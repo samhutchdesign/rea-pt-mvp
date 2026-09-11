@@ -2,7 +2,6 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import { mockClinicLocations, mockClinic, mockEmployees } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useLocationOverrides, getEffectivePatientIdsForEmployee } from '@/lib/patientLocationStore';
@@ -59,12 +58,6 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <TopBar
-        breadcrumbs={[
-          { label: 'Organization Profile', href: '/clinic' },
-          { label: saved.name },
-        ]}
-      />
       <div className="p-8 max-w-[900px]">
         {/* Header */}
         <div className="flex items-start gap-6 mb-8">

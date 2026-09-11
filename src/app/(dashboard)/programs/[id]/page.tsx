@@ -3,7 +3,6 @@ import { use, useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button as AriaButton } from 'react-aria-components';
-import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
@@ -110,7 +109,6 @@ function ProgramDetailContent({ id }: { id: string }) {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Programs', href: '/programs' }, { label: prog.name }]} />
       <div className="px-8 py-8 max-w-[1200px]">
         <button
           onClick={() => router.push(backUrl)}

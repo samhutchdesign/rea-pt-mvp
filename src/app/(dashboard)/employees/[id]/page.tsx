@@ -2,7 +2,6 @@
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { mockEmployees, mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -349,7 +348,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Employees', href: '/employees' }, { label: `${savedContact.firstName} ${savedContact.lastName}` }]} />
       <div className="p-8">
 
         {archived && (

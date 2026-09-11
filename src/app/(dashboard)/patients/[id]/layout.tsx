@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { usePathname, useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Button } from '@/components/base/buttons/button';
 import { Alert } from '@/components/ui/alert';
@@ -83,7 +82,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const isYourPatient = yourEmpId !== null && !!patient && getEffectiveAssignedEmployeeId(patient, locationOverrides) === yourEmpId;
   const canEdit = can.canArchivePatient || isYourPatient;
   const activeTab = patientTabs.findIndex((t) => pathname.includes(`/${t.path}`));
-  const currentTab = patientTabs[activeTab] ?? patientTabs[0];
 
   useEffect(() => {
     return () => { clearUploadedData(id); };
@@ -145,13 +143,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      <TopBar
-        breadcrumbs={[
-          { label: 'All Patients', href: '/patients' },
-          { label: `${effectiveContact.firstName} ${effectiveContact.lastName}`, href: `/patients/${id}/overview` },
-          { label: currentTab.label },
-        ]}
-      />
       <div>
         {archived && (
           <Alert type="warning" className="rounded-none px-10">

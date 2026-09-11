@@ -1,7 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -84,7 +83,6 @@ function NewExerciseForm() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: pageTitle }]} />
       <div className="p-8 max-w-[700px]">
         <h2 className="mt-0 mb-6 text-2xl font-bold text-primary">{pageTitle}</h2>
 

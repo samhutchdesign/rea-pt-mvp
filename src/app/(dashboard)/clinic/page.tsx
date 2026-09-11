@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ComponentType } from 'react';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import { mockClinic, mockClinicLocations, mockEmployees, mockPatients } from '@/lib/mock-data';
 import type { ClinicLocation } from '@/lib/types';
 import { Avatar } from '@/components/base/avatar/avatar';
@@ -71,7 +70,6 @@ export default function ClinicPage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Organization Profile' }]} />
       <div className="p-8 max-w-[900px]">
         {/* Header */}
         <div className="flex items-center gap-6 mb-8">

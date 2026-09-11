@@ -1,6 +1,5 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -66,7 +65,6 @@ export default function NewExercisePage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Exercises', href: '/exercises' }, { label: 'New Exercise' }]} />
       <div className="p-8 max-w-[700px]">
         <h2 className="mt-0 mb-6 text-2xl font-bold text-primary">New Exercise</h2>
 

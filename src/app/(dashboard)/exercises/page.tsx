@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import type { ComponentType } from 'react';
 import { toast } from 'sonner';
 import { Heart, Lightbulb, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
-import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import ExerciseCardMenu from '@/components/exercises/ExerciseCardMenu';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
@@ -385,8 +384,6 @@ function ExercisesPageContent() {
     setVisibleCount(PAGE_SIZE);
   }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly]);
 
-  const breadcrumbs = [{ label: 'Exercises' }];
-
   const filteredConditions = filterConfig
     ? (conditionSearch ? filterConfig.conditions.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase())) : filterConfig.conditions)
     : [];
@@ -423,7 +420,6 @@ function ExercisesPageContent() {
 
   return (
     <>
-      <TopBar breadcrumbs={breadcrumbs} />
       <div className="p-10">
 
         {/* Header */}

@@ -1,6 +1,5 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import TopBar from '@/components/layout/TopBar';
 import { Input } from '@/components/base/input/input';
 import { Button } from '@/components/base/buttons/button';
 import { useCurrentIdentity } from '@/lib/locationScope';
@@ -10,7 +9,6 @@ export default function EmailChangePage() {
   const identity = useCurrentIdentity();
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Account' }, { label: 'Email Change' }]} />
       <div className="p-8 max-w-[500px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Change Email</h2>
         <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">

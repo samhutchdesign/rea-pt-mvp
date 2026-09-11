@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import TopBar from '@/components/layout/TopBar';
 import { mockDocuments } from '@/lib/mock-data';
 import { cx } from '@/utils/cx';
 import { Folder, Heart } from 'lucide-react';
@@ -26,7 +25,6 @@ export default function DocumentsPage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Documents' }]} />
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-primary m-0">Documents</h2>

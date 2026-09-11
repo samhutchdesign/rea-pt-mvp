@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Button } from '@/components/base/buttons/button';
 import { Divider } from '@/components/ui/divider';
 import { Progress } from '@/components/ui/progress';
-import TopBar from '@/components/layout/TopBar';
 import { cx } from '@/utils/cx';
 import { Check, CreditCard, Download } from 'lucide-react';
 
@@ -190,7 +189,6 @@ export default function BillingPage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Billing' }]} />
       <div className="p-8">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Billing</h2>
 

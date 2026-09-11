@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Divider } from '@/components/ui/divider';
 import { mockNotifications } from '@/lib/mock-data';
@@ -26,7 +25,6 @@ export default function NotificationsPage() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Notifications' }]} />
       <div className="p-8 max-w-[720px]">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">

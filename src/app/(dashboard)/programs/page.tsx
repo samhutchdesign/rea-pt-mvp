@@ -2,7 +2,6 @@
 import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import TopBar from '@/components/layout/TopBar';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
@@ -199,7 +198,6 @@ function ProgramsPageContent() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'All Programs' }]} />
       <div className="p-10">
 
         <div className="flex items-center justify-between mb-10">

@@ -3,7 +3,6 @@ import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Search, X } from 'lucide-react';
-import TopBar from '@/components/layout/TopBar';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import ExerciseCardMenu from '@/components/exercises/ExerciseCardMenu';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
@@ -239,7 +238,6 @@ function ExercisesPageContent() {
 
   return (
     <>
-      <TopBar breadcrumbs={[{ label: 'Exercises' }]} />
       <div className="p-8">
 
         {/* Header */}
