@@ -84,7 +84,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
   if (!patient) return null;
 
   return (
-    <>
+    <div className="mt-20">
       {showUploadBanner && (
         <Alert type="success" className="mb-6">
           <div className="flex w-full items-start justify-between gap-3">
@@ -287,6 +287,6 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           </Dialog>
         </Modal>
       </ModalOverlay>
-    </>
+    </div>
   );
 }

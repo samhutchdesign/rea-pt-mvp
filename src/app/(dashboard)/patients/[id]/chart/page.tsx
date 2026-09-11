@@ -96,40 +96,43 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedSessionId(session.id)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
                 className={cx(
-                  'flex items-start justify-between gap-4 border-b border-secondary py-7 cursor-pointer transition-colors',
+                  'flex items-center justify-between gap-6 border-b border-secondary py-7 cursor-pointer transition-colors',
                   isSelected ? 'bg-secondary_alt' : 'bg-primary hover:bg-secondary_alt'
                 )}
               >
-                <div className="min-w-0">
+                <div className="min-w-0 flex flex-col gap-5">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={cx('text-base font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
-                      {session.signedAt ? 'Signed' : 'Draft'}
+                    <span className={cx('text-base leading-5 font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                      {session.signedAt ? 'Signed' : 'DRAFT'}
                     </span>
                     <span className="text-tertiary">•</span>
-                    <span className="text-base text-secondary">
+                    <span className="text-base leading-5 text-secondary">
                       {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </span>
                   </div>
-                  <span className="font-display mt-2 block text-xl font-medium text-primary">
+                  <span className="font-display block text-xl leading-5 font-medium text-primary">
                     {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
                   </span>
                   {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {
                     const s = ADHERENCE_STYLE[session.adherenceLevel];
                     return (
-                      <span className={cx('mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold', s?.bg, s?.text)}>
+                      <span className={cx('inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold self-start', s?.bg, s?.text)}>
                         {session.adherenceLevel}
                       </span>
                     );
                   })()}
                   {viewMode === 'full' && session.summary && (
-                    <p className="text-xs text-tertiary mt-1.5 line-clamp-2">{session.summary}</p>
+                    <p className="text-xs text-tertiary line-clamp-2">{session.summary}</p>
                   )}
                 </div>
-                {session.signedAt ? (
-                  <Lock size={20} className="shrink-0 text-primary" />
-                ) : (
-                  <Unlock size={20} className="shrink-0 text-[#BF9540]" />
-                )}
+                <div className="flex items-center gap-4 self-stretch shrink-0">
+                  {session.signedAt ? (
+                    <Lock size={20} className="shrink-0 text-primary" />
+                  ) : (
+                    <Unlock size={20} className="shrink-0 text-[#BF9540]" />
+                  )}
+                  <div className={cx('h-full w-1 shrink-0 rounded-xl', !session.signedAt && isSelected ? 'bg-[#BF9540]' : 'bg-transparent')} />
+                </div>
               </div>
             );
           })

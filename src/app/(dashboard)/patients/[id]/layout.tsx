@@ -211,25 +211,27 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             )}
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-10 border-b border-secondary">
-            {patientTabs.map((tab, i) => (
-              <Link
-                key={tab.path}
-                href={`/patients/${id}/${tab.path}`}
-                className={cx(
-                  'pb-4 pt-0 text-base -mb-px border-b-[3px] transition-colors duration-100',
-                  selectedIndex === i
-                    ? 'border-b-[#9b9897] text-primary font-medium'
-                    : 'border-transparent text-primary font-normal hover:text-secondary'
-                )}
-              >
-                {tab.label}
-              </Link>
-            ))}
-          </div>
+          <div>
+            {/* Tabs */}
+            <div className="flex gap-10 border-b border-secondary">
+              {patientTabs.map((tab, i) => (
+                <Link
+                  key={tab.path}
+                  href={`/patients/${id}/${tab.path}`}
+                  className={cx(
+                    'pb-4 pt-0 text-base -mb-px border-b-[3px] transition-colors duration-100',
+                    selectedIndex === i
+                      ? 'border-b-[#9b9897] text-primary font-medium'
+                      : 'border-transparent text-primary font-normal hover:text-secondary'
+                  )}
+                >
+                  {tab.label}
+                </Link>
+              ))}
+            </div>
 
-          {children}
+            {children}
+          </div>
         </div>
       </div>
 

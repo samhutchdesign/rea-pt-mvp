@@ -147,7 +147,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
 
   if (!program) {
     return (
-      <div>
+      <div className="mt-20">
         <h3 className="text-lg font-semibold text-primary mt-0 mb-2">Program</h3>
         <p className="text-sm text-secondary mb-6">
           No program assigned yet. Choose a recommended template or start from scratch.
@@ -184,7 +184,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div>
+    <div className="mt-20">
 
       {/* Current program header */}
       <div className="flex justify-between items-start mb-10">
