@@ -144,7 +144,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
       {/* Right pane: selected session, read-only */}
       <div className="h-full overflow-y-auto pl-10 pt-10">
         {selectedSession ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-10">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="font-display text-[32px] leading-[32px] font-normal text-primary">{titleLabel}</h2>
