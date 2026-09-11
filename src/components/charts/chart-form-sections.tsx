@@ -9,7 +9,7 @@ import { BodyMap } from '@/components/charts/body-map';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { SIGNATURE_FONTS } from '@/lib/employeeSignatureStore';
 import { cx } from '@/utils/cx';
-import { ChevronDown, MapPin, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, MapPin, X } from 'lucide-react';
 import type {
   Patient, ChartSession, PainPoint, RomEntry, StrengthEntry, ProblemListItem, GoalItem, PlanItem, InterventionItem,
   SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, EvaluationSection, JointMovementOption,
@@ -17,8 +17,8 @@ import type {
 import { JOINT_MOVEMENTS } from '@/lib/types';
 
 const tableInputCls = 'w-full rounded border border-secondary px-1.5 py-1 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300';
-const th = 'px-2 py-2 text-left text-xs font-semibold text-secondary whitespace-nowrap';
-const td = 'px-2 py-1.5 align-top';
+const th = 'px-3 py-3 text-left text-base font-normal text-primary whitespace-nowrap';
+const td = 'px-3 py-3 align-top text-base text-primary';
 
 function movementLabel(movement: JointMovementOption | '', movementOther: string): string {
   if (!movement) return '';
@@ -73,22 +73,19 @@ export const emptyAnalysis = (): AnalysisSection => ({ bodyStructures: '', probl
 export const emptyPlan = (): PlanSection => ({ items: [], frequency: '', reassessmentPlan: '', dischargePlan: '', consentObtained: true, notes: '' });
 export const emptyEvaluation = (): EvaluationSection => ({ patientReaction: '', objectiveResponse: '' });
 
-export function SectionCard({ letter, label, defaultOpen = true, children }: { letter: string; label: string; defaultOpen?: boolean; children: React.ReactNode }) {
+export function SectionCard({ label, defaultOpen = true, children }: { letter?: string; label: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-xl border border-secondary bg-primary p-5">
+    <div>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={cx('flex w-full items-center gap-3 bg-transparent border-none p-0 cursor-pointer text-left', open && 'mb-4')}
+        className="flex w-full items-center gap-2 border-b border-secondary bg-transparent px-2 py-4 border-x-0 border-t-0 cursor-pointer text-left"
       >
-        <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-brand-600">
-          <span className="text-[0.8rem] font-bold leading-none text-white">{letter}</span>
-        </div>
-        <span className="font-display flex-1 text-lg font-semibold text-primary">{label}</span>
-        <ChevronDown size={16} className={cx('shrink-0 text-tertiary transition-transform', open && 'rotate-180')} />
+        <span className="font-display flex-1 text-2xl font-medium text-primary">{label}</span>
+        {open ? <ChevronUp size={24} className="shrink-0 text-primary" /> : <ChevronDown size={24} className="shrink-0 text-primary" />}
       </button>
-      {open && <div className="flex flex-col gap-4">{children}</div>}
+      {open && <div className="flex flex-col gap-6 pt-6">{children}</div>}
     </div>
   );
 }
@@ -669,7 +666,7 @@ function ReadBulletedText({ text, emptyLabel }: { text?: string; emptyLabel: str
     .filter(Boolean);
   if (lines.length === 0) return <ReadEmpty>{emptyLabel}</ReadEmpty>;
   return (
-    <ul className="list-disc space-y-1 pl-4 text-sm text-primary">
+    <ul className="list-disc space-y-3 pl-6 text-base text-primary">
       {lines.map((line, i) => <li key={i}>{line}</li>)}
     </ul>
   );
@@ -702,7 +699,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
         {isDictation ? (
           <>
             {subjective.painPoints.some((p) => p.bodyView) && (
-              <BodyMap painPoints={subjective.painPoints} interactive={false} simplified />
+              <BodyMap painPoints={subjective.painPoints} interactive={false} />
             )}
             <ReadBulletedText text={subjective.rawText} emptyLabel="No subjective notes recorded." />
           </>
@@ -788,7 +785,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
         )}
         {objective.rom.length > 0 && (
           <div>
-            <span className="mb-2 block text-xs text-secondary">ROM</span>
+            <span className="font-display mb-3 block text-lg font-medium text-primary">ROM</span>
             <div className="overflow-x-auto rounded-lg border border-secondary">
               <table className="w-full border-collapse">
                 <thead>
@@ -804,7 +801,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
                 </thead>
                 <tbody>
                   {objective.rom.map((r, i) => (
-                    <tr key={i} className="border-b border-secondary text-sm text-primary last:border-0">
+                    <tr key={i} className="border-b border-secondary last:border-0">
                       <td className={td}>{r.jointName || '—'}</td>
                       <td className={td}>{movementLabel(r.movement, r.movementOther) || '—'}</td>
                       <td className={td}>{r.leftArom ? `${r.leftArom}° (${r.leftAromPain || 0}/10)` : '—'}</td>
@@ -821,7 +818,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
         )}
         {(objective.strengthUnaffectedSide || objective.strengthUnaffectedNotes || objective.strength.length > 0) && (
           <div>
-            <span className="mb-2 block text-xs text-secondary">Strength</span>
+            <span className="font-display mb-3 block text-lg font-medium text-primary">Strength</span>
             <div className="mb-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <ReadField label="Unaffected Side" value={objective.strengthUnaffectedSide} />
               <ReadField label="Notes" value={objective.strengthUnaffectedNotes} />
@@ -838,7 +835,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
                 </thead>
                 <tbody>
                   {objective.strength.map((s, i) => (
-                    <tr key={i} className="border-b border-secondary text-sm text-primary last:border-0">
+                    <tr key={i} className="border-b border-secondary last:border-0">
                       <td className={td}>{s.jointName || '—'}</td>
                       <td className={td}>{movementLabel(s.movement, s.movementOther) || '—'}</td>
                       <td className={td}>{s.isometric ? `${s.isometric} (Pain ${s.isometricPain || 0}/10)` : '—'}</td>
@@ -924,7 +921,10 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
         <ReadField label="Additional Notes" value={plan.notes} />
           </>
         )}
-        <ReadField label="Client Consent" value={plan.consentObtained ? 'Treatment plan explained, understood & accepted' : 'Not yet obtained'} />
+        <div>
+          <span className="font-display mb-2 block text-lg font-medium text-primary">Patient Consent</span>
+          <span className="text-base text-primary">{plan.consentObtained ? 'Treatment plan explained, understood & accepted' : 'Not yet obtained'}</span>
+        </div>
       </SectionCard>
 
       {/* Interventions */}
@@ -1002,21 +1002,21 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
       />
 
       {session.signedAt && (
-        <div className="rounded-xl border border-secondary bg-primary p-5">
-          <span className="mb-2 block text-sm font-semibold text-primary">Signed</span>
+        <div className="rounded-lg border border-secondary bg-primary p-7">
+          <span className="font-display mb-3 block text-lg font-medium text-primary">Signature</span>
           <span style={{ fontFamily: signatureFont?.variable }} className="block text-3xl text-primary">
             {session.signedByName}
           </span>
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:max-w-xs sm:grid-cols-2">
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:max-w-xs sm:grid-cols-2">
             <div>
-              <span className="mb-0.5 block text-xs text-secondary">Date of Session</span>
-              <span className="block text-xs text-tertiary">
-                {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
+              <span className="mb-2 block text-xs text-secondary">Date Signed</span>
+              <span className="block text-xs text-primary">{new Date(session.signedAt).toLocaleString()}</span>
             </div>
             <div>
-              <span className="mb-0.5 block text-xs text-secondary">Date Signed</span>
-              <span className="block text-xs text-tertiary">{new Date(session.signedAt).toLocaleString()}</span>
+              <span className="mb-2 block text-xs text-secondary">Date of Session</span>
+              <span className="block text-xs text-primary">
+                {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </span>
             </div>
           </div>
         </div>

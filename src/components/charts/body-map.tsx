@@ -36,6 +36,9 @@ export function BodyMap({
   const pins = painPoints
     .map((p, i) => ({ p, i }))
     .filter(({ p }) => p.bodyView === view && p.x !== undefined && p.y !== undefined);
+  const pinsForView = (v: BodyView) => painPoints
+    .map((p, i) => ({ p, i }))
+    .filter(({ p }) => p.bodyView === v && p.x !== undefined && p.y !== undefined);
 
   const posFromPoint = (clientX: number, clientY: number) => {
     const rect = containerRef.current!.getBoundingClientRect();
@@ -83,6 +86,42 @@ export function BodyMap({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [simplified, !!onMove]);
+
+  if (!interactive) {
+    return (
+      <div>
+        <span className="font-display mb-5 block text-lg font-medium tracking-[0.1px] text-primary">Pain Diagram</span>
+        <div className="flex justify-center gap-8">
+          {VIEWS.map((v) => (
+            <div key={v.id} className="relative aspect-[2/5] w-[180px] shrink-0">
+              {imgError[v.id] ? (
+                <div className="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-secondary bg-secondary_alt" />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element -- static local asset, dimensions vary per file
+                <img
+                  src={v.src}
+                  alt={`Body diagram — ${v.label}`}
+                  className="pointer-events-none h-full w-full object-contain"
+                  draggable={false}
+                  onError={() => setImgError((prev) => ({ ...prev, [v.id]: true }))}
+                />
+              )}
+              {pinsForView(v.id).map(({ p, i }) => (
+                <div
+                  key={i}
+                  title={p.location || `P${i + 1}`}
+                  style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                  className="absolute flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#8fb4a2] bg-brand-100 font-display text-sm font-medium text-primary"
+                >
+                  {i + 1}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
