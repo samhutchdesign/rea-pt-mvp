@@ -10,8 +10,9 @@ import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/pati
 import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { Button } from '@/components/base/buttons/button';
 import { ChartSessionReadPanel } from '@/components/charts/chart-form-sections';
+import { LockIcon, UnlockIcon } from '@/components/icons/lock-icons';
 import { copyChartSessionToClipboard } from '@/lib/chartExport';
-import { Plus, Lock, Unlock, Copy, Check } from 'lucide-react';
+import { Plus, Copy, Check } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 const ADHERENCE_STYLE: Record<string, { bg: string; text: string }> = {
@@ -127,13 +128,13 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 </div>
                 <div className="flex items-center gap-4 self-stretch shrink-0">
                   {session.signedAt ? (
-                    <Lock
+                    <LockIcon
                       size={20}
-                      fill={isSelected ? 'currentColor' : 'none'}
+                      filled={isSelected}
                       className={cx('shrink-0 transition-colors', isSelected ? 'text-brand-400' : 'text-primary group-hover:text-brand-400')}
                     />
                   ) : (
-                    <Unlock size={20} fill="currentColor" className="shrink-0 text-[#BF9540]" />
+                    <UnlockIcon size={20} filled className="shrink-0 text-[#BF9540]" />
                   )}
                   <div className={cx(
                     'h-full w-1 shrink-0 rounded-xl',
