@@ -32,44 +32,37 @@ function ExerciseCard({
   const sorted = [...comments].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
   return (
-    <div className="rounded-xl border border-secondary bg-primary overflow-hidden">
-      <div className="p-4">
-        <div className="flex items-center gap-5">
-          <div className="relative aspect-[320/180] w-40 shrink-0 rounded-lg overflow-hidden bg-brand-50">
-            <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={28} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-display text-md font-medium text-primary tracking-[0.1px] mb-2">{ex.name}</p>
-            <p className="text-xs text-primary mb-2">
-              {pe.sets} Sets / {pe.reps} Reps{pe.holdSecs > 0 ? ` / ${pe.holdSecs} Sec Hold` : ''}
-            </p>
-            {pe.cue && (
-              <span className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-secondary">{pe.cue}</span>
-            )}
-          </div>
-          {viewMode === 'full' && pe.adherence != null && (
-            <div className="flex flex-col items-center gap-1 min-w-[64px]">
-              <span
-                className="text-lg font-bold leading-none"
-                style={{ color: pe.adherence >= 80 ? '#2E7D32' : pe.adherence >= 60 ? '#F57F17' : '#C62828' }}
-              >
-                {pe.adherence}%
-              </span>
-              <span className="text-[10px] text-secondary whitespace-nowrap">adherence</span>
-            </div>
-          )}
-          <button
-            title="Preview exercise"
-            className="p-1.5 rounded-lg text-secondary hover:bg-secondary hover:text-primary transition-colors"
-            onClick={() => onPreview(ex, pe)}
+    <div className="group flex flex-1 min-w-[260px] max-w-[346px] flex-col">
+      <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg bg-brand-50">
+        <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={28} />
+        {viewMode === 'full' && pe.adherence != null && (
+          <span
+            className="absolute left-3 top-3 rounded-full bg-primary px-2 py-0.5 text-xs font-bold"
+            style={{ color: pe.adherence >= 80 ? '#2E7D32' : pe.adherence >= 60 ? '#F57F17' : '#C62828' }}
           >
-            <Eye size={14} />
-          </button>
-        </div>
+            {pe.adherence}%
+          </span>
+        )}
+        <button
+          title="Preview exercise"
+          onClick={() => onPreview(ex, pe)}
+          className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full border border-primary bg-primary opacity-0 transition-opacity group-hover:opacity-100"
+        >
+          <Eye size={16} className="text-primary" />
+        </button>
+      </div>
+      <div className="flex flex-col gap-4 pt-4">
+        <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{ex.name}</p>
+        <p className="text-xs text-primary">
+          {pe.sets} Sets / {pe.reps} Reps{pe.holdSecs > 0 ? ` / ${pe.holdSecs} Sec Hold` : ''}
+        </p>
+        {pe.cue && (
+          <span className="inline-flex w-fit items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-secondary">{pe.cue}</span>
+        )}
       </div>
 
       {viewMode === 'full' && sorted.length > 0 && (
-        <div className="border-t border-secondary bg-secondary_alt px-4 py-3 flex flex-col gap-3">
+        <div className="mt-4 rounded-lg border border-secondary bg-secondary_alt px-4 py-3 flex flex-col gap-3">
           {sorted.map((c) => (
             <div key={c.id} className="flex gap-3">
               <Avatar initials={c.authorInitials} size="xs" />
@@ -190,7 +183,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
       <div className="flex justify-between items-start mb-10">
         <div className="flex flex-col gap-4">
           <h1 className="font-display text-display-xs font-medium text-primary m-0">{program.name}</h1>
-          <p className="text-base text-secondary m-0">
+          <p className="text-base leading-5 text-secondary m-0">
             {completedSessions} of {totalSessions} sessions
             <span className="ml-3 text-sm text-tertiary">{program.frequency}</span>
             {viewMode === 'full' && hep.programAssignedAt && (
@@ -212,7 +205,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
       {visibleExercises.length === 0 ? (
         <p className="text-sm text-tertiary py-10 text-center">No exercises in this program yet.</p>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap gap-10">
           {visibleExercises.map((pe) => (
             <ExerciseCard
               key={pe.exerciseId}
