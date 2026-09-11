@@ -92,7 +92,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 mt-10">
       {/* Contact Information */}
       <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
         <div className="flex justify-between items-center mb-5">
