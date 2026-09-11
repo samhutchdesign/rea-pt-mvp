@@ -64,6 +64,8 @@ export const styles = sortCx({
         secondary: {
             root: [
                 "bg-primary text-secondary ring-1 ring-primary ring-inset hover:bg-primary_hover hover:text-secondary_hover data-loading:bg-primary_hover",
+                // Text buttons get an 8px radius; icon-only buttons stay circular
+                "rounded-lg before:rounded-lg data-icon-only:rounded-full data-icon-only:before:rounded-full",
                 // Icon styles
                 "*:data-icon:text-fg-quaternary hover:*:data-icon:text-fg-quaternary_hover",
             ].join(" "),
