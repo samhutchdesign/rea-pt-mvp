@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import TopBar from '@/components/layout/TopBar';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { Badge } from '@/components/base/badges/badges';
 import { Button } from '@/components/base/buttons/button';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -30,11 +29,6 @@ const ALL_TABS = [
   { label: 'Documents', path: 'documents', fullOnly: true },
   { label: 'Contact', path: 'contact' },
 ];
-
-function conditionLabel(mechanism: string | undefined): string | null {
-  if (!mechanism) return null;
-  return mechanism.length > 32 ? mechanism.slice(0, 32).replace(/\s\S*$/, '') + '…' : mechanism;
-}
 
 function ConfirmModal({ open, onClose, title, description, confirmLabel, destructive, onConfirm }: {
   open: boolean; onClose: () => void; title: string; description: React.ReactNode;
@@ -102,8 +96,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
       </div>
     );
   }
-
-  const chip = conditionLabel(patient.injuryHistory?.mechanism);
 
   const handleArchive = () => {
     setArchived(true);
@@ -185,9 +177,6 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                     <span className="text-base leading-5 text-secondary">{getEffectiveLocationString(patient, locationOverrides)}</span>
                   </div>
                 </div>
-                {chip && !isStaffPersona && (
-                  <Badge type="pill-color" color="brand" size="sm">{chip}</Badge>
-                )}
               </div>
             </div>
 
