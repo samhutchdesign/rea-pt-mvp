@@ -164,7 +164,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         <div className="flex flex-col gap-7 w-[395px] shrink-0">
           <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-9">
             <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Summary</span>
-            <div className="flex flex-col gap-9">
+            <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-3">
                 <span className="text-base leading-5 font-semibold text-primary">Issue:</span>
                 <span className="text-base leading-5 text-primary">{patient.injuryHistory?.mechanism || 'Not recorded'}</span>
@@ -184,7 +184,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
             <div className="flex items-center justify-between">
               <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Assigned Practitioner</span>
               {can.canTransferPatient && (
-                <Button size="xs" color="link-color" iconLeading={ArrowLeftRight} onPress={() => setTransferOpen(true)}>
+                <Button size="sm" color="secondary" iconLeading={ArrowLeftRight} onPress={() => setTransferOpen(true)}>
                   Transfer
                 </Button>
               )}
