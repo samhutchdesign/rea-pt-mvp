@@ -63,7 +63,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   };
 
   return (
-    <div className="sticky top-[96px] grid h-[calc(100vh-128px)] grid-cols-[minmax(0,320px)_1fr] items-start">
+    <div className="sticky top-[96px] grid h-[calc(100vh-128px)] grid-cols-[minmax(0,400px)_1fr] items-start">
       {/* Left pane: session list */}
       <div className="h-full overflow-y-auto flex flex-col border-r border-secondary">
         <div className="px-6 pt-10 pb-5">
@@ -97,11 +97,11 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedSessionId(session.id)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
                 className={cx(
-                  'group flex items-center justify-between gap-6 border-b border-secondary py-7 pl-6 pr-4 cursor-pointer transition-colors',
+                  'group flex items-center justify-between gap-6 border-b border-secondary py-5 pl-6 pr-4 cursor-pointer transition-colors',
                   isSelected ? 'bg-secondary_alt' : 'bg-primary hover:bg-secondary_alt'
                 )}
               >
-                <div className="min-w-0 flex flex-col gap-5">
+                <div className="min-w-0 flex flex-col gap-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={cx('text-base leading-5 font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
                       {session.signedAt ? 'Signed' : 'DRAFT'}
