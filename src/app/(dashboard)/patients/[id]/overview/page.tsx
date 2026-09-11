@@ -124,11 +124,11 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
               >
                 <div className={cx('self-stretch w-1 shrink-0 rounded-xl', latestSession.signedAt ? 'bg-[#206020]' : 'bg-[#BF9540]')} />
                 <div className="flex flex-col gap-5 min-w-0">
-                  <span className="font-display text-xl font-medium text-primary">{latestSessionTitle}</span>
-                  <span className="text-base text-secondary">
+                  <span className="font-display text-xl leading-5 font-medium text-primary">{latestSessionTitle}</span>
+                  <span className="text-base leading-5 text-secondary">
                     {new Date(latestSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                   </span>
-                  <span className={cx('text-base italic', latestSession.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                  <span className={cx('text-base leading-5 italic', latestSession.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
                     {latestSession.signedAt ? 'Signed' : 'Draft'}
                   </span>
                   {viewMode === 'full' && (
@@ -161,21 +161,21 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         </div>
 
         {/* Right column: Summary + Assigned Practitioner */}
-        <div className="flex flex-col gap-7 w-[380px] shrink-0">
+        <div className="flex flex-col gap-7 w-[395px] shrink-0">
           <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-9">
             <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Summary</span>
             <div className="flex flex-col gap-9">
               <div className="flex flex-col gap-3">
-                <span className="text-base font-semibold text-primary">Issue:</span>
-                <span className="text-base text-primary">{patient.injuryHistory?.mechanism || 'Not recorded'}</span>
+                <span className="text-base leading-5 font-semibold text-primary">Issue:</span>
+                <span className="text-base leading-5 text-primary">{patient.injuryHistory?.mechanism || 'Not recorded'}</span>
               </div>
               <div className="flex flex-col gap-3">
-                <span className="text-base font-semibold text-primary">Date of Onset:</span>
-                <span className="text-base text-primary">{patient.injuryHistory?.dateOfOnset || 'Not recorded'}</span>
+                <span className="text-base leading-5 font-semibold text-primary">Date of Onset:</span>
+                <span className="text-base leading-5 text-primary">{patient.injuryHistory?.dateOfOnset || 'Not recorded'}</span>
               </div>
               <div className="flex flex-col gap-3">
-                <span className="text-base font-semibold text-primary">Patient Goals:</span>
-                <span className="text-base text-primary">{patient.sohx?.clientGoals || 'Not recorded'}</span>
+                <span className="text-base leading-5 font-semibold text-primary">Patient Goals:</span>
+                <span className="text-base leading-5 text-primary">{patient.sohx?.clientGoals || 'Not recorded'}</span>
               </div>
             </div>
           </div>

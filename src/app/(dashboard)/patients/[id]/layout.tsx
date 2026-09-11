@@ -167,8 +167,8 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </Alert>
         )}
 
-        <div className="p-10">
-          <div className="flex items-start justify-between gap-5 mb-10">
+        <div className="pt-20 px-10 pb-10 flex flex-col gap-20">
+          <div className="flex items-start justify-between gap-5">
             <div className="flex items-start gap-5">
               <Avatar initials={patient.avatarInitials} size="2xl" className={archived ? 'opacity-60' : ''} />
               <div className="flex flex-col gap-4 py-3">
@@ -178,11 +178,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <Mail size={24} className="text-tertiary" />
-                    <span className="text-base text-secondary">{effectiveContact.email}</span>
+                    <span className="text-base leading-5 text-secondary">{effectiveContact.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin size={24} className="text-tertiary" />
-                    <span className="text-base text-secondary">{getEffectiveLocationString(patient, locationOverrides)}</span>
+                    <span className="text-base leading-5 text-secondary">{getEffectiveLocationString(patient, locationOverrides)}</span>
                   </div>
                 </div>
                 {chip && !isStaffPersona && (
@@ -212,7 +212,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-10 border-b border-secondary mb-10">
+          <div className="flex gap-10 border-b border-secondary">
             {patientTabs.map((tab, i) => (
               <Link
                 key={tab.path}
