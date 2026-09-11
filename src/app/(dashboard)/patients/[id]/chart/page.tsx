@@ -127,13 +127,9 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                   )}
                 </div>
                 {session.signedAt ? (
-                  <LockIcon
-                    size={20}
-                    filled={isSelected}
-                    className={cx('shrink-0 transition-colors', isSelected ? 'text-brand-400' : 'text-primary group-hover:text-brand-400')}
-                  />
+                  <LockIcon size={20} filled={isSelected} hoverFill className="shrink-0 text-brand-400" />
                 ) : (
-                  <UnlockIcon size={20} filled className="shrink-0 text-[#BF9540]" />
+                  <UnlockIcon size={20} filled={isSelected} hoverFill className="shrink-0 text-[#BF9540]" />
                 )}
                 <div className={cx(
                   'absolute right-0 top-0 bottom-0 w-1',
