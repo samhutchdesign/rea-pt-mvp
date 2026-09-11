@@ -63,7 +63,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
   };
 
   return (
-    <div className="sticky top-[96px] grid h-[calc(100vh-128px)] grid-cols-[minmax(0,400px)_1fr] items-start">
+    <div className="sticky top-10 grid h-[calc(100vh-72px)] grid-cols-[minmax(0,400px)_1fr] items-start">
       {/* Left pane: session list */}
       <div className="h-full overflow-y-auto flex flex-col border-r border-secondary">
         <div className="px-6 pt-10 pb-10">

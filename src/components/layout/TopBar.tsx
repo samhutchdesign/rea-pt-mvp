@@ -67,7 +67,7 @@ export default function TopBar({}: TopBarProps) {
   ];
 
   return (
-    <div className="fixed top-10 left-60 z-[99] flex h-14 w-[calc(100%-240px)] items-center bg-transparent px-6">
+    <div className="relative z-[60] flex h-14 w-full items-center bg-transparent px-6">
       {/* Breadcrumbs hidden for now */}
       <nav className="flex flex-1 items-center gap-1 min-w-0" />
 
