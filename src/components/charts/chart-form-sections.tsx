@@ -693,7 +693,7 @@ interface ChartReadOnlyBodyProps {
 
 export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis, plan, interventions, interventionsRawText, evaluation }: ChartReadOnlyBodyProps) {
   return (
-    <>
+    <div className="flex flex-col gap-10">
       {/* Subjective */}
       <SectionCard letter="S" label="Subjective">
         {isDictation ? (
@@ -958,7 +958,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
           </>
         )}
       </SectionCard>
-    </>
+    </div>
   );
 }
 
@@ -985,8 +985,6 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
           <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
         )}
       </div>
-
-      <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
 
       {session.isIntakeSession && <HistoryCard patient={patient} />}
 
