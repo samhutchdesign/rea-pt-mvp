@@ -331,7 +331,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         </Alert>
       )}
 
-      <div className="flex justify-end gap-4 mb-6">
+      <div className="flex justify-end gap-4 mt-10 mb-6">
         <label className="flex items-center gap-2 cursor-pointer select-none">
           <span className="relative inline-block">
             <input
