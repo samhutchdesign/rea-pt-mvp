@@ -609,12 +609,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-5 border-b border-secondary px-5 pb-3">
-                  <span className="w-60 text-xs text-tertiary">Patient</span>
-                  <span className="w-[120px] text-xs text-tertiary">Assigned Doctor</span>
-                  <span className="w-[120px] text-xs text-tertiary">Location</span>
-                  <span className="w-[120px] text-xs text-tertiary">Date Added</span>
-                  <span className="size-6 shrink-0" />
+                <div className="grid grid-cols-[minmax(0,1fr)_140px_120px_140px_24px] items-center gap-4 border-b border-secondary px-5 pb-3">
+                  <span className="text-xs text-primary">Patient</span>
+                  <span className="text-xs text-primary">Assigned Doctor</span>
+                  <span className="text-xs text-primary">Location</span>
+                  <span className="text-xs text-primary ml-4">Date Added</span>
+                  <span />
                 </div>
 
                 {filteredPatients.length === 0 ? (
@@ -622,31 +622,31 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                     <span className="text-tertiary text-sm">No patients match &quot;{patientSearch}&quot;.</span>
                   </div>
                 ) : (
-                  filteredPatients.map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => router.push(`/patients/${p.id}/overview`)}
-                      className="flex items-center gap-5 rounded-lg border border-secondary bg-primary px-5 py-5 cursor-pointer hover:bg-secondary_alt transition-colors"
-                    >
-                      <div className="w-60 flex items-center gap-3 min-w-0">
-                        <Avatar size="md" initials={p.avatarInitials} className="shrink-0" />
-                        <div className="min-w-0">
-                          <span className="font-display block text-md font-medium text-primary tracking-[0.1px] truncate">{p.firstName} {p.lastName}</span>
-                          <span className="block text-xs text-secondary truncate">{p.email}</span>
+                  <div className="flex flex-col gap-5">
+                    {filteredPatients.map((p) => (
+                      <div
+                        key={p.id}
+                        onClick={() => router.push(`/patients/${p.id}/overview`)}
+                        className="grid grid-cols-[minmax(0,1fr)_140px_120px_140px_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors duration-100"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Avatar size="lg" initials={p.avatarInitials} />
+                          <div className="min-w-0 flex flex-col gap-2">
+                            <p className="font-display text-md font-medium text-primary">{p.firstName} {p.lastName}</p>
+                            <p className="text-xs text-primary">{p.email}</p>
+                          </div>
                         </div>
-                      </div>
-                      <span className="w-[120px] text-xs text-primary truncate">{emp.firstName} {emp.lastName}</span>
-                      <div className="w-[120px]">
-                        <span className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary truncate">
+                        <span className="text-xs text-primary whitespace-nowrap">{emp.firstName} {emp.lastName}</span>
+                        <span className="w-fit rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary whitespace-nowrap">
                           {p.location}
                         </span>
+                        <span className="text-xs text-primary whitespace-nowrap ml-4">
+                          {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                        <ChevronRight size={20} className="text-primary shrink-0 justify-self-end" />
                       </div>
-                      <span className="w-[120px] text-xs text-primary">
-                        {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </span>
-                      <ChevronRight size={24} className="shrink-0 text-tertiary" />
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </>
             )}
