@@ -476,7 +476,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 src={emp.avatarUrl}
                 alt={`${emp.firstName} ${emp.lastName}`}
                 initials={emp.avatarInitials}
-                className={cx('shrink-0', archived && 'opacity-60')}
+                className={cx('shrink-0 size-[100px]', archived && 'opacity-60')}
               />
               <div className="flex flex-col gap-4 py-3">
                 <div className="flex items-center gap-3">

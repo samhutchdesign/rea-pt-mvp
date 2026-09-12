@@ -30,7 +30,7 @@ export default function ProfilePage() {
               src={identity.avatarUrl}
               alt={`${identity.firstName} ${identity.lastName}`}
               initials={identity.avatarInitials}
-              className="shrink-0"
+              className="shrink-0 size-[100px]"
             />
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-1">
