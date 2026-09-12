@@ -2,7 +2,9 @@
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Button as AriaButton } from 'react-aria-components';
 import { Avatar } from '@/components/base/avatar/avatar';
+import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { mockEmployees, mockPatients, mockClinicLocations } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
 import { useRole } from '@/lib/roleStore';
@@ -15,7 +17,7 @@ import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
-import { ArrowLeftRight, Calendar, Crown, Inbox, Mail, Pencil, Phone, User } from 'lucide-react';
+import { ArrowLeftRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck } from 'lucide-react';
 
 function TransferDialog({
   open,
@@ -254,14 +256,106 @@ function ArchiveEmployeeDialog({
   );
 }
 
+function EmployeeHeaderMenu({
+  archived,
+  canArchive,
+  canEditRole,
+  onArchive,
+  onRestore,
+  onEditRole,
+}: {
+  archived: boolean;
+  canArchive: boolean;
+  canEditRole: boolean;
+  onArchive: () => void;
+  onRestore: () => void;
+  onEditRole: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!canArchive && !canEditRole) return null;
+
+  const handleAction = (key: React.Key) => {
+    if (key === 'archive') onArchive();
+    if (key === 'restore') onRestore();
+    if (key === 'edit-role') onEditRole();
+  };
+
+  return (
+    <Dropdown.Root isOpen={isOpen} onOpenChange={setIsOpen}>
+      <AriaButton
+        aria-label="More actions"
+        className={cx(
+          'flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary transition-colors outline-none hover:bg-secondary',
+          isOpen && 'bg-secondary',
+        )}
+      >
+        <MoreHorizontal size={24} />
+      </AriaButton>
+      <Dropdown.Popover className="w-52">
+        <Dropdown.Menu onAction={handleAction}>
+          {canArchive && (archived
+            ? <Dropdown.Item id="restore" icon={Inbox} label="Restore Employee" />
+            : <Dropdown.Item id="archive" icon={Inbox} label="Archive" />
+          )}
+          {canEditRole && <Dropdown.Item id="edit-role" icon={ShieldCheck} label="Edit Role" />}
+        </Dropdown.Menu>
+      </Dropdown.Popover>
+    </Dropdown.Root>
+  );
+}
+
+function EditRoleDialog({
+  open,
+  role,
+  onClose,
+  onSave,
+}: {
+  open: boolean;
+  role: UserRole;
+  onClose: () => void;
+  onSave: (role: UserRole) => void;
+}) {
+  const [draft, setDraft] = useState<UserRole>(role);
+
+  useEffect(() => {
+    if (open) setDraft(role);
+  }, [open, role]);
+
+  return (
+    <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <Modal className="w-full max-w-md">
+        <Dialog>
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-primary mb-3">Edit Role</h3>
+            <div className="mb-6">
+              <div className="mb-1 text-sm text-secondary">Permissions</div>
+              <NativeSelect value={draft} onChange={(e) => setDraft(e.target.value as UserRole)}>
+                <option value="admin">Manager</option>
+                <option value="editor">Practitioner</option>
+                <option value="limited">Staff</option>
+              </NativeSelect>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button color="secondary" size="sm" onPress={onClose}>Cancel</Button>
+              <Button color="primary" size="sm" onPress={() => onSave(draft)}>Save</Button>
+            </div>
+          </div>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
+  );
+}
+
 export default function EmployeeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const emp = mockEmployees.find((e) => e.id === id);
 
-  const [tab, setTab] = useState('0');
+  const [tab, setTab] = useState('overview');
   const [archived, setArchived] = useState(emp?.archived ?? false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [editRoleOpen, setEditRoleOpen] = useState(false);
   const [transferPatient, setTransferPatient] = useState<Patient | null>(null);
   const [roleOverride, setRoleOverride] = useState<UserRole>(emp?.role ?? 'editor');
 
@@ -291,6 +385,8 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
   const assignedPatientIds = getEffectivePatientIdsForEmployee(emp, locationOverrides);
   const assignedPatients = mockPatients.filter((p) => assignedPatientIds.includes(p.id));
+  const empLocation = mockClinicLocations.find((l) => emp.locationIds.includes(l.id));
+  const empLocationString = empLocation ? `${empLocation.city}, ${empLocation.regionCountry.split(',')[0].trim()}` : '—';
 
   const handleTransfer = (locationId: string, toEmployee: Employee) => {
     if (!transferPatient) return;
@@ -348,204 +444,125 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <div className="p-8">
+      <div className="p-10 flex flex-col gap-14">
 
         {archived && (
-          <Alert type="warning" className="mb-6 rounded-xl">
+          <Alert type="warning" className="rounded-xl">
             This employee profile is archived. Restore it to re-activate their access.
           </Alert>
         )}
 
-        {/* Header */}
-        <div className="flex items-start gap-6 mb-8">
-          <Avatar
-            size="2xl"
-            src={emp.avatarUrl}
-            alt={`${emp.firstName} ${emp.lastName}`}
-            initials={emp.avatarInitials}
-            className={cx('shrink-0', archived && 'opacity-60')}
-          />
-          <div className="grow">
-            <div className="flex items-center gap-3 mb-1">
-              <h2 className="text-xl font-semibold text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h2>
-              <span
-                className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                style={{ background: '#D9E8E1', color: '#25382F' }}
-              >
-                {savedProfessional.credentials}
-              </span>
+        <div>
+          {/* Header */}
+          <div className="flex items-start justify-between gap-5 mb-10">
+            <div className="flex items-start gap-5">
+              <Avatar
+                size="2xl"
+                src={emp.avatarUrl}
+                alt={`${emp.firstName} ${emp.lastName}`}
+                initials={emp.avatarInitials}
+                className={cx('shrink-0', archived && 'opacity-60')}
+              />
+              <div className="flex flex-col gap-4 py-3">
+                <div className="flex items-center gap-3">
+                  <h1 className="font-display text-2xl leading-8 font-medium text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h1>
+                  <span className="text-base leading-5 text-secondary">{savedProfessional.credentials}</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-base leading-5 text-primary">{savedProfessional.title}</span>
+                  <div className="flex items-center gap-2">
+                    <Mail size={24} className="text-tertiary" />
+                    <span className="text-base leading-5 text-secondary">{savedContact.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin size={24} className="text-tertiary" />
+                    <span className="text-base leading-5 text-secondary">{empLocationString}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span className="block text-tertiary text-sm mb-2">{savedProfessional.title}</span>
-            <div className="flex gap-4">
-              <div className="flex items-center gap-1">
-                <Mail size={15} className="text-tertiary" />
-                <span className="text-tertiary text-sm">{savedContact.email}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Phone size={15} className="text-tertiary" />
-                <span className="text-tertiary text-sm">{savedContact.phone}</span>
-              </div>
+            <div className="flex items-center gap-3 shrink-0">
+              {isOwnProfile && (
+                <Button
+                  color="secondary"
+                  size="sm"
+                  iconLeading={Crown}
+                  onPress={() => router.push('/account/settings?transfer=1')}
+                >
+                  Transfer Ownership
+                </Button>
+              )}
+              <EmployeeHeaderMenu
+                archived={archived}
+                canArchive={can.canArchiveEmployees}
+                canEditRole={role === 'owner' && emp.role !== 'owner'}
+                onArchive={() => setArchiveDialogOpen(true)}
+                onRestore={handleRestore}
+                onEditRole={() => setEditRoleOpen(true)}
+              />
             </div>
           </div>
-          {isOwnProfile && (
-            <Button
-              color="secondary"
-              size="xs"
-              iconLeading={Crown}
-              onPress={() => router.push('/account/settings?transfer=1')}
-            >
-              Transfer Ownership
-            </Button>
-          )}
-          {role === 'owner' && emp.role !== 'owner' && (
-            <NativeSelect
-              wrapperClassName="w-36 shrink-0"
-              value={roleOverride}
-              onChange={(e) => handleChangeRole(e.target.value as UserRole)}
-            >
-              <option value="admin">Manager</option>
-              <option value="editor">Practitioner</option>
-              <option value="limited">Staff</option>
-            </NativeSelect>
-          )}
-          {archived ? (
-            can.canArchiveEmployees && (
-              <Button
-                color="secondary"
-                size="xs"
-                iconLeading={Inbox}
-                onPress={handleRestore}
-                className="border-utility-warning-300 text-utility-warning-700"
-              >
-                Restore Employee
-              </Button>
-            )
-          ) : (
-            can.canArchiveEmployees && (
-              <Button
-                color="secondary"
-                size="xs"
-                iconLeading={Inbox}
-                onPress={() => setArchiveDialogOpen(true)}
-              >
-                Archive Employee
-              </Button>
-            )
-          )}
-        </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-secondary mb-6">
-          {[
-            { key: '0', label: 'Overview', count: null },
-            { key: '1', label: 'Patients', count: assignedPatients.length },
-            { key: '2', label: 'Details', count: null },
-          ].map(({ key, label, count }) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={cx(
-                'flex items-center gap-2 px-1 pb-3 pt-0 mr-6 text-sm font-semibold border-b-2 -mb-px transition-colors duration-100',
-                tab === key
-                  ? 'border-brand-600 text-brand-700'
-                  : 'border-transparent text-tertiary hover:text-secondary hover:border-secondary'
-              )}
-            >
-              {label}
-              {count !== null && (
-                <span className={cx(
-                  'inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
+          {/* Tabs */}
+          <div className="flex gap-10 border-b border-secondary">
+            {[
+              { key: 'overview', label: 'Overview', count: null },
+              { key: 'details', label: 'Details', count: null },
+              { key: 'patients', label: 'Patients', count: assignedPatients.length },
+            ].map(({ key, label, count }) => (
+              <button
+                key={key}
+                onClick={() => setTab(key)}
+                className={cx(
+                  'flex items-center gap-2 pb-4 pt-0 text-base -mb-px border-b-[3px] transition-colors duration-100',
                   tab === key
-                    ? 'bg-utility-brand-50 text-utility-brand-700 ring-utility-brand-200'
-                    : 'bg-utility-neutral-50 text-utility-neutral-600 ring-utility-neutral-200'
-                )}>
-                  {count}
-                </span>
-              )}
-            </button>
-          ))}
+                    ? 'border-b-[#9b9897] text-primary font-medium'
+                    : 'border-transparent text-primary font-normal hover:text-secondary'
+                )}
+              >
+                {label}
+                {count !== null && (
+                  <span className="inline-flex items-center justify-center rounded-full bg-tertiary px-2.5 py-0.5 text-xs text-primary">
+                    {count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Overview Tab */}
-        {tab === '0' && (
-          <div className="flex gap-6">
-            <div className="flex-[2] flex flex-col gap-4">
-              <div className="flex gap-4">
-                <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 flex-1">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center">
-                      <User size={20} className="text-brand-700" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-primary m-0 leading-none">{assignedPatients.length}</h2>
-                      <span className="text-tertiary text-xs">Active Patients</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 flex-1">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: '#0288D118' }}>
-                      <Calendar size={20} style={{ color: '#0288D1' }} />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-primary m-0 leading-none">{new Date(emp.joinedAt).getFullYear()}</h2>
-                      <span className="text-tertiary text-xs">Joined</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
-                <span className="block font-semibold text-primary mb-3">About</span>
-                <p className="text-tertiary text-sm leading-relaxed m-0">{emp.bio}</p>
-              </div>
+        {tab === 'overview' && (
+          <div className="flex gap-10 items-start">
+            <div className="flex-1 min-w-0 rounded-xl border border-primary bg-secondary_alt p-7 flex flex-col gap-5">
+              <span className="font-display text-md font-medium text-primary tracking-[0.1px]">About</span>
+              <p className="text-base leading-5 text-primary m-0">{emp.bio}</p>
             </div>
-
-            <div className="flex-1 flex flex-col gap-4">
-              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
-                <span className="block font-semibold text-primary mb-3">Specialties</span>
-                <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-col gap-7 w-[395px] shrink-0">
+              <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-5">
+                <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Specialties</span>
+                <div className="flex flex-wrap gap-4">
                   {emp.specialties.map((s) => (
-                    <span
-                      key={s}
-                      className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
-                    >
+                    <span key={s} className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary">
                       {s}
                     </span>
                   ))}
                 </div>
               </div>
-
-              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
-                <span className="block font-semibold text-primary mb-3">Assigned Patients</span>
-                {assignedPatients.length === 0 ? (
-                  <span className="text-tertiary text-sm">No patients assigned.</span>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    {assignedPatients.map((p) => (
-                      <div
-                        key={p.id}
-                        className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-secondary_alt transition-colors"
-                        onClick={() => router.push(`/patients/${p.id}/overview`)}
-                      >
-                        <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
-                          style={{ background: '#D9E8E1', color: '#25382F' }}
-                        >
-                          {p.avatarInitials}
-                        </div>
-                        <span className="font-semibold text-primary text-sm">{p.firstName} {p.lastName}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-4">
+                <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Active Patients</span>
+                <span className="font-display text-2xl leading-8 font-medium text-primary">{assignedPatients.length}</span>
+              </div>
+              <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-4">
+                <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Joined</span>
+                <span className="font-display text-2xl leading-8 font-medium text-primary">{new Date(emp.joinedAt).getFullYear()}</span>
               </div>
             </div>
           </div>
         )}
 
         {/* Patients Tab */}
-        {tab === '1' && (
+        {tab === 'patients' && (
           <div className="flex flex-col gap-3">
             {assignedPatients.length === 0 ? (
               <div className="text-center py-16">
@@ -591,7 +608,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         )}
 
         {/* Details Tab */}
-        {tab === '2' && (
+        {tab === 'details' && (
           <div className="max-w-[600px] flex flex-col gap-4">
             <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
               <div className="flex justify-between items-center mb-4">
@@ -687,20 +704,6 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 </div>
               )}
             </div>
-
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
-              <span className="block font-semibold text-primary mb-3">Specialties</span>
-              <div className="flex flex-wrap gap-1.5">
-                {emp.specialties.map((s) => (
-                  <span
-                    key={s}
-                    className="text-xs px-2 py-0.5 rounded-full border border-secondary text-secondary bg-secondary_alt"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
         )}
       </div>
@@ -721,6 +724,13 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         locationOverrides={locationOverrides}
         onClose={() => setArchiveDialogOpen(false)}
         onConfirm={handleConfirmArchive}
+      />
+
+      <EditRoleDialog
+        open={editRoleOpen}
+        role={roleOverride}
+        onClose={() => setEditRoleOpen(false)}
+        onSave={(newRole) => { handleChangeRole(newRole); setEditRoleOpen(false); }}
       />
     </>
   );
