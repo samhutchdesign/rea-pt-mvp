@@ -17,7 +17,7 @@ import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
-import { ArrowLeftRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck } from 'lucide-react';
+import { ArrowLeftRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck, X } from 'lucide-react';
 
 function TransferDialog({
   open,
@@ -371,6 +371,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [savedProfessional, setSavedProfessional] = useState({
     title: emp?.title ?? '',
     credentials: emp?.credentials ?? '',
+    specialties: emp?.specialties ?? [],
   });
   const [contactDraft, setContactDraft] = useState({ ...savedContact });
   const [professionalDraft, setProfessionalDraft] = useState({ ...savedProfessional });
@@ -437,9 +438,21 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   };
 
   const handleSaveProfessional = () => {
-    setSavedProfessional({ ...professionalDraft });
+    setSavedProfessional({ ...professionalDraft, specialties: professionalDraft.specialties.filter((s) => s.trim() !== '') });
     setEditingProfessional(false);
     toast.success('Professional details updated.');
+  };
+
+  const addSpecialty = () => {
+    setProfessionalDraft((d) => ({ ...d, specialties: [...d.specialties, ''] }));
+  };
+
+  const updateSpecialty = (index: number, value: string) => {
+    setProfessionalDraft((d) => ({ ...d, specialties: d.specialties.map((s, i) => (i === index ? value : s)) }));
+  };
+
+  const removeSpecialty = (index: number) => {
+    setProfessionalDraft((d) => ({ ...d, specialties: d.specialties.filter((_, i) => i !== index) }));
   };
 
   return (
@@ -542,7 +555,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-5">
                 <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Specialties</span>
                 <div className="flex flex-wrap gap-4">
-                  {emp.specialties.map((s) => (
+                  {savedProfessional.specialties.map((s) => (
                     <span key={s} className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary">
                       {s}
                     </span>
@@ -609,45 +622,45 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Details Tab */}
         {tab === 'details' && (
-          <div className="max-w-[600px] flex flex-col gap-4">
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
-              <div className="flex justify-between items-center mb-4">
-                <span className="font-semibold text-primary">Contact Information</span>
+          <div className="max-w-[800px] flex flex-col gap-4">
+            <div className="rounded-lg border border-[#cdcccb] bg-primary p-10 flex flex-col gap-7">
+              <div className="flex justify-between items-center">
+                <span className="font-display text-xl leading-5 font-medium text-primary">Contact Information</span>
                 {can.canManageStaff && !editingContact && (
                   <button onClick={handleEditContact} className="text-tertiary hover:text-secondary transition-colors p-1">
-                    <Pencil size={15} />
+                    <Pencil size={20} />
                   </button>
                 )}
               </div>
-              <div className="flex flex-col gap-3">
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">First Name</div>
-                    <Input
-                      value={editingContact ? contactDraft.firstName : savedContact.firstName}
-                      isReadOnly={!editingContact}
-                      onChange={(v) => setContactDraft((d) => ({ ...d, firstName: v }))}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">Last Name</div>
-                    <Input
-                      value={editingContact ? contactDraft.lastName : savedContact.lastName}
-                      isReadOnly={!editingContact}
-                      onChange={(v) => setContactDraft((d) => ({ ...d, lastName: v }))}
-                    />
-                  </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <div className="mb-3 text-xs text-secondary">First Name</div>
+                  <Input
+                    value={editingContact ? contactDraft.firstName : savedContact.firstName}
+                    isReadOnly={!editingContact}
+                    onChange={(v) => setContactDraft((d) => ({ ...d, firstName: v }))}
+                  />
                 </div>
-                <div>
-                  <div className="mb-1 text-sm text-secondary">Email</div>
+                <div className="flex-1">
+                  <div className="mb-3 text-xs text-secondary">Last Name</div>
+                  <Input
+                    value={editingContact ? contactDraft.lastName : savedContact.lastName}
+                    isReadOnly={!editingContact}
+                    onChange={(v) => setContactDraft((d) => ({ ...d, lastName: v }))}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <div className="mb-3 text-xs text-secondary">Email</div>
                   <Input
                     value={editingContact ? contactDraft.email : savedContact.email}
                     isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, email: v }))}
                   />
                 </div>
-                <div>
-                  <div className="mb-1 text-sm text-secondary">Phone</div>
+                <div className="flex-1">
+                  <div className="mb-3 text-xs text-secondary">Phone</div>
                   <Input
                     value={editingContact ? contactDraft.phone : savedContact.phone}
                     isReadOnly={!editingContact}
@@ -656,51 +669,84 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 </div>
               </div>
               {editingContact && (
-                <div className="flex justify-end gap-2 mt-4">
-                  <Button color="secondary" size="xs" onPress={() => setEditingContact(false)}>Cancel</Button>
-                  <Button color="primary" size="xs" onPress={handleSaveContact}>Save</Button>
+                <div className="flex justify-end gap-2">
+                  <Button color="secondary" size="sm" onPress={() => setEditingContact(false)}>Cancel</Button>
+                  <Button color="primary" size="sm" onPress={handleSaveContact}>Save</Button>
                 </div>
               )}
             </div>
 
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
-              <div className="flex justify-between items-center mb-4">
-                <span className="font-semibold text-primary">Professional Details</span>
+            <div className="rounded-lg border border-[#cdcccb] bg-primary p-10 flex flex-col gap-7">
+              <div className="flex justify-between items-center">
+                <span className="font-display text-xl leading-5 font-medium text-primary">Professional Details</span>
                 {can.canManageStaff && !editingProfessional && (
                   <button onClick={handleEditProfessional} className="text-tertiary hover:text-secondary transition-colors p-1">
-                    <Pencil size={15} />
+                    <Pencil size={20} />
                   </button>
                 )}
               </div>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <div className="mb-1 text-sm text-secondary">Title</div>
+              <div>
+                <div className="mb-3 text-xs text-secondary">Date Joined</div>
+                <Input
+                  value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  isReadOnly
+                />
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <div className="mb-3 text-xs text-secondary">Title</div>
                   <Input
                     value={editingProfessional ? professionalDraft.title : savedProfessional.title}
                     isReadOnly={!editingProfessional}
                     onChange={(v) => setProfessionalDraft((d) => ({ ...d, title: v }))}
                   />
                 </div>
-                <div>
-                  <div className="mb-1 text-sm text-secondary">Credentials</div>
+                <div className="flex-1">
+                  <div className="mb-3 text-xs text-secondary">Credentials / Degrees</div>
                   <Input
                     value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials}
                     isReadOnly={!editingProfessional}
                     onChange={(v) => setProfessionalDraft((d) => ({ ...d, credentials: v }))}
                   />
                 </div>
-                <div>
-                  <div className="mb-1 text-sm text-secondary">Date Joined</div>
-                  <Input
-                    value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    isReadOnly
-                  />
-                </div>
+              </div>
+              <div>
+                <div className="mb-3 text-xs text-secondary">Specialties</div>
+                {editingProfessional ? (
+                  <div className="flex flex-col gap-3 items-start">
+                    {professionalDraft.specialties.map((s, i) => (
+                      <div key={i} className="flex items-center gap-3 w-full max-w-[350px]">
+                        <span className="size-2 rounded-full bg-quaternary shrink-0" />
+                        <Input
+                          value={s}
+                          onChange={(v) => updateSpecialty(i, v)}
+                          className="flex-1"
+                        />
+                        <button onClick={() => removeSpecialty(i)} className="shrink-0 text-tertiary hover:text-secondary transition-colors p-1">
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    <Button color="link-color" size="sm" onPress={addSpecialty}>+ Add Specialty</Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {savedProfessional.specialties.length === 0 ? (
+                      <span className="text-sm text-tertiary">No specialties added.</span>
+                    ) : (
+                      savedProfessional.specialties.map((s) => (
+                        <span key={s} className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary">
+                          {s}
+                        </span>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
               {editingProfessional && (
-                <div className="flex justify-end gap-2 mt-4">
-                  <Button color="secondary" size="xs" onPress={() => setEditingProfessional(false)}>Cancel</Button>
-                  <Button color="primary" size="xs" onPress={handleSaveProfessional}>Save</Button>
+                <div className="flex justify-end gap-2">
+                  <Button color="secondary" size="sm" onPress={() => setEditingProfessional(false)}>Cancel</Button>
+                  <Button color="primary" size="sm" onPress={handleSaveProfessional}>Save</Button>
                 </div>
               )}
             </div>
