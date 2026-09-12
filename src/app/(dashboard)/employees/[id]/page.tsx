@@ -17,20 +17,19 @@ import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
-import { ArrowLeftRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck, X } from 'lucide-react';
+import { ArrowLeftRight, ChevronRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck, X } from 'lucide-react';
+import { SearchMd } from '@untitledui/icons';
 
-function TransferDialog({
+function BulkTransferDialog({
   open,
-  patient,
+  patients,
   currentEmployee,
-  locationOverrides,
   onClose,
   onTransfer,
 }: {
   open: boolean;
-  patient: Patient | null;
+  patients: Patient[];
   currentEmployee: Employee;
-  locationOverrides: Map<string, PatientLocationState>;
   onClose: () => void;
   onTransfer: (locationId: string, toEmployee: Employee) => void;
 }) {
@@ -39,16 +38,13 @@ function TransferDialog({
   const [selected, setSelected] = useState<Employee | null>(null);
 
   useEffect(() => {
-    if (open && patient) {
-      const currentLocationId = locationOverrides.get(patient.id)?.locationId ?? '';
-      setLocationId(availableLocationIds.includes(currentLocationId) ? currentLocationId : '');
+    if (open) {
+      setLocationId('');
       setSelected(null);
     }
-  }, [open, patient, locationOverrides, availableLocationIds]);
+  }, [open]);
 
-  const locations = patient
-    ? mockClinicLocations.filter((l) => l.orgId === patient.clinicId && availableLocationIds.includes(l.id))
-    : [];
+  const locations = mockClinicLocations.filter((l) => l.orgId === currentEmployee.clinicId && availableLocationIds.includes(l.id));
   const destinationLocation = mockClinicLocations.find((l) => l.id === locationId) ?? null;
   const otherEmployees = destinationLocation
     ? mockEmployees.filter((e) => destinationLocation.employeeIds.includes(e.id) && e.id !== currentEmployee.id && !e.archived)
@@ -64,9 +60,9 @@ function TransferDialog({
       <Modal>
         <Dialog>
           <div className="p-6 w-full min-w-[420px]">
-            <h3 className="text-lg font-semibold text-primary mb-3">Transfer Patient</h3>
+            <h3 className="text-lg font-semibold text-primary mb-3">Transfer Patients</h3>
             <p className="text-tertiary text-sm mb-4">
-              Transfer <strong className="text-primary">{patient?.firstName} {patient?.lastName}</strong> to a clinic location and physiotherapist.
+              Transfer all <strong className="text-primary">{patients.length}</strong> of {currentEmployee.firstName} {currentEmployee.lastName}&apos;s patients to a clinic location and physiotherapist.
             </p>
             {locations.length === 0 ? (
               <p className="text-sm text-tertiary mb-4">No locations are available to you for this organization.</p>
@@ -109,7 +105,7 @@ function TransferDialog({
               <Button
                 color="primary"
                 size="sm"
-                isDisabled={!locationId || !selected}
+                isDisabled={!locationId || !selected || patients.length === 0}
                 onPress={() => { if (selected) onTransfer(locationId, selected); }}
               >
                 Transfer
@@ -356,7 +352,8 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [archived, setArchived] = useState(emp?.archived ?? false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [editRoleOpen, setEditRoleOpen] = useState(false);
-  const [transferPatient, setTransferPatient] = useState<Patient | null>(null);
+  const [bulkTransferOpen, setBulkTransferOpen] = useState(false);
+  const [patientSearch, setPatientSearch] = useState('');
   const [roleOverride, setRoleOverride] = useState<UserRole>(emp?.role ?? 'editor');
 
   // Details tab edit state
@@ -389,12 +386,17 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const empLocation = mockClinicLocations.find((l) => emp.locationIds.includes(l.id));
   const empLocationString = empLocation ? `${empLocation.city}, ${empLocation.regionCountry.split(',')[0].trim()}` : '—';
 
-  const handleTransfer = (locationId: string, toEmployee: Employee) => {
-    if (!transferPatient) return;
-    const name = `${transferPatient.firstName} ${transferPatient.lastName}`;
-    transferPatientLocation(transferPatient.id, locationId, toEmployee.id);
-    setTransferPatient(null);
-    toast.success(`${name} transferred to ${toEmployee.firstName} ${toEmployee.lastName}`);
+  const patientSearchLower = patientSearch.trim().toLowerCase();
+  const filteredPatients = patientSearchLower === ''
+    ? assignedPatients
+    : assignedPatients.filter((p) =>
+        `${p.firstName} ${p.lastName}`.toLowerCase().includes(patientSearchLower) || p.email.toLowerCase().includes(patientSearchLower)
+      );
+
+  const handleBulkTransfer = (locationId: string, toEmployee: Employee) => {
+    assignedPatients.forEach((p) => transferPatientLocation(p.id, locationId, toEmployee.id));
+    setBulkTransferOpen(false);
+    toast.success(`${assignedPatients.length} patient${assignedPatients.length !== 1 ? 's' : ''} transferred to ${toEmployee.firstName} ${toEmployee.lastName}.`);
   };
 
   const handleConfirmArchive = (reassignments: Record<string, { locationId: string; employee: Employee }>) => {
@@ -576,46 +578,77 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Patients Tab */}
         {tab === 'patients' && (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex gap-4 items-start">
+              <div className="flex-1">
+                <Input
+                  size="lg"
+                  wrapperClassName="h-12 shadow-none ring-secondary"
+                  icon={SearchMd}
+                  placeholder="Search by name or email"
+                  value={patientSearch}
+                  onChange={setPatientSearch}
+                />
+              </div>
+              {can.canManageStaff && (
+                <Button
+                  color="secondary"
+                  size="lg"
+                  iconLeading={ArrowLeftRight}
+                  isDisabled={assignedPatients.length === 0}
+                  onPress={() => setBulkTransferOpen(true)}
+                >
+                  Transfer Patients
+                </Button>
+              )}
+            </div>
+
             {assignedPatients.length === 0 ? (
               <div className="text-center py-16">
                 <span className="text-tertiary text-sm">No patients assigned to {emp.firstName} yet.</span>
               </div>
             ) : (
-              assignedPatients.map((p) => (
-                <div
-                  key={p.id}
-                  className="rounded-xl border border-secondary bg-primary shadow-xs hover:bg-secondary_alt transition-colors"
-                >
-                  <div className="flex items-center gap-5 px-6 py-4">
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base"
-                      style={{ background: '#D9E8E1', color: '#25382F' }}
-                    >
-                      {p.avatarInitials}
-                    </div>
-                    <div
-                      className="grow cursor-pointer"
-                      onClick={() => router.push(`/patients/${p.id}/overview`)}
-                    >
-                      <span className="block font-semibold text-primary text-sm mb-0.5">{p.firstName} {p.lastName}</span>
-                      <span className="text-tertiary text-sm">{p.email}</span>
-                    </div>
-                    {can.canManageStaff && (
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          color="secondary"
-                          size="xs"
-                          iconLeading={ArrowLeftRight}
-                          onPress={() => setTransferPatient(p)}
-                        >
-                          Transfer
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+              <>
+                <div className="flex items-center gap-5 border-b border-secondary px-5 pb-3">
+                  <span className="w-60 text-xs text-tertiary">Patient</span>
+                  <span className="w-[120px] text-xs text-tertiary">Assigned Doctor</span>
+                  <span className="w-[120px] text-xs text-tertiary">Location</span>
+                  <span className="w-[120px] text-xs text-tertiary">Date Added</span>
+                  <span className="size-6 shrink-0" />
                 </div>
-              ))
+
+                {filteredPatients.length === 0 ? (
+                  <div className="text-center py-16">
+                    <span className="text-tertiary text-sm">No patients match &quot;{patientSearch}&quot;.</span>
+                  </div>
+                ) : (
+                  filteredPatients.map((p) => (
+                    <div
+                      key={p.id}
+                      onClick={() => router.push(`/patients/${p.id}/overview`)}
+                      className="flex items-center gap-5 rounded-lg border border-secondary bg-primary px-5 py-5 cursor-pointer hover:bg-secondary_alt transition-colors"
+                    >
+                      <div className="w-60 flex items-center gap-3 min-w-0">
+                        <Avatar size="md" initials={p.avatarInitials} className="shrink-0" />
+                        <div className="min-w-0">
+                          <span className="font-display block text-md font-medium text-primary tracking-[0.1px] truncate">{p.firstName} {p.lastName}</span>
+                          <span className="block text-xs text-secondary truncate">{p.email}</span>
+                        </div>
+                      </div>
+                      <span className="w-[120px] text-xs text-primary truncate">{emp.firstName} {emp.lastName}</span>
+                      <div className="w-[120px]">
+                        <span className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary truncate">
+                          {p.location}
+                        </span>
+                      </div>
+                      <span className="w-[120px] text-xs text-primary">
+                        {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                      <ChevronRight size={24} className="shrink-0 text-tertiary" />
+                    </div>
+                  ))
+                )}
+              </>
             )}
           </div>
         )}
@@ -754,13 +787,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         )}
       </div>
 
-      <TransferDialog
-        open={!!transferPatient}
-        patient={transferPatient}
+      <BulkTransferDialog
+        open={bulkTransferOpen}
+        patients={assignedPatients}
         currentEmployee={emp}
-        locationOverrides={locationOverrides}
-        onClose={() => setTransferPatient(null)}
-        onTransfer={handleTransfer}
+        onClose={() => setBulkTransferOpen(false)}
+        onTransfer={handleBulkTransfer}
       />
 
       <ArchiveEmployeeDialog
