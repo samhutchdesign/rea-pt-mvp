@@ -578,7 +578,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Patients Tab */}
         {tab === 'patients' && (
-          <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-col gap-4 w-full -mt-8">
             <div className="flex gap-4 items-start">
               <div className="flex-1">
                 <Input
