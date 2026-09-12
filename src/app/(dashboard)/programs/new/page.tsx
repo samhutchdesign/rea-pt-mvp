@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { mockExercises, mockPrograms } from '@/lib/mock-data';
@@ -115,6 +115,12 @@ function NewProgramContent() {
     setStep(target);
     setMaxReachedStep((prev) => Math.max(prev, target));
   };
+
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = original; };
+  }, []);
 
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('A → Z');

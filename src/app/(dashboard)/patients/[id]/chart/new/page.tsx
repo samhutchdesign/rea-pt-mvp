@@ -1,5 +1,5 @@
 'use client';
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { mockPatients } from '@/lib/mock-data';
@@ -42,6 +42,12 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
 
   const [step, setStep] = useState(0);
   const [template, setTemplate] = useState<ChartTemplateId | null>(null);
+
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = original; };
+  }, []);
 
   const [summary, setSummary] = useState('');
   const { dictating, dictSecs, toggle: toggleDictation } = useDictation(

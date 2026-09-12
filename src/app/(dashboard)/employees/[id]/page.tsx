@@ -207,6 +207,13 @@ function ArchiveFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, patients]);
 
+  useEffect(() => {
+    if (!open) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = original; };
+  }, [open]);
+
   if (!open) return null;
 
   const locations = mockClinicLocations.filter((l) => l.orgId === employee.clinicId && availableLocationIds.includes(l.id));

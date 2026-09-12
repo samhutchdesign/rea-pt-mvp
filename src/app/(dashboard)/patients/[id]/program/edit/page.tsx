@@ -1,5 +1,5 @@
 'use client';
-import { use, useState, useMemo } from 'react';
+import { use, useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockPatients, mockExercises, mockPrograms } from '@/lib/mock-data';
 import { getHepState, saveNewProgram } from '@/lib/patientHepStore';
@@ -111,6 +111,12 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     setStep(target);
     setMaxReachedStep((prev) => Math.max(prev, target));
   };
+
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = original; };
+  }, []);
 
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('A → Z');

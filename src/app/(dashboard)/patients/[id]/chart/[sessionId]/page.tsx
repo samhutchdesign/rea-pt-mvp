@@ -83,6 +83,12 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
     setEditing(true);
   };
 
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = original; };
+  }, []);
+
   // Deep-links from the inline Chart tab view: ?edit=1 opens straight into edit mode,
   // ?sign=1 opens straight into the Sign & Lock confirmation, ?amend=1 opens the amendment
   // box, so there's no redundant second click.
