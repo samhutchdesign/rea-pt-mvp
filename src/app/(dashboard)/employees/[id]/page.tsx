@@ -17,10 +17,83 @@ import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
-import { ArrowLeftRight, ChevronRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, ArrowLeftRight, ChevronRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck, X } from 'lucide-react';
 import { SearchMd } from '@untitledui/icons';
+import { ProgramStepper } from '@/components/programs/ProgramStepper';
+import type { ClinicLocation } from '@/lib/types';
 
 type TransferRow = { locationId: string; employee: Employee | null };
+
+function PatientTransferTable({
+  patients,
+  rows,
+  locations,
+  currentEmployee,
+  onRowLocationChange,
+  onRowEmployeeChange,
+}: {
+  patients: Patient[];
+  rows: Record<string, TransferRow>;
+  locations: ClinicLocation[];
+  currentEmployee: Employee;
+  onRowLocationChange: (patientId: string, locationId: string) => void;
+  onRowEmployeeChange: (patientId: string, emp: Employee | null) => void;
+}) {
+  const employeesFor = (locationId: string) => {
+    const location = locations.find((l) => l.id === locationId);
+    return location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && e.id !== currentEmployee.id && !e.archived) : [];
+  };
+
+  if (patients.length === 0) {
+    return <p className="text-sm text-tertiary">No patients to reassign.</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-6 w-full">
+      <div className="grid grid-cols-[minmax(0,1fr)_240px_240px] gap-4 border-b border-secondary px-5 pb-3">
+        <span className="text-xs text-primary">Patient</span>
+        <span className="text-xs text-primary">Assigned Doctor</span>
+        <span className="text-xs text-primary">Location</span>
+      </div>
+      <div className="flex flex-col gap-4">
+        {patients.map((p) => {
+          const row = rows[p.id];
+          const rowEmployees = employeesFor(row?.locationId ?? '');
+          return (
+            <div
+              key={p.id}
+              className="grid grid-cols-[minmax(0,1fr)_240px_240px] items-center gap-4 rounded-lg border border-secondary bg-primary px-5 py-5"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar size="md" initials={p.avatarInitials} />
+                <span className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{p.firstName} {p.lastName}</span>
+              </div>
+              <NativeSelect
+                value={row?.employee?.id ?? ''}
+                disabled={!row?.locationId}
+                onChange={(e) => onRowEmployeeChange(p.id, rowEmployees.find((emp) => emp.id === e.target.value) ?? null)}
+              >
+                <option value="" disabled>Transfer to…</option>
+                {rowEmployees.map((e) => (
+                  <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
+                ))}
+              </NativeSelect>
+              <NativeSelect
+                value={row?.locationId ?? ''}
+                onChange={(e) => onRowLocationChange(p.id, e.target.value)}
+              >
+                <option value="" disabled>Location…</option>
+                {locations.map((l) => (
+                  <option key={l.id} value={l.id}>{l.name} — {l.city}</option>
+                ))}
+              </NativeSelect>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function BulkTransferDialog({
   open,
@@ -53,10 +126,6 @@ function BulkTransferDialog({
   }, [open, patients]);
 
   const locations = mockClinicLocations.filter((l) => l.orgId === currentEmployee.clinicId && availableLocationIds.includes(l.id));
-  const employeesFor = (locationId: string) => {
-    const location = mockClinicLocations.find((l) => l.id === locationId);
-    return location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && e.id !== currentEmployee.id && !e.archived) : [];
-  };
 
   const setRowLocation = (patientId: string, locationId: string) => {
     setRows((r) => ({ ...r, [patientId]: { locationId, employee: null } }));
@@ -91,53 +160,14 @@ function BulkTransferDialog({
               </Button>
             </div>
 
-            {patients.length === 0 ? (
-              <p className="text-sm text-tertiary">No patients to transfer.</p>
-            ) : (
-              <div className="flex flex-col gap-6 w-full">
-                <div className="grid grid-cols-[minmax(0,1fr)_240px_240px] gap-4 border-b border-secondary px-5 pb-3">
-                  <span className="text-xs text-primary">Patient</span>
-                  <span className="text-xs text-primary">Assigned Doctor</span>
-                  <span className="text-xs text-primary">Location</span>
-                </div>
-                <div className="flex flex-col gap-4 max-h-[420px] overflow-y-auto">
-                  {patients.map((p) => {
-                    const row = rows[p.id];
-                    const rowEmployees = employeesFor(row?.locationId ?? '');
-                    return (
-                      <div
-                        key={p.id}
-                        className="grid grid-cols-[minmax(0,1fr)_240px_240px] items-center gap-4 rounded-lg border border-secondary bg-primary px-5 py-5"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Avatar size="md" initials={p.avatarInitials} />
-                          <span className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{p.firstName} {p.lastName}</span>
-                        </div>
-                        <NativeSelect
-                          value={row?.employee?.id ?? ''}
-                          disabled={!row?.locationId}
-                          onChange={(e) => setRowEmployee(p.id, rowEmployees.find((emp) => emp.id === e.target.value) ?? null)}
-                        >
-                          <option value="" disabled>Transfer to…</option>
-                          {rowEmployees.map((e) => (
-                            <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
-                          ))}
-                        </NativeSelect>
-                        <NativeSelect
-                          value={row?.locationId ?? ''}
-                          onChange={(e) => setRowLocation(p.id, e.target.value)}
-                        >
-                          <option value="" disabled>Location…</option>
-                          {locations.map((l) => (
-                            <option key={l.id} value={l.id}>{l.name} — {l.city}</option>
-                          ))}
-                        </NativeSelect>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <PatientTransferTable
+              patients={patients}
+              rows={rows}
+              locations={locations}
+              currentEmployee={currentEmployee}
+              onRowLocationChange={setRowLocation}
+              onRowEmployeeChange={setRowEmployee}
+            />
           </div>
         </Dialog>
       </Modal>
@@ -145,137 +175,107 @@ function BulkTransferDialog({
   );
 }
 
-type ArchiveReassignment = { locationId: string; employee: Employee | null };
-
-function ArchiveEmployeeDialog({
+function ArchiveFlow({
   open,
   employee,
-  assignedPatients,
+  patients,
   locationOverrides,
   onClose,
   onConfirm,
 }: {
   open: boolean;
   employee: Employee;
-  assignedPatients: Patient[];
+  patients: Patient[];
   locationOverrides: Map<string, PatientLocationState>;
   onClose: () => void;
-  onConfirm: (reassignments: Record<string, { locationId: string; employee: Employee }>) => void;
+  onConfirm: (transfers: Record<string, { locationId: string; employee: Employee }>) => void;
 }) {
   const availableLocationIds = useAvailableLocationIds();
-  const [reassignments, setReassignments] = useState<Record<string, ArchiveReassignment>>({});
+  const [step, setStep] = useState(0);
+  const [rows, setRows] = useState<Record<string, TransferRow>>({});
 
   useEffect(() => {
     if (open) {
-      const init: Record<string, ArchiveReassignment> = {};
-      assignedPatients.forEach((p) => {
+      const init: Record<string, TransferRow> = {};
+      patients.forEach((p) => {
         const currentLocationId = locationOverrides.get(p.id)?.locationId ?? '';
         init[p.id] = { locationId: availableLocationIds.includes(currentLocationId) ? currentLocationId : '', employee: null };
       });
-      setReassignments(init);
+      setRows(init);
+      setStep(0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, assignedPatients]);
+  }, [open, patients]);
 
-  const locationsFor = (patient: Patient) =>
-    mockClinicLocations.filter((l) => l.orgId === patient.clinicId && availableLocationIds.includes(l.id));
-  const employeesFor = (locationId: string) => {
-    const location = mockClinicLocations.find((l) => l.id === locationId);
-    return location ? mockEmployees.filter((e) => location.employeeIds.includes(e.id) && e.id !== employee.id && !e.archived) : [];
-  };
+  if (!open) return null;
 
-  const setPatientLocation = (patientId: string, locationId: string) => {
-    setReassignments((r) => ({ ...r, [patientId]: { locationId, employee: null } }));
-  };
-  const setPatientEmployee = (patientId: string, emp: Employee | null) => {
-    setReassignments((r) => ({ ...r, [patientId]: { ...r[patientId], employee: emp } }));
-  };
+  const locations = mockClinicLocations.filter((l) => l.orgId === employee.clinicId && availableLocationIds.includes(l.id));
+  const setRowLocation = (patientId: string, locationId: string) => setRows((r) => ({ ...r, [patientId]: { locationId, employee: null } }));
+  const setRowEmployee = (patientId: string, emp: Employee | null) => setRows((r) => ({ ...r, [patientId]: { ...r[patientId], employee: emp } }));
 
-  const hasPatients = assignedPatients.length > 0;
-  const allReassigned = assignedPatients.every((p) => reassignments[p.id]?.locationId && reassignments[p.id]?.employee);
-  const canConfirm = !hasPatients || allReassigned;
+  const reassignedCount = patients.filter((p) => rows[p.id]?.locationId && rows[p.id]?.employee).length;
+  const allReassigned = patients.length === 0 || reassignedCount === patients.length;
+
+  const handleConfirm = () => {
+    const result: Record<string, { locationId: string; employee: Employee }> = {};
+    patients.forEach((p) => {
+      const row = rows[p.id];
+      if (row?.locationId && row.employee) result[p.id] = { locationId: row.locationId, employee: row.employee };
+    });
+    onConfirm(result);
+  };
 
   return (
-    <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <Modal>
-        <Dialog>
-          <div className="p-6 w-full min-w-[480px]">
-            <h3 className="text-lg font-semibold text-primary mb-3">Archive Employee?</h3>
-            {!hasPatients ? (
-              <p className="text-tertiary text-sm mb-6">
-                Are you sure you want to archive <strong className="text-primary">{employee.firstName} {employee.lastName}</strong>? They will be moved to the Archived tab and lose clinic access. You can restore them at any time.
-              </p>
-            ) : (
-              <>
-                <Alert type="warning" className="mb-6">
-                  <strong>{employee.firstName} {employee.lastName}</strong> currently has {assignedPatients.length} assigned patient{assignedPatients.length !== 1 ? 's' : ''}. Select a new clinic location and physiotherapist for each before archiving.
-                </Alert>
-                <div className="flex flex-col gap-4 mb-6">
-                  {assignedPatients.map((p) => {
-                    const locations = locationsFor(p);
-                    const rowLocationId = reassignments[p.id]?.locationId ?? '';
-                    const rowEmployees = employeesFor(rowLocationId);
-                    return (
-                      <div key={p.id} className="flex flex-col gap-2 pb-4 border-b border-secondary last:border-b-0 last:pb-0">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-semibold text-sm"
-                            style={{ background: '#D9E8E1', color: '#25382F' }}
-                          >
-                            {p.avatarInitials}
-                          </div>
-                          <span className="font-semibold text-primary text-sm">{p.firstName} {p.lastName}</span>
-                        </div>
-                        <div className="flex gap-3 pl-12">
-                          <NativeSelect
-                            wrapperClassName="flex-1"
-                            value={rowLocationId}
-                            onChange={(e) => setPatientLocation(p.id, e.target.value)}
-                          >
-                            <option value="" disabled>Location…</option>
-                            {locations.map((l) => (
-                              <option key={l.id} value={l.id}>{l.name} — {l.city}</option>
-                            ))}
-                          </NativeSelect>
-                          <NativeSelect
-                            wrapperClassName="flex-1"
-                            value={reassignments[p.id]?.employee?.id ?? ''}
-                            onChange={(e) => setPatientEmployee(p.id, rowEmployees.find((emp) => emp.id === e.target.value) ?? null)}
-                          >
-                            <option value="" disabled>Transfer to…</option>
-                            {rowEmployees.map((e) => (
-                              <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
-                            ))}
-                          </NativeSelect>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
-            <div className="flex justify-end gap-2">
-              <Button color="secondary" size="sm" onPress={onClose}>Cancel</Button>
-              <Button
-                color="secondary-destructive"
-                size="sm"
-                isDisabled={!canConfirm}
-                onPress={() => {
-                  const result: Record<string, { locationId: string; employee: Employee }> = {};
-                  assignedPatients.forEach((p) => {
-                    const r = reassignments[p.id];
-                    if (r?.locationId && r.employee) result[p.id] = { locationId: r.locationId, employee: r.employee };
-                  });
-                  onConfirm(result);
-                }}
-              >
-                Archive Employee
-              </Button>
-            </div>
+    <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] bg-primary flex flex-col overflow-hidden">
+      <div className="flex flex-col items-center gap-7 border-b border-secondary px-10 pt-4 pb-9 shrink-0">
+        <div className="flex items-center justify-between w-full">
+          <Button color="secondary" size="lg" onPress={onClose}>Cancel</Button>
+          <h1 className="font-display text-[32px] leading-[32px] font-normal text-primary m-0">
+            Archive {employee.firstName} {employee.lastName}
+          </h1>
+          {step === 0 ? (
+            <Button color="primary" size="lg" isDisabled={!allReassigned} onPress={() => setStep(1)}>
+              Next
+            </Button>
+          ) : (
+            <Button color="secondary-destructive" size="lg" iconLeading={AlertTriangle} onPress={handleConfirm}>
+              Confirm Archive
+            </Button>
+          )}
+        </div>
+        <ProgramStepper
+          steps={['Transfer Patients', 'Confirm Archive']}
+          currentStep={step}
+          maxReachedStep={step}
+          onStepClick={setStep}
+        />
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-10 py-10">
+        {step === 0 ? (
+          <div className="max-w-[1200px] mx-auto flex flex-col gap-5">
+            <span className="text-xs text-primary">{reassignedCount} out of {patients.length} Patients Reassigned</span>
+            <PatientTransferTable
+              patients={patients}
+              rows={rows}
+              locations={locations}
+              currentEmployee={employee}
+              onRowLocationChange={setRowLocation}
+              onRowEmployeeChange={setRowEmployee}
+            />
           </div>
-        </Dialog>
-      </Modal>
-    </ModalOverlay>
+        ) : (
+          <div className="max-w-[800px] mx-auto rounded-xl border p-7 flex flex-col gap-7" style={{ background: '#f7eded', borderColor: '#993335' }}>
+            <h2 className="font-display text-2xl leading-8 font-medium m-0" style={{ color: '#993335' }}>
+              Are you sure you want to archive and transfer?
+            </h2>
+            <p className="text-base leading-5 m-0" style={{ color: '#592626' }}>
+              Once the patients are transferred, they will be sent notifications of their new practitioner and the practitioner will be sent to archive. Archive is only accessible to administrators of the clinic. <strong>The practitioner will no longer have access to their profile or their patients.</strong>
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -826,10 +826,10 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         onApply={handleApplyBulkTransfer}
       />
 
-      <ArchiveEmployeeDialog
+      <ArchiveFlow
         open={archiveDialogOpen}
         employee={emp}
-        assignedPatients={assignedPatients}
+        patients={assignedPatients}
         locationOverrides={locationOverrides}
         onClose={() => setArchiveDialogOpen(false)}
         onConfirm={handleConfirmArchive}
