@@ -634,7 +634,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-3 text-xs text-secondary">First Name</div>
+                  <div className="mb-2 text-xs text-secondary">First Name</div>
                   <Input
                     value={editingContact ? contactDraft.firstName : savedContact.firstName}
                     isReadOnly={!editingContact}
@@ -642,7 +642,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-3 text-xs text-secondary">Last Name</div>
+                  <div className="mb-2 text-xs text-secondary">Last Name</div>
                   <Input
                     value={editingContact ? contactDraft.lastName : savedContact.lastName}
                     isReadOnly={!editingContact}
@@ -652,7 +652,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-3 text-xs text-secondary">Email</div>
+                  <div className="mb-2 text-xs text-secondary">Email</div>
                   <Input
                     value={editingContact ? contactDraft.email : savedContact.email}
                     isReadOnly={!editingContact}
@@ -660,7 +660,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-3 text-xs text-secondary">Phone</div>
+                  <div className="mb-2 text-xs text-secondary">Phone</div>
                   <Input
                     value={editingContact ? contactDraft.phone : savedContact.phone}
                     isReadOnly={!editingContact}
@@ -686,7 +686,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 )}
               </div>
               <div>
-                <div className="mb-3 text-xs text-secondary">Date Joined</div>
+                <div className="mb-2 text-xs text-secondary">Date Joined</div>
                 <Input
                   value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   isReadOnly
@@ -694,7 +694,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-3 text-xs text-secondary">Title</div>
+                  <div className="mb-2 text-xs text-secondary">Title</div>
                   <Input
                     value={editingProfessional ? professionalDraft.title : savedProfessional.title}
                     isReadOnly={!editingProfessional}
@@ -702,7 +702,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-3 text-xs text-secondary">Credentials / Degrees</div>
+                  <div className="mb-2 text-xs text-secondary">Credentials / Degrees</div>
                   <Input
                     value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials}
                     isReadOnly={!editingProfessional}
@@ -711,7 +711,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 </div>
               </div>
               <div>
-                <div className="mb-3 text-xs text-secondary">Specialties</div>
+                <div className="mb-2 text-xs text-secondary">Specialties</div>
                 {editingProfessional ? (
                   <div className="flex flex-col gap-3 items-start">
                     {professionalDraft.specialties.map((s, i) => (
