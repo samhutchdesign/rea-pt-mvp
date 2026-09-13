@@ -87,7 +87,7 @@ function NewExerciseForm() {
         <h2 className="mt-0 mb-6 text-2xl font-bold text-primary">{pageTitle}</h2>
 
         {/* Basic Info */}
-        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+        <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
           <div className="flex flex-col gap-5">
             <span className="text-sm font-semibold text-primary">Basic Info</span>
             <div>
@@ -100,7 +100,7 @@ function NewExerciseForm() {
                 rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
               />
             </div>
             <div>
@@ -109,7 +109,7 @@ function NewExerciseForm() {
                 rows={4}
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
               />
             </div>
             <div>
@@ -118,14 +118,14 @@ function NewExerciseForm() {
                 rows={3}
                 value={mistakes}
                 onChange={(e) => setMistakes(e.target.value)}
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
               />
             </div>
           </div>
         </div>
 
         {/* Defaults */}
-        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+        <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
           <span className="mb-4 block text-sm font-semibold text-primary">Defaults</span>
           <div className="flex flex-wrap gap-4 items-end">
             <div>
@@ -135,7 +135,7 @@ function NewExerciseForm() {
                 min={0}
                 value={sets}
                 onChange={(e) => setSets(Number(e.target.value))}
-                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center outline-none focus:ring-2 focus:ring-brand-300"
               />
             </div>
             <div>
@@ -145,7 +145,7 @@ function NewExerciseForm() {
                 min={0}
                 value={reps}
                 onChange={(e) => setReps(Number(e.target.value))}
-                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center outline-none focus:ring-2 focus:ring-brand-300"
               />
             </div>
             <div>
@@ -155,7 +155,7 @@ function NewExerciseForm() {
                 min={0}
                 value={hold}
                 onChange={(e) => setHold(Number(e.target.value))}
-                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center shadow-xs outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center outline-none focus:ring-2 focus:ring-brand-300"
               />
             </div>
             <div>
@@ -172,7 +172,7 @@ function NewExerciseForm() {
         </div>
 
         {/* Tags */}
-        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+        <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
           <div className="flex flex-col gap-5">
             <span className="text-sm font-semibold text-primary">Tags</span>
             {tagFields.map(({ label, options, selected, set }) => (
@@ -185,7 +185,7 @@ function NewExerciseForm() {
         </div>
 
         {/* Media */}
-        <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+        <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
           <div className="flex flex-col gap-5">
             <span className="text-sm font-semibold text-primary">Media</span>
             {isDuplicate ? (

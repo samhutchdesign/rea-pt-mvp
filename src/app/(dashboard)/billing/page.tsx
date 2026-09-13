@@ -45,7 +45,7 @@ const USAGE = [
 function SubscriptionTab() {
   return (
     <div className="flex gap-6 flex-wrap">
-      <div className="flex-[2] min-w-[300px] rounded-xl border border-secondary bg-primary shadow-xs p-6">
+      <div className="flex-[2] min-w-[300px] rounded-xl border border-secondary bg-primary p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -83,7 +83,7 @@ function SubscriptionTab() {
         </div>
       </div>
 
-      <div className="flex-1 min-w-[240px] rounded-xl border border-secondary bg-primary shadow-xs p-6 self-start">
+      <div className="flex-1 min-w-[240px] rounded-xl border border-secondary bg-primary p-6 self-start">
         <span className="block font-semibold text-primary mb-4">Seats</span>
         <h2 className="text-3xl font-bold text-primary mt-0 mb-0.5">{PLAN.usedSeats} / {PLAN.seats}</h2>
         <span className="text-tertiary text-xs">practitioners on your plan</span>
@@ -99,7 +99,7 @@ function SubscriptionTab() {
 function PaymentMethodTab() {
   return (
     <div className="max-w-[560px]">
-      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6 mb-4">
+      <div className="rounded-xl border border-secondary bg-primary p-6 mb-4">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
             <CreditCard size={24} className="text-brand-700" />
@@ -128,7 +128,7 @@ function PaymentMethodTab() {
 function InvoiceHistoryTab() {
   return (
     <div className="max-w-[720px]">
-      <div className="overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-secondary bg-primary">
         <div className="grid grid-cols-5 gap-0 border-b border-secondary px-4 py-3 bg-secondary_alt">
           <span className="text-xs font-semibold text-tertiary uppercase tracking-wide">Invoice</span>
           <span className="text-xs font-semibold text-tertiary uppercase tracking-wide">Date</span>
@@ -159,7 +159,7 @@ function UsageStatsTab() {
     <div className="max-w-[600px]">
       <div className="flex flex-col gap-4">
         {USAGE.map(({ label, used, limit, unit }) => (
-          <div key={label} className="rounded-xl border border-secondary bg-primary shadow-xs px-4 py-3.5">
+          <div key={label} className="rounded-xl border border-secondary bg-primary px-4 py-3.5">
             <div className={cx('flex justify-between items-center', limit ? 'mb-2' : '')}>
               <span className="font-semibold text-primary text-sm">{label}</span>
               <span className="text-tertiary text-sm">

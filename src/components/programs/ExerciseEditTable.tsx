@@ -10,7 +10,7 @@ const GRID_COLS = 'grid-cols-[24px_minmax(0,1fr)_100px_100px_110px_200px_64px]';
 
 function TableField({ value, unitLabel, onChange }: { value: number; unitLabel: string; onChange: (v: number) => void }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary px-2 py-2 shadow-xs">
+    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary px-2 py-2">
       <input
         type="number"
         min={0}
@@ -86,7 +86,7 @@ export function ExerciseEditTable({
                   onDrop={(e) => onDrop(e, idx)}
                   onDragEnd={onDragEnd}
                   className={cx(
-                    'grid items-center gap-4 rounded-xl border bg-primary p-3 shadow-xs transition-opacity',
+                    'grid items-center gap-4 rounded-xl border bg-primary p-3 transition-opacity',
                     GRID_COLS,
                     isDragging ? 'opacity-40' : 'opacity-100',
                     isDropTarget ? 'border-brand-600 border-dashed' : 'border-secondary'

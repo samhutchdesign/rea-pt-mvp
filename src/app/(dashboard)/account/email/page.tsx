@@ -11,7 +11,7 @@ export default function EmailChangePage() {
     <>
       <div className="p-8 max-w-[500px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Change Email</h2>
-        <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+        <div className="rounded-xl border border-secondary bg-primary p-5">
           <div className="flex flex-col gap-5">
             <div>
               <div className="mb-1 text-xs text-secondary">Current Email</div>

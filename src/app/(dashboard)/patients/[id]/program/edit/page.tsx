@@ -87,7 +87,7 @@ function FilterSearchBox({ value, onChange, placeholder }: { value: string; onCh
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+        className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
       />
     </div>
   );
@@ -438,7 +438,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                         key={ex.id}
                         title={isAdded ? 'Remove from program' : 'Add to program'}
                         className={cx(
-                          'cursor-pointer overflow-hidden rounded-xl border bg-primary shadow-xs hover:shadow-md transition-shadow',
+                          'cursor-pointer overflow-hidden rounded-xl border bg-primary hover:shadow-md transition-shadow',
                           isAdded ? 'border-brand-400' : 'border-secondary'
                         )}
                         onClick={() => toggleInProgram(ex)}
@@ -528,7 +528,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add a description for this program…"
                   rows={5}
-                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
               <div>

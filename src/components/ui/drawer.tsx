@@ -23,7 +23,7 @@ export const Drawer = ({ open, onClose, children, width = 480, className }: Draw
       <AriaModal
         style={{ width }}
         className={cx(
-          'flex flex-col bg-primary shadow-xl outline-none h-full overflow-hidden',
+          'flex flex-col bg-primary outline-none h-full overflow-hidden',
           'data-[entering]:animate-in data-[entering]:slide-in-from-right data-[exiting]:animate-out data-[exiting]:slide-out-to-right duration-300',
           className
         )}

@@ -262,7 +262,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
                           rows={rows}
                           value={fields[key]}
                           onChange={(e) => set(key, e.target.value)}
-                          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
                           style={isEdited(key) ? { background: '#FFFDE7' } : undefined}
                         />
                       ) : (

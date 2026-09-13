@@ -186,7 +186,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
         <div className="max-w-[820px] mx-auto">
       <div className="flex flex-col gap-5">
         {/* Notes */}
-        <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+        <div className="rounded-xl border border-secondary bg-primary p-5">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm font-semibold text-primary">Notes</span>
             {template === 'default-dictation' && (

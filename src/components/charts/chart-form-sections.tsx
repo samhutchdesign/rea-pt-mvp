@@ -16,7 +16,7 @@ import type {
 } from '@/lib/types';
 import { JOINT_MOVEMENTS } from '@/lib/types';
 
-const tableInputCls = 'w-full rounded border border-secondary px-1.5 py-1 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300';
+const tableInputCls = 'w-full rounded border border-secondary px-1.5 py-1 text-xs text-primary outline-none focus:ring-2 focus:ring-brand-300';
 const th = 'px-3 py-3 text-left text-base font-normal text-primary whitespace-nowrap';
 const td = 'px-3 py-3 align-top text-base text-primary';
 
@@ -42,7 +42,7 @@ function MovementSelect({ movement, movementOther, onMovementChange, onMovementO
   );
 }
 
-export const inputCls = 'w-full rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300';
+export const inputCls = 'w-full rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300';
 
 export const INTERVENTION_TYPES: InterventionItem['type'][] = ['Manual Therapy', 'Exercise', 'Modality', 'Education', 'Other'];
 

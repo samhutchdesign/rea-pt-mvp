@@ -93,7 +93,7 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
 
 function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2 shadow-xs">
+    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2">
       <input
         type="number"
         min={0}
@@ -269,7 +269,7 @@ function ExercisesPageContent() {
                   placeholder="Search conditions…"
                   value={conditionSearch}
                   onChange={(e) => setConditionSearch(e.target.value)}
-                  className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
               {visibleConditions.map((c) => (
@@ -293,7 +293,7 @@ function ExercisesPageContent() {
                   placeholder="Search categories…"
                   value={categorySearch}
                   onChange={(e) => setCategorySearch(e.target.value)}
-                  className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="w-full rounded-lg border border-secondary bg-primary pl-7 pr-2 py-1.5 text-xs text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
               {visibleCategories.map((c) => (
@@ -419,7 +419,7 @@ function ExercisesPageContent() {
                 {filtered.slice(0, visibleCount).map((ex) => (
                   <div
                     key={ex.id}
-                    className="group cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary shadow-xs hover:shadow-md transition-shadow"
+                    className="group cursor-pointer overflow-hidden rounded-xl border border-secondary bg-primary hover:shadow-md transition-shadow"
                     onClick={() => {
                       const p = new URLSearchParams();
                       if (search) p.set('q', search);

@@ -88,7 +88,7 @@ export default function TopBar({}: TopBarProps) {
         </button>
 
         {locMenuOpen && hasMultiple && (
-          <div className="absolute right-0 top-9 z-50 w-52 rounded-xl border border-secondary bg-primary shadow-lg py-1">
+          <div className="absolute right-0 top-9 z-50 w-52 rounded-xl border border-secondary bg-primary py-1">
             <button
               onClick={() => { setLocationId('all'); setLocMenuOpen(false); }}
               className={cx(
@@ -133,7 +133,7 @@ export default function TopBar({}: TopBarProps) {
         </button>
 
         {menuOpen && (
-          <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-secondary bg-primary shadow-lg py-1">
+          <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-secondary bg-primary py-1">
             <div className="px-4 py-3 border-b border-secondary">
               <p className="text-sm font-semibold text-primary">{identity.firstName} {identity.lastName}</p>
               <p className="text-xs font-medium text-brand-600 mt-0.5">{roleLabel(role)}</p>
@@ -179,7 +179,7 @@ export default function TopBar({}: TopBarProps) {
           </button>
 
           {bellOpen && (
-            <div className="absolute right-0 top-11 z-50 w-80 rounded-xl border border-secondary bg-primary shadow-lg overflow-hidden">
+            <div className="absolute right-0 top-11 z-50 w-80 rounded-xl border border-secondary bg-primary overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 border-b border-secondary">
                 <p className="text-sm font-semibold text-primary">Notifications</p>
                 {mockNotifications.filter((n) => !n.read).length > 0 && (

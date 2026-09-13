@@ -16,7 +16,7 @@ function VerifyContent() {
 
   return (
     <div className="w-full max-w-sm px-4">
-      <div className="rounded-2xl border border-secondary bg-primary shadow-xs p-8 text-center">
+      <div className="rounded-2xl border border-secondary bg-primary p-8 text-center">
         <div className="mb-5 flex justify-center">
           <div className="size-10 animate-spin rounded-full border-2 border-secondary border-t-brand-600" />
         </div>

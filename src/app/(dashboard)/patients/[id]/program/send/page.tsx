@@ -38,18 +38,18 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
       <p className="mb-6 text-sm text-secondary">{contact.firstName} {contact.lastName} · {contact.email}</p>
 
       {/* Message */}
-      <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+      <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
         <span className="mb-3 block text-sm font-semibold text-primary">Message</span>
         <textarea
           rows={8}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
         />
       </div>
 
       {/* Program preview */}
-      <div className="mb-6 rounded-xl border border-secondary bg-primary shadow-xs p-6">
+      <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
         <span className="mb-1 block text-sm font-semibold text-primary">{program.name}</span>
         <span className="mb-4 block text-xs text-tertiary">{program.frequency}</span>
         <div className="flex flex-col gap-3">

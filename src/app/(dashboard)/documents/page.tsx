@@ -49,7 +49,7 @@ export default function DocumentsPage() {
           {filtered.map((doc) => (
             <div
               key={doc.id}
-              className="rounded-xl border border-secondary bg-primary shadow-xs cursor-pointer hover:bg-secondary_alt transition-colors"
+              className="rounded-xl border border-secondary bg-primary cursor-pointer hover:bg-secondary_alt transition-colors"
               onClick={() => router.push(`/documents/${doc.id}`)}
             >
               <div className="flex items-center gap-5 px-6 py-5">

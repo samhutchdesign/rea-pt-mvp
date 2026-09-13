@@ -41,7 +41,7 @@ function formatNext(ts: number): string {
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+    <div className="rounded-xl border border-secondary bg-primary p-5">
       <p className="text-xs font-medium text-tertiary mb-1">{label}</p>
       <p className="text-3xl font-bold text-primary leading-none">{value}</p>
       {sub && <p className="text-xs text-secondary mt-1.5">{sub}</p>}
@@ -71,7 +71,7 @@ function SectionCard({ title, action, onAction, children }: {
   title: string; action?: string; onAction?: () => void; children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-secondary bg-primary shadow-xs">
+    <div className="rounded-xl border border-secondary bg-primary">
       <div className="flex items-center justify-between px-5 py-4 border-b border-secondary">
         <h3 className="text-sm font-semibold text-primary m-0">{title}</h3>
         {action && (
@@ -287,7 +287,7 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => {}}
-              className="w-full flex items-start gap-5 rounded-2xl border border-secondary bg-primary shadow-xs p-6 text-left hover:border-brand-300 hover:shadow-sm transition-all group"
+              className="w-full flex items-start gap-5 rounded-2xl border border-secondary bg-primary p-6 text-left hover:border-brand-300 hover:shadow-sm transition-all group"
             >
               <div className="w-11 h-11 rounded-full bg-brand-50 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors">
                 <Building2 size={20} className="text-brand-600" />

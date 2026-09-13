@@ -102,7 +102,7 @@ export default function ClinicPage() {
         <div className="flex gap-6">
           {/* Left column */}
           <div className="flex-[3] flex flex-col gap-4">
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+            <div className="rounded-xl border border-secondary bg-primary p-6">
               <span className="block font-semibold text-primary mb-4">Organization Information</span>
               <div className="flex flex-col gap-4">
                 <div>
@@ -141,7 +141,7 @@ export default function ClinicPage() {
             </div>
 
             {/* Locations */}
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+            <div className="rounded-xl border border-secondary bg-primary p-6">
               <div className="flex justify-between items-center mb-4">
                 <span className="font-semibold text-primary">Locations</span>
                 <Button color="tertiary" size="xs" iconLeading={Plus} onPress={() => setAddLocationOpen(true)}>
@@ -180,7 +180,7 @@ export default function ClinicPage() {
 
             {/* Contact summary */}
             {!editing && (
-              <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+              <div className="rounded-xl border border-secondary bg-primary p-6">
                 <span className="block font-semibold text-primary mb-4">Contact</span>
                 <div className="flex flex-col gap-3">
                   {contactItems.map(({ icon: Icon, label }) => (
@@ -196,7 +196,7 @@ export default function ClinicPage() {
 
           {/* Right: Team */}
           <div className="flex-[2]">
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6 h-full">
+            <div className="rounded-xl border border-secondary bg-primary p-6 h-full">
               <span className="block font-semibold text-primary mb-4">Team ({mockEmployees.length} employees)</span>
               <div className="flex flex-col">
                 {mockEmployees.map((emp, i) => {

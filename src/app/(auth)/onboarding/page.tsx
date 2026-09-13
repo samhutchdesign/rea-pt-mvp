@@ -17,7 +17,7 @@ function OnboardingContent() {
         <p className="text-sm text-tertiary">Let's set up your profile before you get started.</p>
       </div>
 
-      <div className="rounded-2xl border border-secondary bg-primary shadow-xs p-8">
+      <div className="rounded-2xl border border-secondary bg-primary p-8">
         {/* Photo upload */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-3">
@@ -48,7 +48,7 @@ function OnboardingContent() {
           <div className="flex gap-4">
             <div className="flex-1">
               <div className="mb-1 text-xs font-medium text-secondary">Email</div>
-              <div className="w-full rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-sm text-tertiary shadow-xs">
+              <div className="w-full rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-sm text-tertiary">
                 {email || 'your@email.com'}
               </div>
             </div>
@@ -73,7 +73,7 @@ function OnboardingContent() {
             <textarea
               rows={3}
               placeholder="Tell patients a little about yourself…"
-              className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary placeholder:text-tertiary"
+              className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 bg-primary placeholder:text-tertiary"
             />
           </div>
         </div>

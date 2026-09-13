@@ -101,7 +101,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
         <div className="flex gap-6">
           {/* Left: About + Contact + Danger Zone */}
           <div className="flex-[3] flex flex-col gap-4">
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+            <div className="rounded-xl border border-secondary bg-primary p-6">
               <span className="block font-semibold text-primary mb-4">About This Location</span>
               <div className="flex flex-col gap-4">
                 <div>
@@ -131,7 +131,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
               </div>
             </div>
 
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+            <div className="rounded-xl border border-secondary bg-primary p-6">
               <span className="block font-semibold text-primary mb-4">Contact</span>
               <div className="flex flex-col gap-4">
                 <div>
@@ -152,7 +152,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
             </div>
 
             {can.canManageClinic && (
-              <div className="rounded-xl border border-utility-red-200 bg-primary shadow-xs p-6">
+              <div className="rounded-xl border border-utility-red-200 bg-primary p-6">
                 <span className="block text-tertiary text-xs font-semibold uppercase tracking-wide mb-2">Danger Zone</span>
                 <div className="flex items-center justify-between">
                   <div>
@@ -169,7 +169,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
 
           {/* Right: Team */}
           <div className="flex-[2]">
-            <div className="rounded-xl border border-secondary bg-primary shadow-xs p-6">
+            <div className="rounded-xl border border-secondary bg-primary p-6">
               <span className="block font-semibold text-primary mb-4">
                 Team {teamMembers.length > 0 ? `(${teamMembers.length})` : ''}
               </span>

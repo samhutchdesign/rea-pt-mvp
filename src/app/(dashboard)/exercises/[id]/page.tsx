@@ -24,7 +24,7 @@ const RELAXATION_CUES = [
 
 function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2 shadow-xs">
+    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2">
       <input
         type="number"
         min={0}
@@ -209,7 +209,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                   <MoreHorizontal size={16} />
                 </button>
                 {moreOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary shadow-lg z-50 py-1">
+                  <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary z-50 py-1">
                     <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
                       <Mic size={15} className="text-tertiary shrink-0" />Record Audio Cue
                     </button>

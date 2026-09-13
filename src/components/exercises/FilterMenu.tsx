@@ -40,7 +40,7 @@ export default function FilterMenu({ label, options, selected, onChange }: Filte
         <ChevronDown size={14} />
       </button>
       {open && (
-        <div className="absolute left-0 top-9 z-50 max-h-72 w-56 overflow-y-auto rounded-xl border border-secondary bg-primary shadow-lg py-1">
+        <div className="absolute left-0 top-9 z-50 max-h-72 w-56 overflow-y-auto rounded-xl border border-secondary bg-primary py-1">
           {options.map((opt) => (
             <button
               key={opt}

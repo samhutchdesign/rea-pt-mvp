@@ -122,7 +122,7 @@ export function BodyMap({
           onClick={(e) => { if (simplified) e.stopPropagation(); }}
           style={{ left: `${p.x}%`, top: `${p.y}%`, touchAction: simplified ? 'none' : undefined }}
           className={cx(
-            'group absolute -translate-x-1/2 -translate-y-1/2 rounded-full shadow-sm',
+            'group absolute -translate-x-1/2 -translate-y-1/2 rounded-full',
             simplified
               ? cx('h-9 w-9 border-2 border-brand-600 bg-brand-600/20', interactive && onMove && 'cursor-grab active:cursor-grabbing')
               : 'flex size-7 items-center justify-center border-2 border-brand-700 bg-brand-100',
@@ -135,7 +135,7 @@ export function BodyMap({
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => { e.stopPropagation(); onDelete(i); }}
               aria-label="Remove pain point"
-              className="absolute left-full top-1/2 ml-1.5 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full bg-black text-white opacity-0 shadow ring-2 ring-white transition-opacity group-hover:opacity-100"
+              className="absolute left-full top-1/2 ml-1.5 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full bg-black text-white opacity-0 ring-2 ring-white transition-opacity group-hover:opacity-100"
             >
               <X size={9} strokeWidth={3} />
             </button>
@@ -157,7 +157,7 @@ export function BodyMap({
   }
 
   return (
-    <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+    <div className="rounded-xl border border-secondary bg-primary p-5">
       <span className="font-display mb-3 block text-lg font-medium text-primary">Pain Diagram</span>
       <p className="mb-3 text-xs font-medium text-brand-600">
         {simplified

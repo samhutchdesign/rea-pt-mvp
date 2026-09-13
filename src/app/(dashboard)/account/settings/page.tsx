@@ -121,7 +121,7 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
                     placeholder="newowner@example.com"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                   />
                 )}
               </div>
@@ -215,7 +215,7 @@ function SettingsContent() {
     <>
       <div className="p-8 max-w-[600px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Settings</h2>
-        <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-4">
+        <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
           <span className="font-semibold text-sm text-primary block mb-4">Preferences</span>
           <div className="flex items-center gap-2 mb-4">
             <Toggle
@@ -234,7 +234,7 @@ function SettingsContent() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-4">
+        <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
           <span className="font-semibold text-sm text-primary block mb-4">Signature</span>
           {signatureFont ? (
             <>
@@ -254,7 +254,7 @@ function SettingsContent() {
         </div>
 
         {role === 'owner' && (
-          <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+          <div className="rounded-xl border border-secondary bg-primary p-5">
             <span className="font-semibold text-sm text-primary block mb-4">Organization</span>
             <Divider className="mb-4" />
             <p className="text-xs font-semibold uppercase tracking-wide text-tertiary mb-2">Danger Zone</p>

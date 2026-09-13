@@ -15,7 +15,7 @@ export function NativeSelect({ className, wrapperClassName, children, ...props }
       <select
         {...props}
         className={cx(
-          'w-full appearance-none rounded-lg border border-secondary bg-primary pl-3 pr-8 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300',
+          'w-full appearance-none rounded-lg border border-secondary bg-primary pl-3 pr-8 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300',
           className
         )}
       >

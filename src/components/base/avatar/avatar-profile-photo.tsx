@@ -18,7 +18,7 @@ const styles = {
     md: {
         root: "size-24 p-1",
         rootWithPlaceholder: "p-1.25",
-        content: "shadow-xl outline-[0.75px] -outline-offset-[0.75px] before:border-[1.5px]",
+        content: "outline-[0.75px] -outline-offset-[0.75px] before:border-[1.5px]",
         icon: "size-12",
         initials: "text-display-md font-semibold",
         badge: "bottom-1 right-1",
@@ -26,7 +26,7 @@ const styles = {
     lg: {
         root: "size-40 p-1.5",
         rootWithPlaceholder: "p-1.75",
-        content: "shadow-2xl outline-[0.75px] -outline-offset-[0.75px] before:border-[1.5px]",
+        content: "outline-[0.75px] -outline-offset-[0.75px] before:border-[1.5px]",
         icon: "size-20",
         initials: "text-display-xl font-semibold",
         badge: "bottom-2 right-2",

@@ -48,7 +48,7 @@ export default function NotificationsPage() {
             <span className="text-secondary text-sm">No notifications</span>
           </div>
         ) : (
-          <div className="rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden">
+          <div className="rounded-xl border border-secondary bg-primary overflow-hidden">
             {notifications.map((notif, i) => (
               <div key={notif.id}>
                 <div

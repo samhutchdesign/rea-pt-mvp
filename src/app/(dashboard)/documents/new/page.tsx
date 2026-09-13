@@ -49,7 +49,7 @@ export default function NewDocumentPage() {
           {fields.map((field, i) => (
             <div
               key={field.id}
-              className="rounded-xl border border-secondary bg-primary shadow-xs px-3 py-3 flex gap-4 items-center"
+              className="rounded-xl border border-secondary bg-primary px-3 py-3 flex gap-4 items-center"
             >
               <span className="text-tertiary text-sm min-w-[24px]">{i + 1}.</span>
               <div className="grow">

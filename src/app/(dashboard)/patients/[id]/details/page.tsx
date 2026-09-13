@@ -24,7 +24,7 @@ function InfoField({ label, value, hideEmpty }: { label: string; value?: string;
 
 function SectionCard({ title, children, onEdit }: { title: string; children: React.ReactNode; onEdit: () => void }) {
   return (
-    <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-4">
+    <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
       <div className="flex justify-between items-center mb-5">
         <span className="text-sm font-semibold text-primary">{title}</span>
         <Button color="tertiary" size="xs" onPress={onEdit} iconLeading={Pencil} />
@@ -253,7 +253,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         rows={rows}
         value={draftValues[key] ?? ''}
         onChange={(e) => setDraft(key, e.target.value)}
-        className="w-full rounded-lg bg-primary shadow-xs ring-1 ring-inset ring-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
+        className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
       />
     </div>
   );
@@ -341,7 +341,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
               onChange={(e) => setHideEmpty(e.target.checked)}
             />
             <span className="block h-5 w-9 rounded-full bg-secondary transition-colors peer-checked:bg-brand-600" />
-            <span className="absolute left-0.5 top-0.5 block h-4 w-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+            <span className="absolute left-0.5 top-0.5 block h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
           </span>
           <span className="text-sm text-primary">Remove N/A or Empty States</span>
         </label>

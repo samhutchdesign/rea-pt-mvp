@@ -81,7 +81,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg bg-primary shadow-xs ring-1 ring-inset ring-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600"
+          className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600"
         />
       ) : (
         <div className="rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-sm text-primary min-h-[38px]">
@@ -94,7 +94,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
   return (
     <div className="flex flex-col gap-6 mt-10">
       {/* Contact Information */}
-      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+      <div className="rounded-xl border border-secondary bg-primary p-5">
         <div className="flex justify-between items-center mb-5">
           <span className="text-sm font-semibold text-primary">Contact Information</span>
           {can.canEditContactInfo && !editingContact && (
@@ -121,7 +121,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
       </div>
 
       {/* Emergency Contact */}
-      <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+      <div className="rounded-xl border border-secondary bg-primary p-5">
         <div className="flex justify-between items-center mb-5">
           <span className="text-sm font-semibold text-primary">Emergency Contact</span>
           {can.canEditContactInfo && !editingEmergency && (

@@ -249,7 +249,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
         <div className="max-w-[820px] mx-auto">
 
       {canEdit && !signatureFontId && (
-        <div className="mb-6 rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+        <div className="mb-6 rounded-xl border border-secondary bg-primary p-5">
           <span className="mb-2 block text-sm font-semibold text-primary">Set Up Your Signature</span>
           <p className="mb-4 text-sm text-secondary">
             You&apos;ll need a signature before you can sign and lock charts. Pick a style below — you can change it anytime in{' '}
@@ -271,7 +271,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       {editing ? (
         <div className="flex flex-col gap-5">
           {/* Notes */}
-          <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+          <div className="rounded-xl border border-secondary bg-primary p-5">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-semibold text-primary">Notes</span>
               {session.template === 'default-dictation' && (
@@ -319,7 +319,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       )}
 
       {isChartWriter && isSigned && !editing && amendOpen && (
-        <div className="mt-4 rounded-xl border border-secondary bg-primary p-5 shadow-xs">
+        <div className="mt-4 rounded-xl border border-secondary bg-primary p-5">
           <span className="mb-2 block text-sm font-semibold text-primary">Add Amendment</span>
           <Textarea
             rows={3}

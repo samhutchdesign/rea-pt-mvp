@@ -131,7 +131,7 @@ function ProgramDetailContent({ id }: { id: string }) {
                       <Play size={24} className="text-white ml-0.5" fill="currentColor" />
                     </div>
                   </div>
-                  <span className="absolute bottom-3 left-3 rounded-md bg-white/90 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs">
+                  <span className="absolute bottom-3 left-3 rounded-md bg-white/90 px-2.5 py-1 text-xs font-semibold text-primary">
                     {selectedExercise.name}
                   </span>
                 </>

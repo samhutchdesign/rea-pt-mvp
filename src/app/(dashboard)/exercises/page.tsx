@@ -235,7 +235,7 @@ function FilterSearchBox({ value, onChange, placeholder }: { value: string; onCh
 
 function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2 shadow-xs">
+    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2">
       <input
         type="number"
         min={0}

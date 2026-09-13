@@ -22,7 +22,7 @@ export function ChartTemplateSelect({ onSelect }: { onSelect: (id: ChartTemplate
             disabled={template.comingSoon}
             onClick={() => onSelect(template.id)}
             className={cx(
-              'flex flex-col items-start gap-3 rounded-xl border border-secondary bg-primary p-5 text-left shadow-xs transition-shadow',
+              'flex flex-col items-start gap-3 rounded-xl border border-secondary bg-primary p-5 text-left transition-shadow',
               template.comingSoon ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:border-brand-400 hover:shadow-md'
             )}
           >

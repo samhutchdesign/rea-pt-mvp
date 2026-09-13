@@ -22,7 +22,7 @@ export default function ProfilePage() {
       <div className="p-8 max-w-[640px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Your Profile</h2>
 
-        <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5 mb-4">
+        <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
           {/* Avatar + name row */}
           <div className="flex items-center gap-5 mb-6">
             <Avatar
@@ -85,7 +85,7 @@ export default function ProfilePage() {
               <textarea
                 rows={3}
                 defaultValue={identity.bio}
-                className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary shadow-xs outline-none focus:ring-2 focus:ring-brand-300 bg-primary"
+                className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 bg-primary"
               />
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function ProfilePage() {
         </div>
 
         {can.canManageClinic && (
-          <div className="rounded-xl border border-secondary bg-primary shadow-xs p-5">
+          <div className="rounded-xl border border-secondary bg-primary p-5">
             <span className="font-semibold text-sm text-primary block mb-4">Organization</span>
             <Divider className="mb-4" />
             <div

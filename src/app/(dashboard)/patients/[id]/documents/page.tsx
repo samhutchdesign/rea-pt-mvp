@@ -266,7 +266,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
         {docCards.map((doc) => (
           <div
             key={doc.id}
-            className={`rounded-xl border border-secondary bg-primary shadow-xs overflow-hidden ${doc.linkable ? 'cursor-pointer hover:border-brand-600 transition-colors' : ''}`}
+            className={`rounded-xl border border-secondary bg-primary overflow-hidden ${doc.linkable ? 'cursor-pointer hover:border-brand-600 transition-colors' : ''}`}
             onClick={doc.linkable ? () => setPdfOpen(true) : undefined}
           >
             <div className="flex items-center gap-4 px-5 py-4">

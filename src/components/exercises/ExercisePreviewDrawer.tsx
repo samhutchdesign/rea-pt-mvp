@@ -101,7 +101,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           )}
           <button
             onClick={onClose}
-            className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-white/90 shadow-sm hover:bg-white transition-colors"
+            className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-white/90 hover:bg-white transition-colors"
           >
             <X size={14} />
           </button>
