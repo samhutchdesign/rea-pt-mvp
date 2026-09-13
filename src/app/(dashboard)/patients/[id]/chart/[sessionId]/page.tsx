@@ -269,7 +269,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       )}
 
       {editing ? (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           {/* Notes */}
           <div className="rounded-xl border border-secondary bg-primary p-5 shadow-xs">
             <div className="mb-2 flex items-center justify-between">

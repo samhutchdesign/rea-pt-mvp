@@ -76,16 +76,16 @@ export const emptyEvaluation = (): EvaluationSection => ({ patientReaction: '', 
 export function SectionCard({ label, defaultOpen = true, children }: { letter?: string; label: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div>
+    <div className="overflow-hidden rounded-xl border border-secondary bg-secondary_alt">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 border-b border-secondary bg-transparent px-2 py-4 border-x-0 border-t-0 cursor-pointer text-left"
+        className={cx('flex h-[88px] w-full items-center gap-2 bg-transparent px-5 cursor-pointer text-left', open && 'border-b border-secondary')}
       >
         <span className="font-display flex-1 text-2xl font-medium text-primary">{label}</span>
         {open ? <ChevronUp size={24} className="shrink-0 text-primary" /> : <ChevronDown size={24} className="shrink-0 text-primary" />}
       </button>
-      {open && <div className="flex flex-col gap-6 pt-6">{children}</div>}
+      {open && <div className="flex flex-col gap-7 px-10 py-7">{children}</div>}
     </div>
   );
 }
@@ -195,15 +195,13 @@ export function ChartFormBody({
       <SectionCard letter="S" label="Subjective">
         {isDictation ? (
           <>
-            <Field label="Pain Points">
-              <BodyMap
-                painPoints={subjective.painPoints}
-                onCreate={handleCreate}
-                onMove={handleMovePainPoint}
-                onDelete={handleDeletePainPoint}
-                simplified
-              />
-            </Field>
+            <BodyMap
+              painPoints={subjective.painPoints}
+              onCreate={handleCreate}
+              onMove={handleMovePainPoint}
+              onDelete={handleDeletePainPoint}
+              simplified
+            />
             <Field label="Subjective">
               <Textarea
                 rows={8}
@@ -215,52 +213,49 @@ export function ChartFormBody({
           </>
         ) : (
           <>
-        <Field label="Pain Points">
-          <BodyMap painPoints={subjective.painPoints} armedIndex={armedIndex} onPlace={handlePlace} onCreate={handleCreate} />
-          <div className="mt-3">
-          <RepeatableList
-            items={subjective.painPoints}
-            onChange={(painPoints) => setSubjective((s) => ({ ...s, painPoints }))}
-            newItem={emptyPainPoint}
-            addLabel="Add Pain Point"
-            emptyLabel="No pain points reported."
-            renderRow={(pp, update, index) => (
-              <div className="flex gap-3">
+        <BodyMap painPoints={subjective.painPoints} armedIndex={armedIndex} onPlace={handlePlace} onCreate={handleCreate} />
+        <RepeatableList
+          items={subjective.painPoints}
+          onChange={(painPoints) => setSubjective((s) => ({ ...s, painPoints }))}
+          newItem={emptyPainPoint}
+          addLabel="Add Pain Point"
+          emptyLabel="No pain points reported."
+          renderRow={(pp, update, index) => (
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center gap-3">
                 <PainPointBadge index={index} />
-                <div className="flex flex-1 flex-col gap-3">
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <Field label="Location"><input className={inputCls} value={pp.location} onChange={(e) => update({ location: e.target.value })} /></Field>
-                    <Field label="Description"><input className={inputCls} value={pp.description} onChange={(e) => update({ description: e.target.value })} /></Field>
-                    <Field label="NPRS (0-10)">
-                      <div className="flex gap-2 min-w-0">
-                        <input type="number" min={0} max={10} placeholder="/10" className={cx(inputCls, 'w-16 shrink-0')} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} />
-                        <input className={cx(inputCls, 'min-w-0 flex-1 w-auto')} value={pp.nprsContext} onChange={(e) => update({ nprsContext: e.target.value })} />
-                      </div>
-                    </Field>
-                    <Field label="Pattern">
-                      <NativeSelect value={pp.pattern} onChange={(e) => update({ pattern: e.target.value as PainPoint['pattern'] })}>
-                        <option value="constant">Constant</option>
-                        <option value="intermittent">Intermittent</option>
-                      </NativeSelect>
-                    </Field>
-                    <Field label="Aggravating Factors"><input className={inputCls} value={pp.aggravating} onChange={(e) => update({ aggravating: e.target.value })} /></Field>
-                    <Field label="Easing Factors"><input className={inputCls} value={pp.easing} onChange={(e) => update({ easing: e.target.value })} /></Field>
-                    <Field label="↑ P"><input className={inputCls} value={pp.upPain} onChange={(e) => update({ upPain: e.target.value })} /></Field>
-                    <Field label="↓ P"><input className={inputCls} value={pp.downPain} onChange={(e) => update({ downPain: e.target.value })} /></Field>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setArmedIndex(index)}
-                    className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-600 hover:underline"
-                  >
-                    <MapPin size={12} /> {pp.bodyView ? `Reposition P${index + 1} on Diagram` : `Place P${index + 1} on Diagram`}
-                  </button>
-                </div>
+                <span className="font-display text-base font-medium text-primary">Pain Point {index + 1}</span>
               </div>
-            )}
-          />
-          </div>
-        </Field>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field label="Location"><input className={inputCls} value={pp.location} onChange={(e) => update({ location: e.target.value })} /></Field>
+                <Field label="Description"><input className={inputCls} value={pp.description} onChange={(e) => update({ description: e.target.value })} /></Field>
+                <Field label="NPRS (0-10)">
+                  <div className="flex gap-2 min-w-0">
+                    <input type="number" min={0} max={10} placeholder="/10" className={cx(inputCls, 'w-16 shrink-0')} value={pp.nprs} onChange={(e) => update({ nprs: Number(e.target.value) })} />
+                    <input className={cx(inputCls, 'min-w-0 flex-1 w-auto')} value={pp.nprsContext} onChange={(e) => update({ nprsContext: e.target.value })} />
+                  </div>
+                </Field>
+                <Field label="Pattern">
+                  <NativeSelect value={pp.pattern} onChange={(e) => update({ pattern: e.target.value as PainPoint['pattern'] })}>
+                    <option value="constant">Constant</option>
+                    <option value="intermittent">Intermittent</option>
+                  </NativeSelect>
+                </Field>
+                <Field label="Aggravating Factors"><input className={inputCls} value={pp.aggravating} onChange={(e) => update({ aggravating: e.target.value })} /></Field>
+                <Field label="Easing Factors"><input className={inputCls} value={pp.easing} onChange={(e) => update({ easing: e.target.value })} /></Field>
+                <Field label="↑ P"><input className={inputCls} value={pp.upPain} onChange={(e) => update({ upPain: e.target.value })} /></Field>
+                <Field label="↓ P"><input className={inputCls} value={pp.downPain} onChange={(e) => update({ downPain: e.target.value })} /></Field>
+              </div>
+              <button
+                type="button"
+                onClick={() => setArmedIndex(index)}
+                className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-600 hover:underline"
+              >
+                <MapPin size={12} /> {pp.bodyView ? `Reposition P${index + 1} on Diagram` : `Place P${index + 1} on Diagram`}
+              </button>
+            </div>
+          )}
+        />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="AM Symptoms"><input className={inputCls} value={subjective.amSymptoms} onChange={(e) => setSubjective((s) => ({ ...s, amSymptoms: e.target.value }))} /></Field>
           <Field label="PM Symptoms"><input className={inputCls} value={subjective.pmSymptoms} onChange={(e) => setSubjective((s) => ({ ...s, pmSymptoms: e.target.value }))} /></Field>
@@ -348,8 +343,9 @@ export function ChartFormBody({
         )}
 
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">ROM</span>
-          <div className="overflow-x-auto rounded-lg border border-secondary">
+          <span className="font-display mb-3 block text-lg font-medium text-primary">ROM</span>
+          <div className="overflow-hidden rounded-lg border border-secondary">
+            <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-secondary bg-secondary_alt">
@@ -408,12 +404,13 @@ export function ChartFormBody({
                 ))}
               </tbody>
             </table>
+            </div>
+            <button type="button" onClick={addRom} className="w-full border-t border-secondary px-3 py-3 text-left text-sm font-semibold text-brand-600 hover:underline">+ Add Measurement</button>
           </div>
-          <button type="button" onClick={addRom} className="mt-2 w-fit text-xs font-medium text-brand-600 hover:underline">+ Add Measurement</button>
         </div>
 
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">Strength</span>
+          <span className="font-display mb-3 block text-lg font-medium text-primary">Strength</span>
           <div className="mb-3 flex items-end gap-3">
             <div className="w-40 shrink-0">
               <span className="mb-1 block text-xs text-secondary">Unaffected Side</span>
@@ -431,7 +428,8 @@ export function ChartFormBody({
               <input className={inputCls} value={objective.strengthUnaffectedNotes} onChange={(e) => setObjective((o) => ({ ...o, strengthUnaffectedNotes: e.target.value }))} />
             </div>
           </div>
-          <div className="overflow-x-auto rounded-lg border border-secondary">
+          <div className="overflow-hidden rounded-lg border border-secondary">
+            <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-secondary bg-secondary_alt">
@@ -472,8 +470,9 @@ export function ChartFormBody({
                 ))}
               </tbody>
             </table>
+            </div>
+            <button type="button" onClick={addStrength} className="w-full border-t border-secondary px-3 py-3 text-left text-sm font-semibold text-brand-600 hover:underline">+ Add Measurement</button>
           </div>
-          <button type="button" onClick={addStrength} className="mt-2 w-fit text-xs font-medium text-brand-600 hover:underline">+ Add Measurement</button>
         </div>
         {!isDictation && (
           <Field label="Additional Notes"><Textarea rows={2} value={objective.notes} onChange={(e) => setObjective((o) => ({ ...o, notes: e.target.value }))} /></Field>
@@ -674,8 +673,8 @@ function ReadBulletedText({ text, emptyLabel }: { text?: string; emptyLabel: str
 
 function PainPointBadge({ index }: { index: number }) {
   return (
-    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-600 text-[11px] font-bold text-white">
-      {index + 1}
+    <div className="flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-brand-700 bg-brand-100">
+      <span className="font-display text-sm font-medium text-brand-700">{index + 1}</span>
     </div>
   );
 }
@@ -693,7 +692,7 @@ interface ChartReadOnlyBodyProps {
 
 export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis, plan, interventions, interventionsRawText, evaluation }: ChartReadOnlyBodyProps) {
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-5">
       {/* Subjective */}
       <SectionCard letter="S" label="Subjective">
         {isDictation ? (
