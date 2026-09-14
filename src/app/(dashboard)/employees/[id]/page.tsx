@@ -286,6 +286,33 @@ function ArchiveFlow({
   );
 }
 
+function DetailField({
+  label,
+  value,
+  editing,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  editing: boolean;
+  onChange?: (v: string) => void;
+}) {
+  if (editing) {
+    return (
+      <div>
+        <div className="mb-2 text-xs text-tertiary">{label}</div>
+        <Input wrapperClassName="h-12" value={value} onChange={onChange} />
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-xs text-tertiary">{label}</span>
+      <span className="text-base text-primary">{value || '—'}</span>
+    </div>
+  );
+}
+
 function EmployeeHeaderMenu({
   archived,
   canArchive,
@@ -419,6 +446,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const assignedPatients = mockPatients.filter((p) => assignedPatientIds.includes(p.id));
   const empLocation = mockClinicLocations.find((l) => emp.locationIds.includes(l.id));
   const empLocationString = empLocation ? `${empLocation.city}, ${empLocation.regionCountry.split(',')[0].trim()}` : '—';
+  const dateJoinedStr = new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const patientSearchLower = patientSearch.trim().toLowerCase();
   const filteredPatients = patientSearchLower === ''
@@ -704,40 +732,36 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-tertiary">First Name</div>
-                  <Input
-                    wrapperClassName="h-12"
+                  <DetailField
+                    label="First Name"
+                    editing={editingContact}
                     value={editingContact ? contactDraft.firstName : savedContact.firstName}
-                    isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, firstName: v }))}
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-tertiary">Last Name</div>
-                  <Input
-                    wrapperClassName="h-12"
+                  <DetailField
+                    label="Last Name"
+                    editing={editingContact}
                     value={editingContact ? contactDraft.lastName : savedContact.lastName}
-                    isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, lastName: v }))}
                   />
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-tertiary">Email</div>
-                  <Input
-                    wrapperClassName="h-12"
+                  <DetailField
+                    label="Email"
+                    editing={editingContact}
                     value={editingContact ? contactDraft.email : savedContact.email}
-                    isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, email: v }))}
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-tertiary">Phone</div>
-                  <Input
-                    wrapperClassName="h-12"
+                  <DetailField
+                    label="Phone"
+                    editing={editingContact}
                     value={editingContact ? contactDraft.phone : savedContact.phone}
-                    isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, phone: v }))}
                   />
                 </div>
@@ -759,30 +783,31 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   </button>
                 )}
               </div>
-              <div>
-                <div className="mb-2 text-xs text-tertiary">Date Joined</div>
-                <Input
-                  wrapperClassName="h-12 bg-secondary"
-                  value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  isReadOnly
-                />
-              </div>
+              {editingProfessional ? (
+                <div>
+                  <div className="mb-2 text-xs text-tertiary">Date Joined</div>
+                  <Input wrapperClassName="h-12 bg-secondary" value={dateJoinedStr} isReadOnly />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs text-tertiary">Date Joined</span>
+                  <span className="text-base text-primary">{dateJoinedStr}</span>
+                </div>
+              )}
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-tertiary">Title</div>
-                  <Input
-                    wrapperClassName="h-12"
+                  <DetailField
+                    label="Title"
+                    editing={editingProfessional}
                     value={editingProfessional ? professionalDraft.title : savedProfessional.title}
-                    isReadOnly={!editingProfessional}
                     onChange={(v) => setProfessionalDraft((d) => ({ ...d, title: v }))}
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-tertiary">Credentials / Degrees</div>
-                  <Input
-                    wrapperClassName="h-12"
+                  <DetailField
+                    label="Credentials / Degrees"
+                    editing={editingProfessional}
                     value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials}
-                    isReadOnly={!editingProfessional}
                     onChange={(v) => setProfessionalDraft((d) => ({ ...d, credentials: v }))}
                   />
                 </div>
@@ -813,7 +838,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                       <span className="text-xs text-tertiary">No specialties added.</span>
                     ) : (
                       savedProfessional.specialties.map((s) => (
-                        <span key={s} className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary">
+                        <span key={s} className="inline-flex items-center rounded-full bg-tertiary px-3 py-2 text-xs text-primary">
                           {s}
                         </span>
                       ))
