@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button as AriaButton } from 'react-aria-components';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { cx } from '@/utils/cx';
-import { Copy, Heart, MoreVertical, Pencil, Trash2, UserPlus } from 'lucide-react';
+import { Copy, MoreVertical, Pencil, Trash2, UserPlus } from 'lucide-react';
 
 interface ProgramCardMenuProps {
   isFavorite: boolean;
@@ -45,7 +45,6 @@ export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorit
       </AriaButton>
       <Dropdown.Popover className="w-[260px] rounded-lg border border-primary bg-primary shadow-[0px_0px_10px_3px_rgba(0,0,0,0.07)] ring-0">
         <Dropdown.Menu onAction={handleAction} className="flex flex-col gap-1 p-2">
-          <Dropdown.Item size="lg" id="favorite" icon={Heart} label={isFavorite ? 'Unfavorite' : 'Favorite'} />
           <Dropdown.Item size="lg" id="assign" icon={UserPlus} label="Assign to Patient" />
           {canManage ? (
             <>
