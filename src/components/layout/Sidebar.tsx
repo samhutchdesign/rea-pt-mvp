@@ -32,13 +32,15 @@ export default function Sidebar() {
   const navItems = can.canViewEmployeesTab ? ownerNavItems : baseNavItems;
 
   return (
-    <nav className="fixed top-10 left-0 z-[100] flex h-[calc(100vh-40px)] w-60 shrink-0 flex-col bg-secondary_alt px-4 py-6">
+    <nav className="fixed top-10 left-0 z-[100] flex h-[calc(100vh-40px)] w-60 shrink-0 flex-col gap-6 bg-secondary_alt py-5">
       {/* Wordmark */}
-      <Link href="/" className="mb-6 block">
-        <span className="font-display text-[34px] font-medium text-primary">Rea</span>
-      </Link>
+      <div className="pl-4">
+        <Link href="/" className="flex h-12 items-center p-1">
+          <span className="font-display text-[34px] font-medium text-primary">Rea</span>
+        </Link>
+      </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 px-4">
         {navItems.filter((item) => !(viewMode === 'mvp' && item.mvpHide)).map(({ label, href, icon: Icon }) => {
           const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
           return (
