@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { Heart, Lightbulb, Scissors, Search, Smile, Stethoscope, Trophy, User, X, Zap } from 'lucide-react';
 import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer';
 import ExerciseCardMenu from '@/components/exercises/ExerciseCardMenu';
-import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { useScrollMemory, saveScrollPosition } from '@/hooks/use-scroll-memory';
 import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
@@ -306,7 +305,6 @@ function ExercisesPageContent() {
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
   const [assignTargetExercise, setAssignTargetExercise] = useState<Exercise | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [audioTargetExercise, setAudioTargetExercise] = useState<Exercise | null>(null);
   const [rxSets, setRxSets] = useState(3);
   const [rxReps, setRxReps] = useState(10);
   const [rxHoldSecs, setRxHoldSecs] = useState(0);
@@ -666,15 +664,10 @@ function ExercisesPageContent() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <ExerciseCardMenu
-                          exercise={ex}
-                          variant="full"
                           size="lg"
-                          isFavorite={favorites.has(ex.id)}
-                          onToggleFavorite={() => toggleFavorite(ex.id)}
                           onOpenChange={(open) => setOpenMenuId(open ? ex.id : null)}
                           onAddToProgram={() => block(() => { resetRx(ex); setProgramTargetExercise(ex); })}
                           onAssign={() => block(() => { resetRx(ex); setAssignTargetExercise(ex); })}
-                          onRecordAudio={() => block(() => setAudioTargetExercise(ex))}
                         />
                       </div>
                       <div className="flex flex-col gap-2 pt-5">
@@ -709,14 +702,6 @@ function ExercisesPageContent() {
         onActionBlocked={dataState === 'empty' ? () => { setPreviewExercise(null); setShowSignUpModal(true); } : undefined}
       />
       <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or assign exercises" />
-
-      <AudioRecordingDialog
-        open={!!audioTargetExercise}
-        exerciseName={audioTargetExercise?.name ?? ''}
-        videoId={audioTargetExercise?.videoUrl}
-        onClose={() => setAudioTargetExercise(null)}
-        onSave={() => setAudioTargetExercise(null)}
-      />
 
       <ModalOverlay isOpen={!!programTargetExercise} onOpenChange={(o) => { if (!o) { setProgramTargetExercise(null); setSelectedProgramId(null); } }}>
         <Modal><Dialog>

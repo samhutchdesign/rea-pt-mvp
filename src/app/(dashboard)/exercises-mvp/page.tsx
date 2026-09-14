@@ -442,10 +442,6 @@ function ExercisesPageContent() {
                       <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                       <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                         <ExerciseCardMenu
-                          exercise={ex}
-                          variant="mvp"
-                          isFavorite={favorites.has(ex.id)}
-                          onToggleFavorite={() => toggleFavorite(ex.id)}
                           onAddToProgram={() => guardFilter(() => { resetRx(ex); setProgramTargetExercise(ex); })}
                           onAssign={() => guardFilter(() => { resetRx(ex); setAssignTargetExercise(ex); })}
                         />

@@ -1,29 +1,19 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import { Button as AriaButton } from 'react-aria-components';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { cx } from '@/utils/cx';
-import type { Exercise } from '@/lib/types';
-import { Copy, ListPlus, Mic, MoreVertical, Pencil, Share2, UserPlus } from 'lucide-react';
+import { ListPlus, MoreVertical, UserPlus } from 'lucide-react';
 
 interface ExerciseCardMenuProps {
-  exercise: Exercise;
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
   onAddToProgram: () => void;
   onAssign: () => void;
-  onRecordAudio?: () => void;
-  /** 'full' shows every exercise-page action (matches the detail page); 'mvp' shows only what's visible on the MVP exercises page today. */
-  variant: 'full' | 'mvp';
   onOpenChange?: (isOpen: boolean) => void;
   /** 'sm' (default) is the compact button used on the MVP exercises page; 'lg' matches ProgramCardMenu's 48px circular button. */
   size?: 'sm' | 'lg';
 }
 
-export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorite, onAddToProgram, onAssign, onRecordAudio, variant, onOpenChange, size = 'sm' }: ExerciseCardMenuProps) {
-  const router = useRouter();
+export default function ExerciseCardMenu({ onAddToProgram, onAssign, onOpenChange, size = 'sm' }: ExerciseCardMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
@@ -32,14 +22,8 @@ export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorit
   };
 
   const handleAction = (key: React.Key) => {
-    if (key === 'favorite') onToggleFavorite();
     if (key === 'add-to-program') onAddToProgram();
     if (key === 'assign') onAssign();
-    if (key === 'record-audio') onRecordAudio?.();
-    if (key === 'edit') router.push(`/exercises/new?edit=${exercise.id}`);
-    if (key === 'duplicate') router.push(`/exercises/new?duplicate=${exercise.id}`);
-    if (key === 'share') toast.success('Link copied!');
-    if (key === 'report') toast.info('Report submitted. Thank you!');
   };
 
   return (
@@ -64,14 +48,6 @@ export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorit
         <Dropdown.Menu onAction={handleAction} className="flex flex-col gap-1 p-2">
           <Dropdown.Item size="lg" id="add-to-program" icon={ListPlus} label="Add to Program" />
           <Dropdown.Item size="lg" id="assign" icon={UserPlus} label="Assign to Patient" />
-          {variant === 'full' && onRecordAudio && <Dropdown.Item size="lg" id="record-audio" icon={Mic} label="Record Audio Cue" />}
-          {variant === 'full' && (
-            exercise.userUploaded
-              ? <Dropdown.Item size="lg" id="edit" icon={Pencil} label="Edit" />
-              : <Dropdown.Item size="lg" id="duplicate" icon={Copy} label="Duplicate" />
-          )}
-          {variant === 'full' && <Dropdown.Item size="lg" id="share" icon={Share2} label="Share" />}
-          {variant === 'full' && <Dropdown.Item size="lg" id="report" label="Report an issue" />}
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown.Root>
