@@ -206,7 +206,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
             {phase === 'recording' && (
               <div className="absolute top-3 left-3 flex items-center gap-2 rounded-lg bg-black/70 px-3 py-1.5">
                 <span className="size-2 rounded-full bg-error-500 animate-pulse" />
-                <span className="text-white font-mono text-sm tracking-wide">REC {fmt(elapsed)}</span>
+                <span className="text-white font-mono text-base tracking-wide">REC {fmt(elapsed)}</span>
               </div>
             )}
             {phase === 'preview' && (
@@ -221,7 +221,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
           <div className="px-6 py-4">
             {phase === 'idle' && (
               <div>
-                <p className="text-sm text-secondary mb-2">
+                <p className="text-base text-secondary mb-2">
                   The video will play automatically when you click Start Recording. Your microphone will capture your voice as an overlay — patients will hear your audio instead of the original video audio.
                 </p>
                 <p className="text-xs text-tertiary mb-3">Maximum recording length: 5 minutes. Recording stops automatically when the video ends.</p>
@@ -233,7 +233,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
             {phase === 'recording' && (
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-semibold text-primary">Recording in progress</span>
+                  <span className="text-base font-semibold text-primary">Recording in progress</span>
                   <span className="text-xs text-tertiary">· Stop manually or recording ends with the video</span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -245,7 +245,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
             {phase === 'preview' && (
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-primary">Previewing — your audio plays over the muted video</p>
+                  <p className="text-base font-semibold text-primary">Previewing — your audio plays over the muted video</p>
                   <p className="text-xs text-tertiary mt-0.5">Duration: {fmt(savedDur)} · This is exactly how patients will hear it</p>
                 </div>
                 <Button size="sm" color="secondary" iconLeading={previewPlaying ? Pause : ChevronRight} onPress={togglePreview}>
@@ -259,13 +259,13 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
           <div className="flex items-center gap-3 border-t border-secondary px-6 py-4">
             {phase === 'preview' ? (
               <>
-                <button onClick={handleDiscard} className="text-sm text-tertiary hover:text-secondary transition-colors">Discard</button>
+                <button onClick={handleDiscard} className="text-xs text-tertiary hover:text-secondary transition-colors">Discard</button>
                 <div className="flex-1" />
                 <Button color="primary" onPress={handleSave}>Save Audio</Button>
               </>
             ) : (
               <>
-                <button onClick={handleClose} className="text-sm text-tertiary hover:text-secondary transition-colors">Cancel</button>
+                <button onClick={handleClose} className="text-xs text-tertiary hover:text-secondary transition-colors">Cancel</button>
                 <div className="flex-1" />
                 {phase === 'idle' ? (
                   <Button color="primary-destructive" iconLeading={Mic} onPress={startRecording}>Start Recording</Button>

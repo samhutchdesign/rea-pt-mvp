@@ -30,7 +30,7 @@ export default function FilterMenu({ label, options, selected, onChange }: Filte
       <button
         onClick={() => setOpen((v) => !v)}
         className={cx(
-          'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors',
+          'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-base font-medium transition-colors',
           selected.length > 0
             ? 'border-brand-300 bg-brand-50 text-brand-700'
             : 'border-secondary bg-primary text-secondary hover:bg-primary_hover'
@@ -45,7 +45,7 @@ export default function FilterMenu({ label, options, selected, onChange }: Filte
             <button
               key={opt}
               onClick={() => toggle(opt)}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-secondary hover:bg-secondary transition-colors"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-base text-secondary hover:bg-secondary transition-colors"
             >
               <span className={cx(
                 'flex size-4 shrink-0 items-center justify-center rounded border transition-colors',

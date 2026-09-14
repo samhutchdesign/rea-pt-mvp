@@ -22,7 +22,7 @@ export function SignUpRequiredModal({ open, onClose, action = 'access this featu
                 <Lock size={20} className="text-brand-600" />
               </div>
               <h2 className="text-lg font-semibold text-primary mb-1">Organization required</h2>
-              <p className="text-sm text-tertiary leading-relaxed">
+              <p className="text-xs text-tertiary leading-relaxed">
                 You need to create or join an organization to {action}.
               </p>
             </div>

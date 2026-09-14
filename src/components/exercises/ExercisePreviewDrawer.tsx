@@ -21,7 +21,7 @@ function CollapsibleSection({ title, titleClassName, open, onToggle, children }:
         onClick={onToggle}
         className="flex w-full items-center justify-between mb-3 bg-transparent border-none p-0 cursor-pointer"
       >
-        <span className={titleClassName ?? 'text-sm font-semibold text-primary'}>{title}</span>
+        <span className={titleClassName ?? 'text-base font-semibold text-primary'}>{title}</span>
         <ChevronDown size={16} className={`text-tertiary transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && children}
@@ -110,7 +110,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
           <h2 className="text-xl font-bold text-primary mb-1">{exercise.name}</h2>
-          <p className="text-sm text-secondary mb-4">{exercise.description}</p>
+          <p className="text-base text-secondary mb-4">{exercise.description}</p>
 
           {patientPrescription && (
             <div className="mb-5 rounded-lg border border-brand-200 bg-brand-50 p-3">
@@ -129,7 +129,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           <CollapsibleSection title="Instructions" open={instructionsOpen} onToggle={() => setInstructionsOpen((v) => !v)}>
             <ol className="pl-5 mb-2 space-y-1.5 list-decimal">
               {exercise.instructions.map((step, i) => (
-                <li key={i} className="text-sm text-secondary">{step}</li>
+                <li key={i} className="text-base text-secondary">{step}</li>
               ))}
             </ol>
           </CollapsibleSection>
@@ -138,13 +138,13 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
 
           <CollapsibleSection
             title="Common Mistakes"
-            titleClassName="text-sm font-semibold text-warning-600"
+            titleClassName="text-base font-semibold text-warning-600"
             open={mistakesOpen}
             onToggle={() => setMistakesOpen((v) => !v)}
           >
             <ul className="pl-5 space-y-1.5 list-disc">
               {exercise.commonMistakes.map((m, i) => (
-                <li key={i} className="text-sm text-secondary">{m}</li>
+                <li key={i} className="text-base text-secondary">{m}</li>
               ))}
             </ul>
           </CollapsibleSection>
@@ -196,7 +196,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           <Dialog>
             <div className="p-6">
               <h2 className="text-lg font-semibold text-primary mb-1">Add to a Program</h2>
-              <p className="text-sm text-secondary mb-4">
+              <p className="text-base text-secondary mb-4">
                 Select a program to add <strong>{exercise.name}</strong> to.
               </p>
               <NativeSelect

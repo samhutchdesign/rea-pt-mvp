@@ -48,7 +48,7 @@ export default function Sidebar() {
                 isActive ? 'bg-quaternary' : 'hover:bg-secondary'
               )}>
                 <Icon className={cx('size-5 shrink-0', isActive ? 'text-primary' : 'text-quaternary')} />
-                <span className={cx('text-sm', isActive ? 'font-medium text-primary' : 'font-medium text-secondary')}>
+                <span className={cx('text-xs', isActive ? 'font-medium text-primary' : 'font-medium text-secondary')}>
                   {label}
                 </span>
               </div>

@@ -42,7 +42,7 @@ function MovementSelect({ movement, movementOther, onMovementChange, onMovementO
   );
 }
 
-export const inputCls = 'w-full rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300';
+export const inputCls = 'w-full rounded-lg border border-secondary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300';
 
 export const INTERVENTION_TYPES: InterventionItem['type'][] = ['Manual Therapy', 'Exercise', 'Modality', 'Education', 'Other'];
 
@@ -109,19 +109,19 @@ export function HistoryCard({ patient }: { patient: Patient }) {
   return (
     <div className="rounded-xl border border-secondary bg-secondary_alt p-5">
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-sm font-semibold text-primary">History</span>
+        <span className="text-base font-semibold text-primary">History</span>
         <Link href={`/patients/${patient.id}/details`} className="text-xs font-medium text-brand-600 hover:underline">
           Edit in Patient Details
         </Link>
       </div>
       {rows.length === 0 ? (
-        <p className="text-sm italic text-tertiary">No history recorded yet for this patient. Add it in Patient Details, or capture it in the Subjective section below.</p>
+        <p className="text-xs italic text-tertiary">No history recorded yet for this patient. Add it in Patient Details, or capture it in the Subjective section below.</p>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {rows.map((r) => (
             <div key={r.label}>
               <span className="mb-0.5 block text-xs text-secondary">{r.label}</span>
-              <div className="rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary">{r.value}</div>
+              <div className="rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary">{r.value}</div>
             </div>
           ))}
         </div>
@@ -262,7 +262,7 @@ export function ChartFormBody({
           <Field label="Sleeping Position"><input className={inputCls} value={subjective.sleepingPosition} onChange={(e) => setSubjective((s) => ({ ...s, sleepingPosition: e.target.value }))} /></Field>
           <div className="flex items-center gap-2 pt-5">
             <input id="nightPain" type="checkbox" checked={subjective.nightPain} onChange={(e) => setSubjective((s) => ({ ...s, nightPain: e.target.checked }))} />
-            <label htmlFor="nightPain" className="text-sm text-primary">Night pain</label>
+            <label htmlFor="nightPain" className="text-base text-primary">Night pain</label>
           </div>
         </div>
         <Field label="Additional Notes">
@@ -288,7 +288,7 @@ export function ChartFormBody({
         <Field label="General Observation"><Textarea rows={2} value={objective.generalObservation} onChange={(e) => setObjective((o) => ({ ...o, generalObservation: e.target.value }))} /></Field>
 
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">Observation</span>
+          <span className="mb-3 block text-base font-semibold text-primary">Observation</span>
           <div className="flex flex-col gap-3">
             <Field label="Posture"><input className={inputCls} value={objective.posture} onChange={(e) => setObjective((o) => ({ ...o, posture: e.target.value }))} /></Field>
             <Field label="Atrophy/Hypertrophy (girth)"><input className={inputCls} value={objective.atrophyHypertrophy} onChange={(e) => setObjective((o) => ({ ...o, atrophyHypertrophy: e.target.value }))} /></Field>
@@ -300,7 +300,7 @@ export function ChartFormBody({
         </div>
 
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">Functional Tests</span>
+          <span className="mb-3 block text-base font-semibold text-primary">Functional Tests</span>
           <div className="flex flex-col gap-3">
             <Field label="Mobility (gait, transfer, stairs)">
               <div className="flex flex-col gap-2">
@@ -405,7 +405,7 @@ export function ChartFormBody({
               </tbody>
             </table>
             </div>
-            <button type="button" onClick={addRom} className="w-full border-t border-secondary px-3 py-3 text-left text-sm font-semibold text-brand-600 hover:underline">+ Add Measurement</button>
+            <button type="button" onClick={addRom} className="w-full border-t border-secondary px-3 py-3 text-left text-base font-semibold text-brand-600 hover:underline">+ Add Measurement</button>
           </div>
         </div>
 
@@ -471,7 +471,7 @@ export function ChartFormBody({
               </tbody>
             </table>
             </div>
-            <button type="button" onClick={addStrength} className="w-full border-t border-secondary px-3 py-3 text-left text-sm font-semibold text-brand-600 hover:underline">+ Add Measurement</button>
+            <button type="button" onClick={addStrength} className="w-full border-t border-secondary px-3 py-3 text-left text-base font-semibold text-brand-600 hover:underline">+ Add Measurement</button>
           </div>
         </div>
         {!isDictation && (
@@ -494,7 +494,7 @@ export function ChartFormBody({
           <>
         <Field label="Body Structure(s)"><input className={inputCls} value={analysis.bodyStructures} onChange={(e) => setAnalysis((a) => ({ ...a, bodyStructures: e.target.value }))} placeholder="Specific structure(s) that are the source of symptoms/limitations" /></Field>
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">Problem List (by priority)</span>
+          <span className="mb-3 block text-base font-semibold text-primary">Problem List (by priority)</span>
           <RepeatableList
             items={analysis.problemList}
             onChange={(problemList) => setAnalysis((a) => ({ ...a, problemList }))}
@@ -512,11 +512,11 @@ export function ChartFormBody({
           />
         </div>
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">PT Diagnosis</span>
+          <span className="mb-3 block text-base font-semibold text-primary">PT Diagnosis</span>
           <Textarea rows={2} value={analysis.ptDiagnosis} onChange={(e) => setAnalysis((a) => ({ ...a, ptDiagnosis: e.target.value }))} placeholder="[age] y.o. [sex] presenting with [nature/severity/phase] dt [impairments] affecting [activity/participation limitations]." />
         </div>
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">PT Goals</span>
+          <span className="mb-3 block text-base font-semibold text-primary">PT Goals</span>
           <RepeatableList
             items={analysis.goals}
             onChange={(goals) => setAnalysis((a) => ({ ...a, goals }))}
@@ -552,7 +552,7 @@ export function ChartFormBody({
         ) : (
           <>
         <div>
-          <span className="mb-3 block text-sm font-semibold text-primary">Treatment Plan (per problem)</span>
+          <span className="mb-3 block text-base font-semibold text-primary">Treatment Plan (per problem)</span>
           <RepeatableList
             items={plan.items}
             onChange={(items) => setPlan((p) => ({ ...p, items }))}
@@ -579,7 +579,7 @@ export function ChartFormBody({
         )}
         <div className="flex items-center gap-2">
           <input id="consent" type="checkbox" checked={plan.consentObtained} onChange={(e) => setPlan((p) => ({ ...p, consentObtained: e.target.checked }))} />
-          <label htmlFor="consent" className="text-sm text-primary">Treatment plan explained, understood & accepted by client</label>
+          <label htmlFor="consent" className="text-base text-primary">Treatment plan explained, understood & accepted by client</label>
         </div>
       </SectionCard>
 
@@ -648,13 +648,13 @@ function ReadField({ label, value }: { label: string; value?: string | number | 
   return (
     <div>
       <span className="mb-0.5 block text-xs text-secondary">{label}</span>
-      <span className="text-sm text-primary">{value}</span>
+      <span className="text-base text-primary">{value}</span>
     </div>
   );
 }
 
 function ReadEmpty({ children }: { children: React.ReactNode }) {
-  return <span className="text-sm italic text-tertiary">{children}</span>;
+  return <span className="text-xs italic text-tertiary">{children}</span>;
 }
 
 /** Renders a dictation section's rawText as a real bulleted list — splits on newlines and strips any leading -/•/* marker. */
@@ -674,7 +674,7 @@ function ReadBulletedText({ text, emptyLabel }: { text?: string; emptyLabel: str
 function PainPointBadge({ index }: { index: number }) {
   return (
     <div className="flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-brand-700 bg-brand-100">
-      <span className="font-display text-sm font-medium text-brand-700">{index + 1}</span>
+      <span className="font-display text-base font-medium text-brand-700">{index + 1}</span>
     </div>
   );
 }
@@ -766,7 +766,7 @@ export function ChartReadOnlyBody({ isDictation, subjective, objective, analysis
               {objective.mobility.filter(Boolean).length > 0 && (
                 <div>
                   <span className="mb-0.5 block text-xs text-secondary">Mobility (gait, transfer, stairs)</span>
-                  <ul className="list-disc pl-4 text-sm text-primary">
+                  <ul className="list-disc pl-4 text-base text-primary">
                     {objective.mobility.filter(Boolean).map((item, i) => <li key={i}>{item}</li>)}
                   </ul>
                 </div>
@@ -977,11 +977,11 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
           onClick={() => setNotesOpen((v) => !v)}
           className={cx('flex w-full items-center gap-2 bg-transparent border-none p-0 cursor-pointer text-left', notesOpen && 'mb-2')}
         >
-          <span className="flex-1 text-sm font-semibold text-primary">Notes</span>
+          <span className="flex-1 text-base font-semibold text-primary">Notes</span>
           <ChevronDown size={16} className={cx('shrink-0 text-tertiary transition-transform', notesOpen && 'rotate-180')} />
         </button>
         {notesOpen && (
-          <span className="whitespace-pre-wrap text-sm text-secondary">{session.summary || 'No notes recorded.'}</span>
+          <span className="whitespace-pre-wrap text-base text-secondary">{session.summary || 'No notes recorded.'}</span>
         )}
       </div>
 
@@ -1021,7 +1021,7 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
 
       {amendments.length > 0 && (
         <div>
-          <p className="mb-3 text-sm font-semibold text-primary">Amendments</p>
+          <p className="mb-3 text-base font-semibold text-primary">Amendments</p>
           <div className="flex flex-col gap-3">
             {amendments.map((a) => (
               <div key={a.id} className="rounded-xl border border-amber-300 bg-amber-50 p-4">
@@ -1030,7 +1030,7 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
                   <span className="text-xs font-semibold text-amber-900">{a.authorName}</span>
                   <span className="text-xs text-amber-700">{new Date(a.createdAt).toLocaleString()}</span>
                 </div>
-                <p className="whitespace-pre-wrap text-sm text-amber-900">{a.text}</p>
+                <p className="whitespace-pre-wrap text-base text-amber-900">{a.text}</p>
               </div>
             ))}
           </div>

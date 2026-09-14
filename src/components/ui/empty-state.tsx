@@ -18,7 +18,7 @@ export function EmptyState({ icon: Icon, title, description }: EmptyStateProps) 
           <Icon size={24} className="text-quaternary" />
         </div>
         <h2 className="text-base font-semibold text-primary mb-2">{title}</h2>
-        <p className="text-sm text-tertiary mb-6 leading-relaxed">{description}</p>
+        <p className="text-xs text-tertiary mb-6 leading-relaxed">{description}</p>
         <Button color="primary" size="sm" onPress={() => router.push('/dashboard')}>
           Create an organization
         </Button>

@@ -92,7 +92,7 @@ export default function TopBar({}: TopBarProps) {
             <button
               onClick={() => { setLocationId('all'); setLocMenuOpen(false); }}
               className={cx(
-                'w-full px-4 py-2 text-left text-sm transition-colors',
+                'w-full px-4 py-2 text-left text-base transition-colors',
                 selectedLocId === 'all'
                   ? 'font-semibold text-brand-700 bg-brand-50'
                   : 'text-secondary hover:bg-secondary'
@@ -105,7 +105,7 @@ export default function TopBar({}: TopBarProps) {
                 key={loc.id}
                 onClick={() => { setLocationId(loc.id); setLocMenuOpen(false); }}
                 className={cx(
-                  'w-full px-4 py-2 text-left text-sm transition-colors',
+                  'w-full px-4 py-2 text-left text-base transition-colors',
                   selectedLocId === loc.id
                     ? 'font-semibold text-brand-700 bg-brand-50'
                     : 'text-secondary hover:bg-secondary'
@@ -135,7 +135,7 @@ export default function TopBar({}: TopBarProps) {
         {menuOpen && (
           <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-secondary bg-primary py-1">
             <div className="px-4 py-3 border-b border-secondary">
-              <p className="text-sm font-semibold text-primary">{identity.firstName} {identity.lastName}</p>
+              <p className="text-base font-semibold text-primary">{identity.firstName} {identity.lastName}</p>
               <p className="text-xs font-medium text-brand-600 mt-0.5">{roleLabel(role)}</p>
               <p className="text-xs text-tertiary mt-0.5">{identity.email}</p>
             </div>
@@ -144,7 +144,7 @@ export default function TopBar({}: TopBarProps) {
                 <button
                   key={item.key}
                   onClick={() => { setMenuOpen(false); router.push(item.href); }}
-                  className="w-full px-4 py-2 text-left text-sm text-secondary hover:bg-secondary transition-colors"
+                  className="w-full px-4 py-2 text-left text-base text-secondary hover:bg-secondary transition-colors"
                 >
                   {item.label}
                 </button>
@@ -153,7 +153,7 @@ export default function TopBar({}: TopBarProps) {
             <div className="border-t border-secondary py-1">
               <button
                 onClick={() => { setMenuOpen(false); router.push('/login'); }}
-                className="w-full px-4 py-2 text-left text-sm text-tertiary hover:bg-secondary transition-colors"
+                className="w-full px-4 py-2 text-left text-xs text-tertiary hover:bg-secondary transition-colors"
               >
                 Log Out
               </button>
@@ -181,7 +181,7 @@ export default function TopBar({}: TopBarProps) {
           {bellOpen && (
             <div className="absolute right-0 top-11 z-50 w-80 rounded-xl border border-secondary bg-primary overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 border-b border-secondary">
-                <p className="text-sm font-semibold text-primary">Notifications</p>
+                <p className="text-base font-semibold text-primary">Notifications</p>
                 {mockNotifications.filter((n) => !n.read).length > 0 && (
                   <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[11px] font-semibold text-white">
                     {mockNotifications.filter((n) => !n.read).length} new

@@ -12,7 +12,7 @@ export function Textarea({ className, rows = 3, ...props }: TextareaProps) {
       rows={rows}
       {...props}
       className={cx(
-        'w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300',
+        'w-full resize-none rounded-lg border border-secondary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300',
         className
       )}
     />

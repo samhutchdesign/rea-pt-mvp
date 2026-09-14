@@ -49,12 +49,12 @@ export function RepeatableList<T>({ items, onChange, newItem, renderRow, addLabe
   return (
     <div className="space-y-3">
       {items.length === 0 && emptyLabel && (
-        <p className="text-sm text-tertiary italic">{emptyLabel}</p>
+        <p className="text-xs text-tertiary italic">{emptyLabel}</p>
       )}
       {items.map((item, i) => (
         <div key={i} className="flex items-start gap-2">
           {reorderable && (
-            <span className="mt-2 w-4 shrink-0 text-right text-sm font-semibold text-tertiary">{i + 1}.</span>
+            <span className="mt-2 w-4 shrink-0 text-right text-xs font-semibold text-tertiary">{i + 1}.</span>
           )}
           <div
             className={cx(

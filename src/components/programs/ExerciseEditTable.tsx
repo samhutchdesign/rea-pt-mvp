@@ -16,7 +16,7 @@ function TableField({ value, unitLabel, onChange }: { value: number; unitLabel: 
         min={0}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-8 min-w-0 bg-transparent text-sm text-primary text-center outline-none"
+        className="w-8 min-w-0 bg-transparent text-base text-primary text-center outline-none"
       />
       <span className="truncate text-xs text-secondary">{unitLabel}</span>
     </div>
@@ -52,13 +52,13 @@ export function ExerciseEditTable({
 }: ExerciseEditTableProps) {
   return (
     <div className="flex flex-1 min-h-0 flex-col gap-3 px-6 py-5">
-      <span className="text-sm font-semibold text-primary shrink-0">
+      <span className="text-base font-semibold text-primary shrink-0">
         {rows.length} exercise{rows.length !== 1 ? 's' : ''} in program
       </span>
 
       {rows.length === 0 ? (
         <div className="py-16 text-center">
-          <span className="text-sm text-secondary">No exercises added yet — go back and add some.</span>
+          <span className="text-base text-secondary">No exercises added yet — go back and add some.</span>
         </div>
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto">
@@ -102,7 +102,7 @@ export function ExerciseEditTable({
                     <div className="relative size-12 shrink-0 overflow-hidden rounded-lg">
                       <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
                     </div>
-                    <span className="font-display truncate text-sm font-semibold text-primary">{ex.name}</span>
+                    <span className="font-display truncate text-base font-semibold text-primary">{ex.name}</span>
                   </button>
 
                   <TableField value={row.sets} unitLabel="Sets" onChange={(v) => onUpdateRow(row.exerciseId, 'sets', v)} />

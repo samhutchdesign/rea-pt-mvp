@@ -128,7 +128,7 @@ export function BodyMap({
               : 'flex size-7 items-center justify-center border-2 border-brand-700 bg-brand-100',
           )}
         >
-          {!simplified && <span className="font-display text-sm font-medium text-brand-700">{i + 1}</span>}
+          {!simplified && <span className="font-display text-base font-medium text-brand-700">{i + 1}</span>}
           {simplified && interactive && onDelete && (
             <button
               type="button"

@@ -14,7 +14,7 @@ const styles: Record<AlertType, { root: string; icon: string }> = {
 interface AlertProps { type?: AlertType; children: ReactNode; className?: string; }
 
 export const Alert = ({ type = 'info', children, className }: AlertProps) => (
-  <div className={cx('flex gap-3 rounded-xl border px-4 py-3 text-sm', styles[type].root, className)}>
+  <div className={cx('flex gap-3 rounded-xl border px-4 py-3 text-base', styles[type].root, className)}>
     {children}
   </div>
 );

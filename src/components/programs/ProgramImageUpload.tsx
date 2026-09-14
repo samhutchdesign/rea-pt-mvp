@@ -58,7 +58,7 @@ export function ProgramImageUpload({ value, onChange }: ProgramImageUploadProps)
       )}
     >
       <Upload size={22} className="text-quaternary" />
-      <span className="text-sm text-tertiary">Choose an image or drag and drop it here</span>
+      <span className="text-xs text-tertiary">Choose an image or drag and drop it here</span>
       <input
         ref={inputRef}
         type="file"

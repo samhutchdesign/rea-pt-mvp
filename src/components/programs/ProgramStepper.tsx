@@ -42,7 +42,7 @@ export function ProgramStepper({ steps, currentStep, maxReachedStep, onStepClick
               </span>
               <span
                 className={cx(
-                  'text-sm',
+                  'text-xs',
                   isActive ? 'font-semibold text-primary' : isComplete ? 'font-medium text-secondary' : 'text-quaternary'
                 )}
               >

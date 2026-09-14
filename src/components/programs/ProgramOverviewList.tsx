@@ -11,9 +11,9 @@ interface ProgramOverviewListProps {
 export function ProgramOverviewList({ rows, getExercise }: ProgramOverviewListProps) {
   return (
     <div className="flex flex-col gap-5">
-      <span className="text-sm font-bold text-primary">Program Overview</span>
+      <span className="text-base font-bold text-primary">Program Overview</span>
       {rows.length === 0 ? (
-        <span className="text-sm text-tertiary">No exercises added yet.</span>
+        <span className="text-xs text-tertiary">No exercises added yet.</span>
       ) : (
         rows.map((row) => {
           const ex = getExercise(row.exerciseId);
@@ -24,7 +24,7 @@ export function ProgramOverviewList({ rows, getExercise }: ProgramOverviewListPr
                 <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-display mb-0.5 truncate text-sm font-semibold text-primary">{ex.name}</p>
+                <p className="font-display mb-0.5 truncate text-base font-semibold text-primary">{ex.name}</p>
                 <p className="mb-1.5 text-xs text-tertiary">
                   {row.sets} Sets / {row.reps} Reps{row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}
                 </p>

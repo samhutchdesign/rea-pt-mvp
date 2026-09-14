@@ -143,9 +143,9 @@ export default function AddPatientDialog({ open, onClose }: Props) {
 
             {activeStep === 1 && (
               <div className="flex flex-col gap-4">
-                <p className="text-sm text-secondary">Which clinic location and PT will {firstName} be seen by?</p>
+                <p className="text-base text-secondary">Which clinic location and PT will {firstName} be seen by?</p>
                 <div>
-                  <label className="block text-sm font-medium text-secondary mb-1.5">Location</label>
+                  <label className="block text-base font-medium text-secondary mb-1.5">Location</label>
                   <NativeSelect
                     value={locationId}
                     onChange={(e) => handleSelectLocation(e.target.value)}
@@ -160,7 +160,7 @@ export default function AddPatientDialog({ open, onClose }: Props) {
                 </div>
                 {destinationLocation && (
                   <div>
-                    <label className="block text-sm font-medium text-secondary mb-1.5">Treating PT</label>
+                    <label className="block text-base font-medium text-secondary mb-1.5">Treating PT</label>
                     <NativeSelect
                       value={ptId}
                       onChange={(e) => setPtId(e.target.value)}
@@ -181,7 +181,7 @@ export default function AddPatientDialog({ open, onClose }: Props) {
             )}
 
             <div className="flex items-center mt-6">
-              <button onClick={handleClose} className="text-sm text-tertiary hover:text-secondary transition-colors">
+              <button onClick={handleClose} className="text-xs text-tertiary hover:text-secondary transition-colors">
                 Cancel
               </button>
               <div className="flex-1" />
