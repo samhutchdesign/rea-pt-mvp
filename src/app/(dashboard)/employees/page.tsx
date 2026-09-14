@@ -144,7 +144,7 @@ export default function EmployeesPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            <div className="grid grid-cols-[minmax(0,1fr)_80px_120px_160px_24px] gap-4 border-b border-secondary pl-5 pr-7 py-3">
+            <div className="grid grid-cols-[minmax(220px,2fr)_minmax(80px,1fr)_minmax(100px,1fr)_minmax(140px,1fr)_24px] gap-4 border-b border-secondary pl-5 pr-7 py-3">
               <span className="text-xs text-primary">Practitioner</span>
               <span className="text-xs text-primary"># of Patients</span>
               <span className="text-xs text-primary">Location</span>
@@ -159,7 +159,7 @@ export default function EmployeesPage() {
                   <div
                     key={emp.id}
                     className={cx(
-                      'grid grid-cols-[minmax(0,1fr)_80px_120px_160px_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors',
+                      'grid grid-cols-[minmax(220px,2fr)_minmax(80px,1fr)_minmax(100px,1fr)_minmax(140px,1fr)_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors',
                       emp.archived && 'opacity-75'
                     )}
                     onClick={() => router.push(`/employees/${emp.id}`)}
