@@ -437,7 +437,7 @@ function ProgramsPageContent() {
           <Dialog>
             <div className="p-6 w-full max-w-md">
               <h3 className="text-lg font-semibold text-primary mb-1">Assign to Patient</h3>
-              <p className="text-sm text-secondary mb-4">
+              <p className="text-base text-secondary mb-4">
                 Select a patient to assign <strong>{assignTargetProgram?.name}</strong> to.
               </p>
               <NativeSelect
@@ -464,7 +464,7 @@ function ProgramsPageContent() {
           <Dialog>
             <div className="p-6 w-full max-w-sm">
               <h2 className="text-lg font-semibold text-primary mb-2">Delete Program?</h2>
-              <p className="text-sm text-secondary mb-6">
+              <p className="text-base text-secondary mb-6">
                 This will permanently delete <strong>{deleteTargetProgram?.name}</strong>. This cannot be undone.
               </p>
               <div className="flex justify-end gap-3">

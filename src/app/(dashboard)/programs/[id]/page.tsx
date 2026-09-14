@@ -112,7 +112,7 @@ function ProgramDetailContent({ id }: { id: string }) {
       <div className="px-8 py-8 max-w-[1200px]">
         <button
           onClick={() => router.push(backUrl)}
-          className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-primary mb-5 transition-colors"
+          className="inline-flex items-center gap-1.5 text-base text-secondary hover:text-primary mb-5 transition-colors"
         >
           <ArrowLeft size={15} />
           Back
@@ -139,12 +139,12 @@ function ProgramDetailContent({ id }: { id: string }) {
             </div>
 
             <h2 className="text-2xl font-bold text-primary mt-5 mb-1">{prog.name}</h2>
-            <p className="text-sm text-tertiary mb-3">{prog.frequency}</p>
+            <p className="text-xs text-tertiary mb-3">{prog.frequency}</p>
 
             <div className="flex justify-between items-center mb-5">
               <div className="flex items-center gap-2.5">
                 <Avatar initials={clinicInitials} size="sm" />
-                <span className="text-sm font-medium text-secondary">{mockPhysio.clinicName}</span>
+                <span className="text-base font-medium text-secondary">{mockPhysio.clinicName}</span>
               </div>
               <div className="flex gap-2 shrink-0">
                 <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : setAssignOpen(true)}>
@@ -190,7 +190,7 @@ function ProgramDetailContent({ id }: { id: string }) {
 
             <div className="border-t border-secondary pt-5 mb-5">
               <h3 className="text-base font-bold text-primary mb-2">Program Description</h3>
-              <p className="text-sm text-secondary leading-relaxed">
+              <p className="text-base text-secondary leading-relaxed">
                 {prog.description || 'No description yet.'}
               </p>
             </div>
@@ -198,7 +198,7 @@ function ProgramDetailContent({ id }: { id: string }) {
             <div className="border-t border-secondary pt-5">
               <h3 className="text-base font-bold text-primary mb-3">Tags</h3>
               {derivedTags.length === 0 ? (
-                <p className="text-sm text-tertiary">Add exercises to see suggested tags.</p>
+                <p className="text-xs text-tertiary">Add exercises to see suggested tags.</p>
               ) : (
                 <div className="flex gap-1.5 flex-wrap items-center">
                   {visibleTags.map((t, i) => (
@@ -224,7 +224,7 @@ function ProgramDetailContent({ id }: { id: string }) {
             </div>
             <div className="max-h-[462px] overflow-y-auto divide-y divide-secondary">
               {prog.exercises.length === 0 ? (
-                <p className="text-sm text-tertiary px-6 py-6">No exercises in this program yet.</p>
+                <p className="text-xs text-tertiary px-6 py-6">No exercises in this program yet.</p>
               ) : prog.exercises.map((pe) => {
                 const ex = mockExercises.find((e) => e.id === pe.exerciseId);
                 if (!ex) return null;
@@ -247,7 +247,7 @@ function ProgramDetailContent({ id }: { id: string }) {
                       </div>
                     </div>
                     <div className="min-w-0">
-                      <span className="block font-semibold text-sm text-primary leading-tight mb-1 truncate">{ex.name}</span>
+                      <span className="block font-semibold text-base text-primary leading-tight mb-1 truncate">{ex.name}</span>
                       <span className="block text-xs text-tertiary">
                         {pe.sets} Sets · {pe.reps} Reps{pe.holdSecs > 0 ? ` · ${pe.holdSecs}s Hold` : ''}
                       </span>
@@ -269,7 +269,7 @@ function ProgramDetailContent({ id }: { id: string }) {
           <Dialog>
             <div className="p-6 w-full max-w-md">
               <h3 className="text-lg font-semibold text-primary mb-1">Assign to Patient</h3>
-              <p className="text-sm text-secondary mb-4">
+              <p className="text-base text-secondary mb-4">
                 Select a patient to assign <strong>{prog.name}</strong> to.
               </p>
               <NativeSelect
@@ -299,7 +299,7 @@ function ProgramDetailContent({ id }: { id: string }) {
           <Dialog>
             <div className="p-6 w-full max-w-sm">
               <h2 className="text-lg font-semibold text-primary mb-2">Delete Program?</h2>
-              <p className="text-sm text-secondary mb-6">
+              <p className="text-base text-secondary mb-6">
                 This will permanently delete <strong>{prog.name}</strong>. This cannot be undone.
               </p>
               <div className="flex justify-end gap-3">
