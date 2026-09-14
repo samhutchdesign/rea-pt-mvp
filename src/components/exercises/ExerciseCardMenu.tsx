@@ -60,19 +60,19 @@ export default function ExerciseCardMenu({ exercise, isFavorite, onToggleFavorit
       >
         <MoreVertical size={size === 'lg' ? 24 : 15} />
       </AriaButton>
-      <Dropdown.Popover className="w-56">
-        <Dropdown.Menu onAction={handleAction}>
-          <Dropdown.Item id="favorite" icon={Heart} label={isFavorite ? 'Unfavorite' : 'Favorite'} />
-          <Dropdown.Item id="add-to-program" icon={ListPlus} label="Add to Program" />
-          <Dropdown.Item id="assign" icon={UserPlus} label="Assign to Patient" />
-          {variant === 'full' && onRecordAudio && <Dropdown.Item id="record-audio" icon={Mic} label="Record Audio Cue" />}
+      <Dropdown.Popover className="w-[260px] rounded-lg border border-primary bg-primary shadow-[0px_0px_10px_3px_rgba(0,0,0,0.07)] ring-0">
+        <Dropdown.Menu onAction={handleAction} className="flex flex-col gap-1 p-2">
+          <Dropdown.Item size="lg" id="favorite" icon={Heart} label={isFavorite ? 'Unfavorite' : 'Favorite'} />
+          <Dropdown.Item size="lg" id="add-to-program" icon={ListPlus} label="Add to Program" />
+          <Dropdown.Item size="lg" id="assign" icon={UserPlus} label="Assign to Patient" />
+          {variant === 'full' && onRecordAudio && <Dropdown.Item size="lg" id="record-audio" icon={Mic} label="Record Audio Cue" />}
           {variant === 'full' && (
             exercise.userUploaded
-              ? <Dropdown.Item id="edit" icon={Pencil} label="Edit" />
-              : <Dropdown.Item id="duplicate" icon={Copy} label="Duplicate" />
+              ? <Dropdown.Item size="lg" id="edit" icon={Pencil} label="Edit" />
+              : <Dropdown.Item size="lg" id="duplicate" icon={Copy} label="Duplicate" />
           )}
-          {variant === 'full' && <Dropdown.Item id="share" icon={Share2} label="Share" />}
-          {variant === 'full' && <Dropdown.Item id="report" label="Report an issue" />}
+          {variant === 'full' && <Dropdown.Item size="lg" id="share" icon={Share2} label="Share" />}
+          {variant === 'full' && <Dropdown.Item size="lg" id="report" label="Report an issue" />}
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown.Root>

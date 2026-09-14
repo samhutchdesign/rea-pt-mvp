@@ -39,9 +39,13 @@ interface DropdownItemProps extends AriaMenuItemProps {
     avatarUrl?: string;
     /** The selection indicator to be displayed on the item. */
     selectionIndicator?: "checkmark" | "checkbox" | "radio" | "toggle" | "none";
+    /** "sm" (default) matches the standard Untitled UI menu item. "lg" matches the
+     * Figma "Card Dropdown" component (24px icon, 16px regular label) used on card
+     * overflow menus (Exercise/Program cards). */
+    size?: "sm" | "lg";
 }
 
-const DropdownItem = ({ label, children, addon, icon: Icon, avatarUrl, unstyled, selectionIndicator = "checkmark", ...props }: DropdownItemProps) => {
+const DropdownItem = ({ label, children, addon, icon: Icon, avatarUrl, unstyled, selectionIndicator = "checkmark", size = "sm", ...props }: DropdownItemProps) => {
     const SelectionIndicator = useCallback(
         (state: MenuItemRenderProps & { className?: string }) => {
             if (selectionIndicator === "checkmark") {
@@ -82,7 +86,8 @@ const DropdownItem = ({ label, children, addon, icon: Icon, avatarUrl, unstyled,
             {...props}
             className={(state) =>
                 cx(
-                    "group block cursor-pointer px-1.5 py-px outline-hidden",
+                    "group block cursor-pointer outline-hidden",
+                    size === "lg" ? "px-0 py-0" : "px-1.5 py-px",
                     state.isDisabled && "cursor-not-allowed opacity-50",
                     typeof props.className === "function" ? props.className(state) : props.className,
                 )
@@ -91,7 +96,8 @@ const DropdownItem = ({ label, children, addon, icon: Icon, avatarUrl, unstyled,
             {(state) => (
                 <div
                     className={cx(
-                        "relative flex items-center rounded-md px-2.5 py-2 outline-focus-ring transition duration-100 ease-linear",
+                        "relative flex items-center outline-focus-ring transition duration-100 ease-linear",
+                        size === "lg" ? "rounded-lg px-2 py-3" : "rounded-md px-2.5 py-2",
                         !state.isDisabled && "group-hover:bg-primary_hover",
                         state.isFocused && "bg-primary_hover",
                         state.isFocusVisible && "outline-2 -outline-offset-2",
@@ -106,9 +112,19 @@ const DropdownItem = ({ label, children, addon, icon: Icon, avatarUrl, unstyled,
                         </div>
                     )}
 
-                    {Icon && <Icon aria-hidden="true" className="mr-2 size-4 shrink-0 stroke-[2.25px] text-fg-quaternary" />}
+                    {Icon && (
+                        <Icon
+                            aria-hidden="true"
+                            className={size === "lg" ? "mr-2 size-6 shrink-0 text-tertiary" : "mr-2 size-4 shrink-0 stroke-[2.25px] text-fg-quaternary"}
+                        />
+                    )}
 
-                    <span className={cx("grow truncate text-sm font-semibold text-secondary", state.isFocused && "text-secondary_hover")}>
+                    <span
+                        className={cx(
+                            size === "lg" ? "grow truncate text-base font-normal text-tertiary" : "grow truncate text-sm font-semibold text-secondary",
+                            state.isFocused && (size === "lg" ? "text-tertiary_hover" : "text-secondary_hover"),
+                        )}
+                    >
                         {label || (typeof children === "function" ? children(state) : children)}
                     </span>
 
