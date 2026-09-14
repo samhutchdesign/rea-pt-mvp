@@ -30,9 +30,9 @@ function CompactField({ value, onChange, unitSingular, unitPlural }: { value: nu
         min={0}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-6 bg-transparent text-sm text-primary text-center outline-none"
+        className="w-6 bg-transparent text-base text-primary text-center outline-none"
       />
-      <span className="text-sm text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
+      <span className="text-base text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
     </div>
   );
 }
@@ -46,8 +46,8 @@ function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => voi
         </div>
       </div>
       <div className="flex flex-col justify-center min-w-0">
-        <span className="text-sm font-bold text-primary leading-snug group-hover:text-brand-700 transition-colors">{ex.name}</span>
-        <span className="text-sm text-secondary mt-0.5">Rea Health</span>
+        <span className="text-base font-bold text-primary leading-snug group-hover:text-brand-700 transition-colors">{ex.name}</span>
+        <span className="text-base text-secondary mt-0.5">Rea Health</span>
       </div>
     </div>
   );
@@ -153,7 +153,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           <button
             onClick={() => router.push(backUrl)}
-            className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-primary mb-5 transition-colors"
+            className="inline-flex items-center gap-1.5 text-base text-secondary hover:text-primary mb-5 transition-colors"
           >
             <ArrowLeft size={15} />
             Back
@@ -181,7 +181,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {ex.userUploaded ? 'Me' : 'RH'}
               </div>
-              <span className="text-sm font-medium text-secondary">{ex.userUploaded ? 'You' : 'Rea Health'}</span>
+              <span className="text-base font-medium text-secondary">{ex.userUploaded ? 'You' : 'Rea Health'}</span>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -193,7 +193,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </Button>
               <button
                 onClick={() => block(() => setIsFavorite((v) => !v))}
-                className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${isFavorite ? 'border-pink-200 bg-pink-50 text-pink-600' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
+                className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-base font-medium transition-colors ${isFavorite ? 'border-pink-200 bg-pink-50 text-pink-600' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
               >
                 <Heart size={14} fill={isFavorite ? '#E91E63' : 'none'} color={isFavorite ? '#E91E63' : 'currentColor'} />
                 Favorite
@@ -210,22 +210,22 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 </button>
                 {moreOpen && (
                   <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary z-50 py-1">
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
+                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
                       <Mic size={15} className="text-tertiary shrink-0" />Record Audio Cue
                     </button>
                     {ex.userUploaded ? (
-                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
+                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
                         <Pencil size={15} className="text-tertiary shrink-0" />Edit
                       </button>
                     ) : (
-                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?duplicate=${id}`)); }}>
+                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?duplicate=${id}`)); }}>
                         <Copy size={15} className="text-tertiary shrink-0" />Duplicate
                       </button>
                     )}
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
+                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
                       <Share2 size={15} className="text-tertiary shrink-0" />Share
                     </button>
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
+                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
                       Report an issue
                     </button>
                   </div>
@@ -236,7 +236,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
           </div>
 
           {/* Transcript */}
-          <div className="mb-5 rounded-xl border border-secondary bg-secondary_alt px-4 py-3 text-sm text-secondary">
+          <div className="mb-5 rounded-xl border border-secondary bg-secondary_alt px-4 py-3 text-base text-secondary">
             <p className={transcriptExpanded ? '' : 'line-clamp-1'}>{MOCK_TRANSCRIPT}</p>
             {!transcriptExpanded && (
               <button className="text-brand-700 font-medium text-xs mt-0.5 hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
@@ -262,19 +262,19 @@ function ExerciseDetailContent({ id }: { id: string }) {
             return cue ? (
               <div className="mb-4 rounded-xl bg-brand-50 border border-brand-200 px-4 py-3">
                 <p className="text-xs font-semibold text-brand-700 mb-1">{cue.label}</p>
-                <p className="text-sm text-brand-900">{cue.text}</p>
+                <p className="text-base text-brand-900">{cue.text}</p>
               </div>
             ) : null;
           })()}
           <ol className="mb-6 pl-5 space-y-2 list-decimal">
-            {ex.instructions.map((step, i) => <li key={i} className="text-sm text-primary">{step}</li>)}
+            {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
           </ol>
 
           <Divider className="mb-6" />
 
           <h3 className="mt-0 mb-3 text-base font-bold text-primary">Common Mistakes</h3>
           <ul className="pl-5 space-y-2 list-disc">
-            {ex.commonMistakes.map((m, i) => <li key={i} className="text-sm text-primary">{m}</li>)}
+            {ex.commonMistakes.map((m, i) => <li key={i} className="text-base text-primary">{m}</li>)}
           </ul>
 
           <Divider className="mt-6" />

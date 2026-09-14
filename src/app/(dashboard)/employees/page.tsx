@@ -138,7 +138,7 @@ export default function EmployeesPage() {
         {empty ? (
           <div className="text-center py-16">
             <Users size={48} className="text-quaternary mx-auto mb-3" />
-            <span className="text-tertiary text-sm">
+            <span className="text-tertiary text-xs">
               {tab === '0' ? 'No active employees found' : 'No archived employees found'}
             </span>
           </div>
@@ -229,7 +229,7 @@ export default function EmployeesPage() {
         <Modal><Dialog>
           <div className="p-6 w-[440px]">
             <h3 className="mb-1 text-lg font-semibold text-primary">Add Employee</h3>
-            <p className="text-sm text-tertiary mb-5">Send an invite link to add a new team member.</p>
+            <p className="text-xs text-tertiary mb-5">Send an invite link to add a new team member.</p>
 
             <div className="flex flex-col gap-4">
               <div>
@@ -239,7 +239,7 @@ export default function EmployeesPage() {
                   placeholder="colleague@example.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
               <div>

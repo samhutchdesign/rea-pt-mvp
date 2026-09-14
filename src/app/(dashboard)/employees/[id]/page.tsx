@@ -45,7 +45,7 @@ function PatientTransferTable({
   };
 
   if (patients.length === 0) {
-    return <p className="text-sm text-tertiary">No patients to reassign.</p>;
+    return <p className="text-xs text-tertiary">No patients to reassign.</p>;
   }
 
   return (
@@ -359,7 +359,7 @@ function EditRoleDialog({
           <div className="p-6">
             <h3 className="text-lg font-semibold text-primary mb-3">Edit Role</h3>
             <div className="mb-6">
-              <div className="mb-1 text-sm text-secondary">Permissions</div>
+              <div className="mb-1 text-base text-secondary">Permissions</div>
               <NativeSelect value={draft} onChange={(e) => setDraft(e.target.value as UserRole)}>
                 <option value="admin">Manager</option>
                 <option value="editor">Practitioner</option>
@@ -411,7 +411,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const currentIdentity = useCurrentIdentity();
   const locationOverrides = useLocationOverrides();
 
-  if (!emp) return <div className="p-8"><span className="text-tertiary text-sm">Employee not found.</span></div>;
+  if (!emp) return <div className="p-8"><span className="text-tertiary text-xs">Employee not found.</span></div>;
 
   const isOwnProfile = role === 'owner' && currentIdentity.id === emp.id;
 
@@ -642,7 +642,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
             {assignedPatients.length === 0 ? (
               <div className="text-center py-16">
-                <span className="text-tertiary text-sm">No patients assigned to {emp.firstName} yet.</span>
+                <span className="text-tertiary text-xs">No patients assigned to {emp.firstName} yet.</span>
               </div>
             ) : (
               <>
@@ -656,7 +656,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
                 {filteredPatients.length === 0 ? (
                   <div className="text-center py-16">
-                    <span className="text-tertiary text-sm">No patients match &quot;{patientSearch}&quot;.</span>
+                    <span className="text-tertiary text-xs">No patients match &quot;{patientSearch}&quot;.</span>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-5">
@@ -802,7 +802,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {savedProfessional.specialties.length === 0 ? (
-                      <span className="text-sm text-tertiary">No specialties added.</span>
+                      <span className="text-xs text-tertiary">No specialties added.</span>
                     ) : (
                       savedProfessional.specialties.map((s) => (
                         <span key={s} className="inline-flex items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary">

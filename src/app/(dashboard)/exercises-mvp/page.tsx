@@ -43,7 +43,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
   return (
     <div className="mb-5 pb-5 border-b border-secondary">
       <div className="flex justify-between items-center mb-3">
-        <span className="font-semibold text-sm text-primary">{title}</span>
+        <span className="font-semibold text-base text-primary">{title}</span>
         {activeCount > 0 && (
           <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
             <X size={13} />
@@ -75,7 +75,7 @@ function CheckRow({ label, checked, onChange, inactive }: { label: string; check
           </svg>
         )}
       </span>
-      <span className="text-sm text-primary leading-tight">{label}</span>
+      <span className="text-base text-primary leading-tight">{label}</span>
     </button>
   );
 }
@@ -99,9 +99,9 @@ function CompactField({ value, onChange, unitSingular, unitPlural }: { value: nu
         min={0}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-6 bg-transparent text-sm text-primary text-center outline-none"
+        className="w-6 bg-transparent text-base text-primary text-center outline-none"
       />
-      <span className="text-sm text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
+      <span className="text-base text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
     </div>
   );
 }
@@ -251,7 +251,7 @@ function ExercisesPageContent() {
           <div className="w-56 shrink-0 pr-6 border-r border-secondary mr-7">
 
             <div className="flex justify-between items-center mb-5 pb-4 border-b border-secondary">
-              <span className="font-semibold text-sm text-primary">Filters</span>
+              <span className="font-semibold text-base text-primary">Filters</span>
               {hasFilters && (
                 <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
               )}
@@ -411,7 +411,7 @@ function ExercisesPageContent() {
 
             {filtered.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-sm text-tertiary mb-3">No exercises match your filters.</p>
+                <p className="text-xs text-tertiary mb-3">No exercises match your filters.</p>
                 <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
               </div>
             ) : (
@@ -448,7 +448,7 @@ function ExercisesPageContent() {
                       </div>
                     </div>
                     <div className="px-3.5 py-3">
-                      <p className="font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
+                      <p className="font-semibold text-base text-primary leading-tight mb-2">{ex.name}</p>
                       <div className="flex gap-1 flex-wrap mb-2.5">
                         <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
                         {ex.equipment !== 'None' && (

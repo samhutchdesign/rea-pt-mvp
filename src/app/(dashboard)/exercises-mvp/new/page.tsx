@@ -71,7 +71,7 @@ export default function NewExercisePage() {
         {/* Basic Info */}
         <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
           <div className="flex flex-col gap-5">
-            <span className="text-sm font-semibold text-primary">Basic Info</span>
+            <span className="text-base font-semibold text-primary">Basic Info</span>
             <div>
               {fieldLabel('Exercise Name')}
               <Input value={name} onChange={(val) => setName(val)} placeholder="Exercise name" />
@@ -82,7 +82,7 @@ export default function NewExercisePage() {
                 rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
               />
             </div>
             <div>
@@ -91,7 +91,7 @@ export default function NewExercisePage() {
                 rows={4}
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
               />
             </div>
             <div>
@@ -100,7 +100,7 @@ export default function NewExercisePage() {
                 rows={3}
                 value={mistakes}
                 onChange={(e) => setMistakes(e.target.value)}
-                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
               />
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function NewExercisePage() {
 
         {/* Defaults */}
         <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
-          <span className="mb-4 block text-sm font-semibold text-primary">Defaults</span>
+          <span className="mb-4 block text-base font-semibold text-primary">Defaults</span>
           <div className="flex flex-wrap gap-4 items-end">
             <div>
               {fieldLabel('Sets')}
@@ -117,7 +117,7 @@ export default function NewExercisePage() {
                 min={0}
                 value={sets}
                 onChange={(e) => setSets(Number(e.target.value))}
-                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-base text-center outline-none focus:ring-2 focus:ring-brand-300"
               />
             </div>
             <div>
@@ -127,7 +127,7 @@ export default function NewExercisePage() {
                 min={0}
                 value={reps}
                 onChange={(e) => setReps(Number(e.target.value))}
-                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-base text-center outline-none focus:ring-2 focus:ring-brand-300"
               />
             </div>
             <div>
@@ -137,7 +137,7 @@ export default function NewExercisePage() {
                 min={0}
                 value={hold}
                 onChange={(e) => setHold(Number(e.target.value))}
-                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-sm text-center outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-24 rounded-lg border border-secondary px-2 py-1.5 text-base text-center outline-none focus:ring-2 focus:ring-brand-300"
               />
             </div>
             <div>
@@ -156,7 +156,7 @@ export default function NewExercisePage() {
         {/* Tags */}
         <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
           <div className="flex flex-col gap-5">
-            <span className="text-sm font-semibold text-primary">Tags</span>
+            <span className="text-base font-semibold text-primary">Tags</span>
             {tagFields.map(({ label, options, selected, set }) => (
               <div key={label}>
                 {fieldLabel(label)}
@@ -169,7 +169,7 @@ export default function NewExercisePage() {
         {/* Media */}
         <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
           <div className="flex flex-col gap-5">
-            <span className="text-sm font-semibold text-primary">Media</span>
+            <span className="text-base font-semibold text-primary">Media</span>
             <div>
               {fieldLabel('YouTube URL')}
               <Input

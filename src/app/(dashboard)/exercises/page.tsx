@@ -159,7 +159,7 @@ function ComingSoonState({ sp }: { sp: typeof SPECIALTIES[0] }) {
         <Icon size={28} color={sp.color} />
       </div>
       <h3 className="mt-0 mb-1 text-lg font-semibold text-primary">{sp.name}</h3>
-      <p className="max-w-sm text-center text-sm text-secondary mb-4">{sp.description}</p>
+      <p className="max-w-sm text-center text-base text-secondary mb-4">{sp.description}</p>
       <span className="rounded px-2 py-0.5 font-semibold text-xs mb-2" style={{ background: sp.bg, color: sp.color }}>Coming Soon</span>
       <p className="text-xs text-tertiary">APTA: {sp.apta}</p>
     </div>
@@ -240,9 +240,9 @@ function CompactField({ value, onChange, unitSingular, unitPlural }: { value: nu
         min={0}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-6 bg-transparent text-sm text-primary text-center outline-none"
+        className="w-6 bg-transparent text-base text-primary text-center outline-none"
       />
-      <span className="text-sm text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
+      <span className="text-base text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
     </div>
   );
 }
@@ -610,7 +610,7 @@ function ExercisesPageContent() {
               {/* Grid */}
               {filtered.length === 0 ? (
                 <div className="text-center py-16">
-                  <p className="text-sm text-tertiary mb-3">No exercises match your filters.</p>
+                  <p className="text-xs text-tertiary mb-3">No exercises match your filters.</p>
                   <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
