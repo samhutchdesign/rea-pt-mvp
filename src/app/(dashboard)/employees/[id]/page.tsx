@@ -674,11 +674,11 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-[minmax(0,1fr)_140px_120px_140px_24px] items-center gap-4 border-b border-secondary px-5 pb-3">
+                <div className="grid grid-cols-[minmax(220px,2fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_24px] items-center gap-4 border-b border-secondary pl-5 pr-7 py-3">
                   <span className="text-xs text-primary">Patient</span>
                   <span className="text-xs text-primary">Assigned Doctor</span>
                   <span className="text-xs text-primary">Location</span>
-                  <span className="text-xs text-primary ml-4">Date Added</span>
+                  <span className="text-xs text-primary">Date Added</span>
                   <span />
                 </div>
 
@@ -687,12 +687,12 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                     <span className="text-tertiary text-xs">No patients match &quot;{patientSearch}&quot;.</span>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-4">
                     {filteredPatients.map((p) => (
                       <div
                         key={p.id}
                         onClick={() => router.push(`/patients/${p.id}/overview`)}
-                        className="grid grid-cols-[minmax(0,1fr)_140px_120px_140px_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors duration-100"
+                        className="grid grid-cols-[minmax(220px,2fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors duration-100"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <Avatar size="lg" initials={p.avatarInitials} />
@@ -702,13 +702,13 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                           </div>
                         </div>
                         <span className="text-xs text-primary whitespace-nowrap">{emp.firstName} {emp.lastName}</span>
-                        <span className="w-fit rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary whitespace-nowrap">
+                        <span className="w-fit rounded-full bg-tertiary px-3 py-2 text-xs text-primary whitespace-nowrap">
                           {p.location}
                         </span>
-                        <span className="text-xs text-primary whitespace-nowrap ml-4">
+                        <span className="text-xs text-primary whitespace-nowrap">
                           {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
-                        <ChevronRight size={20} className="text-primary shrink-0 justify-self-end" />
+                        <ChevronRight size={24} className="text-primary shrink-0 justify-self-end" />
                       </div>
                     ))}
                   </div>
