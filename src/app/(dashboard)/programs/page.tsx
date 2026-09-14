@@ -200,7 +200,7 @@ function ProgramsPageContent() {
     <>
       <div className="p-10">
 
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="font-display text-[32px] leading-[48px] font-normal text-primary m-0">Programs</h1>
           <Button color="primary" size="lg" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
             Create Program
@@ -237,9 +237,9 @@ function ProgramsPageContent() {
           <div className="w-[280px] shrink-0 pr-10 border-r border-secondary">
 
             <div className="flex justify-between items-center mb-4">
-              <span className="font-display text-xl font-medium text-primary">Filter By</span>
+              <span className="font-display text-md font-medium text-primary">Filter By</span>
               {hasFilters && (
-                <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
+                <Button color="link-color" size="sm" className="font-semibold" onPress={clearFilters}>Clear all</Button>
               )}
             </div>
 
@@ -263,7 +263,7 @@ function ProgramsPageContent() {
                 <CheckRow key={c} label={c} checked={filterConditions.includes(c)} inactive={filtersInactive} onChange={() => guardFilter(() => toggleArr(filterConditions, c, setFilterConditions))} />
               ))}
               {!conditionSearch && ALL_CONDITIONS.length > 7 && (
-                <Button color="link-color" size="sm" onPress={() => setShowMoreConditions((v) => !v)}>
+                <Button color="link-color" size="sm" className="font-semibold" onPress={() => setShowMoreConditions((v) => !v)}>
                   {showMoreConditions ? 'Show less' : `+${ALL_CONDITIONS.length - 7} more`}
                 </Button>
               )}
@@ -333,7 +333,7 @@ function ProgramsPageContent() {
               </div>
             )}
 
-            <span className="block mb-4 text-xs text-primary">
+            <span className="block mb-10 text-xs text-primary">
               {filtered.length} of {mockPrograms.length} programs
             </span>
 
@@ -369,7 +369,7 @@ function ProgramsPageContent() {
                     }}
                   >
                     <div className="aspect-[320/180] w-full shrink-0 overflow-hidden">
-                      <ExerciseThumbnail src={prog.imageUrl} alt={prog.name} iconSize={28} />
+                      <ExerciseThumbnail src={prog.imageUrl ?? '/images/program-placeholder.png'} alt={prog.name} iconSize={28} />
                     </div>
                     <button
                       type="button"
