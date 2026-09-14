@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Poppins, Dancing_Script, Great_Vibes, Caveat, Sacramento, Lora } from 'next/font/google';
+import { Inter, Poppins, Dancing_Script, Great_Vibes, Caveat, Sacramento, Lora } from 'next/font/google';
 import Providers from './providers';
 import './globals.css';
 
@@ -7,6 +7,14 @@ const lora = Lora({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-lora',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-inter',
   display: 'swap',
 });
 
@@ -52,7 +60,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${lora.variable} ${poppins.variable} ${dancingScript.variable} ${greatVibes.variable} ${caveat.variable} ${sacramento.variable}`}>
+    <html lang="en" className={`${lora.variable} ${inter.variable} ${poppins.variable} ${dancingScript.variable} ${greatVibes.variable} ${caveat.variable} ${sacramento.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>
