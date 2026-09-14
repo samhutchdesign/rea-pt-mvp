@@ -57,6 +57,8 @@ export const styles = sortCx({
         primary: {
             root: [
                 "bg-brand-solid text-white hover:bg-brand-solid_hover data-loading:bg-brand-solid_hover",
+                // Minimum 100px width, but not for icon-only (square) buttons
+                "min-w-[100px] data-icon-only:min-w-0",
                 // Icon styles
                 "*:data-icon:text-white",
             ].join(" "),
