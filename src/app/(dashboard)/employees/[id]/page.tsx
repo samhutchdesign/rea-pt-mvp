@@ -50,10 +50,10 @@ function PatientTransferTable({
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="grid grid-cols-[minmax(0,1fr)_240px_240px] gap-4 border-b border-secondary px-5 pb-3">
-        <span className="text-xs text-primary">Patient</span>
-        <span className="text-xs text-primary">Assigned Doctor</span>
-        <span className="text-xs text-primary">Location</span>
+      <div className="flex items-center justify-between gap-4 border-b border-secondary pl-5 pr-7 py-3">
+        <span className="w-60 text-xs text-primary">Patient</span>
+        <span className="w-60 text-xs text-primary">Assigned Doctor</span>
+        <span className="w-60 text-xs text-primary">Location</span>
       </div>
       <div className="flex flex-col gap-4">
         {patients.map((p) => {
@@ -62,31 +62,35 @@ function PatientTransferTable({
           return (
             <div
               key={p.id}
-              className="grid grid-cols-[minmax(0,1fr)_240px_240px] items-center gap-4 rounded-lg border border-secondary bg-primary px-5 py-5"
+              className="flex items-center justify-between gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <Avatar size="md" initials={p.avatarInitials} />
+              <div className="flex items-center gap-3 w-60 min-w-0">
+                <Avatar size="lg" initials={p.avatarInitials} />
                 <span className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{p.firstName} {p.lastName}</span>
               </div>
-              <NativeSelect
-                value={row?.employee?.id ?? ''}
-                disabled={!row?.locationId}
-                onChange={(e) => onRowEmployeeChange(p.id, rowEmployees.find((emp) => emp.id === e.target.value) ?? null)}
-              >
-                <option value="" disabled>Transfer to…</option>
-                {rowEmployees.map((e) => (
-                  <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
-                ))}
-              </NativeSelect>
-              <NativeSelect
-                value={row?.locationId ?? ''}
-                onChange={(e) => onRowLocationChange(p.id, e.target.value)}
-              >
-                <option value="" disabled>Location…</option>
-                {locations.map((l) => (
-                  <option key={l.id} value={l.id}>{l.name} — {l.city}</option>
-                ))}
-              </NativeSelect>
+              <div className="w-60 shrink-0">
+                <NativeSelect
+                  value={row?.employee?.id ?? ''}
+                  disabled={!row?.locationId}
+                  onChange={(e) => onRowEmployeeChange(p.id, rowEmployees.find((emp) => emp.id === e.target.value) ?? null)}
+                >
+                  <option value="" disabled>Transfer to…</option>
+                  {rowEmployees.map((e) => (
+                    <option key={e.id} value={e.id}>{e.firstName} {e.lastName}</option>
+                  ))}
+                </NativeSelect>
+              </div>
+              <div className="w-60 shrink-0">
+                <NativeSelect
+                  value={row?.locationId ?? ''}
+                  onChange={(e) => onRowLocationChange(p.id, e.target.value)}
+                >
+                  <option value="" disabled>Location…</option>
+                  {locations.map((l) => (
+                    <option key={l.id} value={l.id}>{l.name} — {l.city}</option>
+                  ))}
+                </NativeSelect>
+              </div>
             </div>
           );
         })}
@@ -149,10 +153,10 @@ function BulkTransferDialog({
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
       <Modal className="w-full max-w-[980px]">
         <Dialog>
-          <div className="p-10 flex flex-col gap-10">
+          <div className="p-10 flex flex-col gap-12">
             <div className="relative flex items-center justify-between">
               <Button color="secondary" size="lg" onPress={onClose}>Cancel</Button>
-              <h2 className="absolute left-1/2 -translate-x-1/2 font-display text-2xl leading-8 font-medium text-primary m-0 whitespace-nowrap">
+              <h2 className="absolute left-1/2 -translate-x-1/2 font-display text-[20px] leading-[32px] font-medium text-primary m-0 whitespace-nowrap">
                 Transfer Patients
               </h2>
               <Button color="primary" size="lg" isDisabled={readyCount === 0} onPress={handleApply}>
