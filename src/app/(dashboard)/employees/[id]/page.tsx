@@ -517,18 +517,18 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               />
               <div className="flex flex-col gap-4 py-3">
                 <div className="flex items-center gap-3">
-                  <h1 className="font-display text-2xl leading-8 font-medium text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h1>
+                  <h1 className="font-display text-[20px] leading-[32px] font-medium text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h1>
                   <span className="text-base leading-5 text-secondary">{savedProfessional.credentials}</span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-base leading-5 text-primary">{savedProfessional.title}</span>
                   <div className="flex items-center gap-2">
                     <Mail size={24} className="text-tertiary" />
-                    <span className="text-base leading-5 text-secondary">{savedContact.email}</span>
+                    <span className="text-base leading-5 text-tertiary">{savedContact.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin size={24} className="text-tertiary" />
-                    <span className="text-base leading-5 text-secondary">{empLocationString}</span>
+                    <span className="text-base leading-5 text-tertiary">{empLocationString}</span>
                   </div>
                 </div>
               </div>
@@ -574,7 +574,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               >
                 {label}
                 {count !== null && (
-                  <span className="inline-flex items-center justify-center rounded-full bg-tertiary px-2.5 py-0.5 text-xs text-primary">
+                  <span className="inline-flex items-center justify-center rounded-full bg-tertiary px-3 py-2 text-xs text-primary">
                     {count}
                   </span>
                 )}
@@ -695,25 +695,27 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
           <div className="max-w-[800px] flex flex-col gap-4">
             <div className="rounded-lg border border-[#cdcccb] bg-primary p-10 flex flex-col gap-7">
               <div className="flex justify-between items-center">
-                <span className="font-display text-xl leading-5 font-medium text-primary">Contact Information</span>
+                <span className="font-display text-md leading-5 font-medium text-primary">Contact Information</span>
                 {can.canManageStaff && !editingContact && (
                   <button onClick={handleEditContact} className="text-tertiary hover:text-secondary transition-colors p-1">
-                    <Pencil size={20} />
+                    <Pencil size={24} />
                   </button>
                 )}
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-secondary">First Name</div>
+                  <div className="mb-2 text-xs text-tertiary">First Name</div>
                   <Input
+                    wrapperClassName="h-12"
                     value={editingContact ? contactDraft.firstName : savedContact.firstName}
                     isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, firstName: v }))}
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-secondary">Last Name</div>
+                  <div className="mb-2 text-xs text-tertiary">Last Name</div>
                   <Input
+                    wrapperClassName="h-12"
                     value={editingContact ? contactDraft.lastName : savedContact.lastName}
                     isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, lastName: v }))}
@@ -722,16 +724,18 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-secondary">Email</div>
+                  <div className="mb-2 text-xs text-tertiary">Email</div>
                   <Input
+                    wrapperClassName="h-12"
                     value={editingContact ? contactDraft.email : savedContact.email}
                     isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, email: v }))}
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-secondary">Phone</div>
+                  <div className="mb-2 text-xs text-tertiary">Phone</div>
                   <Input
+                    wrapperClassName="h-12"
                     value={editingContact ? contactDraft.phone : savedContact.phone}
                     isReadOnly={!editingContact}
                     onChange={(v) => setContactDraft((d) => ({ ...d, phone: v }))}
@@ -748,32 +752,35 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
 
             <div className="rounded-lg border border-[#cdcccb] bg-primary p-10 flex flex-col gap-7">
               <div className="flex justify-between items-center">
-                <span className="font-display text-xl leading-5 font-medium text-primary">Professional Details</span>
+                <span className="font-display text-md leading-5 font-medium text-primary">Professional Details</span>
                 {can.canManageStaff && !editingProfessional && (
                   <button onClick={handleEditProfessional} className="text-tertiary hover:text-secondary transition-colors p-1">
-                    <Pencil size={20} />
+                    <Pencil size={24} />
                   </button>
                 )}
               </div>
               <div>
-                <div className="mb-2 text-xs text-secondary">Date Joined</div>
+                <div className="mb-2 text-xs text-tertiary">Date Joined</div>
                 <Input
+                  wrapperClassName="h-12 bg-secondary"
                   value={new Date(emp.joinedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   isReadOnly
                 />
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-secondary">Title</div>
+                  <div className="mb-2 text-xs text-tertiary">Title</div>
                   <Input
+                    wrapperClassName="h-12"
                     value={editingProfessional ? professionalDraft.title : savedProfessional.title}
                     isReadOnly={!editingProfessional}
                     onChange={(v) => setProfessionalDraft((d) => ({ ...d, title: v }))}
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="mb-2 text-xs text-secondary">Credentials / Degrees</div>
+                  <div className="mb-2 text-xs text-tertiary">Credentials / Degrees</div>
                   <Input
+                    wrapperClassName="h-12"
                     value={editingProfessional ? professionalDraft.credentials : savedProfessional.credentials}
                     isReadOnly={!editingProfessional}
                     onChange={(v) => setProfessionalDraft((d) => ({ ...d, credentials: v }))}
@@ -781,13 +788,14 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 </div>
               </div>
               <div>
-                <div className="mb-2 text-xs text-secondary">Specialties</div>
+                <div className="mb-2 text-xs text-tertiary">Specialties</div>
                 {editingProfessional ? (
                   <div className="flex flex-col gap-3 items-start">
                     {professionalDraft.specialties.map((s, i) => (
                       <div key={i} className="flex items-center gap-3 w-full max-w-[350px]">
                         <span className="size-2 rounded-full bg-quaternary shrink-0" />
                         <Input
+                          wrapperClassName="h-12"
                           value={s}
                           onChange={(v) => updateSpecialty(i, v)}
                           className="flex-1"
@@ -797,7 +805,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                         </button>
                       </div>
                     ))}
-                    <Button color="link-color" size="sm" onPress={addSpecialty}>+ Add Specialty</Button>
+                    <Button color="link-color" size="sm" className="font-semibold" onPress={addSpecialty}>+ Add Specialty</Button>
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
