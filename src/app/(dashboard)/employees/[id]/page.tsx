@@ -66,7 +66,7 @@ function PatientTransferTable({
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Avatar size="md" initials={p.avatarInitials} />
-                <span className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{p.firstName} {p.lastName}</span>
+                <span className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{p.firstName} {p.lastName}</span>
               </div>
               <NativeSelect
                 value={row?.employee?.id ?? ''}

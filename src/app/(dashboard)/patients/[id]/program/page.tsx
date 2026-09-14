@@ -52,7 +52,7 @@ function ExerciseCard({
         </button>
       </div>
       <div className="flex flex-col pt-4">
-        <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{ex.name}</p>
+        <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{ex.name}</p>
         <p className="mt-1 text-xs text-primary">
           {pe.sets} Sets / {pe.reps} Reps{pe.holdSecs > 0 ? ` / ${pe.holdSecs} Sec Hold` : ''}
         </p>

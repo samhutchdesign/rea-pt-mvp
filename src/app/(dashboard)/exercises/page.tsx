@@ -678,7 +678,7 @@ function ExercisesPageContent() {
                         />
                       </div>
                       <div className="flex flex-col gap-2 pt-5">
-                        <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{ex.name}</p>
+                        <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{ex.name}</p>
                         <div className="flex items-center gap-2">
                           <span className="flex-1 text-xs text-primary">{ex.category}</span>
                           <span className="shrink-0 rounded-full bg-tertiary px-3 py-2 text-xs text-primary whitespace-nowrap">{ex.level}</span>

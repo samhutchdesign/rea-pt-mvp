@@ -66,3 +66,13 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, li, td, th, dt, dd, blockquote, figca
   text-box-edge: auto;
 }
 
+@utility title-trim {
+  /* Restores Figma's tight spacing for `truncate` titles that can't use
+     text-box-trim (it would clip them, see above). Figma's 16px Lora
+     Medium title renders at an 11px cap-height-to-baseline box; the
+     untrimmed line-height box here is 20px — pull the extra 9px back in
+     via margin (which doesn't touch the overflow-clip edge, so it can't
+     re-introduce clipping) instead of shrinking the box itself. */
+  margin-bottom: -9px;
+}
+
