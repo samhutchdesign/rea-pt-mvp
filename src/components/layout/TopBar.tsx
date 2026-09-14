@@ -67,28 +67,26 @@ export default function TopBar({}: TopBarProps) {
   ];
 
   return (
-    <div className="relative z-[60] flex h-14 w-full items-center bg-transparent px-6">
+    <div className="relative z-[60] flex h-20 w-full items-center gap-6 bg-transparent px-6">
       {/* Breadcrumbs hidden for now */}
       <nav className="flex flex-1 items-center gap-1 min-w-0" />
 
-      {/* Location pill */}
-      <div className="relative shrink-0 mr-3" ref={locMenuRef}>
+      {/* Location dropdown */}
+      <div className="relative shrink-0" ref={locMenuRef}>
         <button
           onClick={() => hasMultiple && setLocMenuOpen((v) => !v)}
           className={cx(
-            'flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-            hasMultiple
-              ? 'border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 cursor-pointer'
-              : 'border-secondary bg-secondary text-secondary cursor-default'
+            'flex h-12 items-center gap-1 rounded-lg border border-primary bg-primary px-3 text-base text-primary transition-colors',
+            hasMultiple ? 'hover:bg-secondary cursor-pointer' : 'cursor-default'
           )}
         >
-          <MapPin size={11} className="shrink-0" />
+          <MapPin size={24} className="shrink-0" />
           <span>{locLabel}</span>
-          {hasMultiple && <ChevronDown size={11} className="shrink-0" />}
+          {hasMultiple && <ChevronDown size={24} className="shrink-0" />}
         </button>
 
         {locMenuOpen && hasMultiple && (
-          <div className="absolute right-0 top-9 z-50 w-52 rounded-xl border border-secondary bg-primary py-1">
+          <div className="absolute right-0 top-14 z-50 w-52 rounded-xl border border-secondary bg-primary py-1">
             <button
               onClick={() => { setLocationId('all'); setLocMenuOpen(false); }}
               className={cx(
@@ -125,7 +123,7 @@ export default function TopBar({}: TopBarProps) {
           className="cursor-pointer rounded-full transition-opacity hover:opacity-80"
         >
           <Avatar
-            size="sm"
+            size="lg"
             src={identity.avatarUrl}
             alt={`${identity.firstName} ${identity.lastName}`}
             initials={identity.avatarInitials}
@@ -164,7 +162,7 @@ export default function TopBar({}: TopBarProps) {
 
       {/* Notification bell */}
       {viewMode === 'full' && (
-        <div className="relative shrink-0 ml-1" ref={bellRef}>
+        <div className="relative shrink-0" ref={bellRef}>
           <button
             onClick={() => setBellOpen((v) => !v)}
             className="relative flex size-9 items-center justify-center rounded-full text-quaternary hover:bg-secondary hover:text-secondary transition-colors"

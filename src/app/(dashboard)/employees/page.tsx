@@ -106,7 +106,7 @@ export default function EmployeesPage() {
               )}
             >
               {label}
-              <span className="inline-flex items-center justify-center rounded-full bg-secondary_alt px-3 py-1 text-xs text-primary">
+              <span className="inline-flex items-center justify-center rounded-full bg-tertiary px-3 py-2 text-xs text-primary">
                 {count}
               </span>
             </button>
@@ -144,7 +144,7 @@ export default function EmployeesPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            <div className="grid grid-cols-[minmax(0,1fr)_100px_140px_180px_24px] gap-4 border-b border-secondary px-5 pb-3">
+            <div className="grid grid-cols-[minmax(0,1fr)_80px_120px_160px_24px] gap-4 border-b border-secondary pl-5 pr-7 py-3">
               <span className="text-xs text-primary">Practitioner</span>
               <span className="text-xs text-primary"># of Patients</span>
               <span className="text-xs text-primary">Location</span>
@@ -159,7 +159,7 @@ export default function EmployeesPage() {
                   <div
                     key={emp.id}
                     className={cx(
-                      'grid grid-cols-[minmax(0,1fr)_100px_140px_180px_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors',
+                      'grid grid-cols-[minmax(0,1fr)_80px_120px_160px_24px] items-center gap-4 rounded-lg border border-secondary bg-primary pl-5 pr-7 py-5 cursor-pointer hover:bg-secondary_alt transition-colors',
                       emp.archived && 'opacity-75'
                     )}
                     onClick={() => router.push(`/employees/${emp.id}`)}
@@ -172,7 +172,7 @@ export default function EmployeesPage() {
                         initials={emp.avatarInitials}
                         className="shrink-0"
                       />
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex flex-col gap-3">
                         <div className="flex items-center gap-2">
                           <span className="font-display text-md font-medium text-primary">{emp.firstName} {emp.lastName}</span>
                           <span className="text-xs text-primary">{emp.credentials}</span>

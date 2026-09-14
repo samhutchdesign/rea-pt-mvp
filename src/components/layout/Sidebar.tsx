@@ -35,7 +35,7 @@ export default function Sidebar() {
     <nav className="fixed top-10 left-0 z-[100] flex h-[calc(100vh-40px)] w-60 shrink-0 flex-col bg-secondary_alt px-4 py-6">
       {/* Wordmark */}
       <Link href="/" className="mb-6 block">
-        <span className="font-display text-2xl font-bold text-primary">Rea</span>
+        <span className="font-display text-[34px] font-medium text-primary">Rea</span>
       </Link>
 
       <div className="flex flex-col gap-1">
@@ -44,11 +44,11 @@ export default function Sidebar() {
           return (
             <Link key={href} href={href} title={label}>
               <div className={cx(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 cursor-pointer',
+                'flex items-center gap-2 rounded-lg px-2 py-3 transition-colors duration-150 cursor-pointer',
                 isActive ? 'bg-quaternary' : 'hover:bg-secondary'
               )}>
-                <Icon className={cx('size-5 shrink-0', isActive ? 'text-primary' : 'text-quaternary')} />
-                <span className={cx('text-xs', isActive ? 'font-medium text-primary' : 'font-medium text-secondary')}>
+                <Icon className={cx('size-6 shrink-0', isActive ? 'text-primary' : 'text-tertiary')} />
+                <span className={cx('text-base font-normal', isActive ? 'text-primary' : 'text-tertiary')}>
                   {label}
                 </span>
               </div>
