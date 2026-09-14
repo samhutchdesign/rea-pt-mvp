@@ -23,13 +23,13 @@ function AcceptInviteContent() {
             <Building2 size={24} className="text-brand-600" />
           </div>
           <h1 className="text-xl font-semibold text-primary mb-1">You've been invited</h1>
-          <p className="text-sm text-tertiary">
+          <p className="text-xs text-tertiary">
             You've been added to the following organization
           </p>
         </div>
 
         <div className="rounded-xl border border-secondary bg-secondary_alt p-4 mb-6">
-          <p className="text-sm font-semibold text-primary mb-0.5">Westside Physiotherapy</p>
+          <p className="text-base font-semibold text-primary mb-0.5">Westside Physiotherapy</p>
           <p className="text-xs text-tertiary mb-3">westside-physio.com</p>
           <div className="flex items-center gap-2">
             <span className="text-xs text-secondary">Your role:</span>

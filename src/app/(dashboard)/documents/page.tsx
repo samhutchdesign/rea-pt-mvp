@@ -34,7 +34,7 @@ export default function DocumentsPage() {
           <button
             onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
             className={cx(
-              'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm font-medium transition-colors',
+              'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-base font-medium transition-colors',
               showFavoritesOnly
                 ? 'border-brand-600 bg-brand-50 text-brand-700'
                 : 'border-secondary bg-primary text-secondary hover:bg-secondary_alt'
@@ -58,7 +58,7 @@ export default function DocumentsPage() {
                 </div>
                 <div className="grow">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="font-semibold text-primary text-sm">{doc.name}</span>
+                    <span className="font-semibold text-primary text-base">{doc.name}</span>
                     {favorites.has(doc.id) && (
                       <Heart size={14} fill="currentColor" className="text-favorite" />
                     )}

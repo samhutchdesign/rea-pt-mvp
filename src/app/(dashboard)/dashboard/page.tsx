@@ -59,7 +59,7 @@ function LocationRow({ loc }: { loc: ClinicLocation }) {
         <MapPin size={14} className="text-brand-600" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-primary">{loc.name}</p>
+        <p className="text-base font-medium text-primary">{loc.name}</p>
         <p className="text-xs text-tertiary truncate">{loc.address}</p>
       </div>
       <span className="text-xs text-secondary shrink-0 ml-2">{empCount} staff</span>
@@ -73,7 +73,7 @@ function SectionCard({ title, action, onAction, children }: {
   return (
     <div className="rounded-xl border border-secondary bg-primary">
       <div className="flex items-center justify-between px-5 py-4 border-b border-secondary">
-        <h3 className="text-sm font-semibold text-primary m-0">{title}</h3>
+        <h3 className="text-base font-semibold text-primary m-0">{title}</h3>
         {action && (
           <button onClick={onAction} className="text-xs text-brand-700 hover:text-brand-600 font-medium">
             {action}
@@ -182,7 +182,7 @@ function StaffDashboard({ empId }: { empId: string }) {
         onAction={() => router.push('/patients')}
       >
         {myPatients.length === 0 ? (
-          <p className="py-4 text-sm text-tertiary text-center">No patients assigned.</p>
+          <p className="py-4 text-xs text-tertiary text-center">No patients assigned.</p>
         ) : (
           myPatients.map((p) => {
             const next = computeEstimatedNext(p.id);
@@ -194,7 +194,7 @@ function StaffDashboard({ empId }: { empId: string }) {
               >
                 <Avatar initials={p.avatarInitials} size="sm" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-primary leading-tight">
+                  <p className="text-base font-medium text-primary leading-tight">
                     {p.firstName} {p.lastName}
                   </p>
                   {p.injuryHistory?.mechanism && (
@@ -213,7 +213,7 @@ function StaffDashboard({ empId }: { empId: string }) {
 
       <SectionCard title="My Locations">
         {myLocations.length === 0 ? (
-          <p className="py-4 text-sm text-tertiary text-center">No locations assigned.</p>
+          <p className="py-4 text-xs text-tertiary text-center">No locations assigned.</p>
         ) : (
           myLocations.map((loc) => <LocationRow key={loc.id} loc={loc} />)
         )}
@@ -225,7 +225,7 @@ function StaffDashboard({ empId }: { empId: string }) {
         onAction={() => router.push('/programs')}
       >
         {myPrograms.length === 0 ? (
-          <p className="py-4 text-sm text-tertiary text-center">No programs assigned to your patients yet.</p>
+          <p className="py-4 text-xs text-tertiary text-center">No programs assigned to your patients yet.</p>
         ) : (
           myPrograms.map((prog) => (
             <div
@@ -238,7 +238,7 @@ function StaffDashboard({ empId }: { empId: string }) {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <p className="text-sm font-medium text-primary leading-tight">{prog.name}</p>
+                  <p className="text-base font-medium text-primary leading-tight">{prog.name}</p>
                   {prog.isFavorite && <Heart size={12} className="text-favorite shrink-0" fill="currentColor" />}
                 </div>
                 <div className="flex gap-1 mt-0.5 flex-wrap">
@@ -283,7 +283,7 @@ export default function DashboardPage() {
           <div className="w-full max-w-sm">
             <div className="text-center mb-8">
               <h1 className="text-xl font-semibold text-primary mb-1">Welcome to Rea</h1>
-              <p className="text-sm text-tertiary">Set up your organization to get started.</p>
+              <p className="text-xs text-tertiary">Set up your organization to get started.</p>
             </div>
             <button
               onClick={() => {}}
@@ -293,8 +293,8 @@ export default function DashboardPage() {
                 <Building2 size={20} className="text-brand-600" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-primary mb-1">Create an organization</p>
-                <p className="text-sm text-tertiary leading-relaxed">
+                <p className="font-semibold text-base text-primary mb-1">Create an organization</p>
+                <p className="text-xs text-tertiary leading-relaxed">
                   Set up your practice or clinic, choose your plan, and invite your team.
                 </p>
                 <span className="mt-2 inline-block text-xs text-tertiary border border-secondary rounded-full px-2.5 py-0.5">

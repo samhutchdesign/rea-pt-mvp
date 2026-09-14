@@ -54,7 +54,7 @@ function SubscriptionTab() {
             </div>
             <div>
               <span className="text-3xl font-bold text-brand-700">{PLAN.price}</span>
-              <span className="text-tertiary text-sm">/{PLAN.interval}</span>
+              <span className="text-tertiary text-xs">/{PLAN.interval}</span>
             </div>
           </div>
           <Button color="secondary" size="xs" onPress={() => {}}>Change Plan</Button>
@@ -67,7 +67,7 @@ function SubscriptionTab() {
           {PLAN.features.map((f) => (
             <li key={f} className="flex items-center gap-2">
               <Check size={16} className="text-utility-green-600 shrink-0" />
-              <span className="text-sm text-primary">{f}</span>
+              <span className="text-base text-primary">{f}</span>
             </li>
           ))}
         </ul>
@@ -77,7 +77,7 @@ function SubscriptionTab() {
         <div className="flex justify-between items-center">
           <div>
             <span className="block text-tertiary text-xs mb-0.5">Renews on</span>
-            <span className="font-semibold text-primary text-sm">{PLAN.renewsOn}</span>
+            <span className="font-semibold text-primary text-base">{PLAN.renewsOn}</span>
           </div>
           <Button color="tertiary-destructive" size="xs" onPress={() => {}}>Cancel Subscription</Button>
         </div>
@@ -105,7 +105,7 @@ function PaymentMethodTab() {
             <CreditCard size={24} className="text-brand-700" />
           </div>
           <div className="grow">
-            <span className="block font-semibold text-primary text-sm">Visa ending in 4242</span>
+            <span className="block font-semibold text-primary text-base">Visa ending in 4242</span>
             <span className="text-tertiary text-xs">Expires 08 / 2028</span>
           </div>
           <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#D9E8E1', color: '#25382F' }}>Default</span>
@@ -138,9 +138,9 @@ function InvoiceHistoryTab() {
         </div>
         {INVOICES.map((inv) => (
           <div key={inv.id} className="grid grid-cols-5 gap-0 px-4 py-4 border-b border-secondary last:border-0 items-center">
-            <span className="font-semibold text-primary text-sm">{inv.id}</span>
-            <span className="text-tertiary text-sm">{inv.date}</span>
-            <span className="text-primary text-sm">{inv.amount}</span>
+            <span className="font-semibold text-primary text-base">{inv.id}</span>
+            <span className="text-tertiary text-xs">{inv.date}</span>
+            <span className="text-primary text-base">{inv.amount}</span>
             <span>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-utility-green-50 text-utility-green-700">{inv.status}</span>
             </span>
@@ -161,8 +161,8 @@ function UsageStatsTab() {
         {USAGE.map(({ label, used, limit, unit }) => (
           <div key={label} className="rounded-xl border border-secondary bg-primary px-4 py-3.5">
             <div className={cx('flex justify-between items-center', limit ? 'mb-2' : '')}>
-              <span className="font-semibold text-primary text-sm">{label}</span>
-              <span className="text-tertiary text-sm">
+              <span className="font-semibold text-primary text-base">{label}</span>
+              <span className="text-tertiary text-xs">
                 {limit ? `${used} / ${limit} ${unit}` : `${used} ${unit}`}
               </span>
             </div>
@@ -198,7 +198,7 @@ export default function BillingPage() {
               key={i}
               onClick={() => setTab(String(i))}
               className={cx(
-                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                'px-4 py-2 text-base font-medium border-b-2 -mb-px transition-colors',
                 tab === String(i)
                   ? 'border-brand-600 text-brand-700'
                   : 'border-transparent text-tertiary hover:text-secondary'

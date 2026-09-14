@@ -68,12 +68,12 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
             <div className="flex gap-4 flex-wrap">
               <div className="flex items-center gap-1">
                 <MapPin size={15} className="text-tertiary" />
-                <span className="text-tertiary text-sm">{saved.city}, {saved.regionCountry}</span>
+                <span className="text-tertiary text-xs">{saved.city}, {saved.regionCountry}</span>
               </div>
               {teamMembers.length > 0 && (
                 <div className="flex items-center gap-1">
                   <Users size={15} className="text-tertiary" />
-                  <span className="text-tertiary text-sm">
+                  <span className="text-tertiary text-xs">
                     {teamMembers.length} physiotherapist{teamMembers.length !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -105,27 +105,27 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
               <span className="block font-semibold text-primary mb-4">About This Location</span>
               <div className="flex flex-col gap-4">
                 <div>
-                  <div className="mb-1 text-sm text-secondary">Clinic Name</div>
+                  <div className="mb-1 text-base text-secondary">Clinic Name</div>
                   <Input value={form.name} isReadOnly={readOnly} onChange={(v) => setForm((f) => ({ ...f, name: v }))} />
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">City</div>
+                    <div className="mb-1 text-base text-secondary">City</div>
                     <Input value={form.city} isReadOnly={readOnly} onChange={(v) => setForm((f) => ({ ...f, city: v }))} />
                   </div>
                   <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">Region / Country</div>
+                    <div className="mb-1 text-base text-secondary">Region / Country</div>
                     <Input value={form.regionCountry} isReadOnly={readOnly} onChange={(v) => setForm((f) => ({ ...f, regionCountry: v }))} />
                   </div>
                 </div>
                 <div>
-                  <div className="mb-1 text-sm text-secondary">Description</div>
+                  <div className="mb-1 text-base text-secondary">Description</div>
                   <textarea
                     rows={4}
                     value={form.description}
                     readOnly={readOnly}
                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary placeholder:text-placeholder outline-none resize-none focus:ring-2 focus:ring-brand"
+                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary placeholder:text-placeholder outline-none resize-none focus:ring-2 focus:ring-brand"
                   />
                 </div>
               </div>
@@ -135,16 +135,16 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
               <span className="block font-semibold text-primary mb-4">Contact</span>
               <div className="flex flex-col gap-4">
                 <div>
-                  <div className="mb-1 text-sm text-secondary">Address</div>
+                  <div className="mb-1 text-base text-secondary">Address</div>
                   <Input value={form.address} isReadOnly={readOnly} onChange={(v) => setForm((f) => ({ ...f, address: v }))} />
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">Phone</div>
+                    <div className="mb-1 text-base text-secondary">Phone</div>
                     <Input value={form.phone} isReadOnly={readOnly} onChange={(v) => setForm((f) => ({ ...f, phone: v }))} />
                   </div>
                   <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">Email</div>
+                    <div className="mb-1 text-base text-secondary">Email</div>
                     <Input value={form.email} isReadOnly={readOnly} onChange={(v) => setForm((f) => ({ ...f, email: v }))} />
                   </div>
                 </div>
@@ -156,7 +156,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                 <span className="block text-tertiary text-xs font-semibold uppercase tracking-wide mb-2">Danger Zone</span>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="block font-semibold text-primary text-sm">Delete this clinic location</span>
+                    <span className="block font-semibold text-primary text-base">Delete this clinic location</span>
                     <span className="text-tertiary text-xs">This will remove the location from the organization permanently.</span>
                   </div>
                   <Button color="secondary-destructive" size="xs" iconLeading={Trash2} onPress={() => setDeleteOpen(true)}>
@@ -174,7 +174,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                 Team {teamMembers.length > 0 ? `(${teamMembers.length})` : ''}
               </span>
               {teamMembers.length === 0 ? (
-                <span className="text-tertiary text-sm">No staff assigned to this location yet.</span>
+                <span className="text-tertiary text-xs">No staff assigned to this location yet.</span>
               ) : (
                 <div className="flex flex-col">
                   {teamMembers.map((emp, i) => {
@@ -193,7 +193,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                             className="shrink-0"
                           />
                           <div className="grow min-w-0">
-                            <span className="block font-semibold text-primary text-sm truncate">{emp.firstName} {emp.lastName}</span>
+                            <span className="block font-semibold text-primary text-base truncate">{emp.firstName} {emp.lastName}</span>
                             <span className="text-tertiary text-xs truncate">{emp.credentials} · {emp.title}</span>
                           </div>
                           <span
@@ -220,7 +220,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
           <Dialog>
             <div className="p-6 w-full min-w-[400px]">
               <h3 className="text-lg font-semibold text-primary mb-3">Delete Clinic Location?</h3>
-              <p className="text-tertiary text-sm mb-6">
+              <p className="text-tertiary text-xs mb-6">
                 This will permanently remove <strong className="text-primary">{saved.name}</strong> from the organization. This cannot be undone.
               </p>
               <div className="flex justify-end gap-2">

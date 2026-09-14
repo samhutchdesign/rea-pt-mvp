@@ -40,7 +40,7 @@ export default function NewDocumentPage() {
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Create New Form</h2>
 
         <div className="mb-6">
-          <div className="mb-1 text-sm text-secondary">Form Name</div>
+          <div className="mb-1 text-base text-secondary">Form Name</div>
           <Input value={formName} onChange={(v) => setFormName(v)} />
         </div>
 
@@ -51,7 +51,7 @@ export default function NewDocumentPage() {
               key={field.id}
               className="rounded-xl border border-secondary bg-primary px-3 py-3 flex gap-4 items-center"
             >
-              <span className="text-tertiary text-sm min-w-[24px]">{i + 1}.</span>
+              <span className="text-tertiary text-xs min-w-[24px]">{i + 1}.</span>
               <div className="grow">
                 <Input
                   placeholder="Field Label"

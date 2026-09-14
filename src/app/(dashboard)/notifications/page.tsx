@@ -45,7 +45,7 @@ export default function NotificationsPage() {
         {notifications.length === 0 ? (
           <div className="text-center py-16">
             <Bell size={48} className="mx-auto text-quaternary mb-3" />
-            <span className="text-secondary text-sm">No notifications</span>
+            <span className="text-secondary text-base">No notifications</span>
           </div>
         ) : (
           <div className="rounded-xl border border-secondary bg-primary overflow-hidden">
@@ -63,7 +63,7 @@ export default function NotificationsPage() {
                   </div>
                   <div className="flex-1">
                     <div>
-                      <span className={cx('text-sm', !notif.read ? 'font-semibold text-primary' : 'text-primary')}>
+                      <span className={cx('text-base', !notif.read ? 'font-semibold text-primary' : 'text-primary')}>
                         {notif.message}
                       </span>
                     </div>

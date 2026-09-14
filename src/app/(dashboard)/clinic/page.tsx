@@ -79,11 +79,11 @@ export default function ClinicPage() {
             <div className="flex gap-4 flex-wrap">
               <div className="flex items-center gap-1">
                 <MapPin size={15} className="text-tertiary" />
-                <span className="text-tertiary text-sm">{locations.length} location{locations.length !== 1 ? 's' : ''}</span>
+                <span className="text-tertiary text-xs">{locations.length} location{locations.length !== 1 ? 's' : ''}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Building2 size={15} className="text-tertiary" />
-                <span className="text-tertiary text-sm">{mockEmployees.length} physiotherapists</span>
+                <span className="text-tertiary text-xs">{mockEmployees.length} physiotherapists</span>
               </div>
             </div>
           </div>
@@ -106,35 +106,35 @@ export default function ClinicPage() {
               <span className="block font-semibold text-primary mb-4">Organization Information</span>
               <div className="flex flex-col gap-4">
                 <div>
-                  <div className="mb-1 text-sm text-secondary">Organization Name</div>
+                  <div className="mb-1 text-base text-secondary">Organization Name</div>
                   <Input value={form.name} isReadOnly={!editing} onChange={(v) => setForm({ ...form, name: v })} />
                 </div>
                 <div>
-                  <div className="mb-1 text-sm text-secondary">Primary Address</div>
+                  <div className="mb-1 text-base text-secondary">Primary Address</div>
                   <Input value={form.address} isReadOnly={!editing} onChange={(v) => setForm({ ...form, address: v })} />
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">Phone</div>
+                    <div className="mb-1 text-base text-secondary">Phone</div>
                     <Input value={form.phone} isReadOnly={!editing} onChange={(v) => setForm({ ...form, phone: v })} />
                   </div>
                   <div className="flex-1">
-                    <div className="mb-1 text-sm text-secondary">Email</div>
+                    <div className="mb-1 text-base text-secondary">Email</div>
                     <Input value={form.email} isReadOnly={!editing} onChange={(v) => setForm({ ...form, email: v })} />
                   </div>
                 </div>
                 <div>
-                  <div className="mb-1 text-sm text-secondary">Website</div>
+                  <div className="mb-1 text-base text-secondary">Website</div>
                   <Input value={form.website} isReadOnly={!editing} onChange={(v) => setForm({ ...form, website: v })} />
                 </div>
                 <div>
-                  <div className="mb-1 text-sm text-secondary">About the Organization</div>
+                  <div className="mb-1 text-base text-secondary">About the Organization</div>
                   <textarea
                     rows={4}
                     value={form.description}
                     readOnly={!editing}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary placeholder:text-placeholder outline-none resize-none focus:ring-2 focus:ring-brand"
+                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary placeholder:text-placeholder outline-none resize-none focus:ring-2 focus:ring-brand"
                   />
                 </div>
               </div>
@@ -149,7 +149,7 @@ export default function ClinicPage() {
                 </Button>
               </div>
               {locations.length === 0 ? (
-                <span className="text-tertiary text-sm">No locations added yet.</span>
+                <span className="text-tertiary text-xs">No locations added yet.</span>
               ) : (
                 <div className="flex flex-col">
                   {locations.map((loc, i) => (
@@ -160,7 +160,7 @@ export default function ClinicPage() {
                           className="grow cursor-pointer"
                           onClick={() => router.push(`/clinic/${loc.id}`)}
                         >
-                          <span className="block font-semibold text-primary text-sm">{loc.name}</span>
+                          <span className="block font-semibold text-primary text-base">{loc.name}</span>
                           {loc.regionCountry && (
                             <span className="text-tertiary text-xs">{loc.city}, {loc.regionCountry}</span>
                           )}
@@ -186,7 +186,7 @@ export default function ClinicPage() {
                   {contactItems.map(({ icon: Icon, label }) => (
                     <div key={label} className="flex items-start gap-3">
                       <Icon size={16} className="text-tertiary mt-0.5 shrink-0" />
-                      <span className="text-tertiary text-sm">{label}</span>
+                      <span className="text-tertiary text-xs">{label}</span>
                     </div>
                   ))}
                 </div>
@@ -215,7 +215,7 @@ export default function ClinicPage() {
                           className="shrink-0"
                         />
                         <div className="grow min-w-0">
-                          <span className="block font-semibold text-primary text-sm truncate">{emp.firstName} {emp.lastName}</span>
+                          <span className="block font-semibold text-primary text-base truncate">{emp.firstName} {emp.lastName}</span>
                           <span className="text-tertiary text-xs truncate">{emp.credentials} · {emp.title}</span>
                         </div>
                         <span
@@ -248,7 +248,7 @@ export default function ClinicPage() {
                 className="mb-4"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddLocation(); }}
               >
-                <div className="mb-1 text-sm text-secondary">Location</div>
+                <div className="mb-1 text-base text-secondary">Location</div>
                 <Input
                   placeholder="e.g. Toronto, ON, Canada"
                   value={newLocation}

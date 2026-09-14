@@ -34,14 +34,14 @@ export default function ProfilePage() {
             />
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-1">
-                <span className="font-semibold text-sm text-primary">
+                <span className="font-semibold text-base text-primary">
                   {identity.firstName} {identity.lastName}
                 </span>
                 <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-brand-50 text-brand-700">
                   {roleLabel(role)}
                 </span>
               </div>
-              <span className="text-secondary text-sm">{identity.title}</span>
+              <span className="text-secondary text-base">{identity.title}</span>
             </div>
             <Button color="secondary" size="xs" onPress={() => {}}>Change Photo</Button>
           </div>
@@ -85,7 +85,7 @@ export default function ProfilePage() {
               <textarea
                 rows={3}
                 defaultValue={identity.bio}
-                className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 bg-primary"
+                className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 bg-primary"
               />
             </div>
           </div>
@@ -97,7 +97,7 @@ export default function ProfilePage() {
 
         {can.canManageClinic && (
           <div className="rounded-xl border border-secondary bg-primary p-5">
-            <span className="font-semibold text-sm text-primary block mb-4">Organization</span>
+            <span className="font-semibold text-base text-primary block mb-4">Organization</span>
             <Divider className="mb-4" />
             <div
               className="flex items-center gap-4 cursor-pointer p-3 border border-secondary rounded-lg transition-all hover:bg-secondary_alt"
@@ -107,7 +107,7 @@ export default function ProfilePage() {
                 <span className="text-white font-bold text-base">{mockClinic.logoInitials}</span>
               </div>
               <div className="flex-1">
-                <span className="font-semibold text-sm text-primary block">{mockClinic.name}</span>
+                <span className="font-semibold text-base text-primary block">{mockClinic.name}</span>
                 <span className="text-secondary text-xs">{mockClinic.address}</span>
               </div>
               <Building2 size={18} className="text-secondary" />

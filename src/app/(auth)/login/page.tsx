@@ -14,7 +14,7 @@ export default function LoginPage() {
     <div className="w-full max-w-sm px-4">
       <div className="rounded-2xl border border-secondary bg-primary p-8">
         <h1 className="text-xl font-semibold text-primary mb-1">Sign in to Rea</h1>
-        <p className="text-sm text-tertiary mb-6">
+        <p className="text-xs text-tertiary mb-6">
           Enter your email and we'll send you a link to sign in.
         </p>
         <div className="mb-5">

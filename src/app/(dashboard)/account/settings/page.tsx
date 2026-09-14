@@ -75,7 +75,7 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
         <Dialog>
           <div className="p-6">
             <h2 className="text-lg font-semibold text-primary mb-1">Transfer Ownership</h2>
-            <p className="text-sm text-secondary mb-4">
+            <p className="text-base text-secondary mb-4">
               Hand off full control of this organization — billing, all accounts, and all content — to someone else.
             </p>
 
@@ -85,7 +85,7 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
 
             <div className="flex flex-col gap-5">
               <div>
-                <label className="block text-sm font-medium text-secondary mb-2">New Owner</label>
+                <label className="block text-base font-medium text-secondary mb-2">New Owner</label>
                 <div className="flex gap-2 mb-3">
                   <Button
                     color={mode === 'existing' ? 'primary' : 'secondary'}
@@ -121,7 +121,7 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
                     placeholder="newowner@example.com"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                   />
                 )}
               </div>
@@ -129,7 +129,7 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
               <Divider />
 
               <div>
-                <label className="block text-sm font-medium text-secondary mb-2">Your New Role</label>
+                <label className="block text-base font-medium text-secondary mb-2">Your New Role</label>
                 <NativeSelect
                   value={outgoingChoice}
                   onChange={(e) => setOutgoingChoice(e.target.value as OutgoingChoice)}
@@ -179,7 +179,7 @@ function SignatureModal({ open, onClose }: { open: boolean; onClose: () => void 
         <Dialog>
           <div className="p-6">
             <h2 className="text-lg font-semibold text-primary mb-1">Choose Your Signature</h2>
-            <p className="text-sm text-secondary mb-5">
+            <p className="text-base text-secondary mb-5">
               This is stamped on every chart you sign and lock. Pick a style below.
             </p>
 
@@ -216,17 +216,17 @@ function SettingsContent() {
       <div className="p-8 max-w-[600px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Settings</h2>
         <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
-          <span className="font-semibold text-sm text-primary block mb-4">Preferences</span>
+          <span className="font-semibold text-base text-primary block mb-4">Preferences</span>
           <div className="flex items-center gap-2 mb-4">
             <Toggle
               isSelected={mode === 'dark'}
               onChange={(checked) => setThemeMode(checked ? 'dark' : 'light')}
               size="sm"
             />
-            <span className="text-sm text-primary">Dark mode</span>
+            <span className="text-base text-primary">Dark mode</span>
           </div>
           <div>
-            <label className="block text-sm text-primary mb-2">Language</label>
+            <label className="block text-base text-primary mb-2">Language</label>
             <NativeSelect value={language} onChange={(e) => setLanguage(e.target.value)} wrapperClassName="max-w-[220px]">
               <option value="English">English</option>
               <option value="French">French</option>
@@ -235,7 +235,7 @@ function SettingsContent() {
         </div>
 
         <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
-          <span className="font-semibold text-sm text-primary block mb-4">Signature</span>
+          <span className="font-semibold text-base text-primary block mb-4">Signature</span>
           {signatureFont ? (
             <>
               <div className="rounded-lg border border-secondary bg-secondary_alt px-4 py-3 mb-3">
@@ -247,7 +247,7 @@ function SettingsContent() {
             </>
           ) : (
             <>
-              <p className="text-sm text-secondary mb-3">No signature saved yet. You&apos;ll need one before you can sign and lock charts.</p>
+              <p className="text-base text-secondary mb-3">No signature saved yet. You&apos;ll need one before you can sign and lock charts.</p>
               <Button color="secondary" size="sm" onPress={() => setSignatureOpen(true)}>Add Signature</Button>
             </>
           )}
@@ -255,7 +255,7 @@ function SettingsContent() {
 
         {role === 'owner' && (
           <div className="rounded-xl border border-secondary bg-primary p-5">
-            <span className="font-semibold text-sm text-primary block mb-4">Organization</span>
+            <span className="font-semibold text-base text-primary block mb-4">Organization</span>
             <Divider className="mb-4" />
             <p className="text-xs font-semibold uppercase tracking-wide text-tertiary mb-2">Danger Zone</p>
             <Button color="secondary" size="sm" iconLeading={Crown} onPress={() => setTransferOpen(true)}>
