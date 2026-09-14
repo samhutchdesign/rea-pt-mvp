@@ -10,7 +10,7 @@ import { isReactComponent } from "@/utils/is-react-component";
 export const styles = sortCx({
     common: {
         root: [
-            "group relative inline-flex h-max cursor-pointer items-center justify-center whitespace-nowrap outline-brand transition duration-100 ease-linear before:absolute focus-visible:outline-2 focus-visible:outline-offset-2",
+            "group relative inline-flex h-max min-h-12 cursor-pointer items-center justify-center whitespace-nowrap outline-brand transition duration-100 ease-linear before:absolute focus-visible:outline-2 focus-visible:outline-offset-2",
             // When button is used within `InputGroup`
             "in-data-input-wrapper:focus:!z-50 in-data-input-wrapper:in-data-leading:-mr-px in-data-input-wrapper:in-data-leading:rounded-r-none in-data-input-wrapper:in-data-leading:before:rounded-r-none in-data-input-wrapper:in-data-trailing:-ml-px in-data-input-wrapper:in-data-trailing:rounded-l-none in-data-input-wrapper:in-data-trailing:before:rounded-l-none",
             // Disabled styles
@@ -58,7 +58,7 @@ export const styles = sortCx({
             root: [
                 "bg-brand-solid text-white hover:bg-brand-solid_hover data-loading:bg-brand-solid_hover",
                 // Icon styles
-                "*:data-icon:text-white/60 hover:*:data-icon:text-white/70",
+                "*:data-icon:text-white",
             ].join(" "),
         },
         secondary: {
@@ -67,19 +67,19 @@ export const styles = sortCx({
                 // Text buttons get an 8px radius; icon-only buttons stay circular
                 "rounded-lg before:rounded-lg data-icon-only:rounded-full data-icon-only:before:rounded-full",
                 // Icon styles
-                "*:data-icon:text-fg-quaternary hover:*:data-icon:text-fg-quaternary_hover",
+                "*:data-icon:text-primary",
             ].join(" "),
         },
         tertiary: {
             root: [
                 "text-primary hover:bg-primary_hover data-loading:bg-primary_hover",
                 // Icon styles
-                "*:data-icon:text-fg-quaternary hover:*:data-icon:text-fg-quaternary_hover",
+                "*:data-icon:text-primary",
             ].join(" "),
         },
         "link-color": {
             root: [
-                "justify-normal rounded p-0! text-brand-secondary hover:text-brand-secondary_hover",
+                "min-h-0 justify-normal rounded p-0! text-brand-secondary hover:text-brand-secondary_hover",
                 // Inner text underline
                 "*:data-text:underline *:data-text:decoration-transparent hover:*:data-text:decoration-fg-brand-secondary_alt",
                 // Icon styles
@@ -88,7 +88,7 @@ export const styles = sortCx({
         },
         "link-gray": {
             root: [
-                "justify-normal rounded p-0! text-tertiary hover:text-tertiary_hover",
+                "min-h-0 justify-normal rounded p-0! text-tertiary hover:text-tertiary_hover",
                 // Inner text underline
                 "*:data-text:underline *:data-text:decoration-transparent hover:*:data-text:decoration-fg-quaternary",
                 // Icon styles
@@ -101,7 +101,7 @@ export const styles = sortCx({
                 // Inner border gradient
                 "before:absolute before:inset-px before:border before:border-white/12 before:mask-b-from-0%",
                 // Icon styles
-                "*:data-icon:text-white/60 hover:*:data-icon:text-white/70",
+                "*:data-icon:text-white",
             ].join(" "),
         },
         "secondary-destructive": {
@@ -120,7 +120,7 @@ export const styles = sortCx({
         },
         "link-destructive": {
             root: [
-                "justify-normal rounded p-0! text-error-primary outline-error hover:text-error-primary_hover",
+                "min-h-0 justify-normal rounded p-0! text-error-primary outline-error hover:text-error-primary_hover",
                 // Inner text underline
                 "*:data-text:underline *:data-text:decoration-transparent *:data-text:underline-offset-2 hover:*:data-text:decoration-current",
                 // Icon styles
