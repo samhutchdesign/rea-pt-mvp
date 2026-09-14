@@ -55,3 +55,14 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, li, td, th, dt, dd, blockquote, figca
   text-box-edge: cap alphabetic;
 }
 
+/* text-box-trim shrinks an element's own box to the cap-height/baseline
+   region, but descenders (g, y, p, q, j) still paint below that. Combined
+   with overflow:hidden on the SAME element — exactly what `truncate` and
+   `line-clamp-*` do — the browser clips that overflow at the trimmed edge,
+   cutting descenders off. Untrim those specifically so they get the font's
+   full box back and stop clipping. */
+.truncate, [class*="line-clamp"] {
+  text-box-trim: none;
+  text-box-edge: auto;
+}
+
