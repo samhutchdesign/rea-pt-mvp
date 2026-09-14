@@ -308,7 +308,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
 
           {/* Left: Filters */}
           <div className="w-56 shrink-0 overflow-y-auto pr-1">
-            <span className="block text-lg font-bold text-primary mb-4">Exercises</span>
+            <span className="font-display block text-lg font-medium text-primary mb-4">Exercises</span>
 
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-secondary">
               <span className="font-semibold text-sm text-primary">Filters</span>

@@ -201,7 +201,7 @@ function ProgramsPageContent() {
       <div className="p-10">
 
         <div className="flex items-center justify-between mb-10">
-          <h1 className="font-display text-[40px] leading-[48px] font-normal text-primary m-0">Programs</h1>
+          <h1 className="font-display text-[32px] leading-[48px] font-normal text-primary m-0">Programs</h1>
           <Button color="primary" size="lg" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
             Create Program
           </Button>

@@ -12,7 +12,7 @@ export const CHART_TEMPLATES: { id: ChartTemplateId; name: string; description: 
 export function ChartTemplateSelect({ onSelect }: { onSelect: (id: ChartTemplateId) => void }) {
   return (
     <div className="max-w-[820px] mx-auto">
-      <p className="mb-1 text-lg font-bold text-primary">Select a Template</p>
+      <p className="font-display mb-1 text-lg font-medium text-primary">Select a Template</p>
       <p className="mb-6 text-sm text-tertiary">Choose the chart template to use for this session.</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {CHART_TEMPLATES.map((template) => (

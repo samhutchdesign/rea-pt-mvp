@@ -84,7 +84,7 @@ export default function EmployeesPage() {
     <>
       <div className="p-10">
         <div className="flex justify-between items-center mb-10">
-          <h1 className="font-display text-[40px] leading-[48px] font-normal text-primary m-0">Employees</h1>
+          <h1 className="font-display text-[32px] leading-[48px] font-normal text-primary m-0">Employees</h1>
           {can.canInviteUsers && (
             <Button color="primary" size="lg" iconLeading={Plus} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add New Employee</Button>
           )}

@@ -144,7 +144,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
           )}
 
           {/* Title */}
-          <h1 className="text-3xl font-bold text-primary mb-4 mt-0">{ex.name}</h1>
+          <h1 className="text-[32px] leading-[48px] font-normal text-primary mb-4 mt-0">{ex.name}</h1>
 
           {/* Action row */}
           <div className="flex items-center gap-2.5 mb-5 flex-wrap">
