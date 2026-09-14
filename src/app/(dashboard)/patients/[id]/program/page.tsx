@@ -93,7 +93,7 @@ function HistoryEntry({ entry }: { entry: HepHistoryEntry }) {
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-secondary transition-colors"
       >
         <div>
-          <p className="text-sm font-medium text-primary">{entry.programName}</p>
+          <p className="text-base font-medium text-primary">{entry.programName}</p>
           <p className="text-xs text-tertiary mt-0.5">
             {formatDate(entry.assignedAt)} – {formatDate(entry.endedAt)} · {entry.exercises.length} exercise{entry.exercises.length !== 1 ? 's' : ''} · {entry.frequency}
           </p>
@@ -107,7 +107,7 @@ function HistoryEntry({ entry }: { entry: HepHistoryEntry }) {
             if (!ex) return null;
             return (
               <div key={pe.exerciseId} className="flex items-center justify-between py-1.5">
-                <span className="text-sm text-primary">{ex.name}</span>
+                <span className="text-base text-primary">{ex.name}</span>
                 <span className="text-xs text-tertiary shrink-0 ml-4">
                   {pe.sets} × {pe.reps}{pe.holdSecs > 0 ? ` · ${pe.holdSecs}s hold` : ''}
                 </span>
@@ -142,7 +142,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
     return (
       <div className="mt-10">
         <h3 className="text-lg font-semibold text-primary mt-0 mb-2">Program</h3>
-        <p className="text-sm text-secondary mb-6">
+        <p className="text-base text-secondary mb-6">
           No program assigned yet. Choose a recommended template or start from scratch.
         </p>
         <div className="flex flex-col gap-4">
@@ -154,7 +154,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-semibold text-primary">{prog.name}</p>
+                  <p className="text-base font-semibold text-primary">{prog.name}</p>
                   <p className="text-xs text-secondary mt-0.5">{prog.description}</p>
                   <div className="flex gap-1.5 mt-2 flex-wrap">
                     {prog.tags.map((t) => (
@@ -185,9 +185,9 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           <h1 className="font-display text-display-xs font-medium text-primary m-0">{program.name}</h1>
           <p className="text-base leading-5 text-secondary m-0">
             {completedSessions} of {totalSessions} sessions
-            <span className="ml-3 text-sm text-tertiary">{program.frequency}</span>
+            <span className="ml-3 text-xs text-tertiary">{program.frequency}</span>
             {viewMode === 'full' && hep.programAssignedAt && (
-              <span className="ml-3 text-sm text-tertiary">Assigned {formatDate(hep.programAssignedAt)}</span>
+              <span className="ml-3 text-xs text-tertiary">Assigned {formatDate(hep.programAssignedAt)}</span>
             )}
           </p>
         </div>
@@ -203,7 +203,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
 
       {/* Exercises */}
       {visibleExercises.length === 0 ? (
-        <p className="text-sm text-tertiary py-10 text-center">No exercises in this program yet.</p>
+        <p className="text-xs text-tertiary py-10 text-center">No exercises in this program yet.</p>
       ) : (
         <div className="flex flex-wrap gap-10">
           {visibleExercises.map((pe) => (
@@ -220,7 +220,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
       {/* HEP History */}
       {viewMode === 'full' && hep.hepHistory.length > 0 && (
         <div className="mt-10">
-          <h4 className="text-sm font-semibold text-primary mb-3">Previous Programs</h4>
+          <h4 className="text-base font-semibold text-primary mb-3">Previous Programs</h4>
           <div className="flex flex-col gap-2">
             {[...hep.hepHistory].reverse().map((entry) => (
               <HistoryEntry key={entry.id} entry={entry} />

@@ -272,7 +272,7 @@ export default function PatientsPage() {
             <div className="flex items-center justify-center size-14 rounded-full bg-secondary">
               <User01 className="size-7 text-quaternary" />
             </div>
-            <p className="text-sm text-secondary">{emptyMessages[tab]}</p>
+            <p className="text-base text-secondary">{emptyMessages[tab]}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-5">
@@ -348,11 +348,11 @@ export default function PatientsPage() {
           <Dialog>
             <div className="p-6 w-full max-w-md">
               <h3 className="text-lg font-semibold text-primary mb-1">Restore Patient</h3>
-              <p className="text-sm text-secondary mb-4">
+              <p className="text-base text-secondary mb-4">
                 To reactivate <strong>{restoreTarget?.firstName} {restoreTarget?.lastName}</strong>, assign a clinic location and treating PT.
               </p>
               {restoreLocations.length === 0 ? (
-                <p className="text-sm text-tertiary mb-4">No locations are available to you for this organization.</p>
+                <p className="text-xs text-tertiary mb-4">No locations are available to you for this organization.</p>
               ) : (
                 <div className="flex flex-col gap-4 mb-6">
                   <div>
@@ -371,7 +371,7 @@ export default function PatientsPage() {
                     <div>
                       <div className="mb-1 text-xs font-medium text-secondary">Treating PT</div>
                       {restoreEligiblePts.length === 0 ? (
-                        <p className="text-sm text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                        <p className="text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
                       ) : (
                         <NativeSelect
                           value={restorePtId}

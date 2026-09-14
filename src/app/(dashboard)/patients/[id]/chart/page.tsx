@@ -85,7 +85,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
         </div>
 
         {sessions.length === 0 ? (
-          <span className="text-secondary text-sm px-6">No sessions recorded yet.</span>
+          <span className="text-secondary text-base px-6">No sessions recorded yet.</span>
         ) : (
           sessions.map((session, i) => {
             const isSelected = session.id === selectedSessionId;
@@ -148,7 +148,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="font-display text-[32px] leading-[32px] font-normal text-primary">{titleLabel}</h2>
-                <span className="text-sm text-tertiary">
+                <span className="text-xs text-tertiary">
                   {new Date(selectedSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
@@ -179,7 +179,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
             <ChartSessionReadPanel patient={patient} session={selectedSession} />
           </div>
         ) : (
-          <span className="text-secondary text-sm">Select a session to view its chart.</span>
+          <span className="text-secondary text-base">Select a session to view its chart.</span>
         )}
       </div>
     </div>

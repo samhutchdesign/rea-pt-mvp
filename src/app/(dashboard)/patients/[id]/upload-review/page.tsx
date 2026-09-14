@@ -225,7 +225,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
               <Star size={22} className="text-primary" />
               <h2 className="m-0 text-2xl font-bold text-primary">Review Extracted Information</h2>
             </div>
-            <p className="mb-1.5 text-sm text-secondary">
+            <p className="mb-1.5 text-base text-secondary">
               AI extracted and translated responses from <strong>{FAKE_FILENAME}</strong>. Compare against the original on the right, edit if needed, then confirm.
             </p>
 
@@ -243,7 +243,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
               )}
             </div>
 
-            <Alert type="info" className="mb-6 text-sm">
+            <Alert type="info" className="mb-6 text-base">
               Patient responses have been translated to clinical terminology. The original patient-filled form is shown on the right. Fields highlighted in yellow have been edited from the AI translation.
             </Alert>
 
@@ -262,7 +262,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
                           rows={rows}
                           value={fields[key]}
                           onChange={(e) => set(key, e.target.value)}
-                          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+                          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
                           style={isEdited(key) ? { background: '#FFFDE7' } : undefined}
                         />
                       ) : (

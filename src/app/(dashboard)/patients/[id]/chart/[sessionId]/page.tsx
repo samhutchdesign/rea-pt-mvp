@@ -197,7 +197,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
       {/* Full-screen header */}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-4 border-b border-secondary shrink-0">
         <div>
-          <Link href={`/patients/${id}/chart`} className="text-sm font-medium text-secondary hover:text-primary">
+          <Link href={`/patients/${id}/chart`} className="text-base font-medium text-secondary hover:text-primary">
             &lt; Back
           </Link>
         </div>
@@ -250,8 +250,8 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
 
       {canEdit && !signatureFontId && (
         <div className="mb-6 rounded-xl border border-secondary bg-primary p-5">
-          <span className="mb-2 block text-sm font-semibold text-primary">Set Up Your Signature</span>
-          <p className="mb-4 text-sm text-secondary">
+          <span className="mb-2 block text-base font-semibold text-primary">Set Up Your Signature</span>
+          <p className="mb-4 text-base text-secondary">
             You&apos;ll need a signature before you can sign and lock charts. Pick a style below — you can change it anytime in{' '}
             <Link href="/account/settings" className="font-medium text-brand-600 hover:underline">Account Settings</Link>.
           </p>
@@ -273,7 +273,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           {/* Notes */}
           <div className="rounded-xl border border-secondary bg-primary p-5">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-semibold text-primary">Notes</span>
+              <span className="text-base font-semibold text-primary">Notes</span>
               {session.template === 'default-dictation' && (
                 <DictateButton dictating={dictating} dictSecs={dictSecs} onPress={toggleDictation} />
               )}
@@ -299,7 +299,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
             )}
           </div>
 
-          <p className="mt-2 text-sm font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
+          <p className="mt-2 text-base font-semibold text-primary">{session.isIntakeSession ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
 
           {session.isIntakeSession && <HistoryCard patient={patient} />}
 
@@ -320,7 +320,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
 
       {isChartWriter && isSigned && !editing && amendOpen && (
         <div className="mt-4 rounded-xl border border-secondary bg-primary p-5">
-          <span className="mb-2 block text-sm font-semibold text-primary">Add Amendment</span>
+          <span className="mb-2 block text-base font-semibold text-primary">Add Amendment</span>
           <Textarea
             rows={3}
             placeholder="This chart is signed and locked. Add a dated, attributed amendment instead of editing the original entry…"
@@ -352,7 +352,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           <Dialog>
             <div className="w-full max-w-sm p-6">
               <h2 className="mb-2 text-lg font-semibold text-primary">Sign & Lock Chart?</h2>
-              <p className="mb-4 text-sm text-secondary">
+              <p className="mb-4 text-base text-secondary">
                 Once signed, <strong>{sessionLabel}</strong> becomes locked and can no longer be edited directly. Any future correction will be added as a separate, dated amendment.
               </p>
               <div className="mb-4">
@@ -393,7 +393,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           <Dialog>
             <div className="w-full max-w-sm p-6">
               <h2 className="mb-2 text-lg font-semibold text-primary">Delete Session?</h2>
-              <p className="mb-6 text-sm text-secondary">
+              <p className="mb-6 text-base text-secondary">
                 This will permanently delete <strong>{sessionLabel}</strong> for {contact.firstName} {contact.lastName}. This cannot be undone.
               </p>
               <div className="flex justify-end gap-3">

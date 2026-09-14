@@ -274,7 +274,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                 <FileText size={24} />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-primary">{doc.name}</p>
+                <p className="text-base font-semibold text-primary">{doc.name}</p>
                 <p className="text-xs text-secondary mt-0.5">
                   {doc.date !== '—'
                     ? `Submitted ${new Date(doc.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
@@ -298,7 +298,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
 
               {uploadPhase === 'idle' && (
                 <>
-                  <p className="text-sm text-secondary mb-4">
+                  <p className="text-base text-secondary mb-4">
                     Upload a patient intake form, referral letter, or medical history PDF. Our AI will extract the information and let you review it before saving.
                   </p>
                   <div
@@ -306,7 +306,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                     className="border-2 border-dashed border-secondary rounded-lg p-10 flex flex-col items-center gap-3 cursor-pointer hover:border-brand-600 transition-colors"
                   >
                     <Upload size={40} className="text-secondary" />
-                    <p className="text-sm font-semibold text-primary">Drag & drop a PDF here</p>
+                    <p className="text-base font-semibold text-primary">Drag & drop a PDF here</p>
                     <p className="text-xs text-secondary">or click to browse</p>
                   </div>
                 </>
@@ -320,7 +320,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                       : <Star className="text-[#F57C00]" size={20} />
                     }
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-primary mb-0.5">
+                      <p className="text-base font-semibold text-primary mb-0.5">
                         {uploadPhase === 'uploading' ? `Uploading ${FAKE_FILENAME}…` : 'AI is reading your document…'}
                       </p>
                       <p className="text-xs text-secondary">
@@ -337,14 +337,14 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                   <div className="flex items-center gap-3 mb-4 p-4 bg-[#F1F8E9] rounded-lg border border-[#C5E1A5]">
                     <CheckCircle size={22} className="text-[#2E7D32]" fill="currentColor" />
                     <div>
-                      <p className="text-sm font-semibold text-[#2E7D32]">PDF successfully uploaded</p>
+                      <p className="text-base font-semibold text-[#2E7D32]">PDF successfully uploaded</p>
                       <p className="text-xs text-secondary">{FAKE_FILENAME}</p>
                     </div>
                   </div>
-                  <p className="text-sm font-semibold text-primary mb-2">Fields extracted:</p>
+                  <p className="text-base font-semibold text-primary mb-2">Fields extracted:</p>
                   <ul className="pl-5 m-0 list-disc">
                     {['First & last name', 'Date of birth', 'Chief complaint', 'Symptom duration', 'Medical history', 'Current medications', 'Treatment goals'].map((f) => (
-                      <li key={f} className="text-sm text-secondary">{f}</li>
+                      <li key={f} className="text-base text-secondary">{f}</li>
                     ))}
                   </ul>
                   <p className="text-xs text-secondary mt-3">Review and edit the extracted information before confirming.</p>
@@ -378,7 +378,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
             <div className="p-4">
               <div className="flex items-center gap-3 mb-4 pb-3 border-b border-secondary">
                 <FileText size={18} className="text-secondary shrink-0" />
-                <span className="text-sm font-semibold text-primary flex-1">Patient_Intake_Form.pdf</span>
+                <span className="text-base font-semibold text-primary flex-1">Patient_Intake_Form.pdf</span>
                 <span className="inline-flex items-center rounded-full bg-[#FFEBEE] px-2.5 py-0.5 text-xs font-medium text-[#C62828]">
                   Original (patient voice)
                 </span>

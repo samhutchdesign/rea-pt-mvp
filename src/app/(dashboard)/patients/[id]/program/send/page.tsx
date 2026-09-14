@@ -35,22 +35,22 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="max-w-[700px]">
       <h3 className="mt-0 mb-1 text-xl font-semibold text-primary">Send Program to Patient</h3>
-      <p className="mb-6 text-sm text-secondary">{contact.firstName} {contact.lastName} · {contact.email}</p>
+      <p className="mb-6 text-base text-secondary">{contact.firstName} {contact.lastName} · {contact.email}</p>
 
       {/* Message */}
       <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
-        <span className="mb-3 block text-sm font-semibold text-primary">Message</span>
+        <span className="mb-3 block text-base font-semibold text-primary">Message</span>
         <textarea
           rows={8}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
+          className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 resize-none"
         />
       </div>
 
       {/* Program preview */}
       <div className="mb-6 rounded-xl border border-secondary bg-primary p-6">
-        <span className="mb-1 block text-sm font-semibold text-primary">{program.name}</span>
+        <span className="mb-1 block text-base font-semibold text-primary">{program.name}</span>
         <span className="mb-4 block text-xs text-tertiary">{program.frequency}</span>
         <div className="flex flex-col gap-3">
           {program.exercises.map((pe) => {
@@ -63,7 +63,7 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
                     <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={18} />
                   </div>
                   <div className="flex-1">
-                    <span className="text-sm font-semibold text-primary">{ex.name}</span>
+                    <span className="text-base font-semibold text-primary">{ex.name}</span>
                     <div className="mt-0.5 flex flex-wrap gap-1">
                       <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.sets} Sets`}</span>
                       <span className="rounded border border-secondary px-2 py-0.5 text-[11px] text-secondary">{`${pe.reps} Reps`}</span>

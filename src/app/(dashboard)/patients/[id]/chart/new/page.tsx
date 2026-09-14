@@ -140,7 +140,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
   if (!isChartWriter) {
     return (
       <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] flex flex-col items-center justify-center gap-4 bg-primary px-6">
-        <p className="max-w-[420px] text-center text-sm text-secondary">Only {contact.firstName} {contact.lastName}&apos;s assigned practitioner can add entries to this chart.</p>
+        <p className="max-w-[420px] text-center text-base text-secondary">Only {contact.firstName} {contact.lastName}&apos;s assigned practitioner can add entries to this chart.</p>
         <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/chart`)}>
           Back to Chart
         </Button>
@@ -188,7 +188,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
         {/* Notes */}
         <div className="rounded-xl border border-secondary bg-primary p-5">
           <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm font-semibold text-primary">Notes</span>
+            <span className="text-base font-semibold text-primary">Notes</span>
             {template === 'default-dictation' && (
               <DictateButton dictating={dictating} dictSecs={dictSecs} onPress={toggleDictation} />
             )}
@@ -214,7 +214,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
           )}
         </div>
 
-        <p className="mt-2 text-sm font-semibold text-primary">{isIntake ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
+        <p className="mt-2 text-base font-semibold text-primary">{isIntake ? 'H-SOAPIE Chart' : 'SOAPIE Chart'}</p>
 
         {isIntake && <HistoryCard patient={patient} />}
 

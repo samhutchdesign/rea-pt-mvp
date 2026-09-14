@@ -149,14 +149,14 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                 <ChevronRight size={24} className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" />
               </div>
               <button
-                className="text-sm text-brand-700 hover:underline"
+                className="text-base text-brand-700 hover:underline"
                 onClick={() => router.push(`/patients/${id}/chart`)}
               >
                 See all sessions →
               </button>
             </>
           ) : (
-            <p className="text-sm text-secondary">No sessions recorded yet.</p>
+            <p className="text-base text-secondary">No sessions recorded yet.</p>
           )}
         </div>
 
@@ -204,7 +204,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-tertiary">No PT assigned yet.</p>
+              <p className="text-xs text-tertiary">No PT assigned yet.</p>
             )}
           </div>
         </div>
@@ -217,12 +217,12 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
           <Dialog>
             <div className="p-6 w-full min-w-[400px] max-w-md">
               <h2 className="text-lg font-semibold text-primary mb-1">Transfer Patient</h2>
-              <p className="text-sm text-secondary mb-4">
+              <p className="text-base text-secondary mb-4">
                 Update <strong>{patient.firstName} {patient.lastName}</strong>&apos;s clinic location and care team.
               </p>
 
               {transferLocations.length === 0 ? (
-                <p className="text-sm text-tertiary">No locations are available to you in this organization.</p>
+                <p className="text-xs text-tertiary">No locations are available to you in this organization.</p>
               ) : (
                 <div className="flex flex-col gap-4">
                   <div>
@@ -244,7 +244,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                     <div>
                       <div className="mb-1 text-xs font-medium text-secondary">Physiotherapist</div>
                       {physiosAtDestination.length === 0 ? (
-                        <p className="text-sm text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                        <p className="text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
                       ) : (
                         <>
                           <NativeSelect

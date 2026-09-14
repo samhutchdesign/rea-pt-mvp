@@ -81,10 +81,10 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600"
+          className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-base text-primary focus:outline-none focus:ring-2 focus:ring-brand-600"
         />
       ) : (
-        <div className="rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-sm text-primary min-h-[38px]">
+        <div className="rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-base text-primary min-h-[38px]">
           {value || <span className="text-tertiary">—</span>}
         </div>
       )}
@@ -96,7 +96,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
       {/* Contact Information */}
       <div className="rounded-xl border border-secondary bg-primary p-5">
         <div className="flex justify-between items-center mb-5">
-          <span className="text-sm font-semibold text-primary">Contact Information</span>
+          <span className="text-base font-semibold text-primary">Contact Information</span>
           {can.canEditContactInfo && !editingContact && (
             <Button color="tertiary" size="xs" onPress={handleEditContact} iconLeading={Pencil} />
           )}
@@ -123,7 +123,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
       {/* Emergency Contact */}
       <div className="rounded-xl border border-secondary bg-primary p-5">
         <div className="flex justify-between items-center mb-5">
-          <span className="text-sm font-semibold text-primary">Emergency Contact</span>
+          <span className="text-base font-semibold text-primary">Emergency Contact</span>
           {can.canEditContactInfo && !editingEmergency && (
             <Button color="tertiary" size="xs" onPress={handleEditEmergency} iconLeading={Pencil} />
           )}

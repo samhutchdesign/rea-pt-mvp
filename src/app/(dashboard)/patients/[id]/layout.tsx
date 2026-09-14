@@ -39,7 +39,7 @@ function ConfirmModal({ open, onClose, title, description, confirmLabel, destruc
         <Dialog>
           <div className="p-6">
             <h2 className="text-lg font-semibold text-primary mb-3">{title}</h2>
-            <p className="text-sm text-secondary mb-6">{description}</p>
+            <p className="text-base text-secondary mb-6">{description}</p>
             <div className="flex justify-end gap-3">
               <Button color="secondary" onPress={onClose}>Cancel</Button>
               <Button color={destructive ? 'primary-destructive' : 'primary'} onPress={onConfirm}>{confirmLabel}</Button>
@@ -90,7 +90,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   if (!patient) {
     return (
       <div className="p-10">
-        <p className="text-sm text-secondary">Patient not found.</p>
+        <p className="text-base text-secondary">Patient not found.</p>
       </div>
     );
   }
@@ -221,11 +221,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           <Dialog>
             <div className="p-6">
               <h2 className="text-lg font-semibold text-primary mb-1">Restore Patient</h2>
-              <p className="text-sm text-secondary mb-4">
+              <p className="text-base text-secondary mb-4">
                 To reactivate <strong>{patient.firstName} {patient.lastName}</strong>, assign a clinic location and treating PT.
               </p>
               {restoreLocations.length === 0 ? (
-                <p className="text-sm text-tertiary mb-4">No locations are available to you for this organization.</p>
+                <p className="text-xs text-tertiary mb-4">No locations are available to you for this organization.</p>
               ) : (
                 <div className="flex flex-col gap-4 mb-6">
                   <div>
@@ -244,7 +244,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                     <div>
                       <div className="mb-1 text-xs font-medium text-secondary">Treating PT</div>
                       {restoreEligiblePts.length === 0 ? (
-                        <p className="text-sm text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                        <p className="text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
                       ) : (
                         <NativeSelect
                           value={restorePtId}

@@ -44,7 +44,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
   return (
     <div className="mb-5 pb-5 border-b border-secondary">
       <div className="flex justify-between items-center mb-3">
-        <span className="font-semibold text-sm text-primary">{title}</span>
+        <span className="font-semibold text-base text-primary">{title}</span>
         {activeCount > 0 && (
           <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
             <X size={13} />
@@ -73,7 +73,7 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
           </svg>
         )}
       </span>
-      <span className="text-sm text-primary leading-tight">{label}</span>
+      <span className="text-base text-primary leading-tight">{label}</span>
     </button>
   );
 }
@@ -270,7 +270,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <button
               type="button"
               onClick={() => goToStep(0)}
-              className="inline-flex items-center gap-1 bg-transparent border-none p-0 text-sm font-medium text-secondary hover:text-primary cursor-pointer transition-colors"
+              className="inline-flex items-center gap-1 bg-transparent border-none p-0 text-base font-medium text-secondary hover:text-primary cursor-pointer transition-colors"
             >
               <ChevronLeft size={16} />
               Back
@@ -311,7 +311,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <span className="font-display block text-lg font-medium text-primary mb-4">Exercises</span>
 
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-secondary">
-              <span className="font-semibold text-sm text-primary">Filters</span>
+              <span className="font-semibold text-base text-primary">Filters</span>
               {hasFilters && (
                 <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
               )}
@@ -426,7 +426,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <div className="flex-1 min-h-0 overflow-y-auto">
               {filteredExercises.length === 0 ? (
                 <div className="text-center py-16">
-                  <p className="text-sm text-tertiary mb-3">No exercises match your filters.</p>
+                  <p className="text-xs text-tertiary mb-3">No exercises match your filters.</p>
                   <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
@@ -464,7 +464,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                           </div>
                         </div>
                         <div className="px-3 py-2.5">
-                          <p className="font-display font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
+                          <p className="font-display font-semibold text-base text-primary leading-tight mb-2">{ex.name}</p>
                           <div className="flex gap-1 flex-wrap mb-2">
                             <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
                           </div>
@@ -522,17 +522,17 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                 onChange={setProgramName}
               />
               <div>
-                <label className="block text-sm font-medium text-secondary mb-1.5">Description</label>
+                <label className="block text-base font-medium text-secondary mb-1.5">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add a description for this program…"
                   rows={5}
-                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-secondary mb-1.5">Frequency</label>
+                <label className="block text-base font-medium text-secondary mb-1.5">Frequency</label>
                 <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)}>
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
                 </NativeSelect>

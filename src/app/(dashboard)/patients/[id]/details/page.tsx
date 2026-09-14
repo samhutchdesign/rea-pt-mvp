@@ -15,7 +15,7 @@ function InfoField({ label, value, hideEmpty }: { label: string; value?: string;
   return (
     <div>
       <span className="block mb-0.5 text-xs text-secondary">{label}</span>
-      <div className="rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-sm text-primary min-h-[38px]">
+      <div className="rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-base text-primary min-h-[38px]">
         {value || 'N/A'}
       </div>
     </div>
@@ -26,7 +26,7 @@ function SectionCard({ title, children, onEdit }: { title: string; children: Rea
   return (
     <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
       <div className="flex justify-between items-center mb-5">
-        <span className="text-sm font-semibold text-primary">{title}</span>
+        <span className="text-base font-semibold text-primary">{title}</span>
         <Button color="tertiary" size="xs" onPress={onEdit} iconLeading={Pencil} />
       </div>
       {children}
@@ -253,7 +253,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         rows={rows}
         value={draftValues[key] ?? ''}
         onChange={(e) => setDraft(key, e.target.value)}
-        className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
+        className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-base text-primary focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
       />
     </div>
   );
@@ -343,7 +343,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
             <span className="block h-5 w-9 rounded-full bg-secondary transition-colors peer-checked:bg-brand-600" />
             <span className="absolute left-0.5 top-0.5 block h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
           </span>
-          <span className="text-sm text-primary">Remove N/A or Empty States</span>
+          <span className="text-base text-primary">Remove N/A or Empty States</span>
         </label>
       </div>
 
