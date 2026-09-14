@@ -95,8 +95,8 @@ export default function PatientsPage() {
   const isYourPatientsTab = showYoursTab && tab === 0;
   const showDoctorCol = isManagerView && !isYourPatientsTab;
   const gridCols = showDoctorCol
-    ? 'grid-cols-[minmax(0,1fr)_140px_120px_140px_24px]'
-    : 'grid-cols-[minmax(0,1fr)_120px_140px_24px]';
+    ? 'grid-cols-[minmax(220px,2fr)_minmax(100px,1fr)_minmax(100px,1fr)_minmax(100px,1fr)_24px]'
+    : 'grid-cols-[minmax(220px,2fr)_minmax(100px,1fr)_minmax(100px,1fr)_24px]';
 
   const sections = [
     ...(showYoursTab ? [{ list: yourPatients, label: 'Your Patients', searchPlaceholder: 'Search your patients…', emptyMessage: 'No patients assigned to you yet' }] : []),
@@ -207,7 +207,7 @@ export default function PatientsPage() {
       <div className="p-10">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="font-display text-[32px] leading-[48px] font-normal text-primary m-0">Patients</h1>
           <Button color="primary" size="lg" iconLeading={Plus} onPress={() => setAddOpen(true)}>
             Add New Patient
@@ -216,7 +216,7 @@ export default function PatientsPage() {
 
         {/* Tabs */}
         {tabItems.length > 1 && (
-        <div className="flex gap-10 border-b border-secondary mb-10">
+        <div className="flex gap-10 border-b border-secondary mb-6">
           {tabItems.map((item) => (
             <button
               key={item.key}
@@ -229,7 +229,7 @@ export default function PatientsPage() {
               )}
             >
               {item.label}
-              <span className="inline-flex items-center justify-center rounded-full bg-secondary_alt px-3 py-1 text-xs text-primary">
+              <span className="inline-flex items-center justify-center rounded-full bg-tertiary px-3 py-2 text-xs text-primary">
                 {item.count}
               </span>
             </button>
@@ -238,7 +238,7 @@ export default function PatientsPage() {
         )}
 
         {/* Search + Sort */}
-        <div className="mb-5 flex gap-4 items-start">
+        <div className="mb-8 flex gap-4 items-start">
           <div className="flex-1">
             <Input
               size="lg"
@@ -276,11 +276,11 @@ export default function PatientsPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            <div className={cx('grid items-center gap-4 border-b border-secondary px-5 pb-3', gridCols)}>
+            <div className={cx('grid items-center gap-4 border-b border-secondary pl-5 pr-7 py-3', gridCols)}>
               <span className="text-xs text-primary">Patient</span>
               {showDoctorCol && <span className="text-xs text-primary">Assigned Doctor</span>}
               <span className="text-xs text-primary">Location</span>
-              <span className="text-xs text-primary ml-4">Date</span>
+              <span className="text-xs text-primary">Date</span>
               <span />
             </div>
             <div className="flex flex-col gap-5">
@@ -319,7 +319,7 @@ export default function PatientsPage() {
                       {getEffectiveLocationString(patient, locationOverrides)}
                     </span>
 
-                    <span className="text-xs text-primary whitespace-nowrap ml-4">
+                    <span className="text-xs text-primary whitespace-nowrap">
                       {viewMode === 'full' ? (lastSeen ?? 'No sessions yet') : '—'}
                     </span>
 
