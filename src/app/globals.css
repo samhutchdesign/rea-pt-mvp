@@ -22,6 +22,11 @@
     transition-timing-function: inherit;
 }
 
+@utility text-trim {
+    text-box-trim: trim-both;
+    text-box-edge: cap alphabetic;
+}
+
 /* Hide default arrows from number inputs */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -40,4 +45,13 @@ a { color: inherit; text-decoration: none; }
 /* Brand headings use the serif display face; everything else (nav, labels,
    body copy, table/form values) stays on the sans body font. */
 h1, h2, h3 { font-family: var(--font-display); }
+
+/* Figma text layers use "Cap height to baseline" box trimming — browsers
+   render the font's full ascent/descent leading by default, which reads as
+   extra spacing Figma doesn't show. Trim the same way on every leaf text
+   element so spacing matches what's designed. */
+h1, h2, h3, h4, h5, h6, p, span, a, label, li, td, th, dt, dd, blockquote, figcaption {
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
 

@@ -4,15 +4,24 @@
     --font-display: var(--font-lora, "Lora"), Georgia, "Times New Roman", serif;
     --font-mono: ui-monospace, "Roboto Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-    /* FONT SIZE */
+    /* FONT SIZE
+       Line-heights for xs/md are calibrated to Figma's actual type styles
+       (Label Regular/Medium/SemiBold: 12px/16px; Body Regular/Medium/SemiBold/Italic
+       and Header 4/5 Lora: 16px/20px) — confirmed via get_design_context across
+       many card/list components. sm/lg/xl/display weren't directly confirmed
+       against a Figma text style yet, so they're left as-is. */
     --text-xs: calc(var(--spacing) * 3);
-    --text-xs--line-height: calc(var(--spacing) * 4.5);
+    --text-xs--line-height: calc(var(--spacing) * 4);
 
     --text-sm: calc(var(--spacing) * 3.5);
     --text-sm--line-height: calc(var(--spacing) * 5);
 
     --text-md: calc(var(--spacing) * 4);
-    --text-md--line-height: calc(var(--spacing) * 6);
+    --text-md--line-height: calc(var(--spacing) * 5);
+
+    /* Tailwind's default text-base is also 16px — keep it in lockstep with text-md
+       so `text-base` usages (Program Card description, etc.) get the same fix. */
+    --text-base--line-height: calc(var(--spacing) * 5);
 
     --text-lg: calc(var(--spacing) * 4.5);
     --text-lg--line-height: calc(var(--spacing) * 7);
