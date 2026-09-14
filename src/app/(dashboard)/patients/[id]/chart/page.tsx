@@ -107,11 +107,11 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                       {session.signedAt ? 'Signed' : 'DRAFT'}
                     </span>
                     <span className="text-tertiary">•</span>
-                    <span className="text-base leading-5 text-secondary">
+                    <span className="text-base leading-5 text-tertiary">
                       {new Date(session.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </span>
                   </div>
-                  <span className="font-display block text-xl leading-5 font-medium text-primary">
+                  <span className="font-display block text-md leading-5 font-medium text-primary">
                     {session.isIntakeSession ? 'Intake Session' : `Session ${sessionCount - i}`}
                   </span>
                   {viewMode === 'full' && !session.isIntakeSession && session.adherenceLevel && (() => {

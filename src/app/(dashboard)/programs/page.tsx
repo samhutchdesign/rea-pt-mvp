@@ -405,9 +405,9 @@ function ProgramsPageContent() {
                       />
                     </div>
                     <div className="flex flex-col gap-6 p-8 flex-1">
-                      <span className="font-display text-xl font-medium text-primary">{prog.name}</span>
+                      <span className="font-display text-md font-medium text-primary">{prog.name}</span>
                       <span className="block text-base text-primary">{prog.description}</span>
-                      <span className="text-xs text-secondary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
+                      <span className="text-xs text-tertiary">{prog.exercises.length} exercise{prog.exercises.length !== 1 ? 's' : ''}</span>
                     </div>
                   </div>
                   );

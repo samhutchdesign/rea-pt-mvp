@@ -620,7 +620,7 @@ function ExercisesPageContent() {
                   {filtered.slice(0, visibleCount).map((ex) => (
                     <div
                       key={ex.id}
-                      className="group relative flex flex-col cursor-pointer overflow-hidden rounded-xl border border-primary bg-secondary_alt transition-shadow hover:shadow-md"
+                      className="group relative flex flex-col cursor-pointer"
                       onClick={() => {
                         const p = new URLSearchParams();
                         if (effectiveSelectedId !== 'all') p.set('specialty', effectiveSelectedId);
@@ -640,7 +640,7 @@ function ExercisesPageContent() {
                         router.push(`/exercises/${ex.id}?back=${back}`);
                       }}
                     >
-                      <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden">
+                      <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg transition-shadow group-hover:shadow-[0_0_8px_2px_rgba(0,0,0,0.2)]">
                         <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                       </div>
                       <button
@@ -648,7 +648,7 @@ function ExercisesPageContent() {
                         aria-label={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
                         onClick={(e) => { e.stopPropagation(); toggleFavorite(ex.id); }}
                         className={cx(
-                          'absolute left-4 top-4 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary transition-opacity',
+                          'absolute left-2 top-2 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary transition-opacity',
                           favorites.has(ex.id) || openMenuId === ex.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                         )}
                       >
@@ -677,11 +677,11 @@ function ExercisesPageContent() {
                           onRecordAudio={() => block(() => setAudioTargetExercise(ex))}
                         />
                       </div>
-                      <div className="flex flex-col gap-2 px-4 pt-5 pb-4">
+                      <div className="flex flex-col gap-2 pt-5">
                         <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate">{ex.name}</p>
                         <div className="flex items-center gap-2">
                           <span className="flex-1 text-xs text-primary">{ex.category}</span>
-                          <span className="shrink-0 rounded-full bg-tertiary px-3 py-1.5 text-xs text-primary whitespace-nowrap">{ex.level}</span>
+                          <span className="shrink-0 rounded-full bg-tertiary px-3 py-2 text-xs text-primary whitespace-nowrap">{ex.level}</span>
                         </div>
                       </div>
                     </div>

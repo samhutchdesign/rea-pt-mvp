@@ -315,7 +315,7 @@ export default function PatientsPage() {
                       </span>
                     )}
 
-                    <span className="w-fit rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary whitespace-nowrap">
+                    <span className="w-fit rounded-full bg-tertiary px-3 py-2 text-xs text-primary whitespace-nowrap">
                       {getEffectiveLocationString(patient, locationOverrides)}
                     </span>
 
@@ -330,7 +330,7 @@ export default function PatientsPage() {
                         </Button>
                       </div>
                     ) : (
-                      <ChevronRight className="size-5 text-primary shrink-0 justify-self-end" />
+                      <ChevronRight className="size-6 text-primary shrink-0 justify-self-end" />
                     )}
                   </div>
                 );

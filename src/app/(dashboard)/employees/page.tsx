@@ -183,7 +183,7 @@ export default function EmployeesPage() {
 
                     <span className="text-xs text-primary">{`${patientCount} Patient${patientCount !== 1 ? 's' : ''}`}</span>
 
-                    <span className="w-fit rounded-full bg-secondary_alt px-3 py-1.5 text-xs text-primary">
+                    <span className="w-fit rounded-full bg-tertiary px-3 py-2 text-xs text-primary">
                       {location?.city ?? '—'}
                     </span>
 
@@ -217,7 +217,7 @@ export default function EmployeesPage() {
                       </span>
                     )}
 
-                    <ChevronRight size={20} className="text-primary shrink-0 justify-self-end" />
+                    <ChevronRight size={24} className="text-primary shrink-0 justify-self-end" />
                   </div>
                 );
               })}
