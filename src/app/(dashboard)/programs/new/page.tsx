@@ -13,7 +13,7 @@ import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
-import { ChevronLeft, Check, Eye, Heart, Search, X } from 'lucide-react';
+import { ChevronLeft, Check, Heart, Plus, Search, X } from 'lucide-react';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { ProgramStepper } from '@/components/programs/ProgramStepper';
@@ -209,11 +209,6 @@ function NewProgramContent() {
       return 0;
     });
   }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, yourUsage]);
-
-  const levelClasses = (l: string) =>
-    l === 'Beginner' ? 'bg-success-50 text-success-700' :
-    l === 'Intermediate' ? 'bg-warning-50 text-warning-700' :
-    'bg-error-50 text-error-700';
 
   const filteredConditions = conditionSearch
     ? ALL_CONDITIONS.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase()))
@@ -438,57 +433,52 @@ function NewProgramContent() {
                   <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
-                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, 260px)' }}>
+                <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, 320px)' }}>
                   {filteredExercises.map((ex) => {
                     const isAdded = programRows.some((r) => r.exerciseId === ex.id);
                     return (
                       <div
                         key={ex.id}
                         title={isAdded ? 'Remove from program' : 'Add to program'}
-                        className={cx(
-                          'cursor-pointer overflow-hidden rounded-xl border bg-primary hover:shadow-md transition-shadow',
-                          isAdded ? 'border-brand-400' : 'border-secondary'
-                        )}
+                        className="group relative flex flex-col cursor-pointer"
                         onClick={() => toggleInProgram(ex)}
                       >
-                        <div className="relative h-28 overflow-hidden bg-brand-50">
-                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={32} />
-                          <div className={cx(
-                            'absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full',
-                            isAdded ? 'bg-brand-600' : 'bg-white border border-secondary'
-                          )}>
-                            {isAdded && <Check size={13} className="text-white" strokeWidth={3} />}
-                          </div>
-                          <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                            <button
-                              type="button"
-                              title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
-                              className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
-                              onClick={() => toggleFavorite(ex.id)}
-                            >
-                              {favorites.has(ex.id)
-                                ? <Heart size={14} className="text-favorite" fill="currentColor" />
-                                : <Heart size={14} className="text-tertiary" />}
-                            </button>
-                          </div>
+                        <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg transition-shadow group-hover:shadow-[0_0_8px_2px_rgba(0,0,0,0.2)]">
+                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                         </div>
-                        <div className="px-3 py-2.5">
-                          <p className="font-display font-semibold text-sm text-primary leading-tight mb-2">{ex.name}</p>
-                          <div className="flex gap-1 flex-wrap mb-2">
-                            <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-tertiary truncate">{ex.category}</span>
-                            <div onClick={(e) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                title="Preview"
-                                className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary shrink-0"
-                                onClick={() => setPreviewExercise(ex)}
-                              >
-                                <Eye size={14} />
-                              </button>
-                            </div>
+                        <button
+                          type="button"
+                          aria-label={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(ex.id); }}
+                          className={cx(
+                            'absolute left-2 top-2 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary transition-opacity',
+                            favorites.has(ex.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                          )}
+                        >
+                          <Heart
+                            className={favorites.has(ex.id) ? 'text-favorite' : 'text-primary'}
+                            size={24}
+                            fill={favorites.has(ex.id) ? 'currentColor' : 'none'}
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={isAdded ? 'Remove from program' : 'Add to program'}
+                          onClick={(e) => { e.stopPropagation(); toggleInProgram(ex); }}
+                          className={cx(
+                            'absolute z-10 flex size-11 items-center justify-center rounded-full border transition-all',
+                            isAdded
+                              ? 'right-2 top-2 border-brand-300 bg-brand-100 text-brand-700'
+                              : 'right-3 top-3 border-secondary bg-secondary_alt text-tertiary group-hover:right-2 group-hover:top-2 group-hover:border-primary group-hover:bg-primary group-hover:shadow-[0px_0px_5px_rgba(0,0,0,0.07)]'
+                          )}
+                        >
+                          {isAdded ? <Check size={18} strokeWidth={3} /> : <Plus size={18} />}
+                        </button>
+                        <div className="flex flex-col gap-2 pt-5">
+                          <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{ex.name}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="flex-1 text-xs text-primary">{ex.category}</span>
+                            <span className="shrink-0 rounded-full bg-tertiary px-3 py-2 text-xs text-primary whitespace-nowrap">{ex.level}</span>
                           </div>
                         </div>
                       </div>
