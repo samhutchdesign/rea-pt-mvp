@@ -17,9 +17,8 @@ import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { cx } from '@/utils/cx';
-import { AlertTriangle, ArrowLeftRight, ChevronRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowLeftRight, ChevronRight, Crown, Inbox, Mail, MapPin, MoreHorizontal, Pencil, ShieldCheck, X } from 'lucide-react';
 import { SearchMd } from '@untitledui/icons';
-import { ProgramStepper } from '@/components/programs/ProgramStepper';
 import type { ClinicLocation } from '@/lib/types';
 
 type TransferRow = { locationId: string; employee: Employee | null };
@@ -179,6 +178,53 @@ function BulkTransferDialog({
   );
 }
 
+function ArchiveStepper({
+  currentStep,
+  maxReachedStep,
+  onStepClick,
+}: {
+  currentStep: number;
+  maxReachedStep: number;
+  onStepClick: (step: number) => void;
+}) {
+  const steps = ['Transfer Patients', 'Confirm Archive'];
+  return (
+    <div className="flex items-center justify-center gap-5">
+      {steps.map((label, i) => {
+        const isActive = i === currentStep;
+        const isComplete = i < currentStep;
+        const isReachable = i <= maxReachedStep && i !== currentStep;
+        return (
+          <div key={label} className="flex items-center gap-5">
+            {i > 0 && <span className="h-px w-10 bg-border-secondary shrink-0" />}
+            <button
+              type="button"
+              disabled={!isReachable}
+              onClick={() => isReachable && onStepClick(i)}
+              className={cx('flex items-center gap-[11px] bg-transparent border-none p-0', isReachable ? 'cursor-pointer' : 'cursor-default')}
+            >
+              <span className={cx(
+                'flex size-7 shrink-0 items-center justify-center rounded-full font-display text-md font-medium tracking-[0.1px]',
+                isActive ? 'bg-[#eef6f2] border border-[#8fb4a2] text-brand-700'
+                  : isComplete ? 'bg-brand-100 text-brand-600'
+                    : 'bg-secondary text-tertiary'
+              )}>
+                {i + 1}
+              </span>
+              <span className={cx(
+                'text-base',
+                isActive ? 'font-medium text-brand-700' : isComplete ? 'font-normal text-primary' : 'font-normal text-tertiary'
+              )}>
+                {label}
+              </span>
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function ArchiveFlow({
   open,
   employee,
@@ -239,9 +285,13 @@ function ArchiveFlow({
   return (
     <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] bg-primary flex flex-col overflow-hidden">
       <div className="flex flex-col items-center gap-7 border-b border-secondary px-10 pt-4 pb-9 shrink-0">
-        <div className="flex items-center justify-between w-full">
-          <Button color="secondary" size="lg" onPress={onClose}>Cancel</Button>
-          <h1 className="font-display text-[32px] leading-[32px] font-normal text-primary m-0">
+        <div className="relative flex items-center justify-between w-full">
+          {step === 0 ? (
+            <Button color="secondary" size="lg" onPress={onClose}>Cancel</Button>
+          ) : (
+            <Button color="tertiary" size="lg" iconLeading={ArrowLeft} onPress={() => setStep(0)}>Back</Button>
+          )}
+          <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-[24px] leading-[32px] font-normal text-primary m-0 whitespace-nowrap">
             Archive {employee.firstName} {employee.lastName}
           </h1>
           {step === 0 ? (
@@ -249,17 +299,17 @@ function ArchiveFlow({
               Next
             </Button>
           ) : (
-            <Button color="secondary-destructive" size="lg" iconLeading={AlertTriangle} onPress={handleConfirm}>
-              Confirm Archive
-            </Button>
+            <button
+              type="button"
+              onClick={handleConfirm}
+              className="flex h-12 min-w-[100px] items-center justify-center gap-2 rounded-full border border-[#993335] bg-[#f7eded] pl-4 pr-6.5 text-base font-semibold text-[#993335] transition-colors hover:bg-[#f0dcdc]"
+            >
+              <AlertTriangle size={24} />
+              Archive Practitioner
+            </button>
           )}
         </div>
-        <ProgramStepper
-          steps={['Transfer Patients', 'Confirm Archive']}
-          currentStep={step}
-          maxReachedStep={step}
-          onStepClick={setStep}
-        />
+        <ArchiveStepper currentStep={step} maxReachedStep={step} onStepClick={setStep} />
       </div>
 
       <div className="flex-1 overflow-y-auto px-10 py-10">
@@ -277,11 +327,11 @@ function ArchiveFlow({
           </div>
         ) : (
           <div className="max-w-[800px] mx-auto rounded-xl border p-7 flex flex-col gap-7" style={{ background: '#f7eded', borderColor: '#993335' }}>
-            <h2 className="font-display text-2xl leading-8 font-medium m-0" style={{ color: '#993335' }}>
+            <h2 className="font-display text-[20px] leading-[32px] font-medium m-0" style={{ color: '#993335' }}>
               Are you sure you want to archive and transfer?
             </h2>
             <p className="text-base leading-5 m-0" style={{ color: '#592626' }}>
-              Once the patients are transferred, they will be sent notifications of their new practitioner and the practitioner will be sent to archive. Archive is only accessible to administrators of the clinic. <strong>The practitioner will no longer have access to their profile or their patients.</strong>
+              Once the patients are transferred, they will be sent notifications of their new practitioner and the practitioner will be sent to archive. Archive is only accessible to administrators of the clinic. <span className="font-semibold">The practitioner will no longer have access to their profile or their patients.</span>
             </p>
           </div>
         )}
