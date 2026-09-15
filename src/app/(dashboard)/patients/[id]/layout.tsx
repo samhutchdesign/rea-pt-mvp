@@ -153,12 +153,16 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </Alert>
         )}
 
-        <div className="pt-20 px-10 pb-10 flex flex-col gap-20">
+        <div className="pt-10 px-10 pb-10 flex flex-col gap-10">
           <div className="flex items-start justify-between gap-5">
             <div className="flex items-start gap-5">
-              <Avatar initials={patient.avatarInitials} size="2xl" className={cx('size-[100px]', archived && 'opacity-60')} />
+              <Avatar
+                initials={patient.avatarInitials}
+                size="2xl"
+                className={cx('size-[100px] [&_span]:text-[32px] [&_span]:leading-[48px] [&_span]:font-normal', archived && 'opacity-60')}
+              />
               <div className="flex flex-col gap-4 py-3">
-                <h1 className="font-display text-display-xs font-medium text-primary m-0">
+                <h1 className="font-display text-[20px] leading-[32px] font-medium text-primary m-0">
                   {effectiveContact.firstName} {effectiveContact.lastName}
                 </h1>
                 <div className="flex flex-col gap-2">
