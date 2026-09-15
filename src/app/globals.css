@@ -71,8 +71,8 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, li, td, th, dt, dd, blockquote, figca
    grows and falls back over the next 37.72%, then holds at rest. */
 @keyframes breath-pulse {
   0% { transform: translateY(0) scale(1); }
-  37.43% { transform: translateY(-90%) scale(0.42); }
-  50% { transform: translateY(-90%) scale(0.42); }
+  37.43% { transform: translateY(var(--rise-distance, -90%)) scale(0.42); }
+  50% { transform: translateY(var(--rise-distance, -90%)) scale(0.42); }
   87.72% { transform: translateY(0) scale(1); }
   100% { transform: translateY(0) scale(1); }
 }
