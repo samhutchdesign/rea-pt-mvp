@@ -13,7 +13,7 @@ import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
-import { ChevronLeft, Check, Heart, Plus, Search, X } from 'lucide-react';
+import { ArrowLeft, Check, ChevronDown, ChevronUp, Heart, Plus, Search, X } from 'lucide-react';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { ProgramStepper } from '@/components/programs/ProgramStepper';
@@ -40,17 +40,28 @@ const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort()
 function expandSearch(q: string) { return SEARCH_ALIASES[q.toLowerCase().trim()] ?? q; }
 
 function FilterSection({ title, activeCount, onClear, children }: { title: string; activeCount: number; onClear: () => void; children: React.ReactNode }) {
+  const [open, setOpen] = useState(true);
   return (
     <div className="mb-5 pb-5 border-b border-secondary">
       <div className="flex justify-between items-center mb-3">
-        <span className="font-semibold text-base text-primary">{title}</span>
-        {activeCount > 0 && (
-          <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
-            <X size={13} />
+        <span className="font-display text-base font-medium text-primary tracking-[0.1px]">{title}</span>
+        <div className="flex items-center gap-2">
+          {activeCount > 0 && (
+            <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
+              <X size={13} />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? 'Collapse' : 'Expand'}
+            className="p-0.5 text-primary bg-transparent border-none cursor-pointer leading-none"
+          >
+            {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
-        )}
+        </div>
       </div>
-      {children}
+      {open && children}
     </div>
   );
 }
@@ -60,14 +71,14 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
     <button
       type="button"
       onClick={onChange}
-      className="flex w-full items-center gap-2 mb-2 cursor-pointer text-left bg-transparent border-none p-0"
+      className="flex w-full items-center gap-3 mb-3 cursor-pointer text-left bg-transparent border-none p-0"
     >
       <span className={cx(
-        'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
-        checked ? 'bg-brand-600 border-brand-600' : 'border-secondary bg-primary'
+        'flex size-6 shrink-0 items-center justify-center rounded border',
+        checked ? 'bg-brand-600 border-brand-600' : 'border-secondary bg-secondary_alt'
       )}>
         {checked && (
-          <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 10 8" fill="none">
+          <svg className="h-3 w-3 text-white" viewBox="0 0 10 8" fill="none">
             <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
@@ -267,43 +278,33 @@ function NewProgramContent() {
     <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] bg-primary flex flex-col overflow-hidden">
 
       {/* Full-screen header */}
-      <div className="grid grid-cols-3 items-center px-6 py-4 border-b border-secondary shrink-0">
-        <div className="justify-self-start">
-          {step === 1 ? (
-            <button
-              type="button"
-              onClick={() => goToStep(0)}
-              className="inline-flex items-center gap-1 bg-transparent border-none p-0 text-base font-medium text-secondary hover:text-primary cursor-pointer transition-colors"
-            >
-              <ChevronLeft size={16} />
-              Back
-            </button>
+      <div className="flex flex-col items-center gap-7 border-b border-secondary px-10 pt-4 pb-9 shrink-0">
+        <div className="relative flex items-center justify-between w-full">
+          {step === 0 ? (
+            <Button color="secondary" size="lg" onPress={() => router.push('/programs')}>Cancel</Button>
           ) : (
-            <Button color="secondary" size="sm" onPress={() => router.push('/programs')}>Cancel</Button>
+            <Button color="tertiary" size="lg" iconLeading={ArrowLeft} onPress={() => goToStep(step - 1)}>Back</Button>
           )}
-        </div>
-        <h1 className="text-2xl font-semibold text-primary m-0 text-center">
-          {editingProgram ? 'Edit Program' : 'Create New Program'}
-        </h1>
-        <div className="flex gap-3 justify-self-end">
+          <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-[24px] leading-[32px] font-normal text-primary m-0 whitespace-nowrap">
+            {editingProgram ? 'Edit Program' : 'Create New Program'}
+          </h1>
           {step === 0 && (
-            <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => goToStep(1)}>Next</Button>
+            <Button color="primary" size="lg" isDisabled={programRows.length === 0} onPress={() => goToStep(1)}>Next</Button>
           )}
           {step === 1 && (
-            <Button color="primary" size="sm" onPress={() => goToStep(2)}>Next</Button>
+            <Button color="primary" size="lg" onPress={() => goToStep(2)}>Next</Button>
           )}
           {step === 2 && (
-            <Button color="primary" size="sm" onPress={handleSave}>Save</Button>
+            <Button color="primary" size="lg" onPress={handleSave}>Save</Button>
           )}
         </div>
+        <ProgramStepper
+          steps={PROGRAM_BUILDER_STEPS}
+          currentStep={step}
+          maxReachedStep={maxReachedStep}
+          onStepClick={goToStep}
+        />
       </div>
-
-      <ProgramStepper
-        steps={PROGRAM_BUILDER_STEPS}
-        currentStep={step}
-        maxReachedStep={maxReachedStep}
-        onStepClick={goToStep}
-      />
 
       {step === 0 ? (
         /* Three-column content */
@@ -311,17 +312,15 @@ function NewProgramContent() {
 
           {/* Left: Filters */}
           <div className="w-56 shrink-0 overflow-y-auto pr-1">
-            <span className="font-display block text-lg font-medium text-primary mb-4">Exercises</span>
-
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-secondary">
-              <span className="font-semibold text-base text-primary">Filters</span>
+              <span className="font-display text-base font-medium text-primary tracking-[0.1px]">Filter By</span>
               {hasFilters && (
                 <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
               )}
             </div>
 
-            <div className="mb-5 pb-5 border-b border-secondary">
-              <CheckRow label="Favorites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
+            <div className="mb-5 pb-5 border-b border-secondary flex flex-col gap-4">
+              <CheckRow label="Favorites Only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
@@ -406,24 +405,24 @@ function NewProgramContent() {
             <div className="flex gap-2.5 items-center">
               <div className="flex-1">
                 <Input
-                  placeholder="Search by name, description, or any tag"
+                  placeholder="Search by name or key words"
                   value={search}
                   onChange={setSearch}
                   icon={Search}
-                  size="sm"
+                  size="lg"
                 />
               </div>
               <NativeSelect
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                wrapperClassName="w-40 shrink-0"
+                wrapperClassName="w-[200px] shrink-0"
               >
                 {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
               </NativeSelect>
             </div>
 
-            <p className="text-xs text-tertiary m-0">
-              {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} shown
+            <p className="text-xs text-primary m-0">
+              {filteredExercises.length} Exercise{filteredExercises.length !== 1 ? 's' : ''}
             </p>
 
             <div className="flex-1 min-h-0 overflow-y-auto">
@@ -433,7 +432,7 @@ function NewProgramContent() {
                   <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
-                <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, 320px)' }}>
+                <div className="grid grid-cols-3 gap-10">
                   {filteredExercises.map((ex) => {
                     const isAdded = programRows.some((r) => r.exerciseId === ex.id);
                     return (

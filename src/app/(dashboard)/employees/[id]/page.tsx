@@ -3,6 +3,7 @@ import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button as AriaButton } from 'react-aria-components';
+import { ProgramStepper } from '@/components/programs/ProgramStepper';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { mockEmployees, mockPatients, mockClinicLocations } from '@/lib/mock-data';
@@ -178,53 +179,6 @@ function BulkTransferDialog({
   );
 }
 
-function ArchiveStepper({
-  currentStep,
-  maxReachedStep,
-  onStepClick,
-}: {
-  currentStep: number;
-  maxReachedStep: number;
-  onStepClick: (step: number) => void;
-}) {
-  const steps = ['Transfer Patients', 'Confirm Archive'];
-  return (
-    <div className="flex items-center justify-center gap-5">
-      {steps.map((label, i) => {
-        const isActive = i === currentStep;
-        const isComplete = i < currentStep;
-        const isReachable = i <= maxReachedStep && i !== currentStep;
-        return (
-          <div key={label} className="flex items-center gap-5">
-            {i > 0 && <span className="h-px w-10 bg-border-secondary shrink-0" />}
-            <button
-              type="button"
-              disabled={!isReachable}
-              onClick={() => isReachable && onStepClick(i)}
-              className={cx('flex items-center gap-[11px] bg-transparent border-none p-0', isReachable ? 'cursor-pointer' : 'cursor-default')}
-            >
-              <span className={cx(
-                'flex size-7 shrink-0 items-center justify-center rounded-full font-display text-md font-medium tracking-[0.1px]',
-                isActive ? 'bg-[#eef6f2] border border-[#8fb4a2] text-brand-700'
-                  : isComplete ? 'bg-brand-100 text-brand-600'
-                    : 'bg-secondary text-tertiary'
-              )}>
-                {i + 1}
-              </span>
-              <span className={cx(
-                'text-base',
-                isActive ? 'font-medium text-brand-700' : isComplete ? 'font-normal text-primary' : 'font-normal text-tertiary'
-              )}>
-                {label}
-              </span>
-            </button>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 function ArchiveFlow({
   open,
   employee,
@@ -309,7 +263,12 @@ function ArchiveFlow({
             </button>
           )}
         </div>
-        <ArchiveStepper currentStep={step} maxReachedStep={step} onStepClick={setStep} />
+        <ProgramStepper
+          steps={['Transfer Patients', 'Confirm Archive']}
+          currentStep={step}
+          maxReachedStep={step}
+          onStepClick={setStep}
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto px-10 py-10">
