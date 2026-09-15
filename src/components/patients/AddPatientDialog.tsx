@@ -41,9 +41,14 @@ export default function AddPatientDialog({ open, onClose }: Props) {
 
   const handleSelectPt = (id: string) => {
     setPtId(id);
-    if (id && locationId) {
-      const pt = mockEmployees.find((e) => e.id === id);
-      if (pt && !pt.locationIds.includes(locationId)) setLocationId('');
+    if (!id) return;
+    const pt = mockEmployees.find((e) => e.id === id);
+    if (!pt) return;
+    const ptLocations = availableLocations.filter((l) => pt.locationIds.includes(l.id));
+    if (ptLocations.length === 1) {
+      setLocationId(ptLocations[0].id);
+    } else if (locationId && !pt.locationIds.includes(locationId)) {
+      setLocationId('');
     }
   };
 
