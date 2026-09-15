@@ -42,9 +42,10 @@ export function BreathingCircleAnimation({ cycleSeconds, loops, className }: Bre
         style={{
           animationName: running ? 'breath-pulse' : 'none',
           animationDuration: `${cycleSeconds}s`,
-          animationTimingFunction: 'ease-in-out',
+          animationTimingFunction: 'linear',
           animationIterationCount: iterationCount,
-          transform: running ? undefined : 'scale(0.72)',
+          transformOrigin: 'bottom center',
+          transform: running ? undefined : 'translateY(0) scale(1)',
         }}
       >
         <div className="size-[280px] shrink-0 -mb-[140px] rounded-full bg-brand-100" />

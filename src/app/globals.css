@@ -66,9 +66,15 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, li, td, th, dt, dd, blockquote, figca
   text-box-edge: auto;
 }
 
+/* Matches the Figma prototype's keyframe timing (2707:14895): shrinks and
+   rises over the first 37.43% of the cycle, holds briefly at the top,
+   grows and falls back over the next 37.72%, then holds at rest. */
 @keyframes breath-pulse {
-  0%, 100% { transform: scale(0.72); }
-  50% { transform: scale(1); }
+  0% { transform: translateY(0) scale(1); }
+  37.43% { transform: translateY(-38%) scale(0.42); }
+  50% { transform: translateY(-38%) scale(0.42); }
+  87.72% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(0) scale(1); }
 }
 
 @utility title-trim {
