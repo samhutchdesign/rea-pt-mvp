@@ -3,6 +3,7 @@ import { use, useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
+import { BreathingCircleAnimation } from '@/components/exercises/BreathingCircleAnimation';
 import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -81,6 +82,8 @@ function ExerciseDetailContent({ id }: { id: string }) {
   const [rxSets, setRxSets] = useState(ex?.defaultSets ?? 3);
   const [rxReps, setRxReps] = useState(ex?.defaultReps ?? 10);
   const [rxHoldSecs, setRxHoldSecs] = useState(ex?.defaultHoldSecs ?? 0);
+  const [rxSpeedSecs, setRxSpeedSecs] = useState(ex?.defaultSpeedSecs ?? 4);
+  const [rxLoops, setRxLoops] = useState(ex?.defaultLoops ?? 5);
   const [moreOpen, setMoreOpen] = useState(false);
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
   const [selectedCue, setSelectedCue] = useState('');
@@ -125,7 +128,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
     : [];
   const similar = [...sameCategory, ...fallback];
 
-  const rxSummary = `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
+  const isBreathingPacer = ex.animationType === 'breathing-pacer';
+  const rxSummary = isBreathingPacer
+    ? `${rxSpeedSecs}s per breath × ${rxLoops} loop${rxLoops === 1 ? '' : 's'}`
+    : `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
 
   const handleAddToProgram = () => {
     const prog = mockPrograms.find((p) => p.id === selectedProgramId);
@@ -159,8 +165,15 @@ function ExerciseDetailContent({ id }: { id: string }) {
             Back
           </button>
 
-          {/* Video */}
-          {ex.videoUrl ? (
+          {/* Video / Animation */}
+          {isBreathingPacer ? (
+            <BreathingCircleAnimation
+              key={`${rxSpeedSecs}-${rxLoops}`}
+              cycleSeconds={rxSpeedSecs}
+              loops={rxLoops}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            />
+          ) : ex.videoUrl ? (
             <div className="mb-5 w-full aspect-video rounded-2xl overflow-hidden bg-[#0f0f0f]">
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />
             </div>
@@ -169,6 +182,23 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <div className="w-14 h-14 rounded-full bg-brand-600 flex items-center justify-center">
                 <Play size={24} fill="white" color="white" className="ml-1" />
               </div>
+            </div>
+          )}
+
+          {isBreathingPacer && (
+            <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
+              <span className="text-xs text-secondary shrink-0">Preview speed</span>
+              <input
+                type="range"
+                min={2}
+                max={10}
+                step={0.5}
+                value={rxSpeedSecs}
+                onChange={(e) => setRxSpeedSecs(Number(e.target.value))}
+                className="flex-1 min-w-32 accent-brand-600"
+              />
+              <span className="text-base text-primary w-28 shrink-0 text-right">{rxSpeedSecs}s / breath</span>
+              <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
             </div>
           )}
 
@@ -325,9 +355,18 @@ function ExerciseDetailContent({ id }: { id: string }) {
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
               <div className="flex flex-wrap gap-2">
-                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                {isBreathingPacer ? (
+                  <>
+                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
+                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
+                  </>
+                ) : (
+                  <>
+                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                  </>
+                )}
               </div>
             </div>
             <div className="flex w-full justify-end gap-4">
@@ -352,9 +391,18 @@ function ExerciseDetailContent({ id }: { id: string }) {
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
               <div className="flex flex-wrap gap-2">
-                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                {isBreathingPacer ? (
+                  <>
+                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
+                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
+                  </>
+                ) : (
+                  <>
+                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                  </>
+                )}
               </div>
             </div>
             <div className="flex w-full justify-end gap-4">

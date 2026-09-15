@@ -114,6 +114,12 @@ export interface Exercise {
   createdAt: string;
   variationGroup?: string;
   userUploaded?: boolean;
+  /** Set for exercises that are a guided animation rather than a video. */
+  animationType?: 'breathing-pacer';
+  /** Default seconds per animation cycle, for animation-type exercises. */
+  defaultSpeedSecs?: number;
+  /** Default number of animation cycles, for animation-type exercises. */
+  defaultLoops?: number;
 }
 
 export interface ProgramExercise {
@@ -123,6 +129,10 @@ export interface ProgramExercise {
   holdSecs: number;
   cue?: string;
   adherence: number;
+  /** Seconds per animation cycle, set when the exercise is animation-type. */
+  speedSecs?: number;
+  /** Number of animation cycles, set when the exercise is animation-type. */
+  loops?: number;
 }
 
 export interface Program {

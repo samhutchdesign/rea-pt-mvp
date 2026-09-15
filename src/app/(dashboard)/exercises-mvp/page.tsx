@@ -151,23 +151,30 @@ function ExercisesPageContent() {
   const [rxSets, setRxSets] = useState(3);
   const [rxReps, setRxReps] = useState(10);
   const [rxHoldSecs, setRxHoldSecs] = useState(0);
+  const [rxSpeedSecs, setRxSpeedSecs] = useState(4);
+  const [rxLoops, setRxLoops] = useState(5);
 
   useScrollMemory();
 
   const filtersInactive = dataState === 'empty';
   const guardFilter = (fn: () => void) => { if (filtersInactive) { setShowSignUpModal(true); return; } fn(); };
-  const resetRx = (ex: Exercise) => { setRxSets(ex.defaultSets); setRxReps(ex.defaultReps); setRxHoldSecs(ex.defaultHoldSecs); };
-  const rxSummary = () => `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
+  const resetRx = (ex: Exercise) => {
+    setRxSets(ex.defaultSets); setRxReps(ex.defaultReps); setRxHoldSecs(ex.defaultHoldSecs);
+    setRxSpeedSecs(ex.defaultSpeedSecs ?? 4); setRxLoops(ex.defaultLoops ?? 5);
+  };
+  const rxSummary = (ex: Exercise | null) => ex?.animationType === 'breathing-pacer'
+    ? `${rxSpeedSecs}s per breath × ${rxLoops} loop${rxLoops === 1 ? '' : 's'}`
+    : `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
 
   const handleAddToProgram = () => {
     const prog = mockPrograms.find((p) => p.id === selectedProgramId);
-    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummary()}).`);
+    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummary(programTargetExercise)}).`);
     setProgramTargetExercise(null);
     setSelectedProgramId(null);
   };
 
   const handleAssign = () => {
-    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummary()}).`);
+    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummary(assignTargetExercise)}).`);
     setAssignTargetExercise(null);
     setSelectedPatient(null);
   };
@@ -501,9 +508,18 @@ function ExercisesPageContent() {
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
               <div className="flex flex-wrap gap-2">
-                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                {programTargetExercise?.animationType === 'breathing-pacer' ? (
+                  <>
+                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
+                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
+                  </>
+                ) : (
+                  <>
+                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                  </>
+                )}
               </div>
             </div>
             <div className="flex w-full justify-end gap-4">
@@ -528,9 +544,18 @@ function ExercisesPageContent() {
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
               <div className="flex flex-wrap gap-2">
-                <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                {assignTargetExercise?.animationType === 'breathing-pacer' ? (
+                  <>
+                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
+                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
+                  </>
+                ) : (
+                  <>
+                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
+                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
+                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
+                  </>
+                )}
               </div>
             </div>
             <div className="flex w-full justify-end gap-4">

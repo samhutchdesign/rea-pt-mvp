@@ -66,6 +66,11 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, li, td, th, dt, dd, blockquote, figca
   text-box-edge: auto;
 }
 
+@keyframes breath-pulse {
+  0%, 100% { transform: scale(0.72); }
+  50% { transform: scale(1); }
+}
+
 @utility title-trim {
   /* Restores Figma's tight spacing for `truncate` titles that can't use
      text-box-trim (it would clip them, see above). Figma's 16px Lora

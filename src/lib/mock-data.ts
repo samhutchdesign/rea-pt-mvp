@@ -1957,6 +1957,36 @@ const mockExercisesRaw: ExerciseBase[] = [
     defaultSets: 1, defaultReps: 5, defaultHoldSecs: 0, defaultFrequency: '3x Weekly',
     isFavorite: false, usageCount: 10, createdAt: '2026-01-10', variationGroup: 'perineal-massage',
   },
+  {
+    id: 'ex_breathing_pacer',
+    name: 'Diaphragmatic Breathing',
+    description: 'Guided breathing pacer. Starting position: Seated or lying down.',
+    category: 'Pelvic Pain & Hypertonic',
+    level: 'Beginner',
+    equipment: 'None',
+    instructions: [
+      'Find a comfortable seated or lying position, with your shoulders relaxed.',
+      'Rest one hand on your chest and one on your belly.',
+      'Follow the circle as it expands — breathe in slowly through your nose, letting your belly rise while your chest stays still.',
+      'Follow the circle as it contracts — exhale slowly through your mouth, letting your belly fall and your pelvic floor gently release.',
+      'Continue at a steady pace for the prescribed number of cycles.',
+    ],
+    commonMistakes: [
+      'Breathing into the chest instead of the belly.',
+      'Rushing the exhale — let it take as long as the inhale.',
+      'Tensing the shoulders or jaw while breathing.',
+    ],
+    tags: {
+      specialty: ['Pelvic health'],
+      condition: ['Pelvic Pain', 'Pelvic Girdle Pain', 'Bladder Pain Syndrome'],
+      surgery: [],
+      muscle: ['Diaphragm; Levator ani; Coccygeus'],
+      bodyPart: ['Pelvic floor', 'Diaphragm'],
+    },
+    defaultSets: 1, defaultReps: 1, defaultHoldSecs: 0, defaultFrequency: 'Daily',
+    isFavorite: false, usageCount: 0, createdAt: '2026-09-15',
+    animationType: 'breathing-pacer', defaultSpeedSecs: 4, defaultLoops: 5,
+  },
 
 ];
 
