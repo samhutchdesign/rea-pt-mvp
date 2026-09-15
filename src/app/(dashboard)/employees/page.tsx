@@ -226,25 +226,28 @@ export default function EmployeesPage() {
         )}
       </div>
       <ModalOverlay isOpen={addOpen} onOpenChange={(o) => { if (!o) setAddOpen(false); }}>
-        <Modal><Dialog>
-          <div className="p-6 w-[440px]">
-            <h3 className="mb-1 text-lg font-semibold text-primary">Add Employee</h3>
-            <p className="text-xs text-tertiary mb-5">Send an invite link to add a new team member.</p>
+        <Modal className="w-full max-w-[480px]"><Dialog>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Add Employee</h2>
+              <p className="m-0 text-base text-primary">Send an invite link to add a new team member.</p>
+            </div>
 
-            <div className="flex flex-col gap-4">
-              <div>
-                <div className="mb-1 text-xs font-medium text-secondary">Email address <span className="text-error-500">*</span></div>
+            <div className="flex w-full flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <div className="text-xs text-secondary">Email address <span className="text-error-500">*</span></div>
                 <input
                   type="email"
                   placeholder="colleague@example.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="h-12 w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
-              <div>
-                <div className="mb-1 text-xs font-medium text-secondary">Role</div>
+              <div className="flex flex-col gap-2">
+                <div className="text-xs text-secondary">Role</div>
                 <NativeSelect
+                  className="h-12"
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value)}
                 >
@@ -255,11 +258,11 @@ export default function EmployeesPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end gap-3">
-              <Button color="secondary" size="sm" onPress={() => setAddOpen(false)}>Cancel</Button>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={() => setAddOpen(false)}>Cancel</Button>
               <Button
                 color="primary"
-                size="sm"
+                size="lg"
                 isDisabled={!inviteEmail.trim()}
                 onPress={() => {
                   toast.success(`Invite sent to ${inviteEmail}`);

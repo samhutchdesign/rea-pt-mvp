@@ -271,33 +271,39 @@ function ExerciseDetailContent({ id }: { id: string }) {
       <AudioRecordingDialog open={audioOpen} exerciseName={ex.name} videoId={ex.videoUrl} onClose={() => setAudioOpen(false)} onSave={(_b, _d) => setAudioOpen(false)} />
 
       <ModalOverlay isOpen={programOpen} onOpenChange={(o) => { if (!o) { setProgramOpen(false); setSelectedProgramId(null); } }}>
-        <Modal><Dialog>
-          <div className="p-6 w-[440px]">
-            <h3 className="mb-4 text-lg font-semibold text-primary">Add to Program</h3>
-            <NativeSelect value={selectedProgramId ?? ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') { router.push('/programs/new'); setProgramOpen(false); return; } setSelectedProgramId(v || null); }}>
+        <Modal className="w-full max-w-[480px]"><Dialog>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Add to Program</h2>
+              <p className="m-0 text-base text-primary">Add <strong>{ex.name}</strong> to a program.</p>
+            </div>
+            <NativeSelect className="h-12" value={selectedProgramId ?? ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') { router.push('/programs/new'); setProgramOpen(false); return; } setSelectedProgramId(v || null); }}>
               <option value="">Select a program…</option>
               <option value="__new__">+ Create new program</option>
               {mockPrograms.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </NativeSelect>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button color="secondary" size="sm" onPress={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>
-              <Button color="primary" size="sm" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>
+              <Button color="primary" size="lg" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
             </div>
           </div>
         </Dialog></Modal>
       </ModalOverlay>
 
       <ModalOverlay isOpen={assignOpen} onOpenChange={(o) => { if (!o) { setAssignOpen(false); setSelectedPatient(null); } }}>
-        <Modal><Dialog>
-          <div className="p-6 w-[440px]">
-            <h3 className="mb-4 text-lg font-semibold text-primary">Assign to Patient</h3>
-            <NativeSelect value={selectedPatient?.id ?? ''} onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}>
+        <Modal className="w-full max-w-[480px]"><Dialog>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Assign to Patient</h2>
+              <p className="m-0 text-base text-primary">Assign <strong>{ex.name}</strong> to a patient.</p>
+            </div>
+            <NativeSelect className="h-12" value={selectedPatient?.id ?? ''} onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}>
               <option value="">Select a patient…</option>
               {mockPatients.filter((p) => !p.archived).map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
             </NativeSelect>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button color="secondary" size="sm" onPress={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>
-              <Button color="primary" size="sm" isDisabled={!selectedPatient} onPress={handleAssign}>Assign</Button>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>
+              <Button color="primary" size="lg" isDisabled={!selectedPatient} onPress={handleAssign}>Assign</Button>
             </div>
           </div>
         </Dialog></Modal>

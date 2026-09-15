@@ -213,21 +213,24 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
 
       {/* Transfer Patient Dialog */}
       <ModalOverlay isOpen={transferOpen} onOpenChange={(open) => { if (!open) closeTransfer(); }}>
-        <Modal>
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="p-6 w-full min-w-[400px] max-w-md">
-              <h2 className="text-lg font-semibold text-primary mb-1">Transfer Patient</h2>
-              <p className="text-base text-secondary mb-4">
-                Update <strong>{patient.firstName} {patient.lastName}</strong>&apos;s clinic location and care team.
-              </p>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Transfer Patient</h2>
+                <p className="m-0 text-base text-primary">
+                  Update <strong>{patient.firstName} {patient.lastName}</strong>&apos;s clinic location and care team.
+                </p>
+              </div>
 
               {transferLocations.length === 0 ? (
                 <p className="text-xs text-tertiary">No locations are available to you in this organization.</p>
               ) : (
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <div className="mb-1 text-xs font-medium text-secondary">Location</div>
+                <div className="flex w-full flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="text-xs text-secondary">Location</div>
                     <NativeSelect
+                      className="h-12"
                       value={selectedLocationId}
                       onChange={(e) => handleSelectLocation(e.target.value)}
                     >
@@ -241,13 +244,14 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                   </div>
 
                   {destinationLocation && (
-                    <div>
-                      <div className="mb-1 text-xs font-medium text-secondary">Physiotherapist</div>
+                    <div className="flex flex-col gap-2">
+                      <div className="text-xs text-secondary">Assigned Practitioner</div>
                       {physiosAtDestination.length === 0 ? (
                         <p className="text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
                       ) : (
                         <>
                           <NativeSelect
+                            className="h-12"
                             value={selectedEmployeeId}
                             onChange={(e) => setSelectedEmployeeId(e.target.value)}
                           >
@@ -270,13 +274,13 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 mt-6">
-                <Button color="secondary" size="sm" onPress={closeTransfer}>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={closeTransfer}>
                   Cancel
                 </Button>
                 <Button
                   color="primary"
-                  size="sm"
+                  size="lg"
                   isDisabled={!destinationLocation || !selectedEmployeeId}
                   onPress={handleTransfer}
                 >

@@ -240,32 +240,33 @@ export default function ClinicPage() {
         isOpen={addLocationOpen}
         onOpenChange={(open) => { if (!open) { setAddLocationOpen(false); setNewLocation(''); } }}
       >
-        <Modal>
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="p-6 w-full min-w-[400px]">
-              <h3 className="text-lg font-semibold text-primary mb-4">Add Location</h3>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Add Location</h2>
               <div
-                className="mb-4"
+                className="flex w-full flex-col gap-2"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddLocation(); }}
               >
-                <div className="mb-1 text-base text-secondary">Location</div>
+                <div className="text-xs text-secondary">Location</div>
                 <Input
+                  size="lg"
                   placeholder="e.g. Toronto, ON, Canada"
                   value={newLocation}
                   onChange={(v) => setNewLocation(v)}
                 />
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex w-full justify-end gap-4">
                 <Button
                   color="secondary"
-                  size="sm"
+                  size="lg"
                   onPress={() => { setAddLocationOpen(false); setNewLocation(''); }}
                 >
                   Cancel
                 </Button>
                 <Button
                   color="primary"
-                  size="sm"
+                  size="lg"
                   isDisabled={!newLocation.trim()}
                   onPress={handleAddLocation}
                 >

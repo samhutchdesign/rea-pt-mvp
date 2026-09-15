@@ -433,15 +433,17 @@ function ProgramsPageContent() {
       <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or edit programs" />
 
       <ModalOverlay isOpen={!!assignTargetProgram} onOpenChange={(o) => { if (!o) { setAssignTargetProgram(null); setSelectedPatient(null); } }}>
-        <Modal>
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold text-primary mb-1">Assign to Patient</h3>
-              <p className="text-base text-secondary mb-4">
-                Select a patient to assign <strong>{assignTargetProgram?.name}</strong> to.
-              </p>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Assign to Patient</h2>
+                <p className="m-0 text-base text-primary">
+                  Select a patient to assign <strong>{assignTargetProgram?.name}</strong> to.
+                </p>
+              </div>
               <NativeSelect
-                wrapperClassName="mb-6"
+                className="h-12"
                 value={selectedPatient?.id ?? ''}
                 onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}
               >
@@ -450,9 +452,9 @@ function ProgramsPageContent() {
                   <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
                 ))}
               </NativeSelect>
-              <div className="flex justify-end gap-3">
-                <Button color="secondary" size="md" onPress={() => { setAssignTargetProgram(null); setSelectedPatient(null); }}>Cancel</Button>
-                <Button color="primary" size="md" isDisabled={!selectedPatient} onPress={handleAssign}>Assign Program</Button>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={() => { setAssignTargetProgram(null); setSelectedPatient(null); }}>Cancel</Button>
+                <Button color="primary" size="lg" isDisabled={!selectedPatient} onPress={handleAssign}>Assign Program</Button>
               </div>
             </div>
           </Dialog>
@@ -460,16 +462,18 @@ function ProgramsPageContent() {
       </ModalOverlay>
 
       <ModalOverlay isOpen={!!deleteTargetProgram} onOpenChange={(o) => { if (!o) setDeleteTargetProgram(null); }}>
-        <Modal>
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="p-6 w-full max-w-sm">
-              <h2 className="text-lg font-semibold text-primary mb-2">Delete Program?</h2>
-              <p className="text-base text-secondary mb-6">
-                This will permanently delete <strong>{deleteTargetProgram?.name}</strong>. This cannot be undone.
-              </p>
-              <div className="flex justify-end gap-3">
-                <Button color="secondary" size="sm" onPress={() => setDeleteTargetProgram(null)}>Cancel</Button>
-                <Button color="primary-destructive" size="sm" onPress={handleDelete}>Delete Program</Button>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Delete Program?</h2>
+                <p className="m-0 text-base text-primary">
+                  This will permanently delete <strong>{deleteTargetProgram?.name}</strong>. This cannot be undone.
+                </p>
+              </div>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={() => setDeleteTargetProgram(null)}>Cancel</Button>
+                <Button color="warning" size="lg" onPress={handleDelete}>Delete Program</Button>
               </div>
             </div>
           </Dialog>

@@ -23,6 +23,7 @@ import { applyDictationStubs } from '@/components/charts/apply-dictation-stubs';
 import { useAddToChart } from '@/components/charts/use-add-to-chart';
 import { DICTATION_NOTES_STUB, DICTATION_FOLLOWUP_NOTES_STUB } from '@/components/charts/dictation-stubs';
 import { copyChartSessionToClipboard } from '@/lib/chartExport';
+import { cx } from '@/utils/cx';
 import type { SubjectiveSection, ObjectiveSection, AnalysisSection, PlanSection, InterventionItem, EvaluationSection } from '@/lib/types';
 import { Trash2, Lock, Unlock, Copy, Check, Sparkles } from 'lucide-react';
 
@@ -348,37 +349,49 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* Sign & Lock confirmation modal */}
       <ModalOverlay isOpen={signOpen} onOpenChange={setSignOpen}>
-        <Modal>
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="w-full max-w-sm p-6">
-              <h2 className="mb-2 text-lg font-semibold text-primary">Sign & Lock Chart?</h2>
-              <p className="mb-4 text-base text-secondary">
-                Once signed, <strong>{sessionLabel}</strong> becomes locked and can no longer be edited directly. Any future correction will be added as a separate, dated amendment.
-              </p>
-              <div className="mb-4">
-                <span className="mb-1 block text-xs text-secondary">Date of Session</span>
-                <div className="flex gap-2">
-                  <input type="date" value={sessionDate} onChange={(e) => setSessionDate(e.target.value)} className={inputCls} />
-                  <input type="time" value={sessionTime} onChange={(e) => setSessionTime(e.target.value)} className={inputCls} />
-                </div>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Sign & Lock Chart?</h2>
+                <p className="m-0 text-base text-primary">
+                  Once signed, <strong>{sessionLabel}</strong> becomes locked and can no longer be edited directly. Any future correction will be added as a separate, dated amendment.
+                </p>
               </div>
-              <div className="mb-4">
-                <span className="mb-1 block text-xs text-secondary">Date Signed</span>
-                <input type="date" value={dateSigned} disabled className={inputCls + ' cursor-not-allowed opacity-60'} />
-              </div>
-              {signatureFont && (
-                <div className="mb-6 rounded-lg border border-secondary bg-secondary_alt px-4 py-3">
-                  <span className="mb-1 block text-xs text-secondary">This will be stamped as your signature:</span>
-                  <span style={{ fontFamily: signatureFont.variable }} className="block text-2xl text-primary">
-                    {currentIdentity.firstName} {currentIdentity.lastName}
-                  </span>
+              <div className="flex w-full flex-col gap-5">
+                <div className="flex gap-4">
+                  <div className="flex flex-1 flex-col gap-2">
+                    <span className="text-xs text-secondary">Session Date & Time</span>
+                    <input type="date" value={sessionDate} onChange={(e) => setSessionDate(e.target.value)} className={cx(inputCls, 'h-12')} />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
+                    <span className="text-xs text-secondary opacity-0">Time</span>
+                    <input type="time" value={sessionTime} onChange={(e) => setSessionTime(e.target.value)} className={cx(inputCls, 'h-12')} />
+                  </div>
                 </div>
-              )}
-              <div className="flex justify-end gap-3">
-                <Button color="secondary" size="sm" onPress={() => setSignOpen(false)}>
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs text-secondary">Date Signed</span>
+                  <input type="date" value={dateSigned} disabled className={cx(inputCls, 'h-12 cursor-not-allowed opacity-60')} />
+                </div>
+                {signatureFont && (
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="w-full rounded-lg border border-secondary bg-secondary_alt p-5">
+                      <span className="mb-1 block text-xs text-secondary">This will be stamped as your signature</span>
+                      <span style={{ fontFamily: signatureFont.variable }} className="block text-2xl text-primary">
+                        {currentIdentity.firstName} {currentIdentity.lastName}
+                      </span>
+                    </div>
+                    <p className="m-0 text-xs text-secondary">
+                      Update your signature in <Link href="/account/settings" className="font-semibold text-brand-600 hover:underline">Settings</Link>
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={() => setSignOpen(false)}>
                   Cancel
                 </Button>
-                <Button color="primary" size="sm" onPress={handleSign}>
+                <Button color="primary" size="lg" onPress={handleSign}>
                   Sign & Lock
                 </Button>
               </div>
@@ -389,18 +402,20 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* Delete confirmation modal */}
       <ModalOverlay isOpen={deleteOpen} onOpenChange={setDeleteOpen}>
-        <Modal>
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="w-full max-w-sm p-6">
-              <h2 className="mb-2 text-lg font-semibold text-primary">Delete Session?</h2>
-              <p className="mb-6 text-base text-secondary">
-                This will permanently delete <strong>{sessionLabel}</strong> for {contact.firstName} {contact.lastName}. This cannot be undone.
-              </p>
-              <div className="flex justify-end gap-3">
-                <Button color="secondary" size="sm" onPress={() => setDeleteOpen(false)}>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Delete Session?</h2>
+                <p className="m-0 text-base text-primary">
+                  This will permanently delete <strong>{sessionLabel}</strong> for {contact.firstName} {contact.lastName}. This cannot be undone.
+                </p>
+              </div>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={() => setDeleteOpen(false)}>
                   Cancel
                 </Button>
-                <Button color="primary-destructive" size="sm" onPress={handleDelete}>
+                <Button color="warning" size="lg" onPress={handleDelete}>
                   Delete Session
                 </Button>
               </div>

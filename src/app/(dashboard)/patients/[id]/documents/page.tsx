@@ -291,10 +291,10 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
 
       {/* Upload dialog */}
       <ModalOverlay isOpen={uploadOpen} onOpenChange={(open) => { if (!open) closeUpload(); }}>
-        <Modal>
+        <Modal className="w-full min-w-[400px] max-w-lg">
           <Dialog>
-            <div className="p-6 w-full min-w-[400px] max-w-lg">
-              <h2 className="text-lg font-semibold text-primary mb-4">Upload Patient PDF</h2>
+            <div className="p-8">
+              <h2 className="font-display m-0 mb-4 text-[24px] leading-[32px] font-normal text-primary">Upload Patient PDF</h2>
 
               {uploadPhase === 'idle' && (
                 <>
@@ -351,17 +351,17 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 mt-6">
+              <div className="flex justify-end gap-4 mt-6">
                 <Button
                   color="secondary"
-                  size="sm"
+                  size="lg"
                   isDisabled={uploadPhase === 'processing'}
                   onPress={closeUpload}
                 >
                   {uploadPhase === 'done' ? 'Close' : 'Cancel'}
                 </Button>
                 {uploadPhase === 'done' && (
-                  <Button color="primary" size="sm" onPress={handleReview}>
+                  <Button color="primary" size="lg" onPress={handleReview}>
                     Review Extracted Information
                   </Button>
                 )}

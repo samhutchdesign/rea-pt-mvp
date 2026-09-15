@@ -8,6 +8,7 @@ import { Button } from '@/components/base/buttons/button';
 import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/modal';
+import { ModalWarningMessage } from '@/components/application/modals/modal-warning';
 import { PatientHeaderMenu } from '@/components/patients/PatientHeaderMenu';
 import { mockPatients, mockClinicLocations, mockEmployees } from '@/lib/mock-data';
 import { usePermissions } from '@/lib/permissionsHook';
@@ -35,14 +36,16 @@ function ConfirmModal({ open, onClose, title, description, confirmLabel, destruc
 }) {
   return (
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <Modal className="w-full max-w-md">
+      <Modal className="w-full max-w-[480px]">
         <Dialog>
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-primary mb-3">{title}</h2>
-            <p className="text-base text-secondary mb-6">{description}</p>
-            <div className="flex justify-end gap-3">
-              <Button color="secondary" onPress={onClose}>Cancel</Button>
-              <Button color={destructive ? 'primary-destructive' : 'primary'} onPress={onConfirm}>{confirmLabel}</Button>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">{title}</h2>
+              {destructive ? <ModalWarningMessage>{description}</ModalWarningMessage> : <p className="m-0 text-base text-primary">{description}</p>}
+            </div>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={onClose}>Cancel</Button>
+              <Button color={destructive ? 'warning' : 'primary'} size="lg" onPress={onConfirm}>{confirmLabel}</Button>
             </div>
           </div>
         </Dialog>
@@ -217,20 +220,23 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
       {/* Restore Patient Dialog */}
       <ModalOverlay isOpen={restoreOpen} onOpenChange={(v) => { if (!v) setRestoreOpen(false); }}>
-        <Modal className="w-full max-w-md">
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-primary mb-1">Restore Patient</h2>
-              <p className="text-base text-secondary mb-4">
-                To reactivate <strong>{patient.firstName} {patient.lastName}</strong>, assign a clinic location and treating PT.
-              </p>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Restore Patient</h2>
+                <p className="m-0 text-base text-primary">
+                  To reactivate <strong>{patient.firstName} {patient.lastName}</strong>, choose a clinic location and care team.
+                </p>
+              </div>
               {restoreLocations.length === 0 ? (
-                <p className="text-xs text-tertiary mb-4">No locations are available to you for this organization.</p>
+                <p className="text-xs text-tertiary">No locations are available to you for this organization.</p>
               ) : (
-                <div className="flex flex-col gap-4 mb-6">
-                  <div>
-                    <div className="mb-1 text-xs font-medium text-secondary">Location</div>
+                <div className="flex w-full flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="text-xs text-secondary">Location</div>
                     <NativeSelect
+                      className="h-12"
                       value={restoreLocationId}
                       onChange={(e) => handleSelectRestoreLocation(e.target.value)}
                     >
@@ -241,12 +247,13 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                     </NativeSelect>
                   </div>
                   {restoreDestLocation && (
-                    <div>
-                      <div className="mb-1 text-xs font-medium text-secondary">Treating PT</div>
+                    <div className="flex flex-col gap-2">
+                      <div className="text-xs text-secondary">Assigned Practitioner</div>
                       {restoreEligiblePts.length === 0 ? (
                         <p className="text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
                       ) : (
                         <NativeSelect
+                          className="h-12"
                           value={restorePtId}
                           onChange={(e) => setRestorePtId(e.target.value)}
                         >
@@ -260,9 +267,9 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                   )}
                 </div>
               )}
-              <div className="flex justify-end gap-3">
-                <Button color="secondary" onPress={() => setRestoreOpen(false)}>Cancel</Button>
-                <Button color="primary" isDisabled={!restoreLocationId || !restorePtId} onPress={handleRestore}>Restore Patient</Button>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={() => setRestoreOpen(false)}>Cancel</Button>
+                <Button color="primary" size="lg" isDisabled={!restoreLocationId || !restorePtId} onPress={handleRestore}>Restore Patient</Button>
               </div>
             </div>
           </Dialog>

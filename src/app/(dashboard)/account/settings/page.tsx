@@ -5,9 +5,9 @@ import { toast } from 'sonner';
 import { Toggle } from '@/components/base/toggle/toggle';
 import { Button } from '@/components/base/buttons/button';
 import { Divider } from '@/components/ui/divider';
-import { Alert } from '@/components/ui/alert';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
+import { ModalWarningMessage } from '@/components/application/modals/modal-warning';
 import { SignatureFontPicker } from '@/components/ui/signature-font-picker';
 import { useThemeMode, setThemeMode } from '@/lib/themeStore';
 import { useRole } from '@/lib/roleStore';
@@ -71,22 +71,23 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
 
   return (
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
-      <Modal className="w-full max-w-lg">
+      <Modal className="w-full max-w-[480px]">
         <Dialog>
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-primary mb-1">Transfer Ownership</h2>
-            <p className="text-base text-secondary mb-4">
-              Hand off full control of this organization — billing, all accounts, and all content — to someone else.
-            </p>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Transfer Ownership</h2>
+              <p className="m-0 text-base text-primary">
+                Hand off full control of the organization to someone else. This includes billing, account permissions, and all content viewing and edit capabilities.
+              </p>
+              <ModalWarningMessage>
+                This gives the new Owner complete control of the organization and cannot be undone.
+              </ModalWarningMessage>
+            </div>
 
-            <Alert type="warning" className="mb-5">
-              This gives the new Owner complete control of the organization and cannot be undone.
-            </Alert>
-
-            <div className="flex flex-col gap-5">
-              <div>
-                <label className="block text-base font-medium text-secondary mb-2">New Owner</label>
-                <div className="flex gap-2 mb-3">
+            <div className="flex w-full flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <label className="block text-xs text-secondary">New Owner</label>
+                <div className="flex gap-2 mb-1">
                   <Button
                     color={mode === 'existing' ? 'primary' : 'secondary'}
                     size="xs"
@@ -105,6 +106,7 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
 
                 {mode === 'existing' ? (
                   <NativeSelect
+                    className="h-12"
                     value={targetEmployeeId}
                     onChange={(e) => setTargetEmployeeId(e.target.value)}
                   >
@@ -121,16 +123,17 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
                     placeholder="newowner@example.com"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                    className="h-12 w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                   />
                 )}
               </div>
 
               <Divider />
 
-              <div>
-                <label className="block text-base font-medium text-secondary mb-2">Your New Role</label>
+              <div className="flex flex-col gap-2">
+                <label className="block text-xs text-secondary">Your New Role</label>
                 <NativeSelect
+                  className="h-12"
                   value={outgoingChoice}
                   onChange={(e) => setOutgoingChoice(e.target.value as OutgoingChoice)}
                 >
@@ -142,9 +145,9 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 mt-6">
-              <Button color="secondary" size="sm" onPress={handleClose}>Cancel</Button>
-              <Button color="primary-destructive" size="sm" isDisabled={!canConfirm} onPress={handleConfirm}>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={handleClose}>Cancel</Button>
+              <Button color="warning" size="lg" isDisabled={!canConfirm} onPress={handleConfirm}>
                 Transfer Ownership
               </Button>
             </div>
@@ -175,19 +178,21 @@ function SignatureModal({ open, onClose }: { open: boolean; onClose: () => void 
 
   return (
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
-      <Modal className="w-full max-w-lg">
+      <Modal className="w-full max-w-[480px]">
         <Dialog>
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-primary mb-1">Choose Your Signature</h2>
-            <p className="text-base text-secondary mb-5">
-              This is stamped on every chart you sign and lock. Pick a style below.
-            </p>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Choose Your Signature</h2>
+              <p className="m-0 text-base text-primary">
+                This is stamped on every chart you sign and lock. Pick a style below.
+              </p>
+            </div>
 
             <SignatureFontPicker name={fullName} value={selected} onChange={setSelected} />
 
-            <div className="flex justify-end gap-3 mt-6">
-              <Button color="secondary" size="sm" onPress={handleClose}>Cancel</Button>
-              <Button color="primary" size="sm" onPress={handleSave}>Save Signature</Button>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={handleClose}>Cancel</Button>
+              <Button color="primary" size="lg" onPress={handleSave}>Save Signature</Button>
             </div>
           </div>
         </Dialog>

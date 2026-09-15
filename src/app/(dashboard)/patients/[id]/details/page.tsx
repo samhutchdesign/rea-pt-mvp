@@ -418,18 +418,18 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
       </SectionCard>
 
       <ModalOverlay isOpen={!!editSection} onOpenChange={(open) => { if (!open) setEditSection(null); }}>
-        <Modal>
+        <Modal className="w-full min-w-[540px] max-w-2xl">
           <Dialog>
-            <div className="p-6 w-full min-w-[540px] max-w-2xl">
-              <h2 className="text-lg font-semibold text-primary mb-5">
+            <div className="flex w-full flex-col gap-8 p-8">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">
                 Edit {editSection ? SECTION_TITLES[editSection] : ''}
               </h2>
               {renderDialogFields()}
-              <div className="flex justify-end gap-3 mt-6">
-                <Button color="secondary" size="sm" onPress={() => setEditSection(null)}>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={() => setEditSection(null)}>
                   Cancel
                 </Button>
-                <Button color="primary" size="sm" onPress={saveEdit}>
+                <Button color="primary" size="lg" onPress={saveEdit}>
                   Save Changes
                 </Button>
               </div>

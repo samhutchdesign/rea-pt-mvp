@@ -216,16 +216,18 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
 
       {/* Delete Confirmation */}
       <ModalOverlay isOpen={deleteOpen} onOpenChange={(open) => { if (!open) setDeleteOpen(false); }}>
-        <Modal>
+        <Modal className="w-full max-w-[480px]">
           <Dialog>
-            <div className="p-6 w-full min-w-[400px]">
-              <h3 className="text-lg font-semibold text-primary mb-3">Delete Clinic Location?</h3>
-              <p className="text-tertiary text-xs mb-6">
-                This will permanently remove <strong className="text-primary">{saved.name}</strong> from the organization. This cannot be undone.
-              </p>
-              <div className="flex justify-end gap-2">
-                <Button color="secondary" size="sm" onPress={() => setDeleteOpen(false)}>Cancel</Button>
-                <Button color="primary-destructive" size="sm" onPress={handleDelete}>Delete Location</Button>
+            <div className="flex w-full flex-col gap-10 p-8">
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Delete Clinic Location?</h2>
+                <p className="m-0 text-base text-primary">
+                  This will permanently remove <strong>{saved.name}</strong> from the organization. This cannot be undone.
+                </p>
+              </div>
+              <div className="flex w-full justify-end gap-4">
+                <Button color="secondary" size="lg" onPress={() => setDeleteOpen(false)}>Cancel</Button>
+                <Button color="warning" size="lg" onPress={handleDelete}>Delete Location</Button>
               </div>
             </div>
           </Dialog>

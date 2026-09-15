@@ -487,49 +487,55 @@ function ExercisesPageContent() {
       <SignUpRequiredModal open={showSignUpModal} onClose={() => setShowSignUpModal(false)} action="create or assign exercises" />
 
       <ModalOverlay isOpen={!!programTargetExercise} onOpenChange={(o) => { if (!o) { setProgramTargetExercise(null); setSelectedProgramId(null); } }}>
-        <Modal><Dialog>
-          <div className="p-6 w-[440px]">
-            <h3 className="mb-4 text-lg font-semibold text-primary">Add to Program</h3>
-            <NativeSelect value={selectedProgramId ?? ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') { router.push('/programs/new'); setProgramTargetExercise(null); return; } setSelectedProgramId(v || null); }}>
+        <Modal className="w-full max-w-[480px]"><Dialog>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Add to Program</h2>
+              {programTargetExercise && <p className="m-0 text-base text-primary">Add <strong>{programTargetExercise.name}</strong> to a program.</p>}
+            </div>
+            <NativeSelect className="h-12" value={selectedProgramId ?? ''} onChange={(e) => { const v = e.target.value; if (v === '__new__') { router.push('/programs/new'); setProgramTargetExercise(null); return; } setSelectedProgramId(v || null); }}>
               <option value="">Select a program…</option>
               <option value="__new__">+ Create new program</option>
               {mockPrograms.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </NativeSelect>
-            <div className="mt-4">
-              <div className="mb-1.5 text-xs font-medium text-secondary">Prescription</div>
+            <div className="flex w-full flex-col gap-2">
+              <div className="text-xs text-secondary">Parameters</div>
               <div className="flex flex-wrap gap-2">
                 <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
                 <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
                 <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
               </div>
             </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button color="secondary" size="sm" onPress={() => { setProgramTargetExercise(null); setSelectedProgramId(null); }}>Cancel</Button>
-              <Button color="primary" size="sm" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={() => { setProgramTargetExercise(null); setSelectedProgramId(null); }}>Cancel</Button>
+              <Button color="primary" size="lg" isDisabled={!selectedProgramId} onPress={handleAddToProgram}>Add to Program</Button>
             </div>
           </div>
         </Dialog></Modal>
       </ModalOverlay>
 
       <ModalOverlay isOpen={!!assignTargetExercise} onOpenChange={(o) => { if (!o) { setAssignTargetExercise(null); setSelectedPatient(null); } }}>
-        <Modal><Dialog>
-          <div className="p-6 w-[440px]">
-            <h3 className="mb-4 text-lg font-semibold text-primary">Assign to Patient</h3>
-            <NativeSelect value={selectedPatient?.id ?? ''} onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}>
+        <Modal className="w-full max-w-[480px]"><Dialog>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <div className="flex w-full flex-col gap-4">
+              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Assign to Patient</h2>
+              {assignTargetExercise && <p className="m-0 text-base text-primary">Assign <strong>{assignTargetExercise.name}</strong> to a patient.</p>}
+            </div>
+            <NativeSelect className="h-12" value={selectedPatient?.id ?? ''} onChange={(e) => setSelectedPatient(mockPatients.find((p) => p.id === e.target.value) ?? null)}>
               <option value="">Select a patient…</option>
               {mockPatients.filter((p) => !p.archived).map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
             </NativeSelect>
-            <div className="mt-4">
-              <div className="mb-1.5 text-xs font-medium text-secondary">Prescription</div>
+            <div className="flex w-full flex-col gap-2">
+              <div className="text-xs text-secondary">Parameters</div>
               <div className="flex flex-wrap gap-2">
                 <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
                 <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
                 <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
               </div>
             </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button color="secondary" size="sm" onPress={() => { setAssignTargetExercise(null); setSelectedPatient(null); }}>Cancel</Button>
-              <Button color="primary" size="sm" isDisabled={!selectedPatient} onPress={handleAssign}>Assign</Button>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={() => { setAssignTargetExercise(null); setSelectedPatient(null); }}>Cancel</Button>
+              <Button color="primary" size="lg" isDisabled={!selectedPatient} onPress={handleAssign}>Assign</Button>
             </div>
           </div>
         </Dialog></Modal>

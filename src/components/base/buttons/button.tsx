@@ -97,6 +97,15 @@ export const styles = sortCx({
                 "*:data-icon:text-fg-quaternary hover:*:data-icon:text-fg-quaternary_hover",
             ].join(" "),
         },
+        warning: {
+            root: [
+                "bg-[#993335] text-white ring-1 ring-[#993335] ring-inset hover:bg-[#7a2829] hover:ring-[#7a2829]",
+                // Minimum 100px width, but not for icon-only (square) buttons
+                "min-w-[100px] data-icon-only:min-w-0",
+                // Icon styles
+                "*:data-icon:text-white",
+            ].join(" "),
+        },
         "primary-destructive": {
             root: [
                 "bg-error-solid text-white ring-1 ring-transparent outline-error ring-inset hover:bg-error-solid_hover data-loading:bg-error-solid_hover",

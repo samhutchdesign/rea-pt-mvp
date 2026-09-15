@@ -394,21 +394,21 @@ function EditRoleDialog({
 
   return (
     <ModalOverlay isOpen={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <Modal className="w-full max-w-md">
+      <Modal className="w-full max-w-[480px]">
         <Dialog>
-          <div className="p-6">
-            <h3 className="text-lg font-semibold text-primary mb-3">Edit Role</h3>
-            <div className="mb-6">
-              <div className="mb-1 text-base text-secondary">Permissions</div>
-              <NativeSelect value={draft} onChange={(e) => setDraft(e.target.value as UserRole)}>
+          <div className="flex w-full flex-col gap-10 p-8">
+            <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Edit Role</h2>
+            <div className="flex flex-col gap-2">
+              <div className="text-xs text-secondary">Permissions</div>
+              <NativeSelect className="h-12" value={draft} onChange={(e) => setDraft(e.target.value as UserRole)}>
                 <option value="admin">Manager</option>
                 <option value="editor">Practitioner</option>
                 <option value="limited">Staff</option>
               </NativeSelect>
             </div>
-            <div className="flex justify-end gap-2">
-              <Button color="secondary" size="sm" onPress={onClose}>Cancel</Button>
-              <Button color="primary" size="sm" onPress={() => onSave(draft)}>Save</Button>
+            <div className="flex w-full justify-end gap-4">
+              <Button color="secondary" size="lg" onPress={onClose}>Cancel</Button>
+              <Button color="primary" size="lg" onPress={() => onSave(draft)}>Save</Button>
             </div>
           </div>
         </Dialog>

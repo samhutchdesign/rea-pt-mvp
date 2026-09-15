@@ -175,7 +175,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
           {/* Title bar */}
           <div className="flex items-start px-6 pt-5 pb-3">
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-primary leading-tight">
+              <h2 className="font-display text-[20px] leading-[28px] font-medium text-primary">
                 {phase === 'preview' ? 'Preview Recording' : 'Record Audio Overlay'}
               </h2>
               <p className="text-xs text-tertiary mt-0.5">{exerciseName}</p>
