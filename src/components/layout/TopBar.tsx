@@ -59,7 +59,6 @@ export default function TopBar({}: TopBarProps) {
   const menuItems = [
     ...(can.canManageClinic ? [{ key: 'org', label: 'Organization Profile', href: '/clinic' }] : []),
     ...(can.canManageLocation ? [{ key: 'clinic', label: 'Clinic Profile', href: `/clinic/${identity.locationIds[0] ?? 'loc1'}` }] : []),
-    ...(can.canManageBilling ? [{ key: 'billing', label: 'Billing', href: '/billing' }] : []),
     { key: 'profile', label: 'Your Profile', href: '/account/profile' },
     { key: 'settings', label: 'Settings', href: '/account/settings' },
     { key: 'email', label: 'Email Change', href: '/account/email' },
