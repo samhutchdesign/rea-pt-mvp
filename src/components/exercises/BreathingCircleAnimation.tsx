@@ -10,7 +10,7 @@ interface BreathingCircleAnimationProps {
   className?: string;
 }
 
-const SHRINK_SCALE = 0.42;
+const SHRINK_SCALE = 0.22;
 
 export function BreathingCircleAnimation({ cycleSeconds, loops, className }: BreathingCircleAnimationProps) {
   // Pass a `key` that changes with cycleSeconds/loops at the call site to
