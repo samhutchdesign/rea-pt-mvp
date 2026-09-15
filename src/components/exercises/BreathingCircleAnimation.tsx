@@ -46,7 +46,7 @@ export function BreathingCircleAnimation({ cycleSeconds, loops, className }: Bre
       // it spans from (containerHeight - groupHeight) to containerHeight. At
       // peak shrink its span is groupHeight * SHRINK_SCALE tall. Move it up
       // by however much is needed so that shrunk top edge lands at y = 0.
-      setRiseDistance(Math.max(containerHeight - groupHeight * SHRINK_SCALE, 0));
+      setRiseDistance(Math.max((containerHeight - groupHeight * SHRINK_SCALE) * 0.8, 0));
     };
     measure();
     window.addEventListener('resize', measure);
@@ -74,7 +74,7 @@ export function BreathingCircleAnimation({ cycleSeconds, loops, className }: Bre
         <div className="absolute bottom-0 left-1/2 size-[216px] -translate-x-1/2 -mb-[108px] rounded-full bg-brand-300" />
         <div className="absolute bottom-0 left-1/2 size-[158px] -translate-x-1/2 -mb-[79px] rounded-full bg-brand-700" />
       </div>
-      <span className="absolute top-6 left-1/2 -translate-x-1/2 font-display text-md font-medium text-primary">
+      <span className="absolute top-6 left-6 font-display text-md font-medium text-primary">
         {running ? (phase === 'in' ? 'Breathe In' : 'Breathe Out') : 'Finished'}
       </span>
     </div>
