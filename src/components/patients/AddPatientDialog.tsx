@@ -25,14 +25,26 @@ export default function AddPatientDialog({ open, onClose }: Props) {
   const [ptId, setPtId] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const destinationLocation = mockClinicLocations.find((l) => l.id === locationId) ?? null;
-  const eligiblePts = destinationLocation
-    ? mockEmployees.filter((e) => destinationLocation.employeeIds.includes(e.id) && !e.archived)
-    : [];
+  const allEligiblePts = mockEmployees.filter((e) => !e.archived && e.locationIds.some((lid) => availableLocationIds.includes(lid)));
+  const eligiblePts = locationId ? allEligiblePts.filter((e) => e.locationIds.includes(locationId)) : allEligiblePts;
+  const eligibleLocations = ptId
+    ? availableLocations.filter((l) => mockEmployees.find((e) => e.id === ptId)?.locationIds.includes(l.id))
+    : availableLocations;
 
   const handleSelectLocation = (id: string) => {
     setLocationId(id);
-    setPtId('');
+    if (id && ptId) {
+      const pt = mockEmployees.find((e) => e.id === ptId);
+      if (pt && !pt.locationIds.includes(id)) setPtId('');
+    }
+  };
+
+  const handleSelectPt = (id: string) => {
+    setPtId(id);
+    if (id && locationId) {
+      const pt = mockEmployees.find((e) => e.id === id);
+      if (pt && !pt.locationIds.includes(locationId)) setLocationId('');
+    }
   };
 
   const validate = () => {
@@ -104,31 +116,29 @@ export default function AddPatientDialog({ open, onClose }: Props) {
                   onChange={(e) => handleSelectLocation(e.target.value)}
                 >
                   <option value="">Select a location</option>
-                  {availableLocations.map((loc) => (
+                  {eligibleLocations.map((loc) => (
                     <option key={loc.id} value={loc.id}>{loc.name} — {loc.city}, {loc.regionCountry}</option>
                   ))}
                 </NativeSelect>
                 {errors.location && <p className="m-0 text-xs text-error-600">{errors.location}</p>}
               </div>
-              {destinationLocation && (
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-secondary">Assigned Practitioner</label>
-                  <NativeSelect
-                    className="h-12"
-                    value={ptId}
-                    onChange={(e) => setPtId(e.target.value)}
-                  >
-                    <option value="">Select a PT</option>
-                    {eligiblePts.map((e) => (
-                      <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
-                    ))}
-                  </NativeSelect>
-                  {errors.pt && <p className="m-0 text-xs text-error-600">{errors.pt}</p>}
-                  {eligiblePts.length === 0 && !errors.pt && (
-                    <p className="m-0 text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
-                  )}
-                </div>
-              )}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs text-secondary">Assigned Practitioner</label>
+                <NativeSelect
+                  className="h-12"
+                  value={ptId}
+                  onChange={(e) => handleSelectPt(e.target.value)}
+                >
+                  <option value="">Select a PT</option>
+                  {eligiblePts.map((e) => (
+                    <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
+                  ))}
+                </NativeSelect>
+                {errors.pt && <p className="m-0 text-xs text-error-600">{errors.pt}</p>}
+                {eligiblePts.length === 0 && !errors.pt && (
+                  <p className="m-0 text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                )}
+              </div>
             </div>
 
             <div className="flex w-full justify-end gap-4">
