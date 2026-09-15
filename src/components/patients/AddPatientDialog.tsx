@@ -5,7 +5,7 @@ import { Modal, ModalOverlay, Dialog } from '@/components/application/modals/mod
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { NativeSelect } from '@/components/ui/native-select';
-import { mockClinicLocations } from '@/lib/mock-data';
+import { mockClinicLocations, mockEmployees } from '@/lib/mock-data';
 import { useAvailableLocationIds } from '@/lib/locationScope';
 
 interface Props {
@@ -22,7 +22,18 @@ export default function AddPatientDialog({ open, onClose }: Props) {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [locationId, setLocationId] = useState('');
+  const [ptId, setPtId] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const destinationLocation = mockClinicLocations.find((l) => l.id === locationId) ?? null;
+  const eligiblePts = destinationLocation
+    ? mockEmployees.filter((e) => destinationLocation.employeeIds.includes(e.id) && !e.archived)
+    : [];
+
+  const handleSelectLocation = (id: string) => {
+    setLocationId(id);
+    setPtId('');
+  };
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -31,6 +42,7 @@ export default function AddPatientDialog({ open, onClose }: Props) {
     if (!email.trim()) e.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Enter a valid email address';
     if (!locationId) e.location = 'Please select a location';
+    if (!ptId) e.pt = 'Please select a treating PT';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -44,7 +56,7 @@ export default function AddPatientDialog({ open, onClose }: Props) {
 
   const reset = () => {
     setErrors({});
-    setFirstName(''); setLastName(''); setEmail(''); setLocationId('');
+    setFirstName(''); setLastName(''); setEmail(''); setLocationId(''); setPtId('');
   };
 
   const handleClose = () => { onClose(); reset(); };
@@ -89,7 +101,7 @@ export default function AddPatientDialog({ open, onClose }: Props) {
                 <NativeSelect
                   className="h-12"
                   value={locationId}
-                  onChange={(e) => setLocationId(e.target.value)}
+                  onChange={(e) => handleSelectLocation(e.target.value)}
                 >
                   <option value="">Select a location</option>
                   {availableLocations.map((loc) => (
@@ -98,6 +110,25 @@ export default function AddPatientDialog({ open, onClose }: Props) {
                 </NativeSelect>
                 {errors.location && <p className="m-0 text-xs text-error-600">{errors.location}</p>}
               </div>
+              {destinationLocation && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs text-secondary">Assigned Practitioner</label>
+                  <NativeSelect
+                    className="h-12"
+                    value={ptId}
+                    onChange={(e) => setPtId(e.target.value)}
+                  >
+                    <option value="">Select a PT</option>
+                    {eligiblePts.map((e) => (
+                      <option key={e.id} value={e.id}>{e.firstName} {e.lastName} — {e.credentials}</option>
+                    ))}
+                  </NativeSelect>
+                  {errors.pt && <p className="m-0 text-xs text-error-600">{errors.pt}</p>}
+                  {eligiblePts.length === 0 && !errors.pt && (
+                    <p className="m-0 text-xs text-tertiary">No physiotherapists are staffed at this location yet.</p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="flex w-full justify-end gap-4">
