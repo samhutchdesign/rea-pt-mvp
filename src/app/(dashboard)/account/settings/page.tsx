@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Toggle } from '@/components/base/toggle/toggle';
 import { Button } from '@/components/base/buttons/button';
+import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
@@ -154,7 +155,6 @@ function SignatureModal({ open, onClose }: { open: boolean; onClose: () => void 
 }
 
 function SettingsContent() {
-  const router = useRouter();
   const mode = useThemeMode();
   const role = useRole();
   const searchParams = useSearchParams();
@@ -164,6 +164,28 @@ function SettingsContent() {
   const signatureFontId = useSignatureFontId(currentIdentity.id);
   const signatureFont = SIGNATURE_FONTS.find((f) => f.id === signatureFontId);
   const [language, setLanguage] = useState('English');
+
+  const [newEmail, setNewEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail) && newEmail === confirmEmail;
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const passwordValid = !!currentPassword && newPassword.length >= 8 && newPassword === confirmPassword;
+
+  const handleSaveEmail = () => {
+    toast.success('Email updated.');
+    setNewEmail('');
+    setConfirmEmail('');
+  };
+
+  const handleSavePassword = () => {
+    toast.success('Password updated.');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
 
   useEffect(() => {
     if (searchParams.get('transfer') === '1' && role === 'owner') setTransferOpen(true);
@@ -175,10 +197,44 @@ function SettingsContent() {
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Settings</h2>
 
         <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
-          <span className="font-semibold text-base text-primary block mb-4">Account</span>
-          <div className="flex flex-wrap gap-3">
-            <Button color="secondary" size="sm" onPress={() => router.push('/account/email')}>Change Email</Button>
-            <Button color="secondary" size="sm" onPress={() => router.push('/account/password')}>Reset Password</Button>
+          <span className="font-semibold text-base text-primary block mb-4">Change Email</span>
+          <div className="flex flex-col gap-5">
+            <div>
+              <div className="mb-1 text-xs text-secondary">Current Email</div>
+              <Input key={currentIdentity.id} aria-label="Current Email" defaultValue={currentIdentity.email} isDisabled />
+            </div>
+            <div>
+              <div className="mb-1 text-xs text-secondary">New Email</div>
+              <Input type="email" aria-label="New Email" value={newEmail} onChange={setNewEmail} />
+            </div>
+            <div>
+              <div className="mb-1 text-xs text-secondary">Confirm New Email</div>
+              <Input type="email" aria-label="Confirm New Email" value={confirmEmail} onChange={setConfirmEmail} />
+            </div>
+            <div className="flex justify-end">
+              <Button color="primary" size="sm" isDisabled={!emailValid} onPress={handleSaveEmail}>Save</Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
+          <span className="font-semibold text-base text-primary block mb-4">Reset Password</span>
+          <div className="flex flex-col gap-5">
+            <div>
+              <div className="mb-1 text-xs text-secondary">Current Password</div>
+              <Input type="password" aria-label="Current Password" value={currentPassword} onChange={setCurrentPassword} />
+            </div>
+            <div>
+              <div className="mb-1 text-xs text-secondary">New Password</div>
+              <Input type="password" aria-label="New Password" value={newPassword} onChange={setNewPassword} />
+            </div>
+            <div>
+              <div className="mb-1 text-xs text-secondary">Confirm New Password</div>
+              <Input type="password" aria-label="Confirm New Password" value={confirmPassword} onChange={setConfirmPassword} />
+            </div>
+            <div className="flex justify-end">
+              <Button color="primary" size="sm" isDisabled={!passwordValid} onPress={handleSavePassword}>Save</Button>
+            </div>
           </div>
         </div>
 
