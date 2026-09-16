@@ -11,7 +11,7 @@ import { useLocationId, setLocationId } from '@/lib/locationStore';
 import { useStaffPersona } from '@/lib/staffPersonaStore';
 import { useOrgId } from '@/lib/orgStore';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { Bell, ChevronDown, MapPin } from 'lucide-react';
+import { Bell, Building2, ChevronDown, CircleUserRound, Hospital, LogOut, MapPin, Settings } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 interface TopBarProps {
@@ -57,12 +57,10 @@ export default function TopBar({}: TopBarProps) {
   const hasMultiple = availableLocations.length > 1;
 
   const menuItems = [
-    ...(can.canManageClinic ? [{ key: 'org', label: 'Organization Profile', href: '/clinic' }] : []),
-    ...(can.canManageLocation ? [{ key: 'clinic', label: 'Clinic Profile', href: `/clinic/${identity.locationIds[0] ?? 'loc1'}` }] : []),
-    { key: 'profile', label: 'Your Profile', href: '/account/profile' },
-    { key: 'settings', label: 'Settings', href: '/account/settings' },
-    { key: 'email', label: 'Email Change', href: '/account/email' },
-    { key: 'password', label: 'Password Reset', href: '/account/password' },
+    ...(can.canManageClinic ? [{ key: 'org', label: 'Organization Profile', href: '/clinic', icon: Building2 }] : []),
+    ...(can.canManageLocation ? [{ key: 'clinic', label: 'Clinic Profile', href: `/clinic/${identity.locationIds[0] ?? 'loc1'}`, icon: Hospital }] : []),
+    { key: 'profile', label: 'Your Profile', href: '/account/profile', icon: CircleUserRound },
+    { key: 'settings', label: 'Settings', href: '/account/settings', icon: Settings },
   ];
 
   return (
@@ -130,31 +128,33 @@ export default function TopBar({}: TopBarProps) {
         </button>
 
         {menuOpen && (
-          <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-secondary bg-primary py-1">
-            <div className="px-4 py-3 border-b border-secondary">
-              <p className="text-base font-semibold text-primary">{identity.firstName} {identity.lastName}</p>
-              <p className="text-xs font-medium text-brand-600 mt-0.5">{roleLabel(role)}</p>
-              <p className="text-xs text-tertiary mt-0.5">{identity.email}</p>
+          <div className="absolute right-0 top-11 z-50 flex w-[260px] flex-col gap-1 rounded-lg border border-secondary bg-primary p-2 shadow-[0px_0px_5px_rgba(0,0,0,0.07)]">
+            <div className="flex flex-col gap-2 px-2 py-3">
+              <p className="font-display m-0 text-[18px] leading-5 font-medium tracking-[0.1px] text-primary">{identity.firstName} {identity.lastName}</p>
+              <div className="flex flex-col gap-1">
+                <p className="m-0 text-xs leading-4 text-secondary">{roleLabel(role)}</p>
+                <p className="m-0 text-xs leading-4 text-secondary">{identity.email}</p>
+              </div>
             </div>
-            <div className="py-1">
-              {menuItems.map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => { setMenuOpen(false); router.push(item.href); }}
-                  className="w-full px-4 py-2 text-left text-base text-secondary hover:bg-secondary transition-colors"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-            <div className="border-t border-secondary py-1">
+            <div className="w-full border-t border-secondary" />
+            {menuItems.map((item) => (
               <button
-                onClick={() => { setMenuOpen(false); router.push('/login'); }}
-                className="w-full px-4 py-2 text-left text-xs text-tertiary hover:bg-secondary transition-colors"
+                key={item.key}
+                onClick={() => { setMenuOpen(false); router.push(item.href); }}
+                className="flex h-12 w-full items-center gap-2 rounded-lg px-2 py-3 text-left text-base text-secondary transition-colors hover:bg-secondary"
               >
-                Log Out
+                <item.icon size={24} className="shrink-0" />
+                {item.label}
               </button>
-            </div>
+            ))}
+            <div className="w-full border-t border-secondary" />
+            <button
+              onClick={() => { setMenuOpen(false); router.push('/login'); }}
+              className="flex h-12 w-full items-center gap-2 rounded-lg px-2 py-3 text-left text-base text-secondary transition-colors hover:bg-secondary"
+            >
+              <LogOut size={24} className="shrink-0" />
+              Log Out
+            </button>
           </div>
         )}
       </div>

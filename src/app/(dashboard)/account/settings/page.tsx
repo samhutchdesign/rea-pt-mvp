@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Toggle } from '@/components/base/toggle/toggle';
 import { Button } from '@/components/base/buttons/button';
@@ -154,6 +154,7 @@ function SignatureModal({ open, onClose }: { open: boolean; onClose: () => void 
 }
 
 function SettingsContent() {
+  const router = useRouter();
   const mode = useThemeMode();
   const role = useRole();
   const searchParams = useSearchParams();
@@ -172,6 +173,15 @@ function SettingsContent() {
     <>
       <div className="p-8 max-w-[600px]">
         <h2 className="text-xl font-semibold text-primary mt-0 mb-6">Settings</h2>
+
+        <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
+          <span className="font-semibold text-base text-primary block mb-4">Account</span>
+          <div className="flex flex-wrap gap-3">
+            <Button color="secondary" size="sm" onPress={() => router.push('/account/email')}>Change Email</Button>
+            <Button color="secondary" size="sm" onPress={() => router.push('/account/password')}>Reset Password</Button>
+          </div>
+        </div>
+
         <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
           <span className="font-semibold text-base text-primary block mb-4">Preferences</span>
           <div className="flex items-center gap-2 mb-4">
