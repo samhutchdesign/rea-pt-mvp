@@ -8,6 +8,8 @@ import { PelvicFloorFullRangeAnimation } from '@/components/exercises/PelvicFloo
 import { QuickFlicksAnimation } from '@/components/exercises/QuickFlicksAnimation';
 import { SustainedHoldAnimation } from '@/components/exercises/SustainedHoldAnimation';
 import { ElevatorAnimation } from '@/components/exercises/ElevatorAnimation';
+import { ReverseKegelAnimation } from '@/components/exercises/ReverseKegelAnimation';
+import { TheKnackAnimation } from '@/components/exercises/TheKnackAnimation';
 import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, type RxValues } from '@/components/exercises/exerciseRx';
 import { CompactField } from '@/components/exercises/CompactField';
 import { ParametersCard } from '@/components/exercises/ParametersCard';
@@ -238,6 +240,22 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
             </ElevatorAnimation>
+          ) : ex.animationType === 'pf-reverse-kegel' ? (
+            <ReverseKegelAnimation
+              key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
+              speedSecs={rx.speedSecs}
+              restSecs={rx.restSecs}
+              reps={rx.reps}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            >
+              <ParametersCard>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
+              </ParametersCard>
+            </ReverseKegelAnimation>
+          ) : ex.animationType === 'pf-the-knack' ? (
+            <TheKnackAnimation className="mb-5 w-full aspect-video rounded-2xl" />
           ) : ex.videoUrl ? (
             <div className="mb-5 w-full aspect-video rounded-2xl overflow-hidden bg-[#0f0f0f]">
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />

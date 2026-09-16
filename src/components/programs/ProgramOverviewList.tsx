@@ -20,6 +20,10 @@ function rowSummary(ex: Exercise, row: ProgramRow): string {
       return `${row.sets} Sets / ${row.reps} Reps at ${row.holdIntensityPct ?? ex.defaultHoldIntensityPct ?? 60}% / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 1.3}s Speed / ${row.holdSecs} Sec Hold`;
     case 'pf-elevator':
       return `${row.sets} Sets / ${row.reps} Reps / ${row.stages ?? ex.defaultStages ?? 4} Stages / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 0.6}s Speed`;
+    case 'pf-reverse-kegel':
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 1.2}s Speed / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
+    case 'pf-the-knack':
+      return `Practiced ${(row.frequency ?? ex.defaultFrequency ?? 'Daily').toLowerCase()}`;
     default:
       return `${row.sets} Sets / ${row.reps} Reps${row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}`;
   }

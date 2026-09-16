@@ -2107,6 +2107,63 @@ const mockExercisesRaw: ExerciseBase[] = [
     isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
     animationType: 'pf-elevator', defaultStartingPosition: 'Lying', defaultStages: 4, defaultStagePauseSecs: 2, defaultSpeedSecs: 0.6,
   },
+  {
+    id: 'ex_pf_reverse_kegel',
+    name: 'Reverse Kegel (Full Release)',
+    description: 'Guided pelvic floor release. Starting position: Lying, sitting, or standing.',
+    category: 'Pelvic Pain & Hypertonic',
+    level: 'Intermediate',
+    equipment: 'None',
+    instructions: [
+      'Find a comfortable lying, sitting, or standing position.',
+      'Inhale and relax your pelvic floor muscles, letting them lengthen and release.',
+      'Exhale as you return to neutral.',
+      'Rest for the prescribed duration before the next repetition.',
+    ],
+    commonMistakes: [
+      'Bearing down or pushing/straining instead of passively releasing.',
+      'Holding the breath.',
+      'Rushing the return to neutral.',
+    ],
+    tags: {
+      specialty: ['Pelvic health'],
+      condition: ['Pelvic Pain', 'Pelvic Girdle Pain', 'Constipation', 'Dyspareunia'],
+      surgery: [],
+      muscle: ['Levator ani; Coccygeus; Urogenital diaphragm'],
+      bodyPart: ['Pelvic floor'],
+    },
+    defaultSets: 3, defaultReps: 8, defaultHoldSecs: 0, defaultFrequency: 'Daily',
+    isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
+    animationType: 'pf-reverse-kegel', defaultStartingPosition: 'Lying', defaultRestSecs: 5, defaultSpeedSecs: 1.2,
+  },
+  {
+    id: 'ex_pf_the_knack',
+    name: 'The Knack',
+    description: 'Pre-contraction cue for real-life pressure moments — no set reps or sessions, practiced as needed.',
+    category: 'Pelvic Floor Muscle Training',
+    level: 'Beginner',
+    equipment: 'None',
+    instructions: [
+      'Before and during any activity that puts pressure on your pelvic floor — coughing, sneezing, lifting, or standing up — contract your pelvic floor muscles.',
+      'Hold the contraction through the activity.',
+      'Release once the activity is complete.',
+    ],
+    commonMistakes: [
+      'Bracing too late, after the pressure has already occurred.',
+      'Forgetting to release once the activity is finished.',
+      'Holding the breath instead of breathing normally.',
+    ],
+    tags: {
+      specialty: ['Pelvic health'],
+      condition: ['Stress Urinary Incontinence', 'Pelvic Organ Prolapse'],
+      surgery: [],
+      muscle: ['Levator ani; Coccygeus; Urogenital diaphragm; External anal sphincter'],
+      bodyPart: ['Pelvic floor'],
+    },
+    defaultSets: 1, defaultReps: 1, defaultHoldSecs: 0, defaultFrequency: 'Daily',
+    isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
+    animationType: 'pf-the-knack',
+  },
 
 ];
 

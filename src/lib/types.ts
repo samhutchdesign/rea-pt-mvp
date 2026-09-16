@@ -115,7 +115,7 @@ export interface Exercise {
   variationGroup?: string;
   userUploaded?: boolean;
   /** Set for exercises that are a guided animation rather than a video. */
-  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator';
+  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack';
   /** Default seconds per animation cycle, for animation-type exercises. */
   defaultSpeedSecs?: number;
   /** Default number of animation cycles, for animation-type exercises. */
