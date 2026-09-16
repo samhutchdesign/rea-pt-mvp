@@ -16,15 +16,14 @@ export function BreathingCircleAnimation({ cycleSeconds, loops, className }: Bre
   // Pass a `key` that changes with cycleSeconds/loops at the call site to
   // restart the preview from a clean state instead of reacting to prop
   // changes here.
-  const [phase, setPhase] = useState<'in' | 'out'>('in');
   const [running, setRunning] = useState(true);
+  const [cycleCount, setCycleCount] = useState(1);
   const [riseDistance, setRiseDistance] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const groupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const halfMs = (cycleSeconds * 1000) / 2;
-    const phaseTimer = setInterval(() => setPhase((p) => (p === 'in' ? 'out' : 'in')), halfMs);
+    const cycleTimer = setInterval(() => setCycleCount((c) => (loops && loops > 0 ? Math.min(c + 1, loops) : c + 1)), cycleSeconds * 1000);
 
     let stopTimer: ReturnType<typeof setTimeout> | undefined;
     if (loops && loops > 0) {
@@ -32,7 +31,7 @@ export function BreathingCircleAnimation({ cycleSeconds, loops, className }: Bre
     }
 
     return () => {
-      clearInterval(phaseTimer);
+      clearInterval(cycleTimer);
       if (stopTimer) clearTimeout(stopTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,7 +74,7 @@ export function BreathingCircleAnimation({ cycleSeconds, loops, className }: Bre
         <div className="absolute bottom-0 left-1/2 size-[158px] -translate-x-1/2 -mb-[79px] rounded-full bg-brand-700" />
       </div>
       <span className="absolute top-6 left-6 font-display text-md font-medium text-primary">
-        {running ? (phase === 'in' ? 'Breathe In' : 'Breathe Out') : 'Finished'}
+        {loops && loops > 0 ? `${Math.min(cycleCount, loops)} of ${loops}` : cycleCount}
       </span>
     </div>
   );
