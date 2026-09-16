@@ -129,9 +129,9 @@ export default function TopBar({}: TopBarProps) {
 
         {menuOpen && (
           <div className="absolute right-0 top-11 z-50 flex w-[260px] flex-col gap-1 rounded-lg border border-secondary bg-primary p-2 shadow-[0px_0px_5px_rgba(0,0,0,0.07)]">
-            <div className="flex flex-col gap-2 px-2 py-3">
+            <div className="flex flex-col gap-3 px-2 py-4">
               <p className="font-display m-0 text-[18px] leading-5 font-medium tracking-[0.1px] text-primary">{identity.firstName} {identity.lastName}</p>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-2">
                 <p className="m-0 text-xs leading-4 text-secondary">{roleLabel(role)}</p>
                 <p className="m-0 text-xs leading-4 text-secondary">{identity.email}</p>
               </div>
