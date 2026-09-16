@@ -17,7 +17,6 @@ import { mockEmployees } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
 import { Crown } from 'lucide-react';
 
-type NewOwnerMode = 'existing' | 'invite';
 type OutgoingChoice = UserRole | 'remove';
 
 const OUTGOING_ROLE_OPTIONS: { value: OutgoingChoice; label: string }[] = [
@@ -31,33 +30,23 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
   const currentIdentity = useCurrentIdentity();
   const eligibleEmployees = mockEmployees.filter((e) => !e.archived && e.id !== currentIdentity.id);
 
-  const [mode, setMode] = useState<NewOwnerMode>('existing');
   const [targetEmployeeId, setTargetEmployeeId] = useState('');
-  const [inviteEmail, setInviteEmail] = useState('');
   const [outgoingChoice, setOutgoingChoice] = useState<OutgoingChoice | ''>('');
 
   const reset = () => {
-    setMode('existing');
     setTargetEmployeeId('');
-    setInviteEmail('');
     setOutgoingChoice('');
   };
 
   const handleClose = () => { onClose(); reset(); };
 
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail);
-  const newOwnerValid = mode === 'existing' ? !!targetEmployeeId : emailValid;
-  const canConfirm = newOwnerValid && !!outgoingChoice;
+  const canConfirm = !!targetEmployeeId && !!outgoingChoice;
 
   const handleConfirm = () => {
-    const targetEmployee = mode === 'existing' ? mockEmployees.find((e) => e.id === targetEmployeeId) : null;
-    const newOwnerName = mode === 'existing' ? `${targetEmployee?.firstName} ${targetEmployee?.lastName}` : inviteEmail;
+    const targetEmployee = mockEmployees.find((e) => e.id === targetEmployeeId);
+    const newOwnerName = `${targetEmployee?.firstName} ${targetEmployee?.lastName}`;
 
-    if (mode === 'invite') {
-      toast.success(`Invite sent to ${inviteEmail} to become the new Owner.`);
-    } else {
-      toast.success(`Ownership transferred to ${newOwnerName}.`);
-    }
+    toast.success(`Ownership transferred to ${newOwnerName}.`);
 
     if (outgoingChoice === 'remove') {
       toast.success(`${currentIdentity.firstName} ${currentIdentity.lastName} has been removed from the organization.`);
@@ -84,65 +73,31 @@ function TransferOwnershipModal({ open, onClose }: { open: boolean; onClose: () 
               </ModalWarningMessage>
             </div>
 
-            <div className="flex w-full flex-col gap-5">
-              <div className="flex flex-col gap-2">
-                <label className="block text-xs text-secondary">New Owner</label>
-                <div className="flex gap-2 mb-1">
-                  <Button
-                    color={mode === 'existing' ? 'primary' : 'secondary'}
-                    size="xs"
-                    onPress={() => { setMode('existing'); setInviteEmail(''); }}
-                  >
-                    Existing Employee
-                  </Button>
-                  <Button
-                    color={mode === 'invite' ? 'primary' : 'secondary'}
-                    size="xs"
-                    onPress={() => { setMode('invite'); setTargetEmployeeId(''); }}
-                  >
-                    Invite by Email
-                  </Button>
-                </div>
+            <NativeSelect
+              className="h-12"
+              value={targetEmployeeId}
+              onChange={(e) => setTargetEmployeeId(e.target.value)}
+            >
+              <option value="">Select an employee…</option>
+              {eligibleEmployees.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.firstName} {e.lastName} — {e.role === 'admin' ? 'Manager' : e.role === 'limited' ? 'Staff' : 'Practitioner'}
+                </option>
+              ))}
+            </NativeSelect>
 
-                {mode === 'existing' ? (
-                  <NativeSelect
-                    className="h-12"
-                    value={targetEmployeeId}
-                    onChange={(e) => setTargetEmployeeId(e.target.value)}
-                  >
-                    <option value="">Select an employee…</option>
-                    {eligibleEmployees.map((e) => (
-                      <option key={e.id} value={e.id}>
-                        {e.firstName} {e.lastName} — {e.role === 'admin' ? 'Manager' : e.role === 'limited' ? 'Staff' : 'Practitioner'}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                ) : (
-                  <input
-                    type="email"
-                    placeholder="newowner@example.com"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    className="h-12 w-full rounded-lg border border-secondary bg-primary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
-                  />
-                )}
-              </div>
-
-              <Divider />
-
-              <div className="flex flex-col gap-2">
-                <label className="block text-xs text-secondary">Your New Role</label>
-                <NativeSelect
-                  className="h-12"
-                  value={outgoingChoice}
-                  onChange={(e) => setOutgoingChoice(e.target.value as OutgoingChoice)}
-                >
-                  <option value="">Select what happens to your account…</option>
-                  {OUTGOING_ROLE_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </NativeSelect>
-              </div>
+            <div className="flex flex-col gap-2">
+              <label className="block text-xs text-secondary">Your New Role</label>
+              <NativeSelect
+                className="h-12"
+                value={outgoingChoice}
+                onChange={(e) => setOutgoingChoice(e.target.value as OutgoingChoice)}
+              >
+                <option value="">Select what happens to your account…</option>
+                {OUTGOING_ROLE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </NativeSelect>
             </div>
 
             <div className="flex w-full justify-end gap-4">
