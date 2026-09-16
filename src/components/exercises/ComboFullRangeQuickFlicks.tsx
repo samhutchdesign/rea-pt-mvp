@@ -36,16 +36,13 @@ export function ComboFullRangeQuickFlicks({
   return (
     <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={500} className={className}>
       <div className="absolute top-5 left-5 flex flex-col gap-0.5">
-        {running && phase.stepName && (
-          <span className="font-display text-[20px] leading-[32px] font-medium text-primary">{phase.stepName}</span>
-        )}
-        {running && phase.repText && (
-          <span className="text-sm text-secondary">{phase.repText}</span>
-        )}
         <span className="flex items-baseline gap-1 font-display text-[20px] leading-[32px] font-medium text-primary">
           <RollingNumber value={repIndex} />
           {comboSets && comboSets > 0 && <span>of {comboSets} sets</span>}
         </span>
+        {running && phase.stepName && phase.repText && (
+          <span className="text-base text-primary">{phase.stepName} - Reps {phase.repText}</span>
+        )}
       </div>
       <span className="absolute top-5 left-1/2 -translate-x-1/2 font-display text-[20px] leading-[32px] font-medium text-primary">
         {running ? phase.label : 'Finished'}
