@@ -479,7 +479,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                   </div>
                 ) : null;
               })()}
-              <ol className="pl-5 space-y-3 list-decimal w-full">
+              <ol className="pl-5 space-y-4 list-decimal w-full">
                 {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
               </ol>
             </div>
@@ -489,7 +489,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
             {/* Common Mistakes */}
             <div className="flex flex-col gap-7 w-full">
               <h3 className="font-display m-0 text-[20px] leading-[32px] font-medium text-primary">Common Mistakes</h3>
-              <ul className="pl-5 space-y-3 list-disc w-full">
+              <ul className="pl-5 space-y-4 list-disc w-full">
                 {ex.commonMistakes.map((m, i) => <li key={i} className="text-base text-primary">{m}</li>)}
               </ul>
             </div>
