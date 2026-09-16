@@ -143,7 +143,7 @@ export default function TopBar({}: TopBarProps) {
                 onClick={() => { setMenuOpen(false); router.push(item.href); }}
                 className="flex h-12 w-full items-center gap-2 rounded-lg px-2 py-3 text-left text-base text-secondary transition-colors hover:bg-secondary"
               >
-                <item.icon size={24} className="shrink-0" />
+                <item.icon size={24} strokeWidth={1.25} className="shrink-0" />
                 {item.label}
               </button>
             ))}
@@ -152,7 +152,7 @@ export default function TopBar({}: TopBarProps) {
               onClick={() => { setMenuOpen(false); router.push('/login'); }}
               className="flex h-12 w-full items-center gap-2 rounded-lg px-2 py-3 text-left text-base text-secondary transition-colors hover:bg-secondary"
             >
-              <LogOut size={24} className="shrink-0" />
+              <LogOut size={24} strokeWidth={1.25} className="shrink-0" />
               Log Out
             </button>
           </div>
