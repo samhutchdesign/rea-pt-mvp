@@ -127,7 +127,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
           <Divider className="mb-5" />
 
           <CollapsibleSection title="Instructions" open={instructionsOpen} onToggle={() => setInstructionsOpen((v) => !v)}>
-            <ol className="pl-5 mb-2 space-y-1.5 list-decimal">
+            <ol className="pl-5 mb-2 space-y-5 list-decimal">
               {exercise.instructions.map((step, i) => (
                 <li key={i} className="text-base text-secondary">{step}</li>
               ))}
@@ -142,7 +142,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             open={mistakesOpen}
             onToggle={() => setMistakesOpen((v) => !v)}
           >
-            <ul className="pl-5 space-y-1.5 list-disc">
+            <ul className="pl-5 space-y-5 list-disc">
               {exercise.commonMistakes.map((m, i) => (
                 <li key={i} className="text-base text-secondary">{m}</li>
               ))}

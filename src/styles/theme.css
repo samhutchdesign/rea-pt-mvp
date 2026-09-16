@@ -21,11 +21,11 @@
     --text-sm--line-height: calc(var(--spacing) * 5);
 
     --text-md: calc(var(--spacing) * 4);
-    --text-md--line-height: calc(var(--spacing) * 5);
+    --text-md--line-height: calc(var(--spacing) * 6);
 
     /* Tailwind's default text-base is also 16px — keep it in lockstep with text-md
        so `text-base` usages (Program Card description, etc.) get the same fix. */
-    --text-base--line-height: calc(var(--spacing) * 5);
+    --text-base--line-height: calc(var(--spacing) * 6);
 
     --text-lg: calc(var(--spacing) * 4.5);
     --text-lg--line-height: calc(var(--spacing) * 5);
