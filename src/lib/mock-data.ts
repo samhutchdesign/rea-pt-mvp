@@ -2015,7 +2015,7 @@ const mockExercisesRaw: ExerciseBase[] = [
     },
     defaultSets: 3, defaultReps: 10, defaultHoldSecs: 5, defaultFrequency: 'Daily',
     isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
-    animationType: 'pf-full-range', defaultStartingPosition: 'Lying', defaultRestSecs: 5,
+    animationType: 'pf-full-range', defaultStartingPosition: 'Lying', defaultRestSecs: 5, defaultSpeedSecs: 0.9,
   },
   {
     id: 'ex_pf_quick_flicks',
@@ -2045,7 +2045,7 @@ const mockExercisesRaw: ExerciseBase[] = [
     },
     defaultSets: 3, defaultReps: 15, defaultHoldSecs: 0, defaultFrequency: 'Daily',
     isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
-    animationType: 'pf-quick-flicks', defaultStartingPosition: 'Lying', defaultRestSecs: 3,
+    animationType: 'pf-quick-flicks', defaultStartingPosition: 'Lying', defaultRestSecs: 3, defaultSpeedSecs: 0.25,
   },
   {
     id: 'ex_pf_sustained_hold',
@@ -2075,7 +2075,7 @@ const mockExercisesRaw: ExerciseBase[] = [
     },
     defaultSets: 3, defaultReps: 8, defaultHoldSecs: 10, defaultFrequency: 'Daily',
     isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
-    animationType: 'pf-sustained-hold', defaultStartingPosition: 'Lying', defaultRestSecs: 8, defaultHoldIntensityPct: 60,
+    animationType: 'pf-sustained-hold', defaultStartingPosition: 'Lying', defaultRestSecs: 8, defaultHoldIntensityPct: 60, defaultSpeedSecs: 1.3,
   },
   {
     id: 'ex_pf_elevator',
@@ -2105,7 +2105,7 @@ const mockExercisesRaw: ExerciseBase[] = [
     },
     defaultSets: 2, defaultReps: 6, defaultHoldSecs: 0, defaultFrequency: 'Daily',
     isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
-    animationType: 'pf-elevator', defaultStartingPosition: 'Lying', defaultStages: 4, defaultStagePauseSecs: 2,
+    animationType: 'pf-elevator', defaultStartingPosition: 'Lying', defaultStages: 4, defaultStagePauseSecs: 2, defaultSpeedSecs: 0.6,
   },
 
 ];

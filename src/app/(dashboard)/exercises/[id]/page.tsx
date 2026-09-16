@@ -178,7 +178,8 @@ function ExerciseDetailContent({ id }: { id: string }) {
             />
           ) : ex.animationType === 'pf-full-range' ? (
             <PelvicFloorFullRangeAnimation
-              key={`${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+              key={`${rx.speedSecs}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+              speedSecs={rx.speedSecs}
               holdSecs={rx.holdSecs}
               restSecs={rx.restSecs}
               reps={rx.reps}
@@ -186,14 +187,16 @@ function ExerciseDetailContent({ id }: { id: string }) {
             />
           ) : ex.animationType === 'pf-quick-flicks' ? (
             <QuickFlicksAnimation
-              key={`${rx.restSecs}-${rx.reps}`}
+              key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
+              speedSecs={rx.speedSecs}
               restSecs={rx.restSecs}
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
             />
           ) : ex.animationType === 'pf-sustained-hold' ? (
             <SustainedHoldAnimation
-              key={`${rx.holdIntensityPct}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+              key={`${rx.speedSecs}-${rx.holdIntensityPct}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+              speedSecs={rx.speedSecs}
               intensityPct={rx.holdIntensityPct}
               holdSecs={rx.holdSecs}
               restSecs={rx.restSecs}
@@ -202,7 +205,8 @@ function ExerciseDetailContent({ id }: { id: string }) {
             />
           ) : ex.animationType === 'pf-elevator' ? (
             <ElevatorAnimation
-              key={`${rx.stages}-${rx.stagePauseSecs}-${rx.reps}`}
+              key={`${rx.speedSecs}-${rx.stages}-${rx.stagePauseSecs}-${rx.reps}`}
+              speedSecs={rx.speedSecs}
               stages={rx.stages}
               stagePauseSecs={rx.stagePauseSecs}
               reps={rx.reps}
@@ -239,6 +243,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           {ex.animationType === 'pf-full-range' && (
             <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
+              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.3} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
               <PreviewSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ holdSecs: v })} />
               <PreviewSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
               <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
@@ -247,6 +252,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           {ex.animationType === 'pf-quick-flicks' && (
             <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
+              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.1} max={1} step={0.05} onChange={(v) => patchRx({ speedSecs: v })} />
               <PreviewSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={10} onChange={(v) => patchRx({ restSecs: v })} />
               <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
             </div>
@@ -258,6 +264,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <NativeSelect className="h-9 w-24" value={String(rx.holdIntensityPct)} onChange={(e) => patchRx({ holdIntensityPct: Number(e.target.value) })}>
                 {HOLD_INTENSITIES.map((pct) => <option key={pct} value={pct}>{pct}%</option>)}
               </NativeSelect>
+              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
               <PreviewSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={20} onChange={(v) => patchRx({ holdSecs: v })} />
               <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
             </div>
@@ -269,6 +276,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <NativeSelect className="h-9 w-20" value={String(rx.stages)} onChange={(e) => patchRx({ stages: Number(e.target.value) })}>
                 {STAGE_COUNTS.map((n) => <option key={n} value={n}>{n}</option>)}
               </NativeSelect>
+              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.2} max={2} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
               <PreviewSlider label="Pause / Stage" value={rx.stagePauseSecs} unit="s" min={0.5} max={5} step={0.5} onChange={(v) => patchRx({ stagePauseSecs: v })} />
               <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
             </div>

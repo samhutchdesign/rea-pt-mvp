@@ -13,13 +13,13 @@ function rowSummary(ex: Exercise, row: ProgramRow): string {
     case 'breathing-pacer':
       return `${row.speedSecs ?? ex.defaultSpeedSecs ?? 4}s per breath × ${row.loops ?? ex.defaultLoops ?? 5} loops`;
     case 'pf-full-range':
-      return `${row.sets} Sets / ${row.reps} Reps / ${row.holdSecs} Sec Hold / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 0.9}s Speed / ${row.holdSecs} Sec Hold / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
     case 'pf-quick-flicks':
-      return `${row.sets} Sets / ${row.reps} Reps / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 0.25}s Speed / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
     case 'pf-sustained-hold':
-      return `${row.sets} Sets / ${row.reps} Reps at ${row.holdIntensityPct ?? ex.defaultHoldIntensityPct ?? 60}% / ${row.holdSecs} Sec Hold`;
+      return `${row.sets} Sets / ${row.reps} Reps at ${row.holdIntensityPct ?? ex.defaultHoldIntensityPct ?? 60}% / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 1.3}s Speed / ${row.holdSecs} Sec Hold`;
     case 'pf-elevator':
-      return `${row.sets} Sets / ${row.reps} Reps / ${row.stages ?? ex.defaultStages ?? 4} Stages`;
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.stages ?? ex.defaultStages ?? 4} Stages / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 0.6}s Speed`;
     default:
       return `${row.sets} Sets / ${row.reps} Reps${row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}`;
   }

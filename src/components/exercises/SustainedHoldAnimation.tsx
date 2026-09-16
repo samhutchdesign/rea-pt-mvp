@@ -6,6 +6,7 @@ import { RollingNumber } from './RollingNumber';
 const SHRINK_SCALE = 0.22;
 
 interface SustainedHoldAnimationProps {
+  speedSecs: number;
   intensityPct: number;
   holdSecs: number;
   restSecs: number;
@@ -13,21 +14,22 @@ interface SustainedHoldAnimationProps {
   className?: string;
 }
 
-export function SustainedHoldAnimation({ intensityPct, holdSecs, restSecs, reps, className }: SustainedHoldAnimationProps) {
+export function SustainedHoldAnimation({ speedSecs, intensityPct, holdSecs, restSecs, reps, className }: SustainedHoldAnimationProps) {
   const targetScale = 1 - (intensityPct / 100) * (1 - SHRINK_SCALE);
   const targetRise = intensityPct / 100;
+  const moveMs = Math.max(speedSecs, 0.1) * 1000;
 
   const phases: Phase[] = [
-    { label: `Contract to ${intensityPct}%`, scale: targetScale, riseFraction: targetRise, durationMs: 1200 },
+    { label: `Contract to ${intensityPct}%`, scale: targetScale, riseFraction: targetRise, durationMs: moveMs },
     { label: 'Hold', scale: targetScale, riseFraction: targetRise, durationMs: Math.max(holdSecs, 0.1) * 1000 },
-    { label: 'Release', scale: 1, riseFraction: 0, durationMs: 1500 },
+    { label: 'Release', scale: 1, riseFraction: 0, durationMs: moveMs },
     { label: 'Rest', scale: 1, riseFraction: 0, durationMs: Math.max(restSecs, 0.1) * 1000 },
   ];
 
   const { repIndex, phase, running } = usePhaseSequence(phases, reps);
 
   return (
-    <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={1000} className={className}>
+    <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={moveMs} className={className}>
       <span className="absolute top-6 left-6 font-display text-md font-medium text-primary">
         {running ? phase.label : 'Finished'}
       </span>

@@ -43,13 +43,13 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
     case 'breathing-pacer':
       return `${rx.speedSecs}s per breath × ${rx.loops} loop${rx.loops === 1 ? '' : 's'}`;
     case 'pf-full-range':
-      return `${rx.sets} sets × ${rx.reps} reps, ${rx.holdSecs}s hold, ${rx.restSecs}s rest`;
+      return `${rx.sets} sets × ${rx.reps} reps, ${rx.speedSecs}s speed, ${rx.holdSecs}s hold, ${rx.restSecs}s rest`;
     case 'pf-quick-flicks':
-      return `${rx.sets} sets × ${rx.reps} reps, ${rx.restSecs}s rest`;
+      return `${rx.sets} sets × ${rx.reps} reps, ${rx.speedSecs}s speed, ${rx.restSecs}s rest`;
     case 'pf-sustained-hold':
-      return `${rx.sets} sets × ${rx.reps} reps at ${rx.holdIntensityPct}%, ${rx.holdSecs}s hold, ${rx.restSecs}s rest`;
+      return `${rx.sets} sets × ${rx.reps} reps at ${rx.holdIntensityPct}%, ${rx.speedSecs}s speed, ${rx.holdSecs}s hold, ${rx.restSecs}s rest`;
     case 'pf-elevator':
-      return `${rx.sets} sets × ${rx.reps} reps, ${rx.stages} stages, ${rx.stagePauseSecs}s pause`;
+      return `${rx.sets} sets × ${rx.reps} reps, ${rx.stages} stages, ${rx.speedSecs}s speed, ${rx.stagePauseSecs}s pause`;
     default:
       return `${rx.sets} sets × ${rx.reps} reps${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
   }
@@ -98,6 +98,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           {positionField}
           <div className="flex flex-wrap gap-2">
             {setsRepsFields}
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
             <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
             <CompactField value={values.restSecs} unitSingular="Sec Rest" unitPlural="Sec Rest" onChange={(v) => onChange({ restSecs: v })} />
           </div>
@@ -111,6 +112,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           {positionField}
           <div className="flex flex-wrap gap-2">
             {setsRepsFields}
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
             <CompactField value={values.restSecs} unitSingular="Sec Rest" unitPlural="Sec Rest" onChange={(v) => onChange({ restSecs: v })} />
           </div>
           {frequencyField}
@@ -129,6 +131,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           </div>
           <div className="flex flex-wrap gap-2">
             {setsRepsFields}
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
             <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
             <CompactField value={values.restSecs} unitSingular="Sec Rest" unitPlural="Sec Rest" onChange={(v) => onChange({ restSecs: v })} />
           </div>
@@ -148,6 +151,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           </div>
           <div className="flex flex-wrap gap-2">
             {setsRepsFields}
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
             <CompactField value={values.stagePauseSecs} unitSingular="Sec / Stage" unitPlural="Sec / Stage" onChange={(v) => onChange({ stagePauseSecs: v })} />
           </div>
           {frequencyField}

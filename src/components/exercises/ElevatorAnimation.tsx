@@ -7,6 +7,7 @@ import { RollingNumber } from './RollingNumber';
 const SHRINK_SCALE = 0.22;
 
 interface ElevatorAnimationProps {
+  speedSecs: number;
   stages: number;
   stagePauseSecs: number;
   reps?: number;
@@ -17,9 +18,10 @@ function levelToScale(fraction: number) {
   return 1 - fraction * (1 - SHRINK_SCALE);
 }
 
-export function ElevatorAnimation({ stages, stagePauseSecs, reps, className }: ElevatorAnimationProps) {
+export function ElevatorAnimation({ speedSecs, stages, stagePauseSecs, reps, className }: ElevatorAnimationProps) {
   const n = Math.max(stages, 1);
   const pauseMs = Math.max(stagePauseSecs, 0.1) * 1000;
+  const moveMs = Math.max(speedSecs, 0.1) * 1000;
 
   const phases = useMemo<Phase[]>(() => {
     const list: Phase[] = [];
@@ -27,23 +29,23 @@ export function ElevatorAnimation({ stages, stagePauseSecs, reps, className }: E
     for (let i = 1; i <= n; i++) {
       const fraction = i / n;
       const label = `Stage ${i} of ${n}`;
-      list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: 600 });
+      list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: moveMs });
       list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: pauseMs });
     }
     // Descend: back down through the same levels to rest.
     for (let i = n - 1; i >= 0; i--) {
       const fraction = i / n;
       const label = i === 0 ? 'Rest' : `Release — Stage ${i} of ${n}`;
-      list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: 600 });
+      list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: moveMs });
       list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: i === 0 ? pauseMs : pauseMs });
     }
     return list;
-  }, [n, pauseMs]);
+  }, [n, pauseMs, moveMs]);
 
   const { repIndex, phase, running } = usePhaseSequence(phases, reps);
 
   return (
-    <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={500} className={className}>
+    <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={moveMs} className={className}>
       <span className="absolute top-6 left-6 font-display text-md font-medium text-primary">
         {running ? phase.label : 'Finished'}
       </span>
