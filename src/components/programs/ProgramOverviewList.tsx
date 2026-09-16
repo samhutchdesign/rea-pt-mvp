@@ -8,6 +8,23 @@ interface ProgramOverviewListProps {
   getExercise: (id: string) => Exercise | undefined;
 }
 
+function rowSummary(ex: Exercise, row: ProgramRow): string {
+  switch (ex.animationType) {
+    case 'breathing-pacer':
+      return `${row.speedSecs ?? ex.defaultSpeedSecs ?? 4}s per breath × ${row.loops ?? ex.defaultLoops ?? 5} loops`;
+    case 'pf-full-range':
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.holdSecs} Sec Hold / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
+    case 'pf-quick-flicks':
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
+    case 'pf-sustained-hold':
+      return `${row.sets} Sets / ${row.reps} Reps at ${row.holdIntensityPct ?? ex.defaultHoldIntensityPct ?? 60}% / ${row.holdSecs} Sec Hold`;
+    case 'pf-elevator':
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.stages ?? ex.defaultStages ?? 4} Stages`;
+    default:
+      return `${row.sets} Sets / ${row.reps} Reps${row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}`;
+  }
+}
+
 export function ProgramOverviewList({ rows, getExercise }: ProgramOverviewListProps) {
   return (
     <div className="flex flex-col gap-5">
@@ -26,7 +43,7 @@ export function ProgramOverviewList({ rows, getExercise }: ProgramOverviewListPr
               <div className="min-w-0 flex-1">
                 <p className="font-display mb-0.5 truncate text-base font-semibold text-primary">{ex.name}</p>
                 <p className="mb-1.5 text-xs text-tertiary">
-                  {row.sets} Sets / {row.reps} Reps{row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}
+                  {rowSummary(ex, row)}
                 </p>
                 {row.cue && (
                   <span className="inline-block rounded-full border border-secondary bg-primary px-2 py-0.5 text-xs text-secondary">

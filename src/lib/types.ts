@@ -115,11 +115,21 @@ export interface Exercise {
   variationGroup?: string;
   userUploaded?: boolean;
   /** Set for exercises that are a guided animation rather than a video. */
-  animationType?: 'breathing-pacer';
+  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator';
   /** Default seconds per animation cycle, for animation-type exercises. */
   defaultSpeedSecs?: number;
   /** Default number of animation cycles, for animation-type exercises. */
   defaultLoops?: number;
+  /** Default starting position, for pelvic-floor animation-type exercises. */
+  defaultStartingPosition?: 'Lying' | 'Sitting' | 'Standing';
+  /** Default rest between reps, in seconds. */
+  defaultRestSecs?: number;
+  /** Default contraction intensity target, as a percentage (Sustained Hold). */
+  defaultHoldIntensityPct?: number;
+  /** Default number of graded stages (The Elevator). */
+  defaultStages?: number;
+  /** Default pause at each stage, in seconds (The Elevator). */
+  defaultStagePauseSecs?: number;
 }
 
 export interface ProgramExercise {
@@ -133,6 +143,16 @@ export interface ProgramExercise {
   speedSecs?: number;
   /** Number of animation cycles, set when the exercise is animation-type. */
   loops?: number;
+  /** Starting position, for pelvic-floor animation-type exercises. */
+  startingPosition?: 'Lying' | 'Sitting' | 'Standing';
+  /** Rest between reps, in seconds. */
+  restSecs?: number;
+  /** Contraction intensity target, as a percentage (Sustained Hold). */
+  holdIntensityPct?: number;
+  /** Number of graded stages (The Elevator). */
+  stages?: number;
+  /** Pause at each stage, in seconds (The Elevator). */
+  stagePauseSecs?: number;
 }
 
 export interface Program {

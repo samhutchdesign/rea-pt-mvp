@@ -164,7 +164,12 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
 
   const addExercise = (ex: Exercise) => {
     if (programRows.some((r) => r.exerciseId === ex.id)) return;
-    setProgramRows((prev) => [...prev, { exerciseId: ex.id, sets: ex.defaultSets, reps: ex.defaultReps, holdSecs: ex.defaultHoldSecs, cue: '' }]);
+    setProgramRows((prev) => [...prev, {
+      exerciseId: ex.id, sets: ex.defaultSets, reps: ex.defaultReps, holdSecs: ex.defaultHoldSecs, cue: '',
+      restSecs: ex.defaultRestSecs, speedSecs: ex.defaultSpeedSecs, loops: ex.defaultLoops,
+      startingPosition: ex.defaultStartingPosition, holdIntensityPct: ex.defaultHoldIntensityPct,
+      stages: ex.defaultStages, stagePauseSecs: ex.defaultStagePauseSecs, frequency: ex.defaultFrequency,
+    }]);
   };
   const removeExercise = (exId: string) => setProgramRows((prev) => prev.filter((r) => r.exerciseId !== exId));
   const toggleInProgram = (ex: Exercise) => {

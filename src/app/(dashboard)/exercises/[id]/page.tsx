@@ -4,6 +4,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import AudioRecordingDialog from '@/components/exercises/AudioRecordingDialog';
 import { BreathingCircleAnimation } from '@/components/exercises/BreathingCircleAnimation';
+import { PelvicFloorFullRangeAnimation } from '@/components/exercises/PelvicFloorFullRangeAnimation';
+import { QuickFlicksAnimation } from '@/components/exercises/QuickFlicksAnimation';
+import { SustainedHoldAnimation } from '@/components/exercises/SustainedHoldAnimation';
+import { ElevatorAnimation } from '@/components/exercises/ElevatorAnimation';
+import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, type RxValues } from '@/components/exercises/exerciseRx';
+import { CompactField } from '@/components/exercises/CompactField';
 import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -22,21 +28,6 @@ const RELAXATION_CUES = [
   { key: 'contraction', label: 'Pelvic Floor Contraction Cue', text: 'Exhale and gently contract your pelvic floor, then fully relax' },
   { key: 'pressure', label: 'Pressure Management Cue', text: 'Exhale with the effort and avoid holding your breath' },
 ];
-
-function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
-  return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2">
-      <input
-        type="number"
-        min={0}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-6 bg-transparent text-base text-primary text-center outline-none"
-      />
-      <span className="text-base text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
-    </div>
-  );
-}
 
 function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => void }) {
   return (
@@ -79,11 +70,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [programOpen, setProgramOpen] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
-  const [rxSets, setRxSets] = useState(ex?.defaultSets ?? 3);
-  const [rxReps, setRxReps] = useState(ex?.defaultReps ?? 10);
-  const [rxHoldSecs, setRxHoldSecs] = useState(ex?.defaultHoldSecs ?? 0);
-  const [rxSpeedSecs, setRxSpeedSecs] = useState(ex?.defaultSpeedSecs ?? 4);
-  const [rxLoops, setRxLoops] = useState(ex?.defaultLoops ?? 5);
+  const [rx, setRx] = useState<RxValues>(defaultRxValues(ex));
   const [moreOpen, setMoreOpen] = useState(false);
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
   const [selectedCue, setSelectedCue] = useState('');
@@ -129,25 +116,23 @@ function ExerciseDetailContent({ id }: { id: string }) {
   const similar = [...sameCategory, ...fallback];
 
   const isBreathingPacer = ex.animationType === 'breathing-pacer';
-  const rxSummary = isBreathingPacer
-    ? `${rxSpeedSecs}s per breath × ${rxLoops} loop${rxLoops === 1 ? '' : 's'}`
-    : `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
 
   const handleAddToProgram = () => {
     const prog = mockPrograms.find((p) => p.id === selectedProgramId);
-    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummary}).`);
+    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummaryText(ex, rx)}).`);
     setProgramOpen(false);
     setSelectedProgramId(null);
   };
 
   const handleAssign = () => {
-    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummary}).`);
+    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummaryText(ex, rx)}).`);
     setAssignOpen(false);
     setSelectedPatient(null);
   };
 
   const block = (fn: () => void) => dataState === 'empty' ? setShowSignUpModal(true) : fn();
-  const resetRx = () => { setRxSets(ex.defaultSets); setRxReps(ex.defaultReps); setRxHoldSecs(ex.defaultHoldSecs); };
+  const resetRx = () => setRx(defaultRxValues(ex));
+  const patchRx = (patch: Partial<RxValues>) => setRx((prev) => ({ ...prev, ...patch }));
 
   return (
     <>
@@ -168,9 +153,41 @@ function ExerciseDetailContent({ id }: { id: string }) {
           {/* Video / Animation */}
           {isBreathingPacer ? (
             <BreathingCircleAnimation
-              key={`${rxSpeedSecs}-${rxLoops}`}
-              cycleSeconds={rxSpeedSecs}
-              loops={rxLoops}
+              key={`${rx.speedSecs}-${rx.loops}`}
+              cycleSeconds={rx.speedSecs}
+              loops={rx.loops}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            />
+          ) : ex.animationType === 'pf-full-range' ? (
+            <PelvicFloorFullRangeAnimation
+              key={`${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+              holdSecs={rx.holdSecs}
+              restSecs={rx.restSecs}
+              reps={rx.reps}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            />
+          ) : ex.animationType === 'pf-quick-flicks' ? (
+            <QuickFlicksAnimation
+              key={`${rx.restSecs}-${rx.reps}`}
+              restSecs={rx.restSecs}
+              reps={rx.reps}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            />
+          ) : ex.animationType === 'pf-sustained-hold' ? (
+            <SustainedHoldAnimation
+              key={`${rx.holdIntensityPct}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+              intensityPct={rx.holdIntensityPct}
+              holdSecs={rx.holdSecs}
+              restSecs={rx.restSecs}
+              reps={rx.reps}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            />
+          ) : ex.animationType === 'pf-elevator' ? (
+            <ElevatorAnimation
+              key={`${rx.stages}-${rx.stagePauseSecs}-${rx.reps}`}
+              stages={rx.stages}
+              stagePauseSecs={rx.stagePauseSecs}
+              reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
             />
           ) : ex.videoUrl ? (
@@ -193,12 +210,12 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 min={2}
                 max={10}
                 step={0.5}
-                value={rxSpeedSecs}
-                onChange={(e) => setRxSpeedSecs(Number(e.target.value))}
+                value={rx.speedSecs}
+                onChange={(e) => patchRx({ speedSecs: Number(e.target.value) })}
                 className="flex-1 min-w-32 accent-brand-600"
               />
-              <span className="text-base text-primary w-28 shrink-0 text-right">{rxSpeedSecs}s / breath</span>
-              <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
+              <span className="text-base text-primary w-28 shrink-0 text-right">{rx.speedSecs}s / breath</span>
+              <CompactField value={rx.loops} unitSingular="Loop" unitPlural="Loops" onChange={(v) => patchRx({ loops: v })} />
             </div>
           )}
 
@@ -354,20 +371,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </NativeSelect>
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
-              <div className="flex flex-wrap gap-2">
-                {isBreathingPacer ? (
-                  <>
-                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
-                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
-                  </>
-                ) : (
-                  <>
-                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
-                  </>
-                )}
-              </div>
+              <ExerciseMarkerFields exercise={ex} values={rx} onChange={patchRx} />
             </div>
             <div className="flex w-full justify-end gap-4">
               <Button color="secondary" size="lg" onPress={() => { setProgramOpen(false); setSelectedProgramId(null); }}>Cancel</Button>
@@ -390,20 +394,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </NativeSelect>
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
-              <div className="flex flex-wrap gap-2">
-                {isBreathingPacer ? (
-                  <>
-                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
-                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
-                  </>
-                ) : (
-                  <>
-                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
-                  </>
-                )}
-              </div>
+              <ExerciseMarkerFields exercise={ex} values={rx} onChange={patchRx} />
             </div>
             <div className="flex w-full justify-end gap-4">
               <Button color="secondary" size="lg" onPress={() => { setAssignOpen(false); setSelectedPatient(null); }}>Cancel</Button>

@@ -20,6 +20,7 @@ import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/mod
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
 import { NativeSelect } from '@/components/ui/native-select';
+import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, type RxValues } from '@/components/exercises/exerciseRx';
 
 const PAGE_SIZE = 24;
 
@@ -91,20 +92,6 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
   );
 }
 
-function CompactField({ value, onChange, unitSingular, unitPlural }: { value: number; onChange: (v: number) => void; unitSingular: string; unitPlural: string }) {
-  return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary pl-2.5 pr-4 py-2">
-      <input
-        type="number"
-        min={0}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-6 bg-transparent text-base text-primary text-center outline-none"
-      />
-      <span className="text-base text-secondary whitespace-nowrap">{value === 1 ? unitSingular : unitPlural}</span>
-    </div>
-  );
-}
 
 function ExercisesPageContent() {
   const router = useRouter();
@@ -148,33 +135,24 @@ function ExercisesPageContent() {
   const [assignTargetExercise, setAssignTargetExercise] = useState<Exercise | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [visibleCount, setVisibleCount] = useState(() => Number(searchParams.get('show')) || PAGE_SIZE);
-  const [rxSets, setRxSets] = useState(3);
-  const [rxReps, setRxReps] = useState(10);
-  const [rxHoldSecs, setRxHoldSecs] = useState(0);
-  const [rxSpeedSecs, setRxSpeedSecs] = useState(4);
-  const [rxLoops, setRxLoops] = useState(5);
+  const [rx, setRx] = useState<RxValues>(defaultRxValues(null));
 
   useScrollMemory();
 
   const filtersInactive = dataState === 'empty';
   const guardFilter = (fn: () => void) => { if (filtersInactive) { setShowSignUpModal(true); return; } fn(); };
-  const resetRx = (ex: Exercise) => {
-    setRxSets(ex.defaultSets); setRxReps(ex.defaultReps); setRxHoldSecs(ex.defaultHoldSecs);
-    setRxSpeedSecs(ex.defaultSpeedSecs ?? 4); setRxLoops(ex.defaultLoops ?? 5);
-  };
-  const rxSummary = (ex: Exercise | null) => ex?.animationType === 'breathing-pacer'
-    ? `${rxSpeedSecs}s per breath × ${rxLoops} loop${rxLoops === 1 ? '' : 's'}`
-    : `${rxSets} sets × ${rxReps} reps${rxHoldSecs > 0 ? `, ${rxHoldSecs}s hold` : ''}`;
+  const resetRx = (ex: Exercise) => setRx(defaultRxValues(ex));
+  const patchRx = (patch: Partial<RxValues>) => setRx((prev) => ({ ...prev, ...patch }));
 
   const handleAddToProgram = () => {
     const prog = mockPrograms.find((p) => p.id === selectedProgramId);
-    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummary(programTargetExercise)}).`);
+    if (prog) toast.success(`Exercise added to "${prog.name}" (${rxSummaryText(programTargetExercise, rx)}).`);
     setProgramTargetExercise(null);
     setSelectedProgramId(null);
   };
 
   const handleAssign = () => {
-    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummary(assignTargetExercise)}).`);
+    if (selectedPatient) toast.success(`Exercise added to ${selectedPatient.firstName} ${selectedPatient.lastName}'s program (${rxSummaryText(assignTargetExercise, rx)}).`);
     setAssignTargetExercise(null);
     setSelectedPatient(null);
   };
@@ -507,20 +485,7 @@ function ExercisesPageContent() {
             </NativeSelect>
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
-              <div className="flex flex-wrap gap-2">
-                {programTargetExercise?.animationType === 'breathing-pacer' ? (
-                  <>
-                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
-                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
-                  </>
-                ) : (
-                  <>
-                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
-                  </>
-                )}
-              </div>
+              {programTargetExercise && <ExerciseMarkerFields exercise={programTargetExercise} values={rx} onChange={patchRx} />}
             </div>
             <div className="flex w-full justify-end gap-4">
               <Button color="secondary" size="lg" onPress={() => { setProgramTargetExercise(null); setSelectedProgramId(null); }}>Cancel</Button>
@@ -543,20 +508,7 @@ function ExercisesPageContent() {
             </NativeSelect>
             <div className="flex w-full flex-col gap-2">
               <div className="text-xs text-secondary">Parameters</div>
-              <div className="flex flex-wrap gap-2">
-                {assignTargetExercise?.animationType === 'breathing-pacer' ? (
-                  <>
-                    <CompactField value={rxSpeedSecs} unitSingular="Sec / Breath" unitPlural="Sec / Breath" onChange={setRxSpeedSecs} />
-                    <CompactField value={rxLoops} unitSingular="Loop" unitPlural="Loops" onChange={setRxLoops} />
-                  </>
-                ) : (
-                  <>
-                    <CompactField value={rxSets} unitSingular="Set" unitPlural="Sets" onChange={setRxSets} />
-                    <CompactField value={rxReps} unitSingular="Rep" unitPlural="Reps" onChange={setRxReps} />
-                    <CompactField value={rxHoldSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={setRxHoldSecs} />
-                  </>
-                )}
-              </div>
+              {assignTargetExercise && <ExerciseMarkerFields exercise={assignTargetExercise} values={rx} onChange={patchRx} />}
             </div>
             <div className="flex w-full justify-end gap-4">
               <Button color="secondary" size="lg" onPress={() => { setAssignTargetExercise(null); setSelectedPatient(null); }}>Cancel</Button>
