@@ -13,11 +13,11 @@ export function buildFullRangePhases(stepLabel: string, speedSecs: number, holdS
   const restMs = Math.max(restSecs, 0.1) * 1000;
   const phases: Phase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
-    const rep = `${stepLabel} · Rep ${i} of ${reps}`;
-    phases.push({ label: `${rep} · Contract`, scale: SHRINK_SCALE, riseFraction: 1, durationMs: moveMs });
-    phases.push({ label: `${rep} · Hold`, scale: SHRINK_SCALE, riseFraction: 1, durationMs: holdMs });
-    phases.push({ label: `${rep} · Release`, scale: 1, riseFraction: 0, durationMs: moveMs });
-    phases.push({ label: `${rep} · Rest`, scale: 1, riseFraction: 0, durationMs: restMs });
+    const repText = `Rep ${i} of ${reps}`;
+    phases.push({ label: 'Contract', scale: SHRINK_SCALE, riseFraction: 1, durationMs: moveMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Hold', scale: SHRINK_SCALE, riseFraction: 1, durationMs: holdMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Release', scale: 1, riseFraction: 0, durationMs: moveMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Rest', scale: 1, riseFraction: 0, durationMs: restMs, stepName: stepLabel, repText });
   }
   return phases;
 }
@@ -35,11 +35,11 @@ export function buildSustainedHoldPhases(stepLabel: string, speedSecs: number, i
   const targetRise = intensityPct / 100;
   const phases: Phase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
-    const rep = `${stepLabel} · Rep ${i} of ${reps}`;
-    phases.push({ label: `${rep} · Contract to ${intensityPct}%`, scale: targetScale, riseFraction: targetRise, durationMs: moveMs });
-    phases.push({ label: `${rep} · Hold`, scale: targetScale, riseFraction: targetRise, durationMs: holdMs });
-    phases.push({ label: `${rep} · Release`, scale: 1, riseFraction: 0, durationMs: moveMs });
-    phases.push({ label: `${rep} · Rest`, scale: 1, riseFraction: 0, durationMs: restMs });
+    const repText = `Rep ${i} of ${reps}`;
+    phases.push({ label: `Contract to ${intensityPct}%`, scale: targetScale, riseFraction: targetRise, durationMs: moveMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Hold', scale: targetScale, riseFraction: targetRise, durationMs: holdMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Release', scale: 1, riseFraction: 0, durationMs: moveMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Rest', scale: 1, riseFraction: 0, durationMs: restMs, stepName: stepLabel, repText });
   }
   return phases;
 }
@@ -53,15 +53,15 @@ export function buildQuickFlicksPhases(stepLabel: string, speedSecs: number, res
   const restMs = Math.max(restSecs, 0.1) * 1000;
   const phases: Phase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
-    const rep = `${stepLabel} · Rep ${i} of ${reps}`;
-    phases.push({ label: `${rep} · Flick`, scale: SHRINK_SCALE, riseFraction: 1, durationMs: moveMs });
-    phases.push({ label: `${rep} · Release`, scale: 1, riseFraction: 0, durationMs: moveMs });
-    phases.push({ label: `${rep} · Rest`, scale: 1, riseFraction: 0, durationMs: restMs });
+    const repText = `Rep ${i} of ${reps}`;
+    phases.push({ label: 'Flick', scale: SHRINK_SCALE, riseFraction: 1, durationMs: moveMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Release', scale: 1, riseFraction: 0, durationMs: moveMs, stepName: stepLabel, repText });
+    phases.push({ label: 'Rest', scale: 1, riseFraction: 0, durationMs: restMs, stepName: stepLabel, repText });
   }
   return phases;
 }
 
 /** Single rest phase between Step 1 and Step 2 in a combo. */
 export function buildTransitionRestPhase(restSecs: number): Phase {
-  return { label: 'Transition Rest', scale: 1, riseFraction: 0, durationMs: Math.max(restSecs, 0.1) * 1000 };
+  return { label: 'Transition Rest', scale: 1, riseFraction: 0, durationMs: Math.max(restSecs, 0.1) * 1000, stepName: 'Transition' };
 }

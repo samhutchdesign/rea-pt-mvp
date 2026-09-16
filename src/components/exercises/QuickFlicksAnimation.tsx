@@ -28,7 +28,7 @@ export function QuickFlicksAnimation({ speedSecs, restSecs, reps, className, chi
       <span className="absolute top-5 left-1/2 -translate-x-1/2 font-display text-[20px] leading-[32px] font-medium text-primary">
         {running ? phase.label : 'Finished'}
       </span>
-      <span className="absolute top-5 right-5 flex items-baseline gap-1 font-display text-[20px] leading-[32px] font-medium text-primary">
+      <span className="absolute top-5 left-5 flex items-baseline gap-1 font-display text-[20px] leading-[32px] font-medium text-primary">
         <RollingNumber value={repIndex} />
         {reps && reps > 0 && <span>of {reps}</span>}
       </span>

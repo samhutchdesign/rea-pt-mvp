@@ -10,6 +10,10 @@ export interface Phase {
   riseFraction: number;
   /** How long this phase lasts before moving to the next one, in ms. */
   durationMs: number;
+  /** Combo-only: the name of the step/exercise this phase belongs to, shown separately from `label` and `repText`. */
+  stepName?: string;
+  /** Combo-only: rep progress within the current step (e.g. "Rep 3 of 10"), shown separately from `label`. */
+  repText?: string;
 }
 
 /**
