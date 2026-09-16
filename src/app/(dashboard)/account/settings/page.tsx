@@ -183,16 +183,13 @@ function SignatureModal({ open, onClose }: { open: boolean; onClose: () => void 
           <div className="flex w-full flex-col gap-10 p-8">
             <div className="flex w-full flex-col gap-4">
               <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Choose Your Signature</h2>
-              <p className="m-0 text-base text-primary">
-                This is stamped on every chart you sign and lock. Pick a style below.
-              </p>
             </div>
 
             <SignatureFontPicker name={fullName} value={selected} onChange={setSelected} />
 
             <div className="flex w-full justify-end gap-4">
               <Button color="secondary" size="lg" onPress={handleClose}>Cancel</Button>
-              <Button color="primary" size="lg" onPress={handleSave}>Save Signature</Button>
+              <Button color="primary" size="lg" onPress={handleSave}>Update Signature</Button>
             </div>
           </div>
         </Dialog>
