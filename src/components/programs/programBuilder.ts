@@ -20,6 +20,19 @@ export interface ProgramRow {
   stagePauseSecs?: number;
   /** Prescribed frequency (pelvic-floor animation exercises). */
   frequency?: string;
+  // Combo exercises (Step 1 -> Transition Rest -> Step 2, repeated Combo Sets times)
+  step1Sets?: number;
+  step1Reps?: number;
+  step1SpeedSecs?: number;
+  step1HoldSecs?: number;
+  step1RestSecs?: number;
+  step1IntensityPct?: number;
+  step2Sets?: number;
+  step2Reps?: number;
+  step2SpeedSecs?: number;
+  step2RestSecs?: number;
+  transitionRestSecs?: number;
+  comboSets?: number;
 }
 
 export const CUES = [

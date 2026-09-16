@@ -10,6 +10,8 @@ import { SustainedHoldAnimation } from '@/components/exercises/SustainedHoldAnim
 import { ElevatorAnimation } from '@/components/exercises/ElevatorAnimation';
 import { ReverseKegelAnimation } from '@/components/exercises/ReverseKegelAnimation';
 import { TheKnackAnimation } from '@/components/exercises/TheKnackAnimation';
+import { ComboFullRangeQuickFlicks } from '@/components/exercises/ComboFullRangeQuickFlicks';
+import { ComboSustainedHoldQuickFlicks } from '@/components/exercises/ComboSustainedHoldQuickFlicks';
 import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, type RxValues } from '@/components/exercises/exerciseRx';
 import { CompactField } from '@/components/exercises/CompactField';
 import { ParametersCard } from '@/components/exercises/ParametersCard';
@@ -256,6 +258,69 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </ReverseKegelAnimation>
           ) : ex.animationType === 'pf-the-knack' ? (
             <TheKnackAnimation className="mb-5 w-full aspect-video rounded-2xl" />
+          ) : ex.animationType === 'pf-combo-full-range-quick-flicks' ? (
+            <ComboFullRangeQuickFlicks
+              key={`${rx.step1SpeedSecs}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
+              step1SpeedSecs={rx.step1SpeedSecs}
+              step1HoldSecs={rx.step1HoldSecs}
+              step1RestSecs={rx.step1RestSecs}
+              step1Reps={rx.step1Reps}
+              step2SpeedSecs={rx.step2SpeedSecs}
+              step2RestSecs={rx.step2RestSecs}
+              step2Reps={rx.step2Reps}
+              transitionRestSecs={rx.transitionRestSecs}
+              comboSets={rx.comboSets}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            >
+              <ParametersCard>
+                <span className="text-xs font-semibold text-primary">Step 1 — Full Range</span>
+                <ParameterSlider label="Speed" value={rx.step1SpeedSecs} unit="s" min={0.3} max={3} step={0.1} onChange={(v) => patchRx({ step1SpeedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.step1HoldSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ step1HoldSecs: v })} />
+                <ParameterSlider label="Rest" value={rx.step1RestSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ step1RestSecs: v })} />
+                <CompactField value={rx.step1Reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ step1Reps: v })} />
+                <ParameterSlider label="Transition" value={rx.transitionRestSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ transitionRestSecs: v })} />
+                <span className="text-xs font-semibold text-primary">Step 2 — Quick Flicks</span>
+                <ParameterSlider label="Speed" value={rx.step2SpeedSecs} unit="s" min={0.1} max={1} step={0.05} onChange={(v) => patchRx({ step2SpeedSecs: v })} />
+                <ParameterSlider label="Rest" value={rx.step2RestSecs} unit="s" min={1} max={10} onChange={(v) => patchRx({ step2RestSecs: v })} />
+                <CompactField value={rx.step2Reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ step2Reps: v })} />
+                <CompactField value={rx.comboSets} unitSingular="Combo Set" unitPlural="Combo Sets" onChange={(v) => patchRx({ comboSets: v })} />
+              </ParametersCard>
+            </ComboFullRangeQuickFlicks>
+          ) : ex.animationType === 'pf-combo-sustained-hold-quick-flicks' ? (
+            <ComboSustainedHoldQuickFlicks
+              key={`${rx.step1SpeedSecs}-${rx.step1IntensityPct}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
+              step1SpeedSecs={rx.step1SpeedSecs}
+              step1IntensityPct={rx.step1IntensityPct}
+              step1HoldSecs={rx.step1HoldSecs}
+              step1RestSecs={rx.step1RestSecs}
+              step1Reps={rx.step1Reps}
+              step2SpeedSecs={rx.step2SpeedSecs}
+              step2RestSecs={rx.step2RestSecs}
+              step2Reps={rx.step2Reps}
+              transitionRestSecs={rx.transitionRestSecs}
+              comboSets={rx.comboSets}
+              className="mb-5 w-full aspect-video rounded-2xl"
+            >
+              <ParametersCard>
+                <span className="text-xs font-semibold text-primary">Step 1 — Sustained Hold</span>
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-xs text-secondary shrink-0">Intensity</span>
+                  <NativeSelect className="h-12 flex-1" value={String(rx.step1IntensityPct)} onChange={(e) => patchRx({ step1IntensityPct: Number(e.target.value) })}>
+                    {HOLD_INTENSITIES.map((pct) => <option key={pct} value={pct}>{pct}%</option>)}
+                  </NativeSelect>
+                </div>
+                <ParameterSlider label="Speed" value={rx.step1SpeedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ step1SpeedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.step1HoldSecs} unit="s" min={1} max={20} onChange={(v) => patchRx({ step1HoldSecs: v })} />
+                <ParameterSlider label="Rest" value={rx.step1RestSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ step1RestSecs: v })} />
+                <CompactField value={rx.step1Reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ step1Reps: v })} />
+                <ParameterSlider label="Transition" value={rx.transitionRestSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ transitionRestSecs: v })} />
+                <span className="text-xs font-semibold text-primary">Step 2 — Quick Flicks</span>
+                <ParameterSlider label="Speed" value={rx.step2SpeedSecs} unit="s" min={0.1} max={1} step={0.05} onChange={(v) => patchRx({ step2SpeedSecs: v })} />
+                <ParameterSlider label="Rest" value={rx.step2RestSecs} unit="s" min={1} max={10} onChange={(v) => patchRx({ step2RestSecs: v })} />
+                <CompactField value={rx.step2Reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ step2Reps: v })} />
+                <CompactField value={rx.comboSets} unitSingular="Combo Set" unitPlural="Combo Sets" onChange={(v) => patchRx({ comboSets: v })} />
+              </ParametersCard>
+            </ComboSustainedHoldQuickFlicks>
           ) : ex.videoUrl ? (
             <div className="mb-5 w-full aspect-video rounded-2xl overflow-hidden bg-[#0f0f0f]">
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />

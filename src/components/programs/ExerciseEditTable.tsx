@@ -40,6 +40,18 @@ function rowToRxValues(ex: Exercise, row: ProgramRow): RxValues {
     stages: row.stages ?? base.stages,
     stagePauseSecs: row.stagePauseSecs ?? base.stagePauseSecs,
     frequency: row.frequency ?? base.frequency,
+    step1Sets: row.step1Sets ?? base.step1Sets,
+    step1Reps: row.step1Reps ?? base.step1Reps,
+    step1SpeedSecs: row.step1SpeedSecs ?? base.step1SpeedSecs,
+    step1HoldSecs: row.step1HoldSecs ?? base.step1HoldSecs,
+    step1RestSecs: row.step1RestSecs ?? base.step1RestSecs,
+    step1IntensityPct: row.step1IntensityPct ?? base.step1IntensityPct,
+    step2Sets: row.step2Sets ?? base.step2Sets,
+    step2Reps: row.step2Reps ?? base.step2Reps,
+    step2SpeedSecs: row.step2SpeedSecs ?? base.step2SpeedSecs,
+    step2RestSecs: row.step2RestSecs ?? base.step2RestSecs,
+    transitionRestSecs: row.transitionRestSecs ?? base.transitionRestSecs,
+    comboSets: row.comboSets ?? base.comboSets,
   };
 }
 

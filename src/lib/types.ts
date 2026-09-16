@@ -115,7 +115,7 @@ export interface Exercise {
   variationGroup?: string;
   userUploaded?: boolean;
   /** Set for exercises that are a guided animation rather than a video. */
-  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack';
+  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack' | 'pf-combo-full-range-quick-flicks' | 'pf-combo-sustained-hold-quick-flicks';
   /** Default seconds per animation cycle, for animation-type exercises. */
   defaultSpeedSecs?: number;
   /** Default number of animation cycles, for animation-type exercises. */
@@ -130,6 +130,22 @@ export interface Exercise {
   defaultStages?: number;
   /** Default pause at each stage, in seconds (The Elevator). */
   defaultStagePauseSecs?: number;
+  // Combo exercises (two exercises chained as one unit) — Step 1/Step 2 each
+  // keep their own full field set, matching their standalone exercise.
+  defaultStep1Sets?: number;
+  defaultStep1Reps?: number;
+  defaultStep1SpeedSecs?: number;
+  defaultStep1HoldSecs?: number;
+  defaultStep1RestSecs?: number;
+  defaultStep1IntensityPct?: number;
+  defaultStep2Sets?: number;
+  defaultStep2Reps?: number;
+  defaultStep2SpeedSecs?: number;
+  defaultStep2RestSecs?: number;
+  /** Rest between Step 1 finishing and Step 2 starting. */
+  defaultTransitionRestSecs?: number;
+  /** How many times the Step 1 -> Transition -> Step 2 unit repeats. */
+  defaultComboSets?: number;
 }
 
 export interface ProgramExercise {
@@ -153,6 +169,19 @@ export interface ProgramExercise {
   stages?: number;
   /** Pause at each stage, in seconds (The Elevator). */
   stagePauseSecs?: number;
+  // Combo exercises
+  step1Sets?: number;
+  step1Reps?: number;
+  step1SpeedSecs?: number;
+  step1HoldSecs?: number;
+  step1RestSecs?: number;
+  step1IntensityPct?: number;
+  step2Sets?: number;
+  step2Reps?: number;
+  step2SpeedSecs?: number;
+  step2RestSecs?: number;
+  transitionRestSecs?: number;
+  comboSets?: number;
 }
 
 export interface Program {
