@@ -9,11 +9,13 @@ interface BreathingCircleAnimationProps {
   /** Number of cycles to run before stopping. 0 or undefined loops forever. */
   loops?: number;
   className?: string;
+  /** Overlay content (e.g. a floating parameters card) rendered over the animation. */
+  children?: React.ReactNode;
 }
 
 const SHRINK_SCALE = 0.22;
 
-export function BreathingCircleAnimation({ cycleSeconds, loops, className }: BreathingCircleAnimationProps) {
+export function BreathingCircleAnimation({ cycleSeconds, loops, className, children }: BreathingCircleAnimationProps) {
   // Pass a `key` that changes with cycleSeconds/loops at the call site to
   // restart the preview from a clean state instead of reacting to prop
   // changes here.
@@ -74,10 +76,11 @@ export function BreathingCircleAnimation({ cycleSeconds, loops, className }: Bre
         <div className="absolute bottom-0 left-1/2 size-[216px] -translate-x-1/2 -mb-[108px] rounded-full bg-brand-300" />
         <div className="absolute bottom-0 left-1/2 size-[158px] -translate-x-1/2 -mb-[79px] rounded-full bg-brand-700" />
       </div>
-      <span className="absolute top-6 left-6 flex items-baseline gap-1 font-display text-md font-medium text-primary">
+      <span className="absolute top-5 left-5 flex items-baseline gap-1 font-display text-[20px] leading-[32px] font-medium text-primary">
         <RollingNumber value={loops && loops > 0 ? Math.min(cycleCount, loops) : cycleCount} />
         {loops && loops > 0 && <span>of {loops}</span>}
       </span>
+      {children}
     </div>
   );
 }

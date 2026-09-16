@@ -12,13 +12,14 @@ interface ElevatorAnimationProps {
   stagePauseSecs: number;
   reps?: number;
   className?: string;
+  children?: React.ReactNode;
 }
 
 function levelToScale(fraction: number) {
   return 1 - fraction * (1 - SHRINK_SCALE);
 }
 
-export function ElevatorAnimation({ speedSecs, stages, stagePauseSecs, reps, className }: ElevatorAnimationProps) {
+export function ElevatorAnimation({ speedSecs, stages, stagePauseSecs, reps, className, children }: ElevatorAnimationProps) {
   const n = Math.max(stages, 1);
   const pauseMs = Math.max(stagePauseSecs, 0.1) * 1000;
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
@@ -46,13 +47,14 @@ export function ElevatorAnimation({ speedSecs, stages, stagePauseSecs, reps, cla
 
   return (
     <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={moveMs} className={className}>
-      <span className="absolute top-6 left-6 font-display text-md font-medium text-primary">
+      <span className="absolute top-5 left-5 font-display text-[20px] leading-[32px] font-medium text-primary">
         {running ? phase.label : 'Finished'}
       </span>
-      <span className="absolute top-6 right-6 flex items-baseline gap-1 font-display text-md font-medium text-primary">
+      <span className="absolute top-5 right-5 flex items-baseline gap-1 font-display text-[20px] leading-[32px] font-medium text-primary">
         <RollingNumber value={repIndex} />
         {reps && reps > 0 && <span>of {reps}</span>}
       </span>
+      {children}
     </PelvicFloorCircleVisual>
   );
 }

@@ -8,6 +8,12 @@ export const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly']
 export const HOLD_INTENSITIES = [50, 60, 70] as const;
 export const STAGE_COUNTS = [2, 3, 4] as const;
 
+/** e.g. "4 (25%, 50%, 75%, 100%)" — matches Figma's stage-count dropdown copy. */
+export function stageLabel(n: number): string {
+  const levels = Array.from({ length: n }, (_, i) => Math.round(((i + 1) / n) * 100));
+  return `${n} (${levels.map((l) => `${l}%`).join(', ')})`;
+}
+
 export interface RxValues {
   sets: number;
   reps: number;
@@ -146,7 +152,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           <div className={fieldColCls}>
             <label className={fieldLabelCls}>Number of Stages</label>
             <NativeSelect className="h-12" value={String(values.stages)} onChange={(e) => onChange({ stages: Number(e.target.value) })}>
-              {STAGE_COUNTS.map((n) => <option key={n} value={n}>{n}</option>)}
+              {STAGE_COUNTS.map((n) => <option key={n} value={n}>{stageLabel(n)}</option>)}
             </NativeSelect>
           </div>
           <div className="flex flex-wrap gap-2">

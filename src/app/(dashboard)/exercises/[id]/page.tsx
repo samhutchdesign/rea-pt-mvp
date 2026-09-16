@@ -8,8 +8,10 @@ import { PelvicFloorFullRangeAnimation } from '@/components/exercises/PelvicFloo
 import { QuickFlicksAnimation } from '@/components/exercises/QuickFlicksAnimation';
 import { SustainedHoldAnimation } from '@/components/exercises/SustainedHoldAnimation';
 import { ElevatorAnimation } from '@/components/exercises/ElevatorAnimation';
-import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, type RxValues } from '@/components/exercises/exerciseRx';
+import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, type RxValues } from '@/components/exercises/exerciseRx';
 import { CompactField } from '@/components/exercises/CompactField';
+import { ParametersCard } from '@/components/exercises/ParametersCard';
+import { ParameterSlider } from '@/components/exercises/ParameterSlider';
 import { mockExercises, mockExercisesFull, mockPrograms, mockPatients } from '@/lib/mock-data';
 import { useViewMode } from '@/lib/viewModeStore';
 import { useDataState } from '@/lib/dataStateStore';
@@ -28,24 +30,6 @@ const RELAXATION_CUES = [
   { key: 'contraction', label: 'Pelvic Floor Contraction Cue', text: 'Exhale and gently contract your pelvic floor, then fully relax' },
   { key: 'pressure', label: 'Pressure Management Cue', text: 'Exhale with the effort and avoid holding your breath' },
 ];
-
-function PreviewSlider({ label, value, unit, min, max, step = 1, onChange }: { label: string; value: number; unit: string; min: number; max: number; step?: number; onChange: (v: number) => void }) {
-  return (
-    <>
-      <span className="text-xs text-secondary shrink-0">{label}</span>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="flex-1 min-w-32 accent-brand-600"
-      />
-      <span className="text-base text-primary w-24 shrink-0 text-right">{value}{unit}</span>
-    </>
-  );
-}
 
 function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => void }) {
   return (
@@ -175,7 +159,12 @@ function ExerciseDetailContent({ id }: { id: string }) {
               cycleSeconds={rx.speedSecs}
               loops={rx.loops}
               className="mb-5 w-full aspect-video rounded-2xl"
-            />
+            >
+              <ParametersCard>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={2} max={10} step={0.5} onChange={(v) => patchRx({ speedSecs: v })} />
+                <CompactField value={rx.loops} unitSingular="Loop" unitPlural="Loops" onChange={(v) => patchRx({ loops: v })} />
+              </ParametersCard>
+            </BreathingCircleAnimation>
           ) : ex.animationType === 'pf-full-range' ? (
             <PelvicFloorFullRangeAnimation
               key={`${rx.speedSecs}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
@@ -184,7 +173,14 @@ function ExerciseDetailContent({ id }: { id: string }) {
               restSecs={rx.restSecs}
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
-            />
+            >
+              <ParametersCard>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.3} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ holdSecs: v })} />
+                <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
+              </ParametersCard>
+            </PelvicFloorFullRangeAnimation>
           ) : ex.animationType === 'pf-quick-flicks' ? (
             <QuickFlicksAnimation
               key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
@@ -192,7 +188,13 @@ function ExerciseDetailContent({ id }: { id: string }) {
               restSecs={rx.restSecs}
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
-            />
+            >
+              <ParametersCard>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.1} max={1} step={0.05} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={10} onChange={(v) => patchRx({ restSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
+              </ParametersCard>
+            </QuickFlicksAnimation>
           ) : ex.animationType === 'pf-sustained-hold' ? (
             <SustainedHoldAnimation
               key={`${rx.speedSecs}-${rx.holdIntensityPct}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
@@ -202,7 +204,19 @@ function ExerciseDetailContent({ id }: { id: string }) {
               restSecs={rx.restSecs}
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
-            />
+            >
+              <ParametersCard>
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-xs text-secondary shrink-0">Intensity</span>
+                  <NativeSelect className="h-12 flex-1" value={String(rx.holdIntensityPct)} onChange={(e) => patchRx({ holdIntensityPct: Number(e.target.value) })}>
+                    {HOLD_INTENSITIES.map((pct) => <option key={pct} value={pct}>{pct}%</option>)}
+                  </NativeSelect>
+                </div>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={20} onChange={(v) => patchRx({ holdSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
+              </ParametersCard>
+            </SustainedHoldAnimation>
           ) : ex.animationType === 'pf-elevator' ? (
             <ElevatorAnimation
               key={`${rx.speedSecs}-${rx.stages}-${rx.stagePauseSecs}-${rx.reps}`}
@@ -211,7 +225,19 @@ function ExerciseDetailContent({ id }: { id: string }) {
               stagePauseSecs={rx.stagePauseSecs}
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
-            />
+            >
+              <ParametersCard>
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-xs text-secondary shrink-0">Stages</span>
+                  <NativeSelect className="h-12 flex-1" value={String(rx.stages)} onChange={(e) => patchRx({ stages: Number(e.target.value) })}>
+                    {STAGE_COUNTS.map((n) => <option key={n} value={n}>{stageLabel(n)}</option>)}
+                  </NativeSelect>
+                </div>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.2} max={2} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Pauses" value={rx.stagePauseSecs} unit="s" min={0.5} max={5} step={0.5} onChange={(v) => patchRx({ stagePauseSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
+              </ParametersCard>
+            </ElevatorAnimation>
           ) : ex.videoUrl ? (
             <div className="mb-5 w-full aspect-video rounded-2xl overflow-hidden bg-[#0f0f0f]">
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />
@@ -221,64 +247,6 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <div className="w-14 h-14 rounded-full bg-brand-600 flex items-center justify-center">
                 <Play size={24} fill="white" color="white" className="ml-1" />
               </div>
-            </div>
-          )}
-
-          {isBreathingPacer && (
-            <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
-              <span className="text-xs text-secondary shrink-0">Preview speed</span>
-              <input
-                type="range"
-                min={2}
-                max={10}
-                step={0.5}
-                value={rx.speedSecs}
-                onChange={(e) => patchRx({ speedSecs: Number(e.target.value) })}
-                className="flex-1 min-w-32 accent-brand-600"
-              />
-              <span className="text-base text-primary w-28 shrink-0 text-right">{rx.speedSecs}s / breath</span>
-              <CompactField value={rx.loops} unitSingular="Loop" unitPlural="Loops" onChange={(v) => patchRx({ loops: v })} />
-            </div>
-          )}
-
-          {ex.animationType === 'pf-full-range' && (
-            <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
-              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.3} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
-              <PreviewSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ holdSecs: v })} />
-              <PreviewSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
-              <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
-            </div>
-          )}
-
-          {ex.animationType === 'pf-quick-flicks' && (
-            <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
-              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.1} max={1} step={0.05} onChange={(v) => patchRx({ speedSecs: v })} />
-              <PreviewSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={10} onChange={(v) => patchRx({ restSecs: v })} />
-              <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
-            </div>
-          )}
-
-          {ex.animationType === 'pf-sustained-hold' && (
-            <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
-              <span className="text-xs text-secondary shrink-0">Intensity</span>
-              <NativeSelect className="h-9 w-24" value={String(rx.holdIntensityPct)} onChange={(e) => patchRx({ holdIntensityPct: Number(e.target.value) })}>
-                {HOLD_INTENSITIES.map((pct) => <option key={pct} value={pct}>{pct}%</option>)}
-              </NativeSelect>
-              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
-              <PreviewSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={20} onChange={(v) => patchRx({ holdSecs: v })} />
-              <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
-            </div>
-          )}
-
-          {ex.animationType === 'pf-elevator' && (
-            <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-secondary bg-secondary_alt px-4 py-3">
-              <span className="text-xs text-secondary shrink-0">Stages</span>
-              <NativeSelect className="h-9 w-20" value={String(rx.stages)} onChange={(e) => patchRx({ stages: Number(e.target.value) })}>
-                {STAGE_COUNTS.map((n) => <option key={n} value={n}>{n}</option>)}
-              </NativeSelect>
-              <PreviewSlider label="Speed" value={rx.speedSecs} unit="s" min={0.2} max={2} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
-              <PreviewSlider label="Pause / Stage" value={rx.stagePauseSecs} unit="s" min={0.5} max={5} step={0.5} onChange={(v) => patchRx({ stagePauseSecs: v })} />
-              <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
             </div>
           )}
 
