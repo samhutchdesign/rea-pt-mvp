@@ -31,10 +31,22 @@ import { cx } from '@/utils/cx';
 
 const MOCK_TRANSCRIPT = 'This exercise focuses on coordinating diaphragmatic breath with pelvic floor relaxation and engagement. Begin by finding a comfortable, supported position. Inhale slowly through your nose, allowing your ribcage to expand in all directions as your pelvic floor gently descends. Exhale fully, feeling the pelvic floor lift and the deep abdominals gently draw in. Repeat at your own pace, without forcing or straining at any point.';
 
-const RELAXATION_CUES = [
-  { key: 'relaxation', label: 'Relaxation Cue', text: 'Inhale and allow your pelvic floor to lengthen and soften' },
-  { key: 'contraction', label: 'Pelvic Floor Contraction Cue', text: 'Exhale and gently contract your pelvic floor, then fully relax' },
-  { key: 'pressure', label: 'Pressure Management Cue', text: 'Exhale with the effort and avoid holding your breath' },
+const RELAXATION_CUES: { key: string; label: string; text: React.ReactNode }[] = [
+  {
+    key: 'relaxation',
+    label: 'Relaxation Cue',
+    text: <>Exhale and press through your heels to lift your hips, squeezing your glutes at the top. Lower back down with control. <strong>Inhale and allow your pelvic floor to lengthen and soften.</strong></>,
+  },
+  {
+    key: 'contraction',
+    label: 'Pelvic Floor Contraction Cue',
+    text: <><strong>Exhale</strong> and press through your heels to lift your hips, squeezing your glutes at the top, <strong>gently contracting your pelvic floor as you rise</strong>. Lower back down with control, fully relaxing.</>,
+  },
+  {
+    key: 'pressure',
+    label: 'Pressure Management Cue',
+    text: 'Exhale with the effort as you press through your heels to lift your hips, squeezing your glutes at the top — avoid holding your breath. Lower back down with control.',
+  },
 ];
 
 function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => void }) {
@@ -447,13 +459,11 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </div>
 
             {/* Transcript / Dictation */}
-            <div className="flex flex-col gap-4 rounded-lg border border-secondary bg-primary p-5 text-base text-primary">
+            <div className="flex flex-col gap-4 rounded-lg border border-primary bg-primary p-5 text-base text-primary">
               <p className={cx('m-0', !transcriptExpanded && 'line-clamp-1')}>{MOCK_TRANSCRIPT}</p>
-              {!transcriptExpanded && (
-                <button className="self-start text-brand-700 font-semibold text-xs hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
-                  show more
-                </button>
-              )}
+              <button className="self-start text-base font-semibold leading-4 text-brand-600 hover:opacity-80" onClick={() => setTranscriptExpanded((v) => !v)}>
+                {transcriptExpanded ? 'show less' : 'show more'}
+              </button>
             </div>
 
             <Divider />
@@ -461,27 +471,31 @@ function ExerciseDetailContent({ id }: { id: string }) {
             {/* Instructions */}
             <div className="flex flex-col gap-7 w-full">
               <h3 className="font-display m-0 text-[20px] leading-[32px] font-medium text-primary">Instructions</h3>
-              <NativeSelect
-                value={selectedCue}
-                onChange={(e) => setSelectedCue(e.target.value)}
-                wrapperClassName="w-[240px]"
-                className="h-12"
-              >
-                <option value="">Add relaxation cue…</option>
-                {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-              </NativeSelect>
-              {selectedCue && (() => {
-                const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
-                return cue ? (
-                  <div className="rounded-xl bg-brand-50 border border-brand-200 px-4 py-3 w-full">
-                    <p className="text-xs font-semibold text-brand-700 mb-1">{cue.label}</p>
-                    <p className="text-base text-brand-900">{cue.text}</p>
-                  </div>
-                ) : null;
-              })()}
-              <ol className="pl-5 space-y-5 list-decimal w-full">
-                {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
-              </ol>
+              <div className="flex flex-col gap-8 w-full">
+                <div className="flex flex-col gap-3 w-full">
+                  <NativeSelect
+                    value={selectedCue}
+                    onChange={(e) => setSelectedCue(e.target.value)}
+                    wrapperClassName="w-[320px]"
+                    className="h-12"
+                  >
+                    <option value="">Add relaxation cue…</option>
+                    {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+                  </NativeSelect>
+                  {selectedCue && (() => {
+                    const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
+                    return cue ? (
+                      <div className="flex w-full max-w-[550px] flex-col gap-4 rounded-lg border border-brand-300 bg-brand-50 px-5 pt-5 pb-6">
+                        <p className="font-display m-0 text-[18px] leading-5 font-medium tracking-[0.1px] text-brand-700">{cue.label}</p>
+                        <p className="m-0 text-base leading-6 text-brand-700">{cue.text}</p>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+                <ol className="pl-5 space-y-5 list-decimal w-full">
+                  {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
+                </ol>
+              </div>
             </div>
 
             <Divider />
