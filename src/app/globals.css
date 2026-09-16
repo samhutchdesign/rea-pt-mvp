@@ -77,6 +77,16 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, li, td, th, dt, dd, blockquote, figca
   100% { transform: translateY(0) scale(1); }
 }
 
+@keyframes counter-roll-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes counter-roll-out {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
+}
+
 @utility title-trim {
   /* Restores Figma's tight spacing for `truncate` titles that can't use
      text-box-trim (it would clip them, see above). Figma's 16px Lora
