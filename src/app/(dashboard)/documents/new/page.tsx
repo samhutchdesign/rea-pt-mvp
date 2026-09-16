@@ -81,7 +81,7 @@ export default function NewDocumentPage() {
           ))}
         </div>
 
-        <Button color="tertiary" size="sm" iconLeading={Plus} onPress={addField} className="mb-8">
+        <Button color="tertiary" size="sm" iconLeading={(p) => <Plus {...p} strokeWidth={1.25} />} onPress={addField} className="mb-8">
           Add Field
         </Button>
 

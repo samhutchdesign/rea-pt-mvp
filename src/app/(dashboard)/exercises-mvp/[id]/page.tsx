@@ -155,10 +155,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <span className="text-base font-medium text-secondary">Rea Health</span>
             </div>
 
-            <Button color="secondary" size="sm" iconLeading={ListPlus} onPress={() => setProgramOpen(true)}>
+            <Button color="secondary" size="sm" iconLeading={(p) => <ListPlus {...p} strokeWidth={1.25} />} onPress={() => setProgramOpen(true)}>
               Add to Program
             </Button>
-            <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => setAssignOpen(true)}>
+            <Button color="secondary" size="sm" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => setAssignOpen(true)}>
               Assign
             </Button>
             <button

@@ -98,7 +98,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
         <div className="flex justify-between items-center mb-5">
           <span className="text-base font-semibold text-primary">Contact Information</span>
           {can.canEditContactInfo && !editingContact && (
-            <Button color="tertiary" size="xs" onPress={handleEditContact} iconLeading={Pencil} />
+            <Button color="tertiary" size="xs" onPress={handleEditContact} iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />} />
           )}
         </div>
         <div className="flex flex-col gap-4">
@@ -125,7 +125,7 @@ export default function PatientContactPage({ params }: { params: Promise<{ id: s
         <div className="flex justify-between items-center mb-5">
           <span className="text-base font-semibold text-primary">Emergency Contact</span>
           {can.canEditContactInfo && !editingEmergency && (
-            <Button color="tertiary" size="xs" onPress={handleEditEmergency} iconLeading={Pencil} />
+            <Button color="tertiary" size="xs" onPress={handleEditEmergency} iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />} />
           )}
         </div>
         <div className="flex flex-col gap-4">

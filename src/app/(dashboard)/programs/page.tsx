@@ -202,7 +202,7 @@ function ProgramsPageContent() {
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-display text-[32px] leading-[48px] font-normal text-primary m-0">Programs</h1>
-          <Button color="primary" size="lg" iconLeading={Plus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
+          <Button color="primary" size="lg" iconLeading={(p) => <Plus {...p} strokeWidth={1.25} />} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : router.push('/programs/new')}>
             Create Program
           </Button>
         </div>

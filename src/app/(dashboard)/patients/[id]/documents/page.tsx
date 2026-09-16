@@ -256,7 +256,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
       <div className="flex justify-between items-center mb-6">
         <span className="font-display text-lg font-medium text-primary">Documents</span>
         {viewMode === 'full' && (
-          <Button color="primary" size="sm" iconLeading={Upload} onPress={openUpload}>
+          <Button color="primary" size="sm" iconLeading={(p) => <Upload {...p} strokeWidth={1.25} />} onPress={openUpload}>
             Upload Patient PDF
           </Button>
         )}

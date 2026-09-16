@@ -292,7 +292,7 @@ function NewProgramContent() {
           {step === 0 ? (
             <Button color="secondary" size="lg" onPress={() => router.push('/programs')}>Cancel</Button>
           ) : (
-            <Button color="tertiary" size="lg" iconLeading={ArrowLeft} onPress={() => goToStep(step - 1)}>Back</Button>
+            <Button color="tertiary" size="lg" iconLeading={(p) => <ArrowLeft {...p} strokeWidth={1.25} />} onPress={() => goToStep(step - 1)}>Back</Button>
           )}
           <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-[24px] leading-[32px] font-normal text-primary m-0 whitespace-nowrap">
             {editingProgram ? 'Edit Program' : 'Create New Program'}

@@ -203,7 +203,7 @@ export default function NewChartPage({ params }: { params: Promise<{ id: string 
           {template === 'default-dictation' && (
             <div className="mt-3 flex justify-end">
               <Button
-                color="secondary" size="sm" iconLeading={Sparkles}
+                color="secondary" size="sm" iconLeading={(p) => <Sparkles {...p} strokeWidth={1.25} />}
                 isLoading={isAddingToChart} showTextWhileLoading
                 isDisabled={!summary.trim() || isAddingToChart}
                 onPress={handleAddToChart}

@@ -268,9 +268,9 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
                 <button onClick={handleClose} className="text-xs text-tertiary hover:text-secondary transition-colors">Cancel</button>
                 <div className="flex-1" />
                 {phase === 'idle' ? (
-                  <Button color="primary-destructive" iconLeading={Mic} onPress={startRecording}>Start Recording</Button>
+                  <Button color="primary-destructive" iconLeading={(p) => <Mic {...p} strokeWidth={1.25} />} onPress={startRecording}>Start Recording</Button>
                 ) : (
-                  <Button color="primary-destructive" iconLeading={Square} onPress={doStop}>Stop Recording</Button>
+                  <Button color="primary-destructive" iconLeading={(p) => <Square {...p} strokeWidth={1.25} />} onPress={doStop}>Stop Recording</Button>
                 )}
               </>
             )}

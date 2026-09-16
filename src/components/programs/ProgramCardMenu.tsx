@@ -45,14 +45,14 @@ export default function ProgramCardMenu({ isFavorite, canManage, onToggleFavorit
       </AriaButton>
       <Dropdown.Popover className="w-[260px] rounded-lg border border-primary bg-primary shadow-[0px_0px_10px_3px_rgba(0,0,0,0.07)] ring-0">
         <Dropdown.Menu onAction={handleAction} className="flex flex-col gap-1 p-2">
-          <Dropdown.Item size="lg" id="assign" icon={UserPlus} label="Assign to Patient" />
+          <Dropdown.Item size="lg" id="assign" icon={(p) => <UserPlus {...p} strokeWidth={1.25} />} label="Assign to Patient" />
           {canManage ? (
             <>
-              <Dropdown.Item size="lg" id="edit" icon={Pencil} label="Edit" />
-              <Dropdown.Item size="lg" id="delete" icon={Trash2} label="Delete" />
+              <Dropdown.Item size="lg" id="edit" icon={(p) => <Pencil {...p} strokeWidth={1.25} />} label="Edit" />
+              <Dropdown.Item size="lg" id="delete" icon={(p) => <Trash2 {...p} strokeWidth={1.25} />} label="Delete" />
             </>
           ) : (
-            <Dropdown.Item size="lg" id="duplicate" icon={Copy} label="Duplicate" />
+            <Dropdown.Item size="lg" id="duplicate" icon={(p) => <Copy {...p} strokeWidth={1.25} />} label="Duplicate" />
           )}
         </Dropdown.Menu>
       </Dropdown.Popover>

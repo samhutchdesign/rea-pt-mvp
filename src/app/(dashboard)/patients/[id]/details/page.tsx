@@ -27,7 +27,7 @@ function SectionCard({ title, children, onEdit }: { title: string; children: Rea
     <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
       <div className="flex justify-between items-center mb-5">
         <span className="text-base font-semibold text-primary">{title}</span>
-        <Button color="tertiary" size="xs" onPress={onEdit} iconLeading={Pencil} />
+        <Button color="tertiary" size="xs" onPress={onEdit} iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />} />
       </div>
       {children}
     </div>

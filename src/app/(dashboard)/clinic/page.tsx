@@ -88,7 +88,7 @@ export default function ClinicPage() {
             </div>
           </div>
           {!editing ? (
-            <Button color="secondary" size="sm" iconLeading={Pencil} onPress={() => setEditing(true)}>
+            <Button color="secondary" size="sm" iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />} onPress={() => setEditing(true)}>
               Edit Organization
             </Button>
           ) : (
@@ -144,7 +144,7 @@ export default function ClinicPage() {
             <div className="rounded-xl border border-secondary bg-primary p-6">
               <div className="flex justify-between items-center mb-4">
                 <span className="font-semibold text-primary">Locations</span>
-                <Button color="tertiary" size="xs" iconLeading={Plus} onPress={() => setAddLocationOpen(true)}>
+                <Button color="tertiary" size="xs" iconLeading={(p) => <Plus {...p} strokeWidth={1.25} />} onPress={() => setAddLocationOpen(true)}>
                   Add Location
                 </Button>
               </div>

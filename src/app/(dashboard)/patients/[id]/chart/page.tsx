@@ -71,7 +71,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
             <Button
               color="secondary"
               size="lg"
-              iconLeading={Plus}
+              iconLeading={(p) => <Plus {...p} strokeWidth={1.25} />}
               onPress={() => router.push(`/patients/${id}/chart/new`)}
               className="w-full justify-center"
             >

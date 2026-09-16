@@ -115,7 +115,7 @@ function PaymentMethodTab() {
           <Button color="tertiary-destructive" size="xs" onPress={() => {}}>Remove</Button>
         </div>
       </div>
-      <Button color="primary" size="sm" iconLeading={CreditCard} onPress={() => {}}>
+      <Button color="primary" size="sm" iconLeading={(p) => <CreditCard {...p} strokeWidth={1.25} />} onPress={() => {}}>
         Add Payment Method
       </Button>
       <p className="text-tertiary text-xs mt-3">
@@ -145,7 +145,7 @@ function InvoiceHistoryTab() {
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-utility-green-50 text-utility-green-700">{inv.status}</span>
             </span>
             <div className="flex justify-end">
-              <Button color="tertiary" size="xs" iconLeading={Download} onPress={() => {}}>PDF</Button>
+              <Button color="tertiary" size="xs" iconLeading={(p) => <Download {...p} strokeWidth={1.25} />} onPress={() => {}}>PDF</Button>
             </div>
           </div>
         ))}

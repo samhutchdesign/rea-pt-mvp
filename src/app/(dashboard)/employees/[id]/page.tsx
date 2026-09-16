@@ -243,7 +243,7 @@ function ArchiveFlow({
           {step === 0 ? (
             <Button color="secondary" size="lg" onPress={onClose}>Cancel</Button>
           ) : (
-            <Button color="tertiary" size="lg" iconLeading={ArrowLeft} onPress={() => setStep(0)}>Back</Button>
+            <Button color="tertiary" size="lg" iconLeading={(p) => <ArrowLeft {...p} strokeWidth={1.25} />} onPress={() => setStep(0)}>Back</Button>
           )}
           <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-[24px] leading-[32px] font-normal text-primary m-0 whitespace-nowrap">
             Archive {employee.firstName} {employee.lastName}
@@ -365,10 +365,10 @@ function EmployeeHeaderMenu({
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>
           {canArchive && (archived
-            ? <Dropdown.Item id="restore" icon={Inbox} label="Restore Employee" />
-            : <Dropdown.Item id="archive" icon={Inbox} label="Archive" />
+            ? <Dropdown.Item id="restore" icon={(p) => <Inbox {...p} strokeWidth={1.25} />} label="Restore Employee" />
+            : <Dropdown.Item id="archive" icon={(p) => <Inbox {...p} strokeWidth={1.25} />} label="Archive" />
           )}
-          {canEditRole && <Dropdown.Item id="edit-role" icon={ShieldCheck} label="Edit Role" />}
+          {canEditRole && <Dropdown.Item id="edit-role" icon={(p) => <ShieldCheck {...p} strokeWidth={1.25} />} label="Edit Role" />}
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown.Root>
@@ -579,7 +579,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <Button
                   color="secondary"
                   size="sm"
-                  iconLeading={Crown}
+                  iconLeading={(p) => <Crown {...p} strokeWidth={1.25} />}
                   onPress={() => router.push('/account/settings?transfer=1')}
                 >
                   Transfer Ownership
@@ -672,7 +672,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <Button
                   color="secondary"
                   size="lg"
-                  iconLeading={ArrowLeftRight}
+                  iconLeading={(p) => <ArrowLeftRight {...p} strokeWidth={1.25} />}
                   isDisabled={assignedPatients.length === 0}
                   onPress={() => setBulkTransferOpen(true)}
                 >

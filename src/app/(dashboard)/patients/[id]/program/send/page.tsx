@@ -80,7 +80,7 @@ export default function SendProgramPage({ params }: { params: Promise<{ id: stri
 
       <div className="flex justify-end gap-4">
         <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
-        <Button color="primary" size="sm" iconLeading={Send} onPress={handleSend}>Send to Patient</Button>
+        <Button color="primary" size="sm" iconLeading={(p) => <Send {...p} strokeWidth={1.25} />} onPress={handleSend}>Send to Patient</Button>
       </div>
     </div>
   );

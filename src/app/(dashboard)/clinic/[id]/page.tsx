@@ -81,11 +81,11 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
           <div className="flex gap-2 items-center">
-            <Button color="secondary" size="xs" iconLeading={ArrowLeft} onPress={() => router.push('/clinic')}>
+            <Button color="secondary" size="xs" iconLeading={(p) => <ArrowLeft {...p} strokeWidth={1.25} />} onPress={() => router.push('/clinic')}>
               Organization
             </Button>
             {(can.canManageClinic || can.canManageLocation) && !editing && (
-              <Button color="secondary" size="xs" iconLeading={Pencil} onPress={() => setEditing(true)}>
+              <Button color="secondary" size="xs" iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />} onPress={() => setEditing(true)}>
                 Edit Clinic
               </Button>
             )}
@@ -159,7 +159,7 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
                     <span className="block font-semibold text-primary text-base">Delete this clinic location</span>
                     <span className="text-tertiary text-xs">This will remove the location from the organization permanently.</span>
                   </div>
-                  <Button color="secondary-destructive" size="xs" iconLeading={Trash2} onPress={() => setDeleteOpen(true)}>
+                  <Button color="secondary-destructive" size="xs" iconLeading={(p) => <Trash2 {...p} strokeWidth={1.25} />} onPress={() => setDeleteOpen(true)}>
                     Delete Location
                   </Button>
                 </div>

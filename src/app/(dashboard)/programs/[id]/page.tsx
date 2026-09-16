@@ -147,13 +147,13 @@ function ProgramDetailContent({ id }: { id: string }) {
                 <span className="text-base font-medium text-secondary">{mockPhysio.clinicName}</span>
               </div>
               <div className="flex gap-2 shrink-0">
-                <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : setAssignOpen(true)}>
+                <Button color="secondary" size="sm" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : setAssignOpen(true)}>
                   Assign
                 </Button>
                 <Button
                   color="secondary"
                   size="sm"
-                  iconLeading={Heart}
+                  iconLeading={(p) => <Heart {...p} strokeWidth={1.25} />}
                   onPress={() => setIsFavorite((v) => !v)}
                   className={isFavorite ? '[&_svg]:fill-favorite [&_svg]:text-favorite' : undefined}
                 >
@@ -176,11 +176,11 @@ function ProgramDetailContent({ id }: { id: string }) {
                     <Dropdown.Menu onAction={handleMenuAction}>
                       {canManage ? (
                         <>
-                          <Dropdown.Item id="edit" icon={Pencil} label="Edit" />
-                          <Dropdown.Item id="delete" icon={Trash2} label="Delete" />
+                          <Dropdown.Item id="edit" icon={(p) => <Pencil {...p} strokeWidth={1.25} />} label="Edit" />
+                          <Dropdown.Item id="delete" icon={(p) => <Trash2 {...p} strokeWidth={1.25} />} label="Delete" />
                         </>
                       ) : (
-                        <Dropdown.Item id="duplicate" icon={Copy} label="Duplicate" />
+                        <Dropdown.Item id="duplicate" icon={(p) => <Copy {...p} strokeWidth={1.25} />} label="Duplicate" />
                       )}
                     </Dropdown.Menu>
                   </Dropdown.Popover>

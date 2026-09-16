@@ -192,10 +192,10 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
           </p>
         </div>
         <div className="flex gap-3">
-          <Button color="secondary" size="lg" iconLeading={Pencil} onPress={() => router.push(`/patients/${id}/program/edit`)}>
+          <Button color="secondary" size="lg" iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />} onPress={() => router.push(`/patients/${id}/program/edit`)}>
             Modify Program
           </Button>
-          <Button color="primary" size="lg" iconLeading={Send} onPress={() => router.push(`/patients/${id}/program/send`)}>
+          <Button color="primary" size="lg" iconLeading={(p) => <Send {...p} strokeWidth={1.25} />} onPress={() => router.push(`/patients/${id}/program/send`)}>
             Send to Patient
           </Button>
         </div>

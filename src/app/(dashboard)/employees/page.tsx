@@ -86,7 +86,7 @@ export default function EmployeesPage() {
         <div className="flex justify-between items-center mb-10">
           <h1 className="font-display text-[32px] leading-[48px] font-normal text-primary m-0">Employees</h1>
           {can.canInviteUsers && (
-            <Button color="primary" size="lg" iconLeading={Plus} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add New Employee</Button>
+            <Button color="primary" size="lg" iconLeading={(p) => <Plus {...p} strokeWidth={1.25} />} onPress={() => { setInviteEmail(''); setInviteRole('Practitioner'); setAddOpen(true); }}>Add New Employee</Button>
           )}
         </div>
 
@@ -205,7 +205,7 @@ export default function EmployeesPage() {
                         <Button
                           color="secondary"
                           size="xs"
-                          iconLeading={RotateCcw}
+                          iconLeading={(p) => <RotateCcw {...p} strokeWidth={1.25} />}
                           onPress={() => restore(emp)}
                         >
                           Restore

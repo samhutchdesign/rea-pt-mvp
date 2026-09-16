@@ -34,9 +34,9 @@ export function PatientHeaderMenu({ onEditProfile, onArchive, onReassign, canArc
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>
-          <Dropdown.Item id="edit" icon={Pencil} label="Edit Profile" />
-          <Dropdown.Item id="reassign" icon={Repeat} label="Transfer Patient" />
-          {canArchive && <Dropdown.Item id="archive" icon={Inbox} label="Archive Patient" />}
+          <Dropdown.Item id="edit" icon={(p) => <Pencil {...p} strokeWidth={1.25} />} label="Edit Profile" />
+          <Dropdown.Item id="reassign" icon={(p) => <Repeat {...p} strokeWidth={1.25} />} label="Transfer Patient" />
+          {canArchive && <Dropdown.Item id="archive" icon={(p) => <Inbox {...p} strokeWidth={1.25} />} label="Archive Patient" />}
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown.Root>

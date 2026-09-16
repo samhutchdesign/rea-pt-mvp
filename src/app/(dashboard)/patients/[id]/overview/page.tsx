@@ -112,7 +112,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         <div className="flex-1 min-w-0 rounded-xl border border-primary bg-secondary_alt p-7">
           <div className="flex justify-between items-center mb-5">
             <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Latest Session</span>
-            <Button size="md" color="secondary" iconLeading={Plus} onPress={() => router.push(`/patients/${id}/chart/new`)}>
+            <Button size="md" color="secondary" iconLeading={(p) => <Plus {...p} strokeWidth={1.25} />} onPress={() => router.push(`/patients/${id}/chart/new`)}>
               New Chart
             </Button>
           </div>
@@ -184,7 +184,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
             <div className="flex items-center justify-between">
               <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Assigned Practitioner</span>
               {can.canTransferPatient && (
-                <Button size="sm" color="secondary" iconLeading={ArrowLeftRight} onPress={() => setTransferOpen(true)}>
+                <Button size="sm" color="secondary" iconLeading={(p) => <ArrowLeftRight {...p} strokeWidth={1.25} />} onPress={() => setTransferOpen(true)}>
                   Transfer
                 </Button>
               )}

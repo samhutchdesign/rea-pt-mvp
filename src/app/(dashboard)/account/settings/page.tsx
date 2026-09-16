@@ -281,7 +281,7 @@ function SettingsContent() {
             <span className="font-semibold text-base text-primary block mb-4">Organization</span>
             <Divider className="mb-4" />
             <p className="text-xs font-semibold uppercase tracking-wide text-tertiary mb-2">Danger Zone</p>
-            <Button color="secondary" size="sm" iconLeading={Crown} onPress={() => setTransferOpen(true)}>
+            <Button color="secondary" size="sm" iconLeading={(p) => <Crown {...p} strokeWidth={1.25} />} onPress={() => setTransferOpen(true)}>
               Transfer Ownership
             </Button>
           </div>

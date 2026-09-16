@@ -55,7 +55,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
           <Button
             color="secondary"
             size="sm"
-            iconLeading={Pencil}
+            iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />}
             onPress={() => router.push('/documents/new')}
           >
             Edit

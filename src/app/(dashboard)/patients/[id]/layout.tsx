@@ -180,7 +180,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
             {can.canArchivePatient && archived && (
               <div className="flex gap-2 shrink-0">
-                <Button size="sm" color="secondary" iconLeading={Inbox} onPress={openRestore}>
+                <Button size="sm" color="secondary" iconLeading={(p) => <Inbox {...p} strokeWidth={1.25} />} onPress={openRestore}>
                   Restore Patient
                 </Button>
                 <Button size="sm" color="primary-destructive" onPress={() => setConfirmDeleteOpen(true)}>

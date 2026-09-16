@@ -46,8 +46,8 @@ export default function ExerciseCardMenu({ onAddToProgram, onAssign, onOpenChang
       </AriaButton>
       <Dropdown.Popover className="w-[260px] rounded-lg border border-primary bg-primary shadow-[0px_0px_10px_3px_rgba(0,0,0,0.07)] ring-0">
         <Dropdown.Menu onAction={handleAction} className="flex flex-col gap-1 p-2">
-          <Dropdown.Item size="lg" id="add-to-program" icon={ListPlus} label="Add to Program" />
-          <Dropdown.Item size="lg" id="assign" icon={UserPlus} label="Assign to Patient" />
+          <Dropdown.Item size="lg" id="add-to-program" icon={(p) => <ListPlus {...p} strokeWidth={1.25} />} label="Add to Program" />
+          <Dropdown.Item size="lg" id="assign" icon={(p) => <UserPlus {...p} strokeWidth={1.25} />} label="Assign to Patient" />
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown.Root>

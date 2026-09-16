@@ -397,10 +397,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
-              <Button color="secondary" size="sm" iconLeading={ListPlus} onPress={() => block(() => { resetRx(); setProgramOpen(true); })}>
+              <Button color="secondary" size="sm" iconLeading={(p) => <ListPlus {...p} strokeWidth={1.25} />} onPress={() => block(() => { resetRx(); setProgramOpen(true); })}>
                 Add to Program
               </Button>
-              <Button color="secondary" size="sm" iconLeading={UserPlus} onPress={() => block(() => { resetRx(); setAssignOpen(true); })}>
+              <Button color="secondary" size="sm" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => block(() => { resetRx(); setAssignOpen(true); })}>
                 Assign
               </Button>
               <button

@@ -153,7 +153,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
         {/* Action bar */}
         <div className="shrink-0 border-t border-secondary px-6 py-4 flex gap-3">
           {viewMode === 'full' && (
-            <Button size="sm" color="secondary" iconLeading={Mic} onPress={() => onActionBlocked ? onActionBlocked() : setAudioOpen(true)}>
+            <Button size="sm" color="secondary" iconLeading={(p) => <Mic {...p} strokeWidth={1.25} />} onPress={() => onActionBlocked ? onActionBlocked() : setAudioOpen(true)}>
               Record Audio Cue
             </Button>
           )}
@@ -172,7 +172,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             <Button
               size="sm"
               color={onAddToCurrentProgram ? 'secondary' : 'primary'}
-              iconLeading={List}
+              iconLeading={(p) => <List {...p} strokeWidth={1.25} />}
               onPress={() => onActionBlocked ? onActionBlocked() : setProgramSelectorOpen(true)}
               className="flex-1"
             >

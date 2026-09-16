@@ -214,7 +214,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
             <Button
               color="tertiary"
               size="sm"
-              iconLeading={ArrowLeft}
+              iconLeading={(p) => <ArrowLeft {...p} strokeWidth={1.25} />}
               onPress={() => router.back()}
               className="mb-4"
             >
