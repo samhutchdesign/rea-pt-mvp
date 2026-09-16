@@ -163,57 +163,61 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           {/* Video / Animation */}
           {isBreathingPacer ? (
-            <BreathingCircleAnimation
-              key={`${rx.speedSecs}-${rx.loops}`}
-              cycleSeconds={rx.speedSecs}
-              loops={rx.loops}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <BreathingCircleAnimation
+                key={`${rx.speedSecs}-${rx.loops}`}
+                cycleSeconds={rx.speedSecs}
+                loops={rx.loops}
+                className="absolute inset-0"
+              />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={2} max={10} step={0.5} onChange={(v) => patchRx({ speedSecs: v })} />
                 <CompactField value={rx.loops} unitSingular="Loop" unitPlural="Loops" onChange={(v) => patchRx({ loops: v })} />
               </ParametersCard>
-            </BreathingCircleAnimation>
+            </div>
           ) : ex.animationType === 'pf-full-range' ? (
-            <PelvicFloorFullRangeAnimation
-              key={`${rx.speedSecs}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
-              speedSecs={rx.speedSecs}
-              holdSecs={rx.holdSecs}
-              restSecs={rx.restSecs}
-              reps={rx.reps}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <PelvicFloorFullRangeAnimation
+                key={`${rx.speedSecs}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                holdSecs={rx.holdSecs}
+                restSecs={rx.restSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.3} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ holdSecs: v })} />
                 <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
-            </PelvicFloorFullRangeAnimation>
+            </div>
           ) : ex.animationType === 'pf-quick-flicks' ? (
-            <QuickFlicksAnimation
-              key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
-              speedSecs={rx.speedSecs}
-              restSecs={rx.restSecs}
-              reps={rx.reps}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <QuickFlicksAnimation
+                key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                restSecs={rx.restSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.1} max={1} step={0.05} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={10} onChange={(v) => patchRx({ restSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
-            </QuickFlicksAnimation>
+            </div>
           ) : ex.animationType === 'pf-sustained-hold' ? (
-            <SustainedHoldAnimation
-              key={`${rx.speedSecs}-${rx.holdIntensityPct}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
-              speedSecs={rx.speedSecs}
-              intensityPct={rx.holdIntensityPct}
-              holdSecs={rx.holdSecs}
-              restSecs={rx.restSecs}
-              reps={rx.reps}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <SustainedHoldAnimation
+                key={`${rx.speedSecs}-${rx.holdIntensityPct}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                intensityPct={rx.holdIntensityPct}
+                holdSecs={rx.holdSecs}
+                restSecs={rx.restSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <div className="flex items-center gap-3 w-full">
                   <span className="text-xs text-secondary shrink-0">Intensity</span>
@@ -225,16 +229,17 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={20} onChange={(v) => patchRx({ holdSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
-            </SustainedHoldAnimation>
+            </div>
           ) : ex.animationType === 'pf-elevator' ? (
-            <ElevatorAnimation
-              key={`${rx.speedSecs}-${rx.stages}-${rx.stagePauseSecs}-${rx.reps}`}
-              speedSecs={rx.speedSecs}
-              stages={rx.stages}
-              stagePauseSecs={rx.stagePauseSecs}
-              reps={rx.reps}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <ElevatorAnimation
+                key={`${rx.speedSecs}-${rx.stages}-${rx.stagePauseSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                stages={rx.stages}
+                stagePauseSecs={rx.stagePauseSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <div className="flex items-center gap-3 w-full">
                   <span className="text-xs text-secondary shrink-0">Stages</span>
@@ -246,37 +251,39 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 <ParameterSlider label="Pauses" value={rx.stagePauseSecs} unit="s" min={0.5} max={5} step={0.5} onChange={(v) => patchRx({ stagePauseSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
-            </ElevatorAnimation>
+            </div>
           ) : ex.animationType === 'pf-reverse-kegel' ? (
-            <ReverseKegelAnimation
-              key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
-              speedSecs={rx.speedSecs}
-              restSecs={rx.restSecs}
-              reps={rx.reps}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <ReverseKegelAnimation
+                key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                restSecs={rx.restSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
-            </ReverseKegelAnimation>
+            </div>
           ) : ex.animationType === 'pf-the-knack' ? (
             <TheKnackAnimation className="mb-5 w-full aspect-video rounded-2xl" />
           ) : ex.animationType === 'pf-combo-full-range-quick-flicks' ? (
-            <ComboFullRangeQuickFlicks
-              key={`${rx.step1SpeedSecs}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
-              step1SpeedSecs={rx.step1SpeedSecs}
-              step1HoldSecs={rx.step1HoldSecs}
-              step1RestSecs={rx.step1RestSecs}
-              step1Reps={rx.step1Reps}
-              step2SpeedSecs={rx.step2SpeedSecs}
-              step2RestSecs={rx.step2RestSecs}
-              step2Reps={rx.step2Reps}
-              transitionRestSecs={rx.transitionRestSecs}
-              comboSets={rx.comboSets}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <ComboFullRangeQuickFlicks
+                key={`${rx.step1SpeedSecs}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
+                step1SpeedSecs={rx.step1SpeedSecs}
+                step1HoldSecs={rx.step1HoldSecs}
+                step1RestSecs={rx.step1RestSecs}
+                step1Reps={rx.step1Reps}
+                step2SpeedSecs={rx.step2SpeedSecs}
+                step2RestSecs={rx.step2RestSecs}
+                step2Reps={rx.step2Reps}
+                transitionRestSecs={rx.transitionRestSecs}
+                comboSets={rx.comboSets}
+                className="absolute inset-0"
+              />
               <ParametersCard
                 expanded={paramsExpanded}
                 onExpandedChange={setParamsExpanded}
@@ -284,7 +291,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 onActiveTabChange={setActiveStepTab}
                 tabs={[
                   {
-                    label: 'Step 1',
+                    label: 'Full Range',
                     content: (
                       <>
                         <ParameterSlider label="Speed" value={rx.step1SpeedSecs} unit="s" min={0.3} max={3} step={0.1} onChange={(v) => patchRx({ step1SpeedSecs: v })} />
@@ -295,7 +302,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                     ),
                   },
                   {
-                    label: 'Step 2',
+                    label: 'Quick Flicks',
                     content: (
                       <>
                         <ParameterSlider label="Transition" value={rx.transitionRestSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ transitionRestSecs: v })} />
@@ -309,22 +316,23 @@ function ExerciseDetailContent({ id }: { id: string }) {
               >
                 <CompactField value={rx.comboSets} unitSingular="Combo Set" unitPlural="Combo Sets" onChange={(v) => patchRx({ comboSets: v })} />
               </ParametersCard>
-            </ComboFullRangeQuickFlicks>
+            </div>
           ) : ex.animationType === 'pf-combo-sustained-hold-quick-flicks' ? (
-            <ComboSustainedHoldQuickFlicks
-              key={`${rx.step1SpeedSecs}-${rx.step1IntensityPct}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
-              step1SpeedSecs={rx.step1SpeedSecs}
-              step1IntensityPct={rx.step1IntensityPct}
-              step1HoldSecs={rx.step1HoldSecs}
-              step1RestSecs={rx.step1RestSecs}
-              step1Reps={rx.step1Reps}
-              step2SpeedSecs={rx.step2SpeedSecs}
-              step2RestSecs={rx.step2RestSecs}
-              step2Reps={rx.step2Reps}
-              transitionRestSecs={rx.transitionRestSecs}
-              comboSets={rx.comboSets}
-              className="mb-5 w-full aspect-video rounded-2xl"
-            >
+            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+              <ComboSustainedHoldQuickFlicks
+                key={`${rx.step1SpeedSecs}-${rx.step1IntensityPct}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
+                step1SpeedSecs={rx.step1SpeedSecs}
+                step1IntensityPct={rx.step1IntensityPct}
+                step1HoldSecs={rx.step1HoldSecs}
+                step1RestSecs={rx.step1RestSecs}
+                step1Reps={rx.step1Reps}
+                step2SpeedSecs={rx.step2SpeedSecs}
+                step2RestSecs={rx.step2RestSecs}
+                step2Reps={rx.step2Reps}
+                transitionRestSecs={rx.transitionRestSecs}
+                comboSets={rx.comboSets}
+                className="absolute inset-0"
+              />
               <ParametersCard
                 expanded={paramsExpanded}
                 onExpandedChange={setParamsExpanded}
@@ -332,7 +340,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 onActiveTabChange={setActiveStepTab}
                 tabs={[
                   {
-                    label: 'Step 1',
+                    label: 'Sustained Hold',
                     content: (
                       <>
                         <div className="flex items-center gap-3 w-full">
@@ -349,7 +357,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                     ),
                   },
                   {
-                    label: 'Step 2',
+                    label: 'Quick Flicks',
                     content: (
                       <>
                         <ParameterSlider label="Transition" value={rx.transitionRestSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ transitionRestSecs: v })} />
@@ -363,7 +371,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               >
                 <CompactField value={rx.comboSets} unitSingular="Combo Set" unitPlural="Combo Sets" onChange={(v) => patchRx({ comboSets: v })} />
               </ParametersCard>
-            </ComboSustainedHoldQuickFlicks>
+            </div>
           ) : ex.videoUrl ? (
             <div className="mb-5 w-full aspect-video rounded-2xl overflow-hidden bg-[#0f0f0f]">
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />

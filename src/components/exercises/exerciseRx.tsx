@@ -86,8 +86,9 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
     case 'pf-the-knack':
       return `Practiced ${rx.frequency.toLowerCase()}`;
     case 'pf-combo-full-range-quick-flicks':
+      return `${rx.comboSets} combo sets — Full Range: ${rx.step1Sets}×${rx.step1Reps}, Quick Flicks: ${rx.step2Sets}×${rx.step2Reps}, ${rx.transitionRestSecs}s transition rest`;
     case 'pf-combo-sustained-hold-quick-flicks':
-      return `${rx.comboSets} combo sets — Step 1: ${rx.step1Sets}×${rx.step1Reps}, Step 2: ${rx.step2Sets}×${rx.step2Reps}, ${rx.transitionRestSecs}s transition rest`;
+      return `${rx.comboSets} combo sets — Sustained Hold: ${rx.step1Sets}×${rx.step1Reps}, Quick Flicks: ${rx.step2Sets}×${rx.step2Reps}, ${rx.transitionRestSecs}s transition rest`;
     default:
       return `${rx.sets} sets × ${rx.reps} reps${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
   }
@@ -220,7 +221,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
       return (
         <div className="flex w-full flex-col gap-3">
           {positionField}
-          <span className="text-xs font-semibold text-primary">Step 1 — Full Range Contraction</span>
+          <span className="text-xs font-semibold text-primary">Full Range Contraction</span>
           <div className="flex flex-wrap gap-2">
             <CompactField value={values.step1Sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => onChange({ step1Sets: v })} />
             <CompactField value={values.step1Reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => onChange({ step1Reps: v })} />
@@ -229,7 +230,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
             <CompactField value={values.step1RestSecs} unitSingular="Sec Rest" unitPlural="Sec Rest" onChange={(v) => onChange({ step1RestSecs: v })} />
           </div>
           <CompactField value={values.transitionRestSecs} unitSingular="Sec Transition Rest" unitPlural="Sec Transition Rest" onChange={(v) => onChange({ transitionRestSecs: v })} />
-          <span className="text-xs font-semibold text-primary">Step 2 — Quick Flicks</span>
+          <span className="text-xs font-semibold text-primary">Quick Flicks</span>
           <div className="flex flex-wrap gap-2">
             <CompactField value={values.step2Sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => onChange({ step2Sets: v })} />
             <CompactField value={values.step2Reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => onChange({ step2Reps: v })} />
@@ -245,7 +246,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
       return (
         <div className="flex w-full flex-col gap-3">
           {positionField}
-          <span className="text-xs font-semibold text-primary">Step 1 — Sustained Hold</span>
+          <span className="text-xs font-semibold text-primary">Sustained Hold</span>
           <div className={fieldColCls}>
             <label className={fieldLabelCls}>Hold Intensity</label>
             <NativeSelect className="h-12" value={String(values.step1IntensityPct)} onChange={(e) => onChange({ step1IntensityPct: Number(e.target.value) })}>

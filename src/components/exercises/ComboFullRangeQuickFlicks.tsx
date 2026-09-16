@@ -26,16 +26,16 @@ export function ComboFullRangeQuickFlicks({
   transitionRestSecs, comboSets, className, children,
 }: ComboFullRangeQuickFlicksProps) {
   const phases = useMemo(() => [
-    ...buildFullRangePhases('Step 1', step1SpeedSecs, step1HoldSecs, step1RestSecs, step1Reps),
+    ...buildFullRangePhases('Full Range', step1SpeedSecs, step1HoldSecs, step1RestSecs, step1Reps),
     buildTransitionRestPhase(transitionRestSecs),
-    ...buildQuickFlicksPhases('Step 2', step2SpeedSecs, step2RestSecs, step2Reps),
+    ...buildQuickFlicksPhases('Quick Flicks', step2SpeedSecs, step2RestSecs, step2Reps),
   ], [step1SpeedSecs, step1HoldSecs, step1RestSecs, step1Reps, step2SpeedSecs, step2RestSecs, step2Reps, transitionRestSecs]);
 
   const { repIndex, phase, running } = usePhaseSequence(phases, comboSets);
 
   return (
     <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={500} className={className}>
-      <span className="absolute top-5 left-5 font-display text-[20px] leading-[32px] font-medium text-primary">
+      <span className="absolute top-5 left-1/2 -translate-x-1/2 font-display text-[20px] leading-[32px] font-medium text-primary">
         {running ? phase.label : 'Finished'}
       </span>
       <span className="absolute top-5 right-5 flex items-baseline gap-1 font-display text-[20px] leading-[32px] font-medium text-primary">

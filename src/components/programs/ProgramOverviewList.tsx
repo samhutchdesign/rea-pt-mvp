@@ -24,14 +24,21 @@ function rowSummary(ex: Exercise, row: ProgramRow): string {
       return `${row.sets} Sets / ${row.reps} Reps / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 1.2}s Speed / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
     case 'pf-the-knack':
       return `Practiced ${(row.frequency ?? ex.defaultFrequency ?? 'Daily').toLowerCase()}`;
-    case 'pf-combo-full-range-quick-flicks':
+    case 'pf-combo-full-range-quick-flicks': {
+      const comboSets = row.comboSets ?? ex.defaultComboSets ?? 3;
+      const step1Sets = row.step1Sets ?? ex.defaultStep1Sets ?? 3;
+      const step1Reps = row.step1Reps ?? ex.defaultStep1Reps ?? 10;
+      const step2Sets = row.step2Sets ?? ex.defaultStep2Sets ?? 3;
+      const step2Reps = row.step2Reps ?? ex.defaultStep2Reps ?? 15;
+      return `${comboSets} Combo Sets / Full Range: ${step1Sets}×${step1Reps} / Quick Flicks: ${step2Sets}×${step2Reps}`;
+    }
     case 'pf-combo-sustained-hold-quick-flicks': {
       const comboSets = row.comboSets ?? ex.defaultComboSets ?? 3;
       const step1Sets = row.step1Sets ?? ex.defaultStep1Sets ?? 3;
       const step1Reps = row.step1Reps ?? ex.defaultStep1Reps ?? 10;
       const step2Sets = row.step2Sets ?? ex.defaultStep2Sets ?? 3;
       const step2Reps = row.step2Reps ?? ex.defaultStep2Reps ?? 15;
-      return `${comboSets} Combo Sets / Step 1: ${step1Sets}×${step1Reps} / Step 2: ${step2Sets}×${step2Reps}`;
+      return `${comboSets} Combo Sets / Sustained Hold: ${step1Sets}×${step1Reps} / Quick Flicks: ${step2Sets}×${step2Reps}`;
     }
     default:
       return `${row.sets} Sets / ${row.reps} Reps${row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}`;

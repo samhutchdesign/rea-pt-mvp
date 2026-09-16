@@ -24,7 +24,7 @@ export function TheKnackAnimation({ className, children }: TheKnackAnimationProp
 
   return (
     <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={400} className={className}>
-      <span className="absolute top-5 left-5 font-display text-[20px] leading-[32px] font-medium text-primary">
+      <span className="absolute top-5 left-1/2 -translate-x-1/2 font-display text-[20px] leading-[32px] font-medium text-primary">
         {phase.label}
       </span>
       {children}
