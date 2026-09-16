@@ -21,7 +21,7 @@ export function SignatureFontPicker({ name, value, onChange }: SignatureFontPick
             value === f.id ? 'border-brand-200 bg-brand-50' : 'border-secondary bg-secondary_alt hover:bg-secondary_alt/80',
           )}
         >
-          <span style={{ fontFamily: f.variable }} className="block text-2xl leading-5 text-primary truncate">
+          <span style={{ fontFamily: f.variable }} className="block py-1 text-2xl leading-normal text-primary truncate">
             {name}
           </span>
         </button>
