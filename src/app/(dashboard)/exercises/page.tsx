@@ -271,6 +271,8 @@ function ExercisesPageContent() {
     searchParams.get('eft')?.split(',').filter(Boolean) ?? []
   );
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('fav') === '1');
+  // TEMPORARY: quick filter to find the demo animation exercises. Remove once they're no longer needed for review.
+  const [showAnimationsOnly, setShowAnimationsOnly] = useState(false);
   const [showMoreConditions, setShowMoreConditions] = useState(false);
   const [showMoreCategories, setShowMoreCategories] = useState(false);
   const [showMoreLevels, setShowMoreLevels] = useState(false);
@@ -326,10 +328,10 @@ function ExercisesPageContent() {
   };
 
   const selectSpecialty = (id: string) => { setSelectedId(id); setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); };
-  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); };
+  const clearFilters = () => { setSearch(''); setFilterConditions([]); setFilterCategories([]); setFilterLevels([]); setFilterEquipment([]); setFilterMovementTypes([]); setFilterEffortTypes([]); setShowFavoritesOnly(false); setShowAnimationsOnly(false); };
 
   const effectiveSearch = expandSearch(search);
-  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly;
+  const hasFilters = !!search || filterConditions.length > 0 || filterCategories.length > 0 || filterLevels.length > 0 || filterEquipment.length > 0 || filterMovementTypes.length > 0 || filterEffortTypes.length > 0 || showFavoritesOnly || showAnimationsOnly;
 
   const yourUsage = useMemo(() => getUsageCountByEmployee(currentIdentity.id), [currentIdentity.id]);
 
@@ -337,6 +339,7 @@ function ExercisesPageContent() {
     if (!isAllMode && !specialty?.available) return [];
     return exercises.filter((ex) => {
       if (showFavoritesOnly && !favorites.has(ex.id)) return false;
+      if (showAnimationsOnly && !ex.animationType) return false;
       if (effectiveSearch) {
         const q = effectiveSearch.toLowerCase();
         const allTags = [...ex.tags.specialty, ...ex.tags.condition, ...ex.tags.surgery, ...ex.tags.muscle, ...ex.tags.bodyPart];
@@ -359,13 +362,13 @@ function ExercisesPageContent() {
       if (sortBy === 'Newest Added') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       return 0;
     });
-  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, exercises, yourUsage]);
+  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, showAnimationsOnly, favorites, exercises, yourUsage]);
 
   const isFirstFilterRender = useRef(true);
   useEffect(() => {
     if (isFirstFilterRender.current) { isFirstFilterRender.current = false; return; }
     setVisibleCount(PAGE_SIZE);
-  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly]);
+  }, [isAllMode, specialty, effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, showAnimationsOnly]);
 
   const filteredConditions = filterConfig
     ? (conditionSearch ? filterConfig.conditions.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase())) : filterConfig.conditions)
@@ -456,6 +459,8 @@ function ExercisesPageContent() {
               {/* Favorites */}
               <div className="mb-5 pb-5 border-b border-secondary">
                 <CheckRow label="Favorites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
+                {/* TEMPORARY: quick filter for the demo animation exercises */}
+                <CheckRow label="Animations" checked={showAnimationsOnly} onChange={() => setShowAnimationsOnly((v) => !v)} />
               </div>
 
               {/* Condition */}
@@ -567,6 +572,7 @@ function ExercisesPageContent() {
                 <div className="flex gap-1.5 flex-wrap mb-3">
                   {search && <FilterTag label={`"${search}"`} onRemove={() => setSearch('')} />}
                   {showFavoritesOnly && <FilterTag label="Favorites only" onRemove={() => setShowFavoritesOnly(false)} />}
+                  {showAnimationsOnly && <FilterTag label="Animations" onRemove={() => setShowAnimationsOnly(false)} />}
                   {filterConditions.map((c) => (
                     <FilterTag key={c} label={c} onRemove={() => toggleArr(filterConditions, c, setFilterConditions)} />
                   ))}
