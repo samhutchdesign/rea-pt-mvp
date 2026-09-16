@@ -77,6 +77,11 @@ function ExerciseDetailContent({ id }: { id: string }) {
   const [programOpen, setProgramOpen] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
   const [rx, setRx] = useState<RxValues>(defaultRxValues(ex));
+  // Lifted out of ParametersCard: the animation it overlays remounts (via a
+  // `key`) whenever a parameter changes, so this state has to live up here
+  // to survive that remount instead of resetting on every edit.
+  const [paramsExpanded, setParamsExpanded] = useState(true);
+  const [activeStepTab, setActiveStepTab] = useState(0);
   const [moreOpen, setMoreOpen] = useState(false);
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
   const [selectedCue, setSelectedCue] = useState('');
@@ -164,7 +169,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               loops={rx.loops}
               className="mb-5 w-full aspect-video rounded-2xl"
             >
-              <ParametersCard>
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={2} max={10} step={0.5} onChange={(v) => patchRx({ speedSecs: v })} />
                 <CompactField value={rx.loops} unitSingular="Loop" unitPlural="Loops" onChange={(v) => patchRx({ loops: v })} />
               </ParametersCard>
@@ -178,7 +183,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
             >
-              <ParametersCard>
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.3} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ holdSecs: v })} />
                 <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
@@ -193,7 +198,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
             >
-              <ParametersCard>
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.1} max={1} step={0.05} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={10} onChange={(v) => patchRx({ restSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
@@ -209,7 +214,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
             >
-              <ParametersCard>
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <div className="flex items-center gap-3 w-full">
                   <span className="text-xs text-secondary shrink-0">Intensity</span>
                   <NativeSelect className="h-12 flex-1" value={String(rx.holdIntensityPct)} onChange={(e) => patchRx({ holdIntensityPct: Number(e.target.value) })}>
@@ -230,7 +235,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
             >
-              <ParametersCard>
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <div className="flex items-center gap-3 w-full">
                   <span className="text-xs text-secondary shrink-0">Stages</span>
                   <NativeSelect className="h-12 flex-1" value={String(rx.stages)} onChange={(e) => patchRx({ stages: Number(e.target.value) })}>
@@ -250,7 +255,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               reps={rx.reps}
               className="mb-5 w-full aspect-video rounded-2xl"
             >
-              <ParametersCard>
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
@@ -273,6 +278,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
               className="mb-5 w-full aspect-video rounded-2xl"
             >
               <ParametersCard
+                expanded={paramsExpanded}
+                onExpandedChange={setParamsExpanded}
+                activeTab={activeStepTab}
+                onActiveTabChange={setActiveStepTab}
                 tabs={[
                   {
                     label: 'Step 1',
@@ -317,6 +326,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
               className="mb-5 w-full aspect-video rounded-2xl"
             >
               <ParametersCard
+                expanded={paramsExpanded}
+                onExpandedChange={setParamsExpanded}
+                activeTab={activeStepTab}
+                onActiveTabChange={setActiveStepTab}
                 tabs={[
                   {
                     label: 'Step 1',
