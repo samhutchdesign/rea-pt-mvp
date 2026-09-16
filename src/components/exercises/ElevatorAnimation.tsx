@@ -29,14 +29,14 @@ export function ElevatorAnimation({ speedSecs, stages, stagePauseSecs, reps, cla
     // Ascend: 1/n, 2/n, ... n/n (100%), pausing at each level.
     for (let i = 1; i <= n; i++) {
       const fraction = i / n;
-      const label = `Stage ${i} of ${n}`;
+      const label = `${Math.round(fraction * 100)}%`;
       list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: moveMs });
       list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: pauseMs });
     }
     // Descend: back down through the same levels to rest.
     for (let i = n - 1; i >= 0; i--) {
       const fraction = i / n;
-      const label = i === 0 ? 'Rest' : `Release — Stage ${i} of ${n}`;
+      const label = `${Math.round(fraction * 100)}%`;
       list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: moveMs });
       list.push({ label, scale: levelToScale(fraction), riseFraction: fraction, durationMs: i === 0 ? pauseMs : pauseMs });
     }
