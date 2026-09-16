@@ -48,7 +48,7 @@ function ExerciseCard({
           onClick={() => onPreview(ex, pe)}
           className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full border border-primary bg-primary opacity-0 transition-opacity group-hover:opacity-100"
         >
-          <Eye size={16} className="text-primary" />
+          <Eye size={16} className="text-primary" strokeWidth={1.25} />
         </button>
       </div>
       <div className="flex flex-col pt-4">
@@ -69,7 +69,7 @@ function ExerciseCard({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <span className="text-xs font-semibold text-primary">{c.authorName}</span>
-                  {c.pinned && <Pin size={10} className="text-brand-500 shrink-0" />}
+                  {c.pinned && <Pin size={10} className="text-brand-500 shrink-0" strokeWidth={1.25} />}
                   <span className="text-[11px] text-tertiary ml-auto shrink-0">
                     {new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </span>
@@ -98,7 +98,7 @@ function HistoryEntry({ entry }: { entry: HepHistoryEntry }) {
             {formatDate(entry.assignedAt)} – {formatDate(entry.endedAt)} · {entry.exercises.length} exercise{entry.exercises.length !== 1 ? 's' : ''} · {entry.frequency}
           </p>
         </div>
-        {open ? <ChevronUp size={14} className="text-quaternary shrink-0" /> : <ChevronDown size={14} className="text-quaternary shrink-0" />}
+        {open ? <ChevronUp size={14} className="text-quaternary shrink-0" strokeWidth={1.25} /> : <ChevronDown size={14} className="text-quaternary shrink-0" strokeWidth={1.25} />}
       </button>
       {open && (
         <div className="border-t border-secondary px-4 py-3 flex flex-col gap-1.5">

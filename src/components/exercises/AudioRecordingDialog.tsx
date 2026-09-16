@@ -181,7 +181,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
               <p className="text-xs text-tertiary mt-0.5">{exerciseName}</p>
             </div>
             <button onClick={handleClose} className="flex size-7 items-center justify-center rounded-lg hover:bg-secondary transition-colors">
-              <X size={16} className="text-quaternary" />
+              <X size={16} className="text-quaternary" strokeWidth={1.25} />
             </button>
           </div>
 
@@ -199,7 +199,7 @@ export default function AudioRecordingDialog({ open, exerciseName, videoId, onCl
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <Zap size={72} className="text-brand-300" />
+                <Zap size={72} className="text-brand-300" strokeWidth={1.25} />
               </div>
             )}
 

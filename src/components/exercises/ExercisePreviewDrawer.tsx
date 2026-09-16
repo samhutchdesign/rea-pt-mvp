@@ -22,7 +22,7 @@ function CollapsibleSection({ title, titleClassName, open, onToggle, children }:
         className="flex w-full items-center justify-between mb-3 bg-transparent border-none p-0 cursor-pointer"
       >
         <span className={titleClassName ?? 'text-base font-semibold text-primary'}>{title}</span>
-        <ChevronDown size={16} className={`text-tertiary transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={16} className={`text-tertiary transition-transform ${open ? 'rotate-180' : ''}`} strokeWidth={1.25} />
       </button>
       {open && children}
     </div>
@@ -103,7 +103,7 @@ export default function ExercisePreviewDrawer({ exercise, open, onClose, onAddTo
             onClick={onClose}
             className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-white/90 hover:bg-white transition-colors"
           >
-            <X size={14} />
+            <X size={14} strokeWidth={1.25} />
           </button>
         </div>
 

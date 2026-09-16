@@ -17,7 +17,7 @@ export function ExerciseThumbnail({ src, alt, className, iconSize = 36 }: Exerci
   if (!src || failed) {
     return (
       <div className={cx('flex size-full items-center justify-center bg-brand-50', className)}>
-        <Zap size={iconSize} className="text-brand-600" />
+        <Zap size={iconSize} className="text-brand-600" strokeWidth={1.25} />
       </div>
     );
   }

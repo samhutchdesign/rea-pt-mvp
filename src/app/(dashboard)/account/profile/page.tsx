@@ -110,7 +110,7 @@ export default function ProfilePage() {
                 <span className="font-semibold text-base text-primary block">{mockClinic.name}</span>
                 <span className="text-secondary text-xs">{mockClinic.address}</span>
               </div>
-              <Building2 size={18} className="text-secondary" />
+              <Building2 size={18} className="text-secondary" strokeWidth={1.25} />
             </div>
           </div>
         )}

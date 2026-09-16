@@ -30,7 +30,7 @@ export function PatientHeaderMenu({ onEditProfile, onArchive, onReassign, canArc
           isOpen && 'bg-secondary',
         )}
       >
-        <MoreHorizontal size={24} />
+        <MoreHorizontal size={24} strokeWidth={1.25} />
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>

@@ -142,7 +142,7 @@ export function ExerciseEditTable({
                     isDropTarget ? 'border-brand-600 border-dashed' : 'border-secondary'
                   )}
                 >
-                  <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" />
+                  <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" strokeWidth={1.25} />
 
                   <button
                     type="button"
@@ -161,7 +161,7 @@ export function ExerciseEditTable({
                       onClick={() => openConfig(ex, row)}
                       className="col-span-3 flex min-w-0 items-center gap-2 rounded-lg border border-secondary bg-primary px-2.5 py-2 text-left cursor-pointer hover:bg-secondary_alt transition-colors"
                     >
-                      <Settings2 size={14} className="shrink-0 text-tertiary" />
+                      <Settings2 size={14} className="shrink-0 text-tertiary" strokeWidth={1.25} />
                       <span className="truncate text-xs text-secondary">{rxSummary(ex, rowToRxValues(ex, row))}</span>
                     </button>
                   ) : (
@@ -189,7 +189,7 @@ export function ExerciseEditTable({
                       onClick={() => onPreview(ex)}
                       className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-quaternary transition-colors hover:bg-secondary hover:text-secondary"
                     >
-                      <Eye size={16} />
+                      <Eye size={16} strokeWidth={1.25} />
                     </button>
                     <button
                       type="button"
@@ -197,7 +197,7 @@ export function ExerciseEditTable({
                       onClick={() => onRemoveRow(row.exerciseId)}
                       className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-quaternary transition-colors hover:bg-secondary hover:text-secondary"
                     >
-                      <X size={16} />
+                      <X size={16} strokeWidth={1.25} />
                     </button>
                   </div>
                 </div>

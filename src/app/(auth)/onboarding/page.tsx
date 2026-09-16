@@ -21,7 +21,7 @@ function OnboardingContent() {
         {/* Photo upload */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-3">
-            <UserCircle size={40} className="text-quaternary" />
+            <UserCircle size={40} className="text-quaternary" strokeWidth={1.25} />
           </div>
           <Button color="secondary" size="xs" onPress={() => {}}>
             Upload photo

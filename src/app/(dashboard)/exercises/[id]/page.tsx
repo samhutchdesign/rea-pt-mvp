@@ -40,7 +40,7 @@ function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => voi
     <div className="flex gap-3 cursor-pointer group" onClick={onClick}>
       <div className="w-[130px] h-[80px] rounded-xl bg-brand-50 flex items-center justify-center shrink-0 overflow-hidden">
         <div className="w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center">
-          <Play size={16} fill="white" color="white" className="ml-0.5" />
+          <Play size={16} fill="white" color="white" className="ml-0.5" strokeWidth={1.25} />
         </div>
       </div>
       <div className="flex flex-col justify-center min-w-0">
@@ -157,7 +157,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
             onClick={() => router.push(backUrl)}
             className="inline-flex items-center gap-1.5 text-base text-secondary hover:text-primary mb-5 transition-colors"
           >
-            <ArrowLeft size={15} />
+            <ArrowLeft size={15} strokeWidth={1.25} />
             Back
           </button>
 
@@ -379,7 +379,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
           ) : (
             <div className="mb-5 w-full aspect-video rounded-2xl bg-brand-50 flex items-center justify-center">
               <div className="w-14 h-14 rounded-full bg-brand-600 flex items-center justify-center">
-                <Play size={24} fill="white" color="white" className="ml-1" />
+                <Play size={24} fill="white" color="white" className="ml-1" strokeWidth={1.25} />
               </div>
             </div>
           )}
@@ -407,7 +407,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 onClick={() => block(() => setIsFavorite((v) => !v))}
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-base font-medium transition-colors ${isFavorite ? 'border-pink-200 bg-pink-50 text-pink-600' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
               >
-                <Heart size={14} fill={isFavorite ? '#E91E63' : 'none'} color={isFavorite ? '#E91E63' : 'currentColor'} />
+                <Heart size={14} fill={isFavorite ? '#E91E63' : 'none'} color={isFavorite ? '#E91E63' : 'currentColor'} strokeWidth={1.25} />
                 Favorite
               </button>
 
@@ -418,24 +418,24 @@ function ExerciseDetailContent({ id }: { id: string }) {
                   onClick={() => setMoreOpen((v) => !v)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg border border-secondary bg-primary text-secondary hover:bg-secondary transition-colors"
                 >
-                  <MoreHorizontal size={16} />
+                  <MoreHorizontal size={16} strokeWidth={1.25} />
                 </button>
                 {moreOpen && (
                   <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary z-50 py-1">
                     <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
-                      <Mic size={15} className="text-tertiary shrink-0" />Record Audio Cue
+                      <Mic size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Record Audio Cue
                     </button>
                     {ex.userUploaded ? (
                       <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
-                        <Pencil size={15} className="text-tertiary shrink-0" />Edit
+                        <Pencil size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Edit
                       </button>
                     ) : (
                       <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?duplicate=${id}`)); }}>
-                        <Copy size={15} className="text-tertiary shrink-0" />Duplicate
+                        <Copy size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Duplicate
                       </button>
                     )}
                     <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
-                      <Share2 size={15} className="text-tertiary shrink-0" />Share
+                      <Share2 size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Share
                     </button>
                     <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
                       Report an issue

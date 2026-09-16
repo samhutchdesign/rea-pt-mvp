@@ -61,7 +61,7 @@ export default function ClinicPage() {
     toast.success('Location added.');
   };
 
-  const contactItems: { icon: ComponentType<{ size?: number; className?: string }>; label: string }[] = [
+  const contactItems: { icon: ComponentType<{ size?: number; className?: string; strokeWidth?: number }>; label: string }[] = [
     { icon: Phone, label: mockClinic.phone },
     { icon: Mail, label: mockClinic.email },
     { icon: Globe, label: mockClinic.website },
@@ -78,11 +78,11 @@ export default function ClinicPage() {
             <h2 className="text-xl font-semibold text-primary mt-0 mb-1">{mockClinic.name}</h2>
             <div className="flex gap-4 flex-wrap">
               <div className="flex items-center gap-1">
-                <MapPin size={15} className="text-tertiary" />
+                <MapPin size={15} className="text-tertiary" strokeWidth={1.25} />
                 <span className="text-tertiary text-xs">{locations.length} location{locations.length !== 1 ? 's' : ''}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Building2 size={15} className="text-tertiary" />
+                <Building2 size={15} className="text-tertiary" strokeWidth={1.25} />
                 <span className="text-tertiary text-xs">{mockEmployees.length} physiotherapists</span>
               </div>
             </div>
@@ -155,7 +155,7 @@ export default function ClinicPage() {
                   {locations.map((loc, i) => (
                     <div key={loc.id}>
                       <div className="flex items-center gap-3 py-2.5">
-                        <MapPin size={18} className="text-tertiary shrink-0" />
+                        <MapPin size={18} className="text-tertiary shrink-0" strokeWidth={1.25} />
                         <div
                           className="grow cursor-pointer"
                           onClick={() => router.push(`/clinic/${loc.id}`)}
@@ -167,6 +167,7 @@ export default function ClinicPage() {
                         </div>
                         <ChevronRight
                           size={14}
+                          strokeWidth={1.25}
                           className="text-tertiary cursor-pointer"
                           onClick={() => router.push(`/clinic/${loc.id}`)}
                         />
@@ -185,7 +186,7 @@ export default function ClinicPage() {
                 <div className="flex flex-col gap-3">
                   {contactItems.map(({ icon: Icon, label }) => (
                     <div key={label} className="flex items-start gap-3">
-                      <Icon size={16} className="text-tertiary mt-0.5 shrink-0" />
+                      <Icon size={16} strokeWidth={1.25} className="text-tertiary mt-0.5 shrink-0" />
                       <span className="text-tertiary text-xs">{label}</span>
                     </div>
                   ))}

@@ -203,7 +203,7 @@ export default function ChartDetailPage({ params }: { params: Promise<{ id: stri
           </Link>
         </div>
         <div className="flex items-center gap-3 justify-self-center">
-          {isSigned ? <Lock size={26} className="shrink-0 text-primary" /> : <Unlock size={26} className="shrink-0 text-primary" />}
+          {isSigned ? <Lock size={26} className="shrink-0 text-primary" strokeWidth={1.25} /> : <Unlock size={26} className="shrink-0 text-primary" strokeWidth={1.25} />}
           <h1 className="whitespace-nowrap text-2xl font-bold text-primary">
             {contact.firstName} {contact.lastName}&apos;s Chart - {titleLabel}
           </h1>

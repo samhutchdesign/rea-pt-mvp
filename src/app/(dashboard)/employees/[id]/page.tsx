@@ -360,7 +360,7 @@ function EmployeeHeaderMenu({
           isOpen && 'bg-secondary',
         )}
       >
-        <MoreHorizontal size={24} />
+        <MoreHorizontal size={24} strokeWidth={1.25} />
       </AriaButton>
       <Dropdown.Popover className="w-52">
         <Dropdown.Menu onAction={handleAction}>
@@ -564,11 +564,11 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <div className="flex flex-col gap-2">
                   <span className="text-base leading-5 text-primary">{savedProfessional.title}</span>
                   <div className="flex items-center gap-2">
-                    <Mail size={24} className="text-tertiary" />
+                    <Mail size={24} className="text-tertiary" strokeWidth={1.25} />
                     <span className="text-base leading-5 text-tertiary">{savedContact.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin size={24} className="text-tertiary" />
+                    <MapPin size={24} className="text-tertiary" strokeWidth={1.25} />
                     <span className="text-base leading-5 text-tertiary">{empLocationString}</span>
                   </div>
                 </div>
@@ -721,7 +721,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                         <span className="text-xs text-primary whitespace-nowrap">
                           {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
-                        <ChevronRight size={24} className="text-primary shrink-0 justify-self-end" />
+                        <ChevronRight size={24} className="text-primary shrink-0 justify-self-end" strokeWidth={1.25} />
                       </div>
                     ))}
                   </div>
@@ -739,7 +739,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <span className="font-display text-md leading-5 font-medium text-primary">Contact Information</span>
                 {can.canManageStaff && !editingContact && (
                   <button onClick={handleEditContact} className="text-tertiary hover:text-secondary transition-colors p-1">
-                    <Pencil size={24} />
+                    <Pencil size={24} strokeWidth={1.25} />
                   </button>
                 )}
               </div>
@@ -792,7 +792,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <span className="font-display text-md leading-5 font-medium text-primary">Professional Details</span>
                 {can.canManageStaff && !editingProfessional && (
                   <button onClick={handleEditProfessional} className="text-tertiary hover:text-secondary transition-colors p-1">
-                    <Pencil size={24} />
+                    <Pencil size={24} strokeWidth={1.25} />
                   </button>
                 )}
               </div>
@@ -839,7 +839,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                           className="flex-1"
                         />
                         <button onClick={() => removeSpecialty(i)} className="shrink-0 text-tertiary hover:text-secondary transition-colors p-1">
-                          <X size={16} />
+                          <X size={16} strokeWidth={1.25} />
                         </button>
                       </div>
                     ))}

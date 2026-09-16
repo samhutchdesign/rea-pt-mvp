@@ -222,7 +222,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
             </Button>
 
             <div className="mb-2 flex items-center gap-3">
-              <Star size={22} className="text-primary" />
+              <Star size={22} className="text-primary" strokeWidth={1.25} />
               <h2 className="m-0 text-2xl font-bold text-primary">Review Extracted Information</h2>
             </div>
             <p className="mb-1.5 text-base text-secondary">
@@ -231,10 +231,10 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
 
             <div className="mb-6 flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1 rounded-md bg-[#FFF8E1] px-2.5 py-1 text-xs font-medium text-[#F57F17]">
-                <Star size={12} /> {`${TOTAL_FIELDS} fields extracted`}
+                <Star size={12} strokeWidth={1.25} /> {`${TOTAL_FIELDS} fields extracted`}
               </span>
               <span className="inline-flex items-center gap-1 rounded-md bg-[#F3E5F5] px-2.5 py-1 text-xs font-medium text-[#6A1B9A]">
-                <Languages size={12} /> Patient language → clinical notes
+                <Languages size={12} strokeWidth={1.25} /> Patient language → clinical notes
               </span>
               {editCount > 0 && (
                 <span className="inline-flex items-center rounded-md bg-[#E8F5E9] px-2.5 py-1 text-xs font-medium text-[#2E7D32]">
@@ -299,7 +299,7 @@ export default function UploadReviewPage({ params }: { params: Promise<{ id: str
           }}
         >
           <div className="mb-3 flex items-center gap-2 pl-1">
-            <FileText size={16} className="text-secondary" />
+            <FileText size={16} className="text-secondary" strokeWidth={1.25} />
             <span className="text-xs font-semibold text-secondary">{FAKE_FILENAME}</span>
             <span className="ml-auto inline-flex items-center rounded bg-[#FFEBEE] px-2 py-0.5 text-[10px] text-[#C62828]">Original (patient voice)</span>
           </div>

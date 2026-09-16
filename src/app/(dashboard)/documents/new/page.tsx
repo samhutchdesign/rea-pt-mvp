@@ -75,7 +75,7 @@ export default function NewDocumentPage() {
                 disabled={fields.length === 1}
                 className="text-tertiary hover:text-secondary transition-colors disabled:opacity-40 p-1 shrink-0"
               >
-                <Trash2 size={16} />
+                <Trash2 size={16} strokeWidth={1.25} />
               </button>
             </div>
           ))}

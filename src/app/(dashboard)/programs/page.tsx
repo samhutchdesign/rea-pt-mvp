@@ -36,7 +36,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
         <span className="font-display text-md font-medium text-primary tracking-[0.1px]">{title}</span>
         {activeCount > 0 && (
           <button onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary cursor-pointer bg-transparent border-0 leading-none flex">
-            <X size={13} />
+            <X size={13} strokeWidth={1.25} />
           </button>
         )}
       </div>
@@ -75,7 +75,7 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
     <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 border border-brand-200">
       <span>{label}</span>
       <button type="button" onClick={onRemove} className="text-brand-400 hover:text-brand-600 bg-transparent border-none cursor-pointer p-0 leading-none">
-        <X size={10} />
+        <X size={10} strokeWidth={1.25} />
       </button>
     </span>
   );
@@ -250,7 +250,7 @@ function ProgramsPageContent() {
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
               <div className="relative mb-3">
-                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" strokeWidth={1.25} />
                 <input
                   type="text"
                   placeholder="Search conditions…"
@@ -274,7 +274,7 @@ function ProgramsPageContent() {
 
             <FilterSection title="Category" activeCount={filterCategories.length} onClear={() => setFilterCategories([])}>
               <div className="relative mb-3">
-                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" strokeWidth={1.25} />
                 <input
                   type="text"
                   placeholder="Search categories…"
@@ -384,6 +384,7 @@ function ProgramsPageContent() {
                         className={favorites.has(prog.id) ? 'text-favorite' : 'text-primary'}
                         size={24}
                         fill={favorites.has(prog.id) ? 'currentColor' : 'none'}
+                        strokeWidth={1.25}
                       />
                     </button>
                     <div

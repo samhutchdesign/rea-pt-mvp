@@ -19,7 +19,7 @@ export function SignUpRequiredModal({ open, onClose, action = 'access this featu
           <div className="flex w-full flex-col gap-10 p-8">
             <div className="flex flex-col items-center gap-4 text-center">
               <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center">
-                <Lock size={20} className="text-brand-600" />
+                <Lock size={20} className="text-brand-600" strokeWidth={1.25} />
               </div>
               <div className="flex flex-col gap-2">
                 <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">Organization required</h2>

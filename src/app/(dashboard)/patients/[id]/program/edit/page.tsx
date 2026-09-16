@@ -47,7 +47,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
         <span className="font-semibold text-base text-primary">{title}</span>
         {activeCount > 0 && (
           <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
-            <X size={13} />
+            <X size={13} strokeWidth={1.25} />
           </button>
         )}
       </div>
@@ -81,7 +81,7 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
 function FilterSearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   return (
     <div className="relative mb-3">
-      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" strokeWidth={1.25} />
       <input
         type="text"
         placeholder={placeholder}
@@ -281,7 +281,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
               onClick={() => goToStep(0)}
               className="inline-flex items-center gap-1 bg-transparent border-none p-0 text-base font-medium text-secondary hover:text-primary cursor-pointer transition-colors"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={16} strokeWidth={1.25} />
               Back
             </button>
           ) : (
@@ -467,8 +467,8 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                               onClick={() => toggleFavorite(ex.id)}
                             >
                               {favorites.has(ex.id)
-                                ? <Heart size={14} className="text-favorite" fill="currentColor" />
-                                : <Heart size={14} className="text-tertiary" />}
+                                ? <Heart size={14} className="text-favorite" fill="currentColor" strokeWidth={1.25} />
+                                : <Heart size={14} className="text-tertiary" strokeWidth={1.25} />}
                             </button>
                           </div>
                         </div>
@@ -486,7 +486,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                                 className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary shrink-0"
                                 onClick={() => setPreviewExercise(ex)}
                               >
-                                <Eye size={14} />
+                                <Eye size={14} strokeWidth={1.25} />
                               </button>
                             </div>
                           </div>

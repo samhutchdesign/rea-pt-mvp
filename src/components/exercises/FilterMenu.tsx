@@ -37,7 +37,7 @@ export default function FilterMenu({ label, options, selected, onChange }: Filte
         )}
       >
         {label}{selected.length > 0 ? ` (${selected.length})` : ''}
-        <ChevronDown size={14} />
+        <ChevronDown size={14} strokeWidth={1.25} />
       </button>
       {open && (
         <div className="absolute left-0 top-9 z-50 max-h-72 w-56 overflow-y-auto rounded-xl border border-secondary bg-primary py-1">

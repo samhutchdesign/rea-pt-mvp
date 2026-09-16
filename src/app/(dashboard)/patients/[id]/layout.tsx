@@ -167,11 +167,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 </h1>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <Mail size={24} className="text-tertiary" />
+                    <Mail size={24} className="text-tertiary" strokeWidth={1.25} />
                     <span className="text-base leading-5 text-secondary">{effectiveContact.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin size={24} className="text-tertiary" />
+                    <MapPin size={24} className="text-tertiary" strokeWidth={1.25} />
                     <span className="text-base leading-5 text-secondary">{getEffectiveLocationString(patient, locationOverrides)}</span>
                   </div>
                 </div>

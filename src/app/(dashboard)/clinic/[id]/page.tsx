@@ -67,12 +67,12 @@ export default function ClinicLocationPage({ params }: { params: Promise<{ id: s
             <h2 className="text-xl font-semibold text-primary mt-0.5 mb-1">{saved.name}</h2>
             <div className="flex gap-4 flex-wrap">
               <div className="flex items-center gap-1">
-                <MapPin size={15} className="text-tertiary" />
+                <MapPin size={15} className="text-tertiary" strokeWidth={1.25} />
                 <span className="text-tertiary text-xs">{saved.city}, {saved.regionCountry}</span>
               </div>
               {teamMembers.length > 0 && (
                 <div className="flex items-center gap-1">
-                  <Users size={15} className="text-tertiary" />
+                  <Users size={15} className="text-tertiary" strokeWidth={1.25} />
                   <span className="text-tertiary text-xs">
                     {teamMembers.length} physiotherapist{teamMembers.length !== 1 ? 's' : ''}
                   </span>

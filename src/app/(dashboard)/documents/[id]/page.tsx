@@ -36,9 +36,9 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
                 className="p-1.5 rounded-full text-tertiary hover:bg-secondary_alt transition-colors"
               >
                 {isFavorite ? (
-                  <Heart size={16} fill="currentColor" className="text-favorite" />
+                  <Heart size={16} fill="currentColor" className="text-favorite" strokeWidth={1.25} />
                 ) : (
-                  <Heart size={16} />
+                  <Heart size={16} strokeWidth={1.25} />
                 )}
               </button>
             </div>

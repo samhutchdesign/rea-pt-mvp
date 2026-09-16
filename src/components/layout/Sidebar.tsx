@@ -7,7 +7,7 @@ import { useViewMode } from '@/lib/viewModeStore';
 import { LayoutDashboard, Contact, ClipboardList, PersonStanding, Users } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
-type NavItem = { label: string; href: string; mvpHide?: boolean; icon: ComponentType<{ className?: string }> };
+type NavItem = { label: string; href: string; mvpHide?: boolean; icon: ComponentType<{ className?: string; strokeWidth?: number }> };
 
 const baseNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', mvpHide: true, icon: LayoutDashboard },
@@ -49,7 +49,7 @@ export default function Sidebar() {
                 'flex items-center gap-2 rounded-lg px-2 py-3 transition-colors duration-150 cursor-pointer',
                 isActive ? 'bg-quaternary' : 'hover:bg-secondary'
               )}>
-                <Icon className={cx('size-6 shrink-0', isActive ? 'text-primary' : 'text-tertiary')} />
+                <Icon strokeWidth={1.25} className={cx('size-6 shrink-0', isActive ? 'text-primary' : 'text-tertiary')} />
                 <span className={cx('text-base font-normal', isActive ? 'text-primary' : 'text-tertiary')}>
                   {label}
                 </span>

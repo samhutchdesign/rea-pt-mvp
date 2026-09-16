@@ -69,7 +69,7 @@ export function RepeatableList<T>({ items, onChange, newItem, renderRow, addLabe
             onDragEnd={reorderable ? handleDragEnd : undefined}
           >
             {reorderable && (
-              <GripVertical size={16} className="mt-2 shrink-0 cursor-grab text-quaternary" />
+              <GripVertical size={16} className="mt-2 shrink-0 cursor-grab text-quaternary" strokeWidth={1.25} />
             )}
             <div className="min-w-0 flex-1">{renderRow(item, (patch) => updateAt(i, patch), i)}</div>
             <button
@@ -78,7 +78,7 @@ export function RepeatableList<T>({ items, onChange, newItem, renderRow, addLabe
               aria-label="Remove"
               className={cx('shrink-0 text-tertiary hover:text-error-600', reorderable && 'mt-2')}
             >
-              <X size={16} />
+              <X size={16} strokeWidth={1.25} />
             </button>
           </div>
         </div>

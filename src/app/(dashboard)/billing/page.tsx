@@ -66,7 +66,7 @@ function SubscriptionTab() {
         <ul className="mt-3 mb-4 list-none p-0 flex flex-col gap-1.5">
           {PLAN.features.map((f) => (
             <li key={f} className="flex items-center gap-2">
-              <Check size={16} className="text-utility-green-600 shrink-0" />
+              <Check size={16} className="text-utility-green-600 shrink-0" strokeWidth={1.25} />
               <span className="text-base text-primary">{f}</span>
             </li>
           ))}
@@ -102,7 +102,7 @@ function PaymentMethodTab() {
       <div className="rounded-xl border border-secondary bg-primary p-6 mb-4">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
-            <CreditCard size={24} className="text-brand-700" />
+            <CreditCard size={24} className="text-brand-700" strokeWidth={1.25} />
           </div>
           <div className="grow">
             <span className="block font-semibold text-primary text-base">Visa ending in 4242</span>

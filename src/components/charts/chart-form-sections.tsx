@@ -83,7 +83,7 @@ export function SectionCard({ label, defaultOpen = true, children }: { letter?: 
         className={cx('flex h-[88px] w-full items-center gap-2 bg-transparent px-5 cursor-pointer text-left', open && 'border-b border-secondary')}
       >
         <span className="font-display flex-1 text-2xl font-medium text-primary">{label}</span>
-        {open ? <ChevronUp size={24} className="shrink-0 text-primary" /> : <ChevronDown size={24} className="shrink-0 text-primary" />}
+        {open ? <ChevronUp size={24} className="shrink-0 text-primary" strokeWidth={1.25} /> : <ChevronDown size={24} className="shrink-0 text-primary" strokeWidth={1.25} />}
       </button>
       {open && <div className="flex flex-col gap-7 px-10 py-7">{children}</div>}
     </div>
@@ -251,7 +251,7 @@ export function ChartFormBody({
                 onClick={() => setArmedIndex(index)}
                 className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-600 hover:underline"
               >
-                <MapPin size={12} /> {pp.bodyView ? `Reposition P${index + 1} on Diagram` : `Place P${index + 1} on Diagram`}
+                <MapPin size={12} strokeWidth={1.25} /> {pp.bodyView ? `Reposition P${index + 1} on Diagram` : `Place P${index + 1} on Diagram`}
               </button>
             </div>
           )}
@@ -318,7 +318,7 @@ export function ChartFormBody({
                       aria-label="Remove"
                       className="shrink-0 text-tertiary hover:text-error-600"
                     >
-                      <X size={14} />
+                      <X size={14} strokeWidth={1.25} />
                     </button>
                   </div>
                 ))}
@@ -397,7 +397,7 @@ export function ChartFormBody({
                     <td className={td}><input className={tableInputCls} style={{ width: 70 }} value={r.endFeel} onChange={(e) => updateRom(i, { endFeel: e.target.value })} /></td>
                     <td className={td}>
                       <button type="button" onClick={() => removeRom(i)} aria-label="Remove" className="text-tertiary hover:text-error-600">
-                        <X size={14} />
+                        <X size={14} strokeWidth={1.25} />
                       </button>
                     </td>
                   </tr>
@@ -463,7 +463,7 @@ export function ChartFormBody({
                     <td className={td}><input className={tableInputCls} style={{ width: 120 }} value={s.mmtMuscle} onChange={(e) => updateStrength(i, { mmtMuscle: e.target.value })} /></td>
                     <td className={td}>
                       <button type="button" onClick={() => removeStrength(i)} aria-label="Remove" className="text-tertiary hover:text-error-600">
-                        <X size={14} />
+                        <X size={14} strokeWidth={1.25} />
                       </button>
                     </td>
                   </tr>
@@ -978,7 +978,7 @@ export function ChartSessionReadPanel({ patient, session }: { patient: Patient; 
           className={cx('flex w-full items-center gap-2 bg-transparent border-none p-0 cursor-pointer text-left', notesOpen && 'mb-2')}
         >
           <span className="flex-1 text-base font-semibold text-primary">Notes</span>
-          <ChevronDown size={16} className={cx('shrink-0 text-tertiary transition-transform', notesOpen && 'rotate-180')} />
+          <ChevronDown size={16} className={cx('shrink-0 text-tertiary transition-transform', notesOpen && 'rotate-180')} strokeWidth={1.25} />
         </button>
         {notesOpen && (
           <span className="whitespace-pre-wrap text-base text-secondary">{session.summary || 'No notes recorded.'}</span>

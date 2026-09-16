@@ -45,7 +45,7 @@ export function ParametersCard({ children, tabs, expanded: expandedProp, onExpan
           aria-label={expanded ? 'Collapse parameters' : 'Expand parameters'}
           className="flex size-12 shrink-0 items-center justify-center rounded-full border-none bg-transparent text-primary cursor-pointer transition-colors hover:bg-primary_hover"
         >
-          {expanded ? <Minus size={24} /> : <Plus size={24} />}
+          {expanded ? <Minus size={24} strokeWidth={1.25} /> : <Plus size={24} strokeWidth={1.25} />}
         </button>
       </div>
       {expanded && (

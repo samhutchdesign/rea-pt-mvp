@@ -24,7 +24,7 @@ import { toTitleCase } from '@/utils/text';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, type RxValues } from '@/components/exercises/exerciseRx';
 
-type IconType = ComponentType<{ style?: React.CSSProperties; size?: number; color?: string }>;
+type IconType = ComponentType<{ style?: React.CSSProperties; size?: number; color?: string; strokeWidth?: number }>;
 
 const PAGE_SIZE = 24;
 
@@ -116,7 +116,7 @@ function SpecialtyScroll({ selectedId, onSelect, totalCount }: { selectedId: str
         )}
       >
         <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-secondary_alt">
-          <Zap size={16} className={isAllSelected ? 'text-brand-600' : 'text-tertiary'} />
+          <Zap size={16} className={isAllSelected ? 'text-brand-600' : 'text-tertiary'} strokeWidth={1.25} />
         </div>
         <span className={cx('text-xs font-medium text-center leading-tight', isAllSelected ? 'text-brand-700' : 'text-primary')}>All Exercises</span>
         <span className={cx('text-[10px] font-medium', isAllSelected ? 'text-brand-600' : 'text-tertiary')}>{totalCount} exercises</span>
@@ -136,7 +136,7 @@ function SpecialtyScroll({ selectedId, onSelect, totalCount }: { selectedId: str
             )}
           >
             <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: sp.bg }}>
-              <Icon size={16} color={sp.color} />
+              <Icon size={16} color={sp.color} strokeWidth={1.25} />
             </div>
             <span className={cx('text-xs font-medium text-center leading-tight', isSelected ? 'text-brand-700' : 'text-primary')}>{sp.name}</span>
             {sp.available
@@ -157,7 +157,7 @@ function ComingSoonState({ sp }: { sp: typeof SPECIALTIES[0] }) {
       style={{ background: sp.bg + '44' }}
     >
       <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center mb-4" style={{ background: sp.bg }}>
-        <Icon size={28} color={sp.color} />
+        <Icon size={28} color={sp.color} strokeWidth={1.25} />
       </div>
       <h3 className="mt-0 mb-1 text-lg font-semibold text-primary">{sp.name}</h3>
       <p className="max-w-sm text-center text-base text-secondary mb-4">{sp.description}</p>
@@ -176,7 +176,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
         <span className="font-display text-md font-medium text-primary tracking-[0.1px]">{title}</span>
         {activeCount > 0 && (
           <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
-            <X size={13} />
+            <X size={13} strokeWidth={1.25} />
           </button>
         )}
       </div>
@@ -212,7 +212,7 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
     <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 border border-brand-200">
       <span>{label}</span>
       <button type="button" onClick={onRemove} className="text-brand-400 hover:text-brand-600 bg-transparent border-none cursor-pointer p-0 leading-none">
-        <X size={10} />
+        <X size={10} strokeWidth={1.25} />
       </button>
     </span>
   );
@@ -221,7 +221,7 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
 function FilterSearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   return (
     <div className="relative mb-3">
-      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" strokeWidth={1.25} />
       <input
         type="text"
         placeholder={placeholder}
@@ -645,6 +645,7 @@ function ExercisesPageContent() {
                           className={favorites.has(ex.id) ? 'text-favorite' : 'text-primary'}
                           size={24}
                           fill={favorites.has(ex.id) ? 'currentColor' : 'none'}
+                          strokeWidth={1.25}
                         />
                       </button>
                       <div

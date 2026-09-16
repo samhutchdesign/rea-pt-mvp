@@ -20,7 +20,7 @@ function AcceptInviteContent() {
       <div className="rounded-2xl border border-secondary bg-primary p-8">
         <div className="flex flex-col items-center text-center mb-6">
           <div className="w-14 h-14 rounded-full bg-brand-50 flex items-center justify-center mb-4">
-            <Building2 size={24} className="text-brand-600" />
+            <Building2 size={24} className="text-brand-600" strokeWidth={1.25} />
           </div>
           <h1 className="text-xl font-semibold text-primary mb-1">You've been invited</h1>
           <p className="text-xs text-tertiary">

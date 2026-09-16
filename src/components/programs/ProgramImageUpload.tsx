@@ -37,7 +37,7 @@ export function ProgramImageUpload({ value, onChange }: ProgramImageUploadProps)
           title="Remove image"
           className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-tertiary transition-colors hover:bg-white"
         >
-          <X size={14} />
+          <X size={14} strokeWidth={1.25} />
         </button>
       </div>
     );
@@ -57,7 +57,7 @@ export function ProgramImageUpload({ value, onChange }: ProgramImageUploadProps)
         isDragging ? 'border-brand-500 bg-brand-50' : 'border-secondary bg-secondary_alt hover:bg-secondary'
       )}
     >
-      <Upload size={22} className="text-quaternary" />
+      <Upload size={22} className="text-quaternary" strokeWidth={1.25} />
       <span className="text-xs text-tertiary">Choose an image or drag and drop it here</span>
       <input
         ref={inputRef}

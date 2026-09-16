@@ -48,7 +48,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
         <div className="flex items-center gap-2">
           {activeCount > 0 && (
             <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
-              <X size={13} />
+              <X size={13} strokeWidth={1.25} />
             </button>
           )}
           <button
@@ -57,7 +57,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
             aria-label={open ? 'Collapse' : 'Expand'}
             className="p-0.5 text-primary bg-transparent border-none cursor-pointer leading-none"
           >
-            {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            {open ? <ChevronUp size={18} strokeWidth={1.25} /> : <ChevronDown size={18} strokeWidth={1.25} />}
           </button>
         </div>
       </div>
@@ -91,7 +91,7 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
 function FilterSearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   return (
     <div className="relative mb-3">
-      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" strokeWidth={1.25} />
       <input
         type="text"
         placeholder={placeholder}
@@ -467,6 +467,7 @@ function NewProgramContent() {
                             className={favorites.has(ex.id) ? 'text-favorite' : 'text-primary'}
                             size={24}
                             fill={favorites.has(ex.id) ? 'currentColor' : 'none'}
+                            strokeWidth={1.25}
                           />
                         </button>
                         <button
@@ -480,7 +481,7 @@ function NewProgramContent() {
                               : 'right-3 top-3 border-secondary bg-secondary_alt text-tertiary group-hover:right-2 group-hover:top-2 group-hover:border-primary group-hover:bg-primary group-hover:shadow-[0px_0px_5px_rgba(0,0,0,0.07)]'
                           )}
                         >
-                          {isAdded ? <Check size={18} strokeWidth={3} /> : <Plus size={18} />}
+                          {isAdded ? <Check size={18} strokeWidth={3} /> : <Plus size={18} strokeWidth={1.25} />}
                         </button>
                         <div className="flex flex-col gap-2 pt-5">
                           <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{ex.name}</p>

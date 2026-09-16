@@ -47,7 +47,7 @@ function FilterSection({ title, activeCount, onClear, children }: { title: strin
         <span className="font-semibold text-base text-primary">{title}</span>
         {activeCount > 0 && (
           <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
-            <X size={13} />
+            <X size={13} strokeWidth={1.25} />
           </button>
         )}
       </div>
@@ -86,7 +86,7 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
     <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 border border-brand-200">
       <span>{label}</span>
       <button type="button" onClick={onRemove} className="text-brand-400 hover:text-brand-600 bg-transparent border-none cursor-pointer p-0 leading-none">
-        <X size={10} />
+        <X size={10} strokeWidth={1.25} />
       </button>
     </span>
   );
@@ -253,7 +253,7 @@ function ExercisesPageContent() {
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
               <div className="relative mb-3">
-                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" strokeWidth={1.25} />
                 <input
                   type="text"
                   placeholder="Search conditions…"
@@ -277,7 +277,7 @@ function ExercisesPageContent() {
 
             <FilterSection title="Category" activeCount={filterCategories.length} onClear={() => setFilterCategories([])}>
               <div className="relative mb-3">
-                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" />
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-quaternary pointer-events-none" strokeWidth={1.25} />
                 <input
                   type="text"
                   placeholder="Search categories…"

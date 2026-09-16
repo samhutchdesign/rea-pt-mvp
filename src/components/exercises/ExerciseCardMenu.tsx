@@ -42,7 +42,7 @@ export default function ExerciseCardMenu({ onAddToProgram, onAssign, onOpenChang
               )
         }
       >
-        <MoreVertical size={size === 'lg' ? 24 : 15} />
+        <MoreVertical size={size === 'lg' ? 24 : 15} strokeWidth={1.25} />
       </AriaButton>
       <Dropdown.Popover className="w-[260px] rounded-lg border border-primary bg-primary shadow-[0px_0px_10px_3px_rgba(0,0,0,0.07)] ring-0">
         <Dropdown.Menu onAction={handleAction} className="flex flex-col gap-1 p-2">

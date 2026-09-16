@@ -31,7 +31,7 @@ export function ChartTemplateSelect({ onSelect }: { onSelect: (id: ChartTemplate
               {template.comingSoon ? (
                 <Badge type="pill-color" color="gray" size="sm">Coming Soon</Badge>
               ) : (
-                <ChevronRight size={16} className="shrink-0 text-quaternary" />
+                <ChevronRight size={16} className="shrink-0 text-quaternary" strokeWidth={1.25} />
               )}
             </div>
             <span className="text-xs text-tertiary">{template.description}</span>

@@ -40,7 +40,7 @@ export default function DocumentsPage() {
                 : 'border-secondary bg-primary text-secondary hover:bg-secondary_alt'
             )}
           >
-            <Heart size={14} fill={showFavoritesOnly ? 'currentColor' : 'none'} />
+            <Heart size={14} fill={showFavoritesOnly ? 'currentColor' : 'none'} strokeWidth={1.25} />
             Favorites
           </button>
         </div>
@@ -54,13 +54,13 @@ export default function DocumentsPage() {
             >
               <div className="flex items-center gap-5 px-6 py-5">
                 <div className="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center shrink-0">
-                  <Folder size={22} className="text-yellow-600" />
+                  <Folder size={22} className="text-yellow-600" strokeWidth={1.25} />
                 </div>
                 <div className="grow">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="font-semibold text-primary text-base">{doc.name}</span>
                     {favorites.has(doc.id) && (
-                      <Heart size={14} fill="currentColor" className="text-favorite" />
+                      <Heart size={14} fill="currentColor" className="text-favorite" strokeWidth={1.25} />
                     )}
                     {doc.isDefault && (
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
@@ -87,9 +87,9 @@ export default function DocumentsPage() {
                   className="p-1.5 rounded-lg text-tertiary hover:bg-secondary transition-colors"
                 >
                   {favorites.has(doc.id) ? (
-                    <Heart size={16} fill="currentColor" className="text-favorite" />
+                    <Heart size={16} fill="currentColor" className="text-favorite" strokeWidth={1.25} />
                   ) : (
-                    <Heart size={16} />
+                    <Heart size={16} strokeWidth={1.25} />
                   )}
                 </button>
               </div>

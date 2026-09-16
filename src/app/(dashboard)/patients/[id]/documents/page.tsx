@@ -271,7 +271,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
           >
             <div className="flex items-center gap-4 px-5 py-4">
               <div className="w-11 h-11 bg-[#FFF3E0] rounded-xl flex items-center justify-center shrink-0">
-                <FileText size={24} />
+                <FileText size={24} strokeWidth={1.25} />
               </div>
               <div className="flex-1">
                 <p className="text-base font-semibold text-primary">{doc.name}</p>
@@ -305,7 +305,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                     onClick={handleBrowseClick}
                     className="border-2 border-dashed border-secondary rounded-lg p-10 flex flex-col items-center gap-3 cursor-pointer hover:border-brand-600 transition-colors"
                   >
-                    <Upload size={40} className="text-secondary" />
+                    <Upload size={40} className="text-secondary" strokeWidth={1.25} />
                     <p className="text-base font-semibold text-primary">Drag & drop a PDF here</p>
                     <p className="text-xs text-secondary">or click to browse</p>
                   </div>
@@ -316,8 +316,8 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                 <div className="py-6">
                   <div className="flex items-center gap-3 mb-4">
                     {uploadPhase === 'uploading'
-                      ? <Upload className="text-brand-600" size={20} />
-                      : <Star className="text-[#F57C00]" size={20} />
+                      ? <Upload className="text-brand-600" size={20} strokeWidth={1.25} />
+                      : <Star className="text-[#F57C00]" size={20} strokeWidth={1.25} />
                     }
                     <div className="flex-1">
                       <p className="text-base font-semibold text-primary mb-0.5">
@@ -377,7 +377,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
           <Dialog>
             <div className="p-4">
               <div className="flex items-center gap-3 mb-4 pb-3 border-b border-secondary">
-                <FileText size={18} className="text-secondary shrink-0" />
+                <FileText size={18} className="text-secondary shrink-0" strokeWidth={1.25} />
                 <span className="text-base font-semibold text-primary flex-1">Patient_Intake_Form.pdf</span>
                 <span className="inline-flex items-center rounded-full bg-[#FFEBEE] px-2.5 py-0.5 text-xs font-medium text-[#C62828]">
                   Original (patient voice)
@@ -386,7 +386,7 @@ export default function PatientDocumentsPage({ params }: { params: Promise<{ id:
                   className="p-1 rounded-lg text-secondary hover:bg-secondary hover:text-primary transition-colors"
                   onClick={() => setPdfOpen(false)}
                 >
-                  <X size={16} />
+                  <X size={16} strokeWidth={1.25} />
                 </button>
               </div>
               <div className="bg-[#EEEEEE] p-4 rounded-lg overflow-y-auto max-h-[70vh]">

@@ -114,7 +114,7 @@ function ProgramDetailContent({ id }: { id: string }) {
           onClick={() => router.push(backUrl)}
           className="inline-flex items-center gap-1.5 text-base text-secondary hover:text-primary mb-5 transition-colors"
         >
-          <ArrowLeft size={15} />
+          <ArrowLeft size={15} strokeWidth={1.25} />
           Back
         </button>
 
@@ -128,7 +128,7 @@ function ProgramDetailContent({ id }: { id: string }) {
                 <>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-600">
-                      <Play size={24} className="text-white ml-0.5" fill="currentColor" />
+                      <Play size={24} className="text-white ml-0.5" fill="currentColor" strokeWidth={1.25} />
                     </div>
                   </div>
                   <span className="absolute bottom-3 left-3 rounded-md bg-white/90 px-2.5 py-1 text-xs font-semibold text-primary">
@@ -170,7 +170,7 @@ function ProgramDetailContent({ id }: { id: string }) {
                       )
                     }
                   >
-                    <MoreHorizontal size={18} />
+                    <MoreHorizontal size={18} strokeWidth={1.25} />
                   </AriaButton>
                   <Dropdown.Popover className="w-44">
                     <Dropdown.Menu onAction={handleMenuAction}>
@@ -242,7 +242,7 @@ function ProgramDetailContent({ id }: { id: string }) {
                       <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={20} />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600">
-                          <Play size={13} className="text-white ml-0.5" fill="currentColor" />
+                          <Play size={13} className="text-white ml-0.5" fill="currentColor" strokeWidth={1.25} />
                         </div>
                       </div>
                     </div>

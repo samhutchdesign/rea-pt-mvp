@@ -77,9 +77,9 @@ export default function TopBar({}: TopBarProps) {
             hasMultiple ? 'hover:bg-secondary cursor-pointer' : 'cursor-default'
           )}
         >
-          <MapPin size={24} className="shrink-0" />
+          <MapPin size={24} className="shrink-0" strokeWidth={1.25} />
           <span>{locLabel}</span>
-          {hasMultiple && <ChevronDown size={24} className="shrink-0" />}
+          {hasMultiple && <ChevronDown size={24} className="shrink-0" strokeWidth={1.25} />}
         </button>
 
         {locMenuOpen && hasMultiple && (
@@ -166,7 +166,7 @@ export default function TopBar({}: TopBarProps) {
             onClick={() => setBellOpen((v) => !v)}
             className="relative flex size-9 items-center justify-center rounded-full text-quaternary hover:bg-secondary hover:text-secondary transition-colors"
           >
-            <Bell size={18} />
+            <Bell size={18} strokeWidth={1.25} />
             {mockNotifications.filter((n) => !n.read).length > 0 && (
               <span className="absolute top-1.5 right-1.5 flex size-2">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping" />
@@ -196,7 +196,7 @@ export default function TopBar({}: TopBarProps) {
                     )}
                   >
                     <div className="w-7 h-7 rounded-full bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
-                      <Bell size={13} className="text-brand-600" />
+                      <Bell size={13} className="text-brand-600" strokeWidth={1.25} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={cx('text-xs leading-snug', !notif.read ? 'font-semibold text-primary' : 'text-secondary')}>

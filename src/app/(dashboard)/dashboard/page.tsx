@@ -56,7 +56,7 @@ function LocationRow({ loc }: { loc: ClinicLocation }) {
   return (
     <div className="flex items-center gap-3 py-3 border-b border-secondary last:border-0">
       <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
-        <MapPin size={14} className="text-brand-600" />
+        <MapPin size={14} className="text-brand-600" strokeWidth={1.25} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-base font-medium text-primary">{loc.name}</p>
@@ -234,12 +234,12 @@ function StaffDashboard({ empId }: { empId: string }) {
               onClick={() => router.push(`/programs/${prog.id}`)}
             >
               <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
-                <Zap size={14} className="text-brand-600" />
+                <Zap size={14} className="text-brand-600" strokeWidth={1.25} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className="text-base font-medium text-primary leading-tight">{prog.name}</p>
-                  {prog.isFavorite && <Heart size={12} className="text-favorite shrink-0" fill="currentColor" />}
+                  {prog.isFavorite && <Heart size={12} className="text-favorite shrink-0" fill="currentColor" strokeWidth={1.25} />}
                 </div>
                 <div className="flex gap-1 mt-0.5 flex-wrap">
                   {prog.tags.slice(0, 2).map((t) => (
@@ -249,7 +249,7 @@ function StaffDashboard({ empId }: { empId: string }) {
               </div>
               <div className="text-right shrink-0">
                 <span className="text-xs text-secondary flex items-center gap-1">
-                  <Users size={11} />
+                  <Users size={11} strokeWidth={1.25} />
                   {prog.patientCount} patient{prog.patientCount !== 1 ? 's' : ''}
                 </span>
               </div>
@@ -290,7 +290,7 @@ export default function DashboardPage() {
               className="w-full flex items-start gap-5 rounded-2xl border border-secondary bg-primary p-6 text-left hover:border-brand-300 hover:shadow-sm transition-all group"
             >
               <div className="w-11 h-11 rounded-full bg-brand-50 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors">
-                <Building2 size={20} className="text-brand-600" />
+                <Building2 size={20} className="text-brand-600" strokeWidth={1.25} />
               </div>
               <div>
                 <p className="font-semibold text-base text-primary mb-1">Create an organization</p>

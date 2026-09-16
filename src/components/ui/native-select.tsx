@@ -21,7 +21,7 @@ export function NativeSelect({ className, wrapperClassName, children, ...props }
       >
         {children}
       </select>
-      <ChevronDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-tertiary" />
+      <ChevronDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-tertiary" strokeWidth={1.25} />
     </div>
   );
 }

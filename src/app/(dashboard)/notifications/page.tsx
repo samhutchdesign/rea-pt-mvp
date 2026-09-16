@@ -44,7 +44,7 @@ export default function NotificationsPage() {
 
         {notifications.length === 0 ? (
           <div className="text-center py-16">
-            <Bell size={48} className="mx-auto text-quaternary mb-3" />
+            <Bell size={48} className="mx-auto text-quaternary mb-3" strokeWidth={1.25} />
             <span className="text-secondary text-base">No notifications</span>
           </div>
         ) : (
@@ -59,7 +59,7 @@ export default function NotificationsPage() {
                   onClick={() => notif.patientId && router.push(`/patients/${notif.patientId}/documents`)}
                 >
                   <div className="w-9 h-9 rounded-full bg-brand-50 flex items-center justify-center shrink-0">
-                    <Bell size={18} className="text-brand-700" />
+                    <Bell size={18} className="text-brand-700" strokeWidth={1.25} />
                   </div>
                   <div className="flex-1">
                     <div>

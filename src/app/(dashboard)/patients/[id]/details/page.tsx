@@ -321,7 +321,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
     <>
       {uploaded && (
         <Alert type="info" className="mb-6">
-          <Star className="size-4 shrink-0 mt-0.5" />
+          <Star className="size-4 shrink-0 mt-0.5" strokeWidth={1.25} />
           <div className="flex flex-1 items-center justify-between gap-4">
             <span>This profile was pre-filled from the uploaded intake form. Review and edit any fields as needed.</span>
             <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700 whitespace-nowrap shrink-0">

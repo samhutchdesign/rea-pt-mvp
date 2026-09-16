@@ -137,7 +137,7 @@ export default function EmployeesPage() {
 
         {empty ? (
           <div className="text-center py-16">
-            <Users size={48} className="text-quaternary mx-auto mb-3" />
+            <Users size={48} className="text-quaternary mx-auto mb-3" strokeWidth={1.25} />
             <span className="text-tertiary text-xs">
               {tab === '0' ? 'No active employees found' : 'No archived employees found'}
             </span>
@@ -217,7 +217,7 @@ export default function EmployeesPage() {
                       </span>
                     )}
 
-                    <ChevronRight size={24} className="text-primary shrink-0 justify-self-end" />
+                    <ChevronRight size={24} className="text-primary shrink-0 justify-self-end" strokeWidth={1.25} />
                   </div>
                 );
               })}

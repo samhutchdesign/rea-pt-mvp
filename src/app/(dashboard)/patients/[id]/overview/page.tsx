@@ -100,7 +100,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
               onClick={() => setUploadBannerDismissed(true)}
               className="shrink-0 opacity-60 hover:opacity-100 transition-opacity"
             >
-              <X size={16} />
+              <X size={16} strokeWidth={1.25} />
             </button>
           </div>
         </Alert>
@@ -146,7 +146,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
                     </div>
                   )}
                 </div>
-                <ChevronRight size={24} className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" />
+                <ChevronRight size={24} className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" strokeWidth={1.25} />
               </div>
               <button
                 className="text-base text-brand-700 hover:underline"
