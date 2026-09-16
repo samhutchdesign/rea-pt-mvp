@@ -11,6 +11,7 @@ import { Button } from '@/components/base/buttons/button';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import type { Exercise, Patient } from '@/lib/types';
 import { ArrowLeft, Copy, Heart, ListPlus, Mic, MoreHorizontal, Pencil, Play, Share2, UserPlus } from 'lucide-react';
+import { cx } from '@/utils/cx';
 
 const MOCK_TRANSCRIPT = 'This exercise focuses on coordinating diaphragmatic breath with pelvic floor relaxation and engagement. Begin by finding a comfortable, supported position. Inhale slowly through your nose, allowing your ribcage to expand in all directions as your pelvic floor gently descends. Exhale fully, feeling the pelvic floor lift and the deep abdominals gently draw in. Repeat at your own pace, without forcing or straining at any point.';
 
@@ -124,145 +125,148 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           <button
             onClick={() => router.push(backUrl)}
-            className="inline-flex items-center gap-1.5 text-base text-secondary hover:text-primary mb-5 transition-colors"
+            className="inline-flex items-center gap-2 text-base text-primary hover:opacity-70 mb-6 transition-opacity"
           >
-            <ArrowLeft size={15} strokeWidth={1.25} />
+            <ArrowLeft size={24} strokeWidth={1.25} />
             Back
           </button>
 
           {/* Video */}
           {ex.videoUrl ? (
-            <div className="mb-5 w-full aspect-video rounded-2xl overflow-hidden bg-[#0f0f0f]">
+            <div className="mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden bg-[#0f0f0f]">
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />
             </div>
           ) : (
-            <div className="mb-5 w-full aspect-video rounded-2xl bg-brand-50 flex items-center justify-center">
+            <div className="mb-10 w-full aspect-video rounded-lg border border-secondary bg-brand-50 flex items-center justify-center">
               <div className="w-14 h-14 rounded-full bg-brand-600 flex items-center justify-center">
                 <Play size={24} fill="white" color="white" className="ml-1" strokeWidth={1.25} />
               </div>
             </div>
           )}
 
-          {/* Title */}
-          <h1 className="text-[32px] leading-[48px] font-normal text-primary mb-4 mt-0">{ex.name}</h1>
+          <div className="flex flex-col gap-10">
 
-          {/* Action row */}
-          <div className="flex items-center gap-2.5 mb-5 flex-wrap">
-            <div className="flex items-center gap-2 mr-1">
-              <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                RH
+            {/* Name & Actions */}
+            <div className="flex flex-col gap-6">
+              <h1 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">{ex.name}</h1>
+
+              <div className="flex items-start justify-between gap-2.5 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-primary font-display font-medium text-base shrink-0">
+                    RH
+                  </div>
+                  <span className="font-display text-base font-medium tracking-[0.1px] text-primary">Rea Health</span>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button color="secondary" size="lg" iconLeading={(p) => <ListPlus {...p} strokeWidth={1.25} />} onPress={() => setProgramOpen(true)}>
+                    Add to Program
+                  </Button>
+                  <Button color="secondary" size="lg" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => setAssignOpen(true)}>
+                    Assign
+                  </Button>
+                  <Button
+                    color="secondary"
+                    size="lg"
+                    aria-label="Favorite"
+                    iconLeading={(p) => <Heart {...p} style={isFavorite ? { color: 'var(--color-favorite)' } : undefined} fill={isFavorite ? 'currentColor' : 'none'} strokeWidth={1.25} />}
+                    onPress={() => setIsFavorite((v) => !v)}
+                  />
+
+                  {/* More menu */}
+                  <div className="relative" ref={moreRef}>
+                    <Button color="secondary" size="lg" aria-label="More options" iconLeading={(p) => <MoreHorizontal {...p} strokeWidth={1.25} />} onPress={() => setMoreOpen((v) => !v)} />
+                    {moreOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary z-50 py-1">
+                        {viewMode === 'full' && (
+                          <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); setAudioOpen(true); }}>
+                            <Mic size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Record Audio Cue
+                          </button>
+                        )}
+                        <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
+                          <Share2 size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Share
+                        </button>
+                        <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
+                          Report an issue
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-              <span className="text-base font-medium text-secondary">Rea Health</span>
             </div>
 
-            <Button color="secondary" size="sm" iconLeading={(p) => <ListPlus {...p} strokeWidth={1.25} />} onPress={() => setProgramOpen(true)}>
-              Add to Program
-            </Button>
-            <Button color="secondary" size="sm" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => setAssignOpen(true)}>
-              Assign
-            </Button>
-            <button
-              onClick={() => setIsFavorite((v) => !v)}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-base font-medium transition-colors ${isFavorite ? 'border-pink-200 bg-pink-50 text-pink-600' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
-            >
-              <Heart size={14} fill={isFavorite ? '#E91E63' : 'none'} color={isFavorite ? '#E91E63' : 'currentColor'} strokeWidth={1.25} />
-              Favorite
-            </button>
-
-            {/* More menu */}
-            <div className="relative" ref={moreRef}>
-              <button
-                onClick={() => setMoreOpen((v) => !v)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-secondary bg-primary text-secondary hover:bg-secondary transition-colors"
-              >
-                <MoreHorizontal size={16} strokeWidth={1.25} />
-              </button>
-              {moreOpen && (
-                <div className="absolute left-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary z-50 py-1">
-                  {viewMode === 'full' && (
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); setAudioOpen(true); }}>
-                      <Mic size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Record Audio Cue
-                    </button>
-                  )}
-                  <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
-                    <Share2 size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Share
-                  </button>
-                  <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
-                    Report an issue
-                  </button>
-                </div>
+            {/* Transcript */}
+            <div className="rounded-lg border border-secondary bg-primary p-5 text-base text-primary">
+              <p className={cx('m-0', !transcriptExpanded && 'line-clamp-1')}>{MOCK_TRANSCRIPT}</p>
+              {!transcriptExpanded && (
+                <button className="text-brand-700 font-semibold text-xs mt-2 hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
+                  show more
+                </button>
               )}
             </div>
-          </div>
 
-          {/* Transcript */}
-          <div className="mb-5 rounded-xl border border-secondary bg-secondary_alt px-4 py-3 text-base text-secondary">
-            <p className={transcriptExpanded ? '' : 'line-clamp-1'}>{MOCK_TRANSCRIPT}</p>
-            {!transcriptExpanded && (
-              <button className="text-brand-700 font-medium text-xs mt-0.5 hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
-                show more
-              </button>
-            )}
-          </div>
+            <Divider />
 
-          <Divider className="mb-6" />
-
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="mt-0 text-base font-bold text-primary">Instructions</h3>
-            <NativeSelect
-              value={selectedCue}
-              onChange={(e) => setSelectedCue(e.target.value)}
-              wrapperClassName="w-56 shrink-0"
-              className="py-1.5 text-xs text-secondary"
-            >
-              <option value="">Add relaxation cue…</option>
-              {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-            </NativeSelect>
-          </div>
-          {selectedCue && (() => {
-            const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
-            return cue ? (
-              <div className="mb-4 rounded-xl bg-brand-50 border border-brand-200 px-4 py-3">
-                <p className="text-xs font-semibold text-brand-700 mb-1">{cue.label}</p>
-                <p className="text-base text-brand-900">{cue.text}</p>
+            {/* Instructions */}
+            <div className="flex flex-col gap-7 w-full">
+              <div className="flex items-center justify-between w-full flex-wrap gap-3">
+                <h3 className="font-display m-0 text-[20px] leading-[32px] font-medium text-primary">Instructions</h3>
+                <NativeSelect
+                  value={selectedCue}
+                  onChange={(e) => setSelectedCue(e.target.value)}
+                  wrapperClassName="w-[240px] shrink-0"
+                  className="h-12"
+                >
+                  <option value="">Add relaxation cue…</option>
+                  {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+                </NativeSelect>
               </div>
-            ) : null;
-          })()}
-          <ol className="mb-6 pl-5 space-y-2 list-decimal">
-            {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
-          </ol>
+              {selectedCue && (() => {
+                const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
+                return cue ? (
+                  <div className="rounded-xl bg-brand-50 border border-brand-200 px-4 py-3 w-full">
+                    <p className="text-xs font-semibold text-brand-700 mb-1">{cue.label}</p>
+                    <p className="text-base text-brand-900">{cue.text}</p>
+                  </div>
+                ) : null;
+              })()}
+              <ol className="pl-5 space-y-3 list-decimal w-full">
+                {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
+              </ol>
+            </div>
 
-          <Divider className="mb-6" />
+            <Divider />
 
-          <h3 className="mt-0 mb-3 text-base font-bold text-primary">Common Mistakes</h3>
-          <ul className="pl-5 space-y-2 list-disc">
-            {ex.commonMistakes.map((m, i) => <li key={i} className="text-base text-primary">{m}</li>)}
-          </ul>
+            {/* Common Mistakes */}
+            <div className="flex flex-col gap-7 w-full">
+              <h3 className="font-display m-0 text-[20px] leading-[32px] font-medium text-primary">Common Mistakes</h3>
+              <ul className="pl-5 space-y-3 list-disc w-full">
+                {ex.commonMistakes.map((m, i) => <li key={i} className="text-base text-primary">{m}</li>)}
+              </ul>
+            </div>
 
-          <Divider className="mt-6" />
+            <Divider />
+          </div>
         </div>
 
         {/* Right: sidebar */}
         <div className="w-80 shrink-0 pt-1">
           {siblings.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-primary mb-4 mt-0">Variations</h2>
-              <div className="flex flex-col gap-4">
-                {siblings.map((sib) => (
-                  <SidebarExerciseCard key={sib.id} ex={sib} onClick={() => router.push(`/exercises/${sib.id}?back=${encodeURIComponent(backUrl)}`)} />
-                ))}
-              </div>
+            <div className="mb-8 flex flex-col gap-7">
+              <h2 className="font-display m-0 text-base font-medium text-primary">Variations</h2>
+              {siblings.map((sib) => (
+                <SidebarExerciseCard key={sib.id} ex={sib} onClick={() => router.push(`/exercises/${sib.id}?back=${encodeURIComponent(backUrl)}`)} />
+              ))}
             </div>
           )}
 
           {similar.length > 0 && (
-            <div>
-              <h2 className="text-xl font-bold text-primary mb-4 mt-0">Similar Exercises</h2>
-              <div className="flex flex-col gap-4">
-                {similar.map((sim) => (
-                  <SidebarExerciseCard key={sim.id} ex={sim} onClick={() => router.push(`/exercises/${sim.id}?back=${encodeURIComponent(backUrl)}`)} />
-                ))}
-              </div>
+            <div className="flex flex-col gap-7">
+              <h2 className="font-display m-0 text-base font-medium text-primary">Similar Exercises</h2>
+              {similar.map((sim) => (
+                <SidebarExerciseCard key={sim.id} ex={sim} onClick={() => router.push(`/exercises/${sim.id}?back=${encodeURIComponent(backUrl)}`)} />
+              ))}
             </div>
           )}
         </div>

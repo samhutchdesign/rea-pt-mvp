@@ -26,6 +26,7 @@ import { Divider } from '@/components/ui/divider';
 import { NativeSelect } from '@/components/ui/native-select';
 import type { Exercise, Patient } from '@/lib/types';
 import { ArrowLeft, Copy, Heart, ListPlus, Mic, MoreHorizontal, Pencil, Play, Share2, UserPlus } from 'lucide-react';
+import { cx } from '@/utils/cx';
 
 const MOCK_TRANSCRIPT = 'This exercise focuses on coordinating diaphragmatic breath with pelvic floor relaxation and engagement. Begin by finding a comfortable, supported position. Inhale slowly through your nose, allowing your ribcage to expand in all directions as your pelvic floor gently descends. Exhale fully, feeling the pelvic floor lift and the deep abdominals gently draw in. Repeat at your own pace, without forcing or straining at any point.';
 
@@ -155,15 +156,15 @@ function ExerciseDetailContent({ id }: { id: string }) {
 
           <button
             onClick={() => router.push(backUrl)}
-            className="inline-flex items-center gap-1.5 text-base text-secondary hover:text-primary mb-5 transition-colors"
+            className="inline-flex items-center gap-2 text-base text-primary hover:opacity-70 mb-6 transition-opacity"
           >
-            <ArrowLeft size={15} strokeWidth={1.25} />
+            <ArrowLeft size={24} strokeWidth={1.25} />
             Back
           </button>
 
           {/* Video / Animation */}
           {isBreathingPacer ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <BreathingCircleAnimation
                 key={`${rx.speedSecs}-${rx.loops}`}
                 cycleSeconds={rx.speedSecs}
@@ -176,7 +177,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.animationType === 'pf-full-range' ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <PelvicFloorFullRangeAnimation
                 key={`${rx.speedSecs}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
@@ -193,7 +194,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.animationType === 'pf-quick-flicks' ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <QuickFlicksAnimation
                 key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
@@ -208,7 +209,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.animationType === 'pf-sustained-hold' ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <SustainedHoldAnimation
                 key={`${rx.speedSecs}-${rx.holdIntensityPct}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
@@ -231,7 +232,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.animationType === 'pf-elevator' ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <ElevatorAnimation
                 key={`${rx.speedSecs}-${rx.stages}-${rx.stagePauseSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
@@ -253,7 +254,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.animationType === 'pf-reverse-kegel' ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <ReverseKegelAnimation
                 key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
@@ -268,9 +269,9 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.animationType === 'pf-the-knack' ? (
-            <TheKnackAnimation className="mb-5 w-full aspect-video rounded-2xl" />
+            <TheKnackAnimation className="mb-10 w-full aspect-video rounded-lg border border-secondary" />
           ) : ex.animationType === 'pf-combo-full-range-quick-flicks' ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <ComboFullRangeQuickFlicks
                 key={`${rx.step1SpeedSecs}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
                 step1SpeedSecs={rx.step1SpeedSecs}
@@ -318,7 +319,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.animationType === 'pf-combo-sustained-hold-quick-flicks' ? (
-            <div className="relative mb-5 w-full aspect-video rounded-2xl overflow-hidden">
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <ComboSustainedHoldQuickFlicks
                 key={`${rx.step1SpeedSecs}-${rx.step1IntensityPct}-${rx.step1HoldSecs}-${rx.step1RestSecs}-${rx.step1Reps}-${rx.step2SpeedSecs}-${rx.step2RestSecs}-${rx.step2Reps}-${rx.transitionRestSecs}-${rx.comboSets}`}
                 step1SpeedSecs={rx.step1SpeedSecs}
@@ -373,146 +374,147 @@ function ExerciseDetailContent({ id }: { id: string }) {
               </ParametersCard>
             </div>
           ) : ex.videoUrl ? (
-            <div className="mb-5 w-full aspect-video rounded-2xl overflow-hidden bg-[#0f0f0f]">
+            <div className="mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden bg-[#0f0f0f]">
               <iframe src={`https://www.youtube.com/embed/${ex.videoUrl}?rel=0&modestbranding=1`} width="100%" height="100%" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 'none', display: 'block' }} />
             </div>
           ) : (
-            <div className="mb-5 w-full aspect-video rounded-2xl bg-brand-50 flex items-center justify-center">
+            <div className="mb-10 w-full aspect-video rounded-lg border border-secondary bg-brand-50 flex items-center justify-center">
               <div className="w-14 h-14 rounded-full bg-brand-600 flex items-center justify-center">
                 <Play size={24} fill="white" color="white" className="ml-1" strokeWidth={1.25} />
               </div>
             </div>
           )}
 
-          {/* Title */}
-          <h1 className="text-[32px] leading-[48px] font-normal text-primary mb-4 mt-0">{ex.name}</h1>
+          <div className="flex flex-col gap-10">
 
-          {/* Action row */}
-          <div className="flex items-center justify-between gap-2.5 mb-5 flex-wrap">
-            <div className="flex items-center gap-2 mr-1">
-              <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                {ex.userUploaded ? 'Me' : 'RH'}
+            {/* Name & Actions */}
+            <div className="flex flex-col gap-6">
+              <h1 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">{ex.name}</h1>
+
+              <div className="flex items-start justify-between gap-2.5 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-primary font-display font-medium text-base shrink-0">
+                    {ex.userUploaded ? 'Me' : 'RH'}
+                  </div>
+                  <span className="font-display text-base font-medium tracking-[0.1px] text-primary">{ex.userUploaded ? 'You' : 'Rea Health'}</span>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button color="secondary" size="lg" iconLeading={(p) => <ListPlus {...p} strokeWidth={1.25} />} onPress={() => block(() => { resetRx(); setProgramOpen(true); })}>
+                    Add to Program
+                  </Button>
+                  <Button color="secondary" size="lg" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => block(() => { resetRx(); setAssignOpen(true); })}>
+                    Assign
+                  </Button>
+                  <Button
+                    color="secondary"
+                    size="lg"
+                    aria-label="Favorite"
+                    iconLeading={(p) => <Heart {...p} style={isFavorite ? { color: 'var(--color-favorite)' } : undefined} fill={isFavorite ? 'currentColor' : 'none'} strokeWidth={1.25} />}
+                    onPress={() => block(() => setIsFavorite((v) => !v))}
+                  />
+
+                  {/* More menu — full version only */}
+                  {viewMode === 'full' && (
+                  <div className="relative" ref={moreRef}>
+                    <Button color="secondary" size="lg" aria-label="More options" iconLeading={(p) => <MoreHorizontal {...p} strokeWidth={1.25} />} onPress={() => setMoreOpen((v) => !v)} />
+                    {moreOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary z-50 py-1">
+                        <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
+                          <Mic size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Record Audio Cue
+                        </button>
+                        {ex.userUploaded ? (
+                          <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
+                            <Pencil size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Edit
+                          </button>
+                        ) : (
+                          <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?duplicate=${id}`)); }}>
+                            <Copy size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Duplicate
+                          </button>
+                        )}
+                        <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
+                          <Share2 size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Share
+                        </button>
+                        <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
+                          Report an issue
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  )}
+                </div>
               </div>
-              <span className="text-base font-medium text-secondary">{ex.userUploaded ? 'You' : 'Rea Health'}</span>
             </div>
 
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Button color="secondary" size="sm" iconLeading={(p) => <ListPlus {...p} strokeWidth={1.25} />} onPress={() => block(() => { resetRx(); setProgramOpen(true); })}>
-                Add to Program
-              </Button>
-              <Button color="secondary" size="sm" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => block(() => { resetRx(); setAssignOpen(true); })}>
-                Assign
-              </Button>
-              <button
-                onClick={() => block(() => setIsFavorite((v) => !v))}
-                className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-base font-medium transition-colors ${isFavorite ? 'border-pink-200 bg-pink-50 text-pink-600' : 'border-secondary bg-primary text-secondary hover:bg-secondary'}`}
-              >
-                <Heart size={14} fill={isFavorite ? '#E91E63' : 'none'} color={isFavorite ? '#E91E63' : 'currentColor'} strokeWidth={1.25} />
-                Favorite
-              </button>
-
-              {/* More menu — full version only */}
-              {viewMode === 'full' && (
-              <div className="relative" ref={moreRef}>
-                <button
-                  onClick={() => setMoreOpen((v) => !v)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-secondary bg-primary text-secondary hover:bg-secondary transition-colors"
-                >
-                  <MoreHorizontal size={16} strokeWidth={1.25} />
+            {/* Transcript / Dictation */}
+            <div className="rounded-lg border border-secondary bg-primary p-5 text-base text-primary">
+              <p className={cx('m-0', !transcriptExpanded && 'line-clamp-1')}>{MOCK_TRANSCRIPT}</p>
+              {!transcriptExpanded && (
+                <button className="text-brand-700 font-semibold text-xs mt-2 hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
+                  show more
                 </button>
-                {moreOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-secondary bg-primary z-50 py-1">
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => setAudioOpen(true)); }}>
-                      <Mic size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Record Audio Cue
-                    </button>
-                    {ex.userUploaded ? (
-                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?edit=${id}`)); }}>
-                        <Pencil size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Edit
-                      </button>
-                    ) : (
-                      <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); block(() => router.push(`/exercises/new?duplicate=${id}`)); }}>
-                        <Copy size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Duplicate
-                      </button>
-                    )}
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-primary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.success('Link copied!'); }}>
-                      <Share2 size={15} className="text-tertiary shrink-0" strokeWidth={1.25} />Share
-                    </button>
-                    <button className="flex w-full items-center gap-2.5 px-3 py-2 text-base text-secondary hover:bg-secondary transition-colors" onClick={() => { setMoreOpen(false); toast.info('Report submitted. Thank you!'); }}>
-                      Report an issue
-                    </button>
-                  </div>
-                )}
-              </div>
               )}
             </div>
+
+            <Divider />
+
+            {/* Instructions */}
+            <div className="flex flex-col gap-7 w-full">
+              <h3 className="font-display m-0 text-[20px] leading-[32px] font-medium text-primary">Instructions</h3>
+              <NativeSelect
+                value={selectedCue}
+                onChange={(e) => setSelectedCue(e.target.value)}
+                wrapperClassName="w-[240px]"
+                className="h-12"
+              >
+                <option value="">Add relaxation cue…</option>
+                {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+              </NativeSelect>
+              {selectedCue && (() => {
+                const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
+                return cue ? (
+                  <div className="rounded-xl bg-brand-50 border border-brand-200 px-4 py-3 w-full">
+                    <p className="text-xs font-semibold text-brand-700 mb-1">{cue.label}</p>
+                    <p className="text-base text-brand-900">{cue.text}</p>
+                  </div>
+                ) : null;
+              })()}
+              <ol className="pl-5 space-y-3 list-decimal w-full">
+                {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
+              </ol>
+            </div>
+
+            <Divider />
+
+            {/* Common Mistakes */}
+            <div className="flex flex-col gap-7 w-full">
+              <h3 className="font-display m-0 text-[20px] leading-[32px] font-medium text-primary">Common Mistakes</h3>
+              <ul className="pl-5 space-y-3 list-disc w-full">
+                {ex.commonMistakes.map((m, i) => <li key={i} className="text-base text-primary">{m}</li>)}
+              </ul>
+            </div>
+
+            <Divider />
           </div>
-
-          {/* Transcript */}
-          <div className="mb-5 rounded-xl border border-secondary bg-secondary_alt px-4 py-3 text-base text-secondary">
-            <p className={transcriptExpanded ? '' : 'line-clamp-1'}>{MOCK_TRANSCRIPT}</p>
-            {!transcriptExpanded && (
-              <button className="text-brand-700 font-medium text-xs mt-0.5 hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
-                show more
-              </button>
-            )}
-          </div>
-
-          <Divider className="mb-6" />
-
-          <h3 className="mt-0 mb-3 text-base font-bold text-primary">Instructions</h3>
-          <NativeSelect
-            value={selectedCue}
-            onChange={(e) => setSelectedCue(e.target.value)}
-            wrapperClassName="w-56 mb-3"
-            className="py-1.5 text-xs text-secondary"
-          >
-            <option value="">Add relaxation cue…</option>
-            {RELAXATION_CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-          </NativeSelect>
-          {selectedCue && (() => {
-            const cue = RELAXATION_CUES.find((c) => c.key === selectedCue);
-            return cue ? (
-              <div className="mb-4 rounded-xl bg-brand-50 border border-brand-200 px-4 py-3">
-                <p className="text-xs font-semibold text-brand-700 mb-1">{cue.label}</p>
-                <p className="text-base text-brand-900">{cue.text}</p>
-              </div>
-            ) : null;
-          })()}
-          <ol className="mb-6 pl-5 space-y-2 list-decimal">
-            {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
-          </ol>
-
-          <Divider className="mb-6" />
-
-          <h3 className="mt-0 mb-3 text-base font-bold text-primary">Common Mistakes</h3>
-          <ul className="pl-5 space-y-2 list-disc">
-            {ex.commonMistakes.map((m, i) => <li key={i} className="text-base text-primary">{m}</li>)}
-          </ul>
-
-          <Divider className="mt-6" />
         </div>
 
         {/* Right: sidebar */}
         <div className="w-80 shrink-0 pt-1">
           {siblings.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-primary mb-4 mt-0">Variations</h2>
-              <div className="flex flex-col gap-4">
-                {siblings.map((sib) => (
-                  <SidebarExerciseCard key={sib.id} ex={sib} onClick={() => router.push(`/exercises/${sib.id}?back=${encodeURIComponent(backUrl)}`)} />
-                ))}
-              </div>
+            <div className="mb-8 flex flex-col gap-7">
+              <h2 className="font-display m-0 text-base font-medium text-primary">Variations</h2>
+              {siblings.map((sib) => (
+                <SidebarExerciseCard key={sib.id} ex={sib} onClick={() => router.push(`/exercises/${sib.id}?back=${encodeURIComponent(backUrl)}`)} />
+              ))}
             </div>
           )}
 
           {viewMode === 'full' && similar.length > 0 && (
-            <div>
-              <h2 className="text-xl font-bold text-primary mb-4 mt-0">Similar Exercises</h2>
-              <div className="flex flex-col gap-4">
-                {similar.map((sim) => (
-                  <SidebarExerciseCard key={sim.id} ex={sim} onClick={() => router.push(`/exercises/${sim.id}?back=${encodeURIComponent(backUrl)}`)} />
-                ))}
-              </div>
+            <div className="flex flex-col gap-7">
+              <h2 className="font-display m-0 text-base font-medium text-primary">Similar Exercises</h2>
+              {similar.map((sim) => (
+                <SidebarExerciseCard key={sim.id} ex={sim} onClick={() => router.push(`/exercises/${sim.id}?back=${encodeURIComponent(backUrl)}`)} />
+              ))}
             </div>
           )}
         </div>
