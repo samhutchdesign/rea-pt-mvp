@@ -9,6 +9,7 @@ import { Divider } from '@/components/ui/divider';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Button } from '@/components/base/buttons/button';
 import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
+import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import type { Exercise, Patient } from '@/lib/types';
 import { ArrowLeft, Copy, Heart, ListPlus, Mic, MoreHorizontal, Pencil, Play, Share2, UserPlus } from 'lucide-react';
 import { cx } from '@/utils/cx';
@@ -23,15 +24,14 @@ const RELAXATION_CUES = [
 
 function SidebarExerciseCard({ ex, onClick }: { ex: Exercise; onClick: () => void }) {
   return (
-    <div className="flex gap-3 cursor-pointer group" onClick={onClick}>
-      <div className="w-[130px] h-[80px] rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
-        <div className="w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center">
-          <Play size={16} fill="white" color="white" className="ml-0.5" strokeWidth={1.25} />
-        </div>
+    <div className="flex items-center gap-4 cursor-pointer group" onClick={onClick}>
+      <div className="relative h-[90px] w-36 shrink-0 overflow-hidden rounded-lg">
+        <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
       </div>
-      <div className="flex flex-col justify-center min-w-0">
-        <span className="text-base font-bold text-primary leading-snug group-hover:text-brand-700 transition-colors">{ex.name}</span>
-        <span className="text-base text-secondary mt-0.5">Rea Health</span>
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <span className="font-display text-base font-medium tracking-[0.1px] text-primary group-hover:text-brand-700 transition-colors">{ex.name}</span>
+        <span className="text-xs text-primary">{ex.category}</span>
+        <span className="text-xs text-secondary">{ex.level}</span>
       </div>
     </div>
   );
@@ -197,10 +197,10 @@ function ExerciseDetailContent({ id }: { id: string }) {
             </div>
 
             {/* Transcript */}
-            <div className="rounded-lg border border-secondary bg-primary p-5 text-base text-primary">
+            <div className="flex flex-col gap-4 rounded-lg border border-secondary bg-primary p-5 text-base text-primary">
               <p className={cx('m-0', !transcriptExpanded && 'line-clamp-1')}>{MOCK_TRANSCRIPT}</p>
               {!transcriptExpanded && (
-                <button className="text-brand-700 font-semibold text-xs mt-2 hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
+                <button className="self-start text-brand-700 font-semibold text-xs hover:opacity-80" onClick={() => setTranscriptExpanded(true)}>
                   show more
                 </button>
               )}
