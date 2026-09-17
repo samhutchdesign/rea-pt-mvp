@@ -421,13 +421,15 @@ function ExerciseDetailContent({ id }: { id: string }) {
           ) : ex.animationType === 'pf-dilator-half-u' ? (
             <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <DilatorHalfUAnimation
-                key={`${rx.speedSecs}-${rx.reps}`}
+                key={`${rx.speedSecs}-${rx.holdSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
+                holdSecs={rx.holdSecs}
                 reps={rx.reps}
                 className="absolute inset-0"
               />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
-                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={8} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={0} max={10} onChange={(v) => patchRx({ holdSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
             </div>

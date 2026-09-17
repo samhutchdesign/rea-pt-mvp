@@ -7,13 +7,14 @@ import { buildHalfUPhases, HALF_U_TRACES } from './dilatorPhaseBuilders';
 interface DilatorHalfUAnimationProps {
   speedSecs: number;
   reps: number;
+  holdSecs?: number;
   className?: string;
   children?: React.ReactNode;
 }
 
-/** Half U: continuous stretch from the top of the entrance toward the bottom, alternating sides each rep. */
-export function DilatorHalfUAnimation({ speedSecs, reps, className, children }: DilatorHalfUAnimationProps) {
-  const phases = useMemo(() => buildHalfUPhases(speedSecs, reps), [speedSecs, reps]);
+/** Half U: continuous stretch from the top of the entrance toward the bottom, alternating sides each rep, with an optional hold before switching sides. */
+export function DilatorHalfUAnimation({ speedSecs, reps, holdSecs = 0, className, children }: DilatorHalfUAnimationProps) {
+  const phases = useMemo(() => buildHalfUPhases(speedSecs, reps, holdSecs), [speedSecs, reps, holdSecs]);
   const { phase } = usePhaseSequence(phases);
 
   return (

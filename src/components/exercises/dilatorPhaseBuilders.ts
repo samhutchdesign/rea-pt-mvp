@@ -141,11 +141,14 @@ export function build3PointPhases(speedSecs: number, holdSecs: number, reps: num
 
 /**
  * Half U: a continuous stretch from the top of the entrance down toward the
- * bottom, alternating sides each rep (no hold — it's a fluid motion).
+ * bottom and back, alternating sides each rep, with an optional brief hold
+ * at the top before switching sides.
  */
-export function buildHalfUPhases(speedSecs: number, reps: number): DilatorPhase[] {
+export function buildHalfUPhases(speedSecs: number, reps: number, holdSecs = 0): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const legMs = moveMs / HALF_U_STEPS;
+  const holdMs = Math.max(holdSecs, 0) * 1000;
+  const { top } = HALF_U_POINTS;
   const phases: DilatorPhase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
     const repText = `${i} of ${reps}`;
@@ -160,6 +163,9 @@ export function buildHalfUPhases(speedSecs: number, reps: number): DilatorPhase[
     }
     for (let s = HALF_U_STEPS - 1; s >= 0; s--) {
       phases.push({ label: 'Return', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
+    }
+    if (holdMs > 0) {
+      phases.push({ label: 'Hold', x: top.x, y: top.y, durationMs: holdMs, stepName: side, repText });
     }
   }
   return phases;

@@ -98,7 +98,7 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
     case 'pf-dilator-3-point':
       return `${rx.dilatorSize} dilator, ${rx.reps} reps/direction, ${rx.holdSecs}s hold, ${rx.speedSecs}s speed`;
     case 'pf-dilator-half-u':
-      return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.speedSecs}s speed`;
+      return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.speedSecs}s speed${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
     default:
       return `${rx.sets} sets × ${rx.reps} reps${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
   }
@@ -331,6 +331,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           <div className="flex flex-wrap gap-2">
             <CompactField value={values.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => onChange({ reps: v })} />
             <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
+            <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
           </div>
           {frequencyField}
         </div>
