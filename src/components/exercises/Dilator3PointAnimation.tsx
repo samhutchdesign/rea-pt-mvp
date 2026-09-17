@@ -20,7 +20,7 @@ export function Dilator3PointAnimation({ speedSecs, holdSecs, reps, className, c
 
   return (
     <DilatorVisual x={phase.x} y={phase.y} scale={phase.scale} tracePaths={THREE_POINT_TRACES} transitionMs={moveMs} className={className}>
-      <div className="absolute top-5 left-5 flex flex-col gap-0.5">
+      <div className="absolute top-5 left-5 flex flex-col gap-2">
         {phase.stepName && <span className="font-display text-[20px] leading-[32px] font-medium text-primary">{phase.stepName}</span>}
         {phase.repText && <span className="text-sm text-secondary">Rep {phase.repText}</span>}
       </div>
