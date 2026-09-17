@@ -12,7 +12,10 @@ import { ReverseKegelAnimation } from '@/components/exercises/ReverseKegelAnimat
 import { TheKnackAnimation } from '@/components/exercises/TheKnackAnimation';
 import { ComboFullRangeQuickFlicks } from '@/components/exercises/ComboFullRangeQuickFlicks';
 import { ComboSustainedHoldQuickFlicks } from '@/components/exercises/ComboSustainedHoldQuickFlicks';
-import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, type RxValues } from '@/components/exercises/exerciseRx';
+import { DilatorJCurveAnimation } from '@/components/exercises/DilatorJCurveAnimation';
+import { Dilator3PointAnimation } from '@/components/exercises/Dilator3PointAnimation';
+import { DilatorHalfUAnimation } from '@/components/exercises/DilatorHalfUAnimation';
+import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, DILATOR_SIZES, type RxValues } from '@/components/exercises/exerciseRx';
 import { CompactField } from '@/components/exercises/CompactField';
 import { ParametersCard } from '@/components/exercises/ParametersCard';
 import { ParameterSlider } from '@/components/exercises/ParameterSlider';
@@ -383,6 +386,67 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 ]}
               >
                 <CompactField value={rx.comboSets} unitSingular="Combo Set" unitPlural="Combo Sets" onChange={(v) => patchRx({ comboSets: v })} />
+              </ParametersCard>
+            </div>
+          ) : ex.animationType === 'pf-dilator-j-curve' ? (
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
+              <DilatorJCurveAnimation
+                key={`${rx.speedSecs}-${rx.holdSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                holdSecs={rx.holdSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-xs text-secondary shrink-0">Dilator Size</span>
+                  <NativeSelect className="h-12 flex-1" value={rx.dilatorSize} onChange={(e) => patchRx({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
+                    {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </NativeSelect>
+                </div>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ holdSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => patchRx({ reps: v })} />
+              </ParametersCard>
+            </div>
+          ) : ex.animationType === 'pf-dilator-3-point' ? (
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
+              <Dilator3PointAnimation
+                key={`${rx.speedSecs}-${rx.holdSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                holdSecs={rx.holdSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-xs text-secondary shrink-0">Dilator Size</span>
+                  <NativeSelect className="h-12 flex-1" value={rx.dilatorSize} onChange={(e) => patchRx({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
+                    {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </NativeSelect>
+                </div>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ holdSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep / Direction" unitPlural="Reps / Direction" onChange={(v) => patchRx({ reps: v })} />
+              </ParametersCard>
+            </div>
+          ) : ex.animationType === 'pf-dilator-half-u' ? (
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
+              <DilatorHalfUAnimation
+                key={`${rx.speedSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-xs text-secondary shrink-0">Dilator Size</span>
+                  <NativeSelect className="h-12 flex-1" value={rx.dilatorSize} onChange={(e) => patchRx({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
+                    {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </NativeSelect>
+                </div>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
             </div>
           ) : ex.videoUrl ? (

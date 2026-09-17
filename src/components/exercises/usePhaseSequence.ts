@@ -21,8 +21,13 @@ export interface Phase {
  * release / rest), looping for `reps` repetitions (0 or undefined loops
  * forever). Each animation component supplies its own `phases` — this hook
  * only owns the timing/looping so that isn't reimplemented per exercise.
+ *
+ * Generic over the phase shape so non-circle visuals (e.g. the dilator
+ * exercises, which animate an {x, y} position instead of scale/riseFraction)
+ * can reuse the same timing/looping logic — the hook only ever reads
+ * `durationMs` off each phase.
  */
-export function usePhaseSequence(phases: Phase[], reps?: number) {
+export function usePhaseSequence<P extends { durationMs: number }>(phases: P[], reps?: number) {
   const [repIndex, setRepIndex] = useState(1);
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [running, setRunning] = useState(true);

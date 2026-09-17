@@ -52,6 +52,7 @@ function rowToRxValues(ex: Exercise, row: ProgramRow): RxValues {
     step2RestSecs: row.step2RestSecs ?? base.step2RestSecs,
     transitionRestSecs: row.transitionRestSecs ?? base.transitionRestSecs,
     comboSets: row.comboSets ?? base.comboSets,
+    dilatorSize: row.dilatorSize ?? base.dilatorSize,
   };
 }
 

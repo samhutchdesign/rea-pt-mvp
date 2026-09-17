@@ -33,6 +33,8 @@ export interface ProgramRow {
   step2RestSecs?: number;
   transitionRestSecs?: number;
   comboSets?: number;
+  /** Dilator size (dilator exercises). Informational only — doesn't affect the animation. */
+  dilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
 }
 
 export const CUES = [

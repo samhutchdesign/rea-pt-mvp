@@ -115,7 +115,7 @@ export interface Exercise {
   variationGroup?: string;
   userUploaded?: boolean;
   /** Set for exercises that are a guided animation rather than a video. */
-  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack' | 'pf-combo-full-range-quick-flicks' | 'pf-combo-sustained-hold-quick-flicks';
+  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack' | 'pf-combo-full-range-quick-flicks' | 'pf-combo-sustained-hold-quick-flicks' | 'pf-dilator-j-curve' | 'pf-dilator-3-point' | 'pf-dilator-half-u';
   /** Default seconds per animation cycle, for animation-type exercises. */
   defaultSpeedSecs?: number;
   /** Default number of animation cycles, for animation-type exercises. */
@@ -146,6 +146,8 @@ export interface Exercise {
   defaultTransitionRestSecs?: number;
   /** How many times the Step 1 -> Transition -> Step 2 unit repeats. */
   defaultComboSets?: number;
+  /** Default dilator size, for dilator animation-type exercises. Informational only — doesn't affect the animation. */
+  defaultDilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
 }
 
 export interface ProgramExercise {
@@ -182,6 +184,8 @@ export interface ProgramExercise {
   step2RestSecs?: number;
   transitionRestSecs?: number;
   comboSets?: number;
+  /** Dilator size, for dilator animation-type exercises. Informational only — doesn't affect the animation. */
+  dilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
 }
 
 export interface Program {

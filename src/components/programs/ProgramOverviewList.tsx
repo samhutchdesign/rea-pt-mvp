@@ -40,6 +40,12 @@ function rowSummary(ex: Exercise, row: ProgramRow): string {
       const step2Reps = row.step2Reps ?? ex.defaultStep2Reps ?? 15;
       return `${comboSets} Combo Sets / Sustained Hold: ${step1Sets}×${step1Reps} / Quick Flicks: ${step2Sets}×${step2Reps}`;
     }
+    case 'pf-dilator-j-curve':
+      return `${row.dilatorSize ?? ex.defaultDilatorSize ?? 'Medium'} dilator / ${row.reps} Reps/Side / ${row.holdSecs} Sec Hold`;
+    case 'pf-dilator-3-point':
+      return `${row.dilatorSize ?? ex.defaultDilatorSize ?? 'Medium'} dilator / ${row.reps} Reps/Direction / ${row.holdSecs} Sec Hold`;
+    case 'pf-dilator-half-u':
+      return `${row.dilatorSize ?? ex.defaultDilatorSize ?? 'Small'} dilator / ${row.reps} Reps/Side`;
     default:
       return `${row.sets} Sets / ${row.reps} Reps${row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}`;
   }

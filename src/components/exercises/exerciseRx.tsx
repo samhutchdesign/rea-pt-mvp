@@ -7,6 +7,7 @@ export const STARTING_POSITIONS = ['Lying', 'Sitting', 'Standing'] as const;
 export const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'] as const;
 export const HOLD_INTENSITIES = [50, 60, 70] as const;
 export const STAGE_COUNTS = [2, 3, 4] as const;
+export const DILATOR_SIZES = ['Small', 'Medium', 'Large', 'Extra Large'] as const;
 
 /** e.g. "4 (25%, 50%, 75%, 100%)" — matches Figma's stage-count dropdown copy. */
 export function stageLabel(n: number): string {
@@ -39,6 +40,8 @@ export interface RxValues {
   step2RestSecs: number;
   transitionRestSecs: number;
   comboSets: number;
+  // Dilator exercises
+  dilatorSize: 'Small' | 'Medium' | 'Large' | 'Extra Large';
 }
 
 export function defaultRxValues(ex: Exercise | null | undefined): RxValues {
@@ -66,6 +69,7 @@ export function defaultRxValues(ex: Exercise | null | undefined): RxValues {
     step2RestSecs: ex?.defaultStep2RestSecs ?? 3,
     transitionRestSecs: ex?.defaultTransitionRestSecs ?? 10,
     comboSets: ex?.defaultComboSets ?? 3,
+    dilatorSize: ex?.defaultDilatorSize ?? 'Medium',
   };
 }
 
@@ -89,6 +93,12 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
       return `${rx.comboSets} combo sets — Full Range: ${rx.step1Sets}×${rx.step1Reps}, Quick Flicks: ${rx.step2Sets}×${rx.step2Reps}, ${rx.transitionRestSecs}s transition rest`;
     case 'pf-combo-sustained-hold-quick-flicks':
       return `${rx.comboSets} combo sets — Sustained Hold: ${rx.step1Sets}×${rx.step1Reps}, Quick Flicks: ${rx.step2Sets}×${rx.step2Reps}, ${rx.transitionRestSecs}s transition rest`;
+    case 'pf-dilator-j-curve':
+      return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.holdSecs}s hold, ${rx.speedSecs}s speed`;
+    case 'pf-dilator-3-point':
+      return `${rx.dilatorSize} dilator, ${rx.reps} reps/direction, ${rx.holdSecs}s hold, ${rx.speedSecs}s speed`;
+    case 'pf-dilator-half-u':
+      return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.speedSecs}s speed`;
     default:
       return `${rx.sets} sets × ${rx.reps} reps${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
   }
@@ -261,7 +271,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
             <CompactField value={values.step1RestSecs} unitSingular="Sec Rest" unitPlural="Sec Rest" onChange={(v) => onChange({ step1RestSecs: v })} />
           </div>
           <CompactField value={values.transitionRestSecs} unitSingular="Sec Transition Rest" unitPlural="Sec Transition Rest" onChange={(v) => onChange({ transitionRestSecs: v })} />
-          <span className="text-xs font-semibold text-primary">Step 2 — Quick Flicks</span>
+          <span className="text-xs font-semibold text-primary">Quick Flicks</span>
           <div className="flex flex-wrap gap-2">
             <CompactField value={values.step2Sets} unitSingular="Set" unitPlural="Sets" onChange={(v) => onChange({ step2Sets: v })} />
             <CompactField value={values.step2Reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => onChange({ step2Reps: v })} />
@@ -269,6 +279,59 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
             <CompactField value={values.step2RestSecs} unitSingular="Sec Rest" unitPlural="Sec Rest" onChange={(v) => onChange({ step2RestSecs: v })} />
           </div>
           <CompactField value={values.comboSets} unitSingular="Combo Set" unitPlural="Combo Sets" onChange={(v) => onChange({ comboSets: v })} />
+          {frequencyField}
+        </div>
+      );
+
+    case 'pf-dilator-j-curve':
+      return (
+        <div className="flex w-full flex-col gap-3">
+          <div className={fieldColCls}>
+            <label className={fieldLabelCls}>Dilator Size</label>
+            <NativeSelect className="h-12" value={values.dilatorSize} onChange={(e) => onChange({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
+              {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </NativeSelect>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <CompactField value={values.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => onChange({ reps: v })} />
+            <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
+          </div>
+          {frequencyField}
+        </div>
+      );
+
+    case 'pf-dilator-3-point':
+      return (
+        <div className="flex w-full flex-col gap-3">
+          <div className={fieldColCls}>
+            <label className={fieldLabelCls}>Dilator Size</label>
+            <NativeSelect className="h-12" value={values.dilatorSize} onChange={(e) => onChange({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
+              {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </NativeSelect>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <CompactField value={values.reps} unitSingular="Rep / Direction" unitPlural="Reps / Direction" onChange={(v) => onChange({ reps: v })} />
+            <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
+          </div>
+          {frequencyField}
+        </div>
+      );
+
+    case 'pf-dilator-half-u':
+      return (
+        <div className="flex w-full flex-col gap-3">
+          <div className={fieldColCls}>
+            <label className={fieldLabelCls}>Dilator Size</label>
+            <NativeSelect className="h-12" value={values.dilatorSize} onChange={(e) => onChange({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
+              {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </NativeSelect>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <CompactField value={values.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => onChange({ reps: v })} />
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
+          </div>
           {frequencyField}
         </div>
       );
