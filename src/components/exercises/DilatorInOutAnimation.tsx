@@ -27,7 +27,7 @@ export function DilatorInOutAnimation({ speedSecs, reps, className, children }: 
       traceClassName="stroke-brand-300"
       transitionMs={phase.durationMs}
       rings
-      ringSizePx={44}
+      ringSizePx={60}
       className={className}
     >
       <div className="absolute top-5 left-5 flex flex-col gap-2">

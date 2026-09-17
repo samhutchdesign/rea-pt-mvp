@@ -248,8 +248,8 @@ export function buildPerinealMassagePhases(speedSecs: number): DilatorPhase[] {
 // ("in") and back down ("out"). Coordinates converted from the Figma
 // vector's 371×371 canvas as plain percentages (no oval to scale against
 // here, unlike the other exercises).
-const IN_OUT_RAIL_X_LEFT = 27;
-const IN_OUT_RAIL_X_RIGHT = 71;
+const IN_OUT_RAIL_X_LEFT = 38;
+const IN_OUT_RAIL_X_RIGHT = 60;
 const IN_OUT_RAIL_Y_TOP = 15;
 const IN_OUT_RAIL_Y_BOTTOM = 84;
 const IN_OUT_CENTER_X = (IN_OUT_RAIL_X_LEFT + IN_OUT_RAIL_X_RIGHT) / 2;
