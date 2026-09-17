@@ -25,6 +25,7 @@ export function DilatorHalfUAnimation({ speedSecs, reps, holdSecs = 0, className
       tracePaths={HALF_U_TRACES}
       transitionMs={phase.durationMs}
       transitionTiming="linear"
+      rings
       className={className}
     >
       <div className="absolute top-5 left-5 flex flex-col gap-2">
