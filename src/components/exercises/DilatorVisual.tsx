@@ -55,18 +55,23 @@ export function DilatorVisual({
         ))}
         <ellipse cx="50" cy="50" rx="14" ry="32" fill="none" className="stroke-brand-300" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
+      {/*
+        Positioned entirely via `transform`, never `left`/`top` — those
+        trigger layout (reflow) on every tick of the phase animation, which
+        runs continuously and can visibly compete with scroll compositing.
+        This wrapper's own box is pinned to exactly fill the parent (inset-0,
+        set once and never changed), so `translate(x%, y%)` — normally a
+        percentage of the element's OWN size — ends up equal to x%/y% of the
+        *parent*, giving the same positioning as `left`/`top` but fully
+        GPU-composited.
+      */}
       <div
-        className="absolute"
-        style={{
-          left: `${x}%`,
-          top: `${y}%`,
-          transform: 'translate(-50%, -50%)',
-          transition: `left ${transitionMs}ms ${transitionTiming}, top ${transitionMs}ms ${transitionTiming}`,
-        }}
+        className="absolute inset-0"
+        style={{ transform: `translate(${x}%, ${y}%)`, transition: `transform ${transitionMs}ms ${transitionTiming}` }}
       >
         <div
-          className="relative size-8"
-          style={{ transform: `scale(${scale})`, transition: `transform ${transitionMs}ms ${transitionTiming}` }}
+          className="absolute left-0 top-0 size-8"
+          style={{ transform: `translate(-50%, -50%) scale(${scale})`, transition: `transform ${transitionMs}ms ${transitionTiming}` }}
         >
           {rings && <div className="absolute inset-0 m-auto size-8 rounded-full bg-brand-100" />}
           {rings && <div className="absolute inset-0 m-auto size-6 rounded-full bg-brand-300" />}
