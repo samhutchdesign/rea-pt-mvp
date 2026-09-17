@@ -65,12 +65,12 @@ export function DilatorVisual({
         }}
       >
         <div
-          className="relative flex items-center justify-center"
+          className="relative size-8"
           style={{ transform: `scale(${scale})`, transition: `transform ${transitionMs}ms ${transitionTiming}` }}
         >
-          {rings && <div className="absolute size-8 shrink-0 rounded-full bg-brand-100" />}
-          {rings && <div className="absolute size-6 shrink-0 rounded-full bg-brand-300" />}
-          <div className="size-4 shrink-0 rounded-full bg-brand-600" />
+          {rings && <div className="absolute inset-0 m-auto size-8 rounded-full bg-brand-100" />}
+          {rings && <div className="absolute inset-0 m-auto size-6 rounded-full bg-brand-300" />}
+          <div className="absolute inset-0 m-auto size-4 rounded-full bg-brand-600" />
         </div>
       </div>
       {children}
