@@ -2,6 +2,7 @@
 import type { Exercise } from '@/lib/types';
 import { NativeSelect } from '@/components/ui/native-select';
 import { CompactField } from './CompactField';
+import { CUES } from '@/components/programs/programBuilder';
 
 export const STARTING_POSITIONS = ['Lying', 'Sitting', 'Standing'] as const;
 export const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly'] as const;
@@ -58,6 +59,8 @@ export interface RxValues {
   pressureLevel: 'Light' | 'Moderate';
   /** Session duration, in seconds. */
   durationSecs: number;
+  /** Optional cue key (see CUES in programBuilder), shown in Add to Program / Assign. Empty string = none selected. */
+  cue: string;
 }
 
 export function defaultRxValues(ex: Exercise | null | undefined): RxValues {
@@ -89,6 +92,7 @@ export function defaultRxValues(ex: Exercise | null | undefined): RxValues {
     contractSecs: ex?.defaultContractSecs ?? 0.35,
     pressureLevel: ex?.defaultPressureLevel ?? 'Light',
     durationSecs: ex?.defaultDurationSecs ?? 150,
+    cue: '',
   };
 }
 
@@ -155,6 +159,17 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
     </>
   );
 
+  const cueField = (
+    <div className={fieldColCls}>
+      <label className={fieldLabelCls}>Cue (Optional)</label>
+      <NativeSelect className="h-12" value={values.cue} onChange={(e) => onChange({ cue: e.target.value })}>
+        <option value="">None</option>
+        {CUES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+      </NativeSelect>
+    </div>
+  );
+
+  const typeFields = (() => {
   switch (exercise.animationType) {
     case 'breathing-pacer':
       return (
@@ -405,4 +420,12 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
         </div>
       );
   }
+  })();
+
+  return (
+    <div className="flex w-full flex-col gap-3">
+      {typeFields}
+      {cueField}
+    </div>
+  );
 }
