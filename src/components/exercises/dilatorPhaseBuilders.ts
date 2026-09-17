@@ -39,7 +39,7 @@ export const THREE_POINT_POINTS = {
 // exactly there and stay a consistent distance apart along the way, reading
 // as "directly alongside" the oval instead of an arbitrary bulge.
 const OVAL = { cx: 75, cy: 50, ry: 32 };
-const HALF_U_RX = 24; // wider than the oval's own rx (14) — the outward gap
+const HALF_U_RX = 19; // wider than the oval's own rx (14) — the outward gap
 
 function ellipsePoint(angleDeg: number, rx: number) {
   const rad = (angleDeg * Math.PI) / 180;
