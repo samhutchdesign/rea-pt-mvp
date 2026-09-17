@@ -53,7 +53,7 @@ export function DilatorVisual({
         {tracePaths.map((d, i) => (
           <path key={i} d={d} fill="none" className="stroke-brand-200" strokeWidth="1.5" strokeDasharray="3 3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         ))}
-        <ellipse cx="75" cy="50" rx="14" ry="32" fill="none" className="stroke-brand-300" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <ellipse cx="50" cy="50" rx="14" ry="32" fill="none" className="stroke-brand-300" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
       <div
         className="absolute"

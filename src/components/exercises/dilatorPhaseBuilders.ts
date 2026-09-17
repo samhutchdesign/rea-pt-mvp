@@ -15,21 +15,19 @@ export interface DilatorPhase {
 
 // Shared anchor points, reused by both the dot's phase waypoints and the
 // DilatorVisual's static background trace so the animated dot visually
-// follows the printed path. Kept to x >= ~48 — the floating Parameters card
-// is pinned bottom-left over the animation (see ParametersCard) and covers
-// roughly the left 46% of the frame, so anything further left would be
-// hidden behind it for the entire "Left"/"8 o'clock" side of each exercise.
+// follows the printed path. Centered on x=50 — the video frame's true
+// horizontal center — matching DilatorVisual's own oval (see its cx).
 export const J_CURVE_POINTS = {
-  center: { x: 75, y: 84 },
-  left: { mid: { x: 64, y: 60 }, out: { x: 58, y: 55 } },
-  right: { mid: { x: 86, y: 60 }, out: { x: 92, y: 55 } },
+  center: { x: 50, y: 84 },
+  left: { mid: { x: 39, y: 60 }, out: { x: 33, y: 55 } },
+  right: { mid: { x: 61, y: 60 }, out: { x: 67, y: 55 } },
 };
 
 export const THREE_POINT_POINTS = {
-  center: { x: 75, y: 45 },
-  eight: { x: 58, y: 68 },
-  four: { x: 92, y: 68 },
-  six: { x: 75, y: 90 },
+  center: { x: 50, y: 45 },
+  eight: { x: 33, y: 68 },
+  four: { x: 67, y: 68 },
+  six: { x: 50, y: 90 },
 };
 
 // The trace is a true ellipse concentric with the main oval in DilatorVisual
@@ -38,7 +36,7 @@ export const THREE_POINT_POINTS = {
 // identical to the oval's own top and bottom vertex, so the two lines meet
 // exactly there and stay a consistent distance apart along the way, reading
 // as "directly alongside" the oval instead of an arbitrary bulge.
-const OVAL = { cx: 75, cy: 50, ry: 32 };
+const OVAL = { cx: 50, cy: 50, ry: 32 };
 const HALF_U_RX = 19; // wider than the oval's own rx (14) — the outward gap
 
 function ellipsePoint(angleDeg: number, rx: number) {
