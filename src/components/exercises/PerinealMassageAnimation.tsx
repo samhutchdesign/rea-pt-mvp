@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { DilatorVisual } from './DilatorVisual';
 import { usePhaseSequence } from './usePhaseSequence';
-import { buildPerinealMassagePhases, HALF_U_TRACES } from './dilatorPhaseBuilders';
+import { buildPerinealMassagePhases, PERINEAL_MASSAGE_TRACE } from './dilatorPhaseBuilders';
 
 interface PerinealMassageAnimationProps {
   speedSecs: number;
@@ -19,7 +19,7 @@ export function PerinealMassageAnimation({ speedSecs, className, children }: Per
     <DilatorVisual
       x={phase.x}
       y={phase.y}
-      tracePaths={HALF_U_TRACES}
+      tracePaths={PERINEAL_MASSAGE_TRACE}
       transitionMs={phase.durationMs}
       transitionTiming="linear"
       rings

@@ -207,22 +207,37 @@ export function buildHalfUPhases(speedSecs: number, reps: number, holdSecs = 0):
   return phases;
 }
 
+// Perineal/Scar Massage: unlike Half U (whose two half-arcs together trace
+// the *entire* outer ellipse), this is a single open arc along just the
+// bottom — literally a "U" — from the ellipse's left-middle (180°) through
+// its bottom (90°) to its right-middle (0°), on the same concentric ellipse
+// Half U already uses.
+const PERINEAL_STEPS = 40;
+
+function perinealUPoints() {
+  const points: { x: number; y: number }[] = [];
+  for (let i = 0; i <= PERINEAL_STEPS; i++) {
+    const angle = 180 - 180 * (i / PERINEAL_STEPS); // 180 (left-middle) -> 90 (bottom) -> 0 (right-middle)
+    points.push(ellipsePoint(angle, HALF_U_RX));
+  }
+  return points; // [0] is the left-middle vertex, [PERINEAL_STEPS] is the right-middle vertex.
+}
+
+const PERINEAL_U_POINTS = perinealUPoints();
+
+// Same decreasing-angle direction as HALF_U_TRACES' left (sweep-flag 0) arc.
+export const PERINEAL_MASSAGE_TRACE = [
+  `M ${PERINEAL_U_POINTS[0].x} ${PERINEAL_U_POINTS[0].y} A ${HALF_U_RX} ${OVAL.ry} 0 0 0 ${PERINEAL_U_POINTS[PERINEAL_STEPS].x} ${PERINEAL_U_POINTS[PERINEAL_STEPS].y}`,
+];
+
 /**
  * Perineal/Scar Massage: a continuous "U" sweep — down one side, across the
- * bottom, up the other side — then back, on repeat. Unlike the dilator
- * exercises this isn't rep-based, so it reuses Half U's same fine-sampled
- * ellipse waypoints (and its trace) but walks the *full* U as one
- * back-and-forth cycle instead of alternating separate left/right reps.
+ * bottom, up the other side — then back, on repeat.
  */
 export function buildPerinealMassagePhases(speedSecs: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
-  const { left, right } = HALF_U_SIDE_POINTS;
-  // left: top -> ... -> bottom. right reversed: bottom -> ... -> top. Together,
-  // one continuous "U" from the left top vertex, through the bottom, to the
-  // right top vertex — then the same path reversed to come back.
-  const forward = [...left, ...[...right].reverse().slice(1)];
-  const backward = [...forward].reverse();
-  const path = [...forward, ...backward.slice(1)];
-  const legMs = moveMs / (forward.length - 1);
+  const backward = [...PERINEAL_U_POINTS].reverse();
+  const path = [...PERINEAL_U_POINTS, ...backward.slice(1)];
+  const legMs = moveMs / PERINEAL_STEPS;
   return path.slice(1).map((p) => ({ label: 'Massage', x: p.x, y: p.y, durationMs: legMs }));
 }
