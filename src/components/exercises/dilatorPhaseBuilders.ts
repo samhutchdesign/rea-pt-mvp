@@ -241,3 +241,36 @@ export function buildPerinealMassagePhases(speedSecs: number): DilatorPhase[] {
   const legMs = moveMs / PERINEAL_STEPS;
   return path.slice(1).map((p) => ({ label: 'Massage', x: p.x, y: p.y, durationMs: legMs }));
 }
+
+// Dilator In & Out: matches the Figma reference (node 2741:16545) — two
+// straight vertical guide rails instead of the oval, with the dot resting
+// near the bottom (the entrance) and gliding straight up toward the top
+// ("in") and back down ("out"). Coordinates converted from the Figma
+// vector's 371×371 canvas as plain percentages (no oval to scale against
+// here, unlike the other exercises).
+const IN_OUT_RAIL_X_LEFT = 27;
+const IN_OUT_RAIL_X_RIGHT = 71;
+const IN_OUT_RAIL_Y_TOP = 15;
+const IN_OUT_RAIL_Y_BOTTOM = 84;
+const IN_OUT_CENTER_X = (IN_OUT_RAIL_X_LEFT + IN_OUT_RAIL_X_RIGHT) / 2;
+const IN_SCALE = 0.75; // shrinks a bit as it glides "in", reads as receding deeper
+
+export const DILATOR_IN_OUT_TRACES = [
+  `M ${IN_OUT_RAIL_X_LEFT} ${IN_OUT_RAIL_Y_TOP} L ${IN_OUT_RAIL_X_LEFT} ${IN_OUT_RAIL_Y_BOTTOM}`,
+  `M ${IN_OUT_RAIL_X_RIGHT} ${IN_OUT_RAIL_Y_TOP} L ${IN_OUT_RAIL_X_RIGHT} ${IN_OUT_RAIL_Y_BOTTOM}`,
+];
+
+/**
+ * Dilator In & Out: glide the dot up ("in") and down ("out") between the
+ * guide rails, repeating for `reps`.
+ */
+export function buildDilatorInOutPhases(speedSecs: number, reps: number): DilatorPhase[] {
+  const moveMs = Math.max(speedSecs, 0.1) * 1000;
+  const phases: DilatorPhase[] = [];
+  for (let i = 1; i <= Math.max(reps, 1); i++) {
+    const repText = `${i} of ${reps}`;
+    phases.push({ label: 'In', x: IN_OUT_CENTER_X, y: IN_OUT_RAIL_Y_TOP, scale: IN_SCALE, durationMs: moveMs, repText });
+    phases.push({ label: 'Out', x: IN_OUT_CENTER_X, y: IN_OUT_RAIL_Y_BOTTOM, scale: 1, durationMs: moveMs, repText });
+  }
+  return phases;
+}

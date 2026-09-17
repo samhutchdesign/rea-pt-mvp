@@ -120,6 +120,8 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
       return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.speedSecs}s speed${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
     case 'pf-perineal-massage':
       return `${rx.startingPosition} position, ${formatDuration(rx.durationSecs)}, ${rx.pressureLevel.toLowerCase()} pressure, ${rx.speedSecs}s speed`;
+    case 'pf-dilator-in-out':
+      return `${rx.dilatorSize} dilator, ${rx.reps} reps, ${rx.speedSecs}s speed`;
     default:
       return `${rx.sets} sets × ${rx.reps} reps${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
   }
@@ -371,6 +373,23 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           </div>
           <div className="flex flex-wrap gap-2">
             <CompactField value={values.durationSecs} unitSingular="Sec Duration" unitPlural="Sec Duration" onChange={(v) => onChange({ durationSecs: v })} />
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
+          </div>
+          {frequencyField}
+        </div>
+      );
+
+    case 'pf-dilator-in-out':
+      return (
+        <div className="flex w-full flex-col gap-3">
+          <div className={fieldColCls}>
+            <label className={fieldLabelCls}>Dilator Size</label>
+            <NativeSelect className="h-12" value={values.dilatorSize} onChange={(e) => onChange({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
+              {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </NativeSelect>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <CompactField value={values.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => onChange({ reps: v })} />
             <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
           </div>
           {frequencyField}

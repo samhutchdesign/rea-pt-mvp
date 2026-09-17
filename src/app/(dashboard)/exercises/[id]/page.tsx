@@ -16,6 +16,7 @@ import { DilatorJCurveAnimation } from '@/components/exercises/DilatorJCurveAnim
 import { Dilator3PointAnimation } from '@/components/exercises/Dilator3PointAnimation';
 import { DilatorHalfUAnimation } from '@/components/exercises/DilatorHalfUAnimation';
 import { PerinealMassageAnimation } from '@/components/exercises/PerinealMassageAnimation';
+import { DilatorInOutAnimation } from '@/components/exercises/DilatorInOutAnimation';
 import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, type RxValues } from '@/components/exercises/exerciseRx';
 import { CompactField } from '@/components/exercises/CompactField';
 import { ParametersCard } from '@/components/exercises/ParametersCard';
@@ -446,6 +447,19 @@ function ExerciseDetailContent({ id }: { id: string }) {
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={8} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Time" value={rx.durationSecs} unit="s" min={30} max={600} step={30} onChange={(v) => patchRx({ durationSecs: v })} />
+              </ParametersCard>
+            </div>
+          ) : ex.animationType === 'pf-dilator-in-out' ? (
+            <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
+              <DilatorInOutAnimation
+                key={`${rx.speedSecs}-${rx.reps}`}
+                speedSecs={rx.speedSecs}
+                reps={rx.reps}
+                className="absolute inset-0"
+              />
+              <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
+                <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
             </div>
           ) : ex.videoUrl ? (

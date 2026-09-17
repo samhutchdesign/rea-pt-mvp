@@ -2345,6 +2345,33 @@ const mockExercisesRaw: ExerciseBase[] = [
     isFavorite: false, usageCount: 0, createdAt: '2026-09-17',
     animationType: 'pf-perineal-massage', defaultStartingPosition: 'Lying', defaultPressureLevel: 'Light', defaultDurationSecs: 150,
   },
+  {
+    id: 'ex_pf_dilator_in_out',
+    name: 'Dilator Exercise - In & Out',
+    description: 'Directional dilator glide in and out without complete removal, to build pain-free range of motion.',
+    category: 'Pelvic Floor Muscle Training',
+    level: 'Intermediate',
+    equipment: 'Dilator',
+    instructions: [
+      'Contract gently your pelvic floor and relax it. Maintain that relaxation through the exercise.',
+      'Glide the dilator in and out without complete removal.',
+    ],
+    commonMistakes: [
+      'Forcing the glide instead of easing in gradually.',
+      'Losing the relaxation cue partway through and re-tensing.',
+      'Removing the dilator completely before you have a pain-free range.',
+    ],
+    tags: {
+      specialty: ['Pelvic health'],
+      condition: ['Vaginismus', 'Dyspareunia'],
+      surgery: [],
+      muscle: ['Levator ani; Bulbospongiosus; Vaginal introitus'],
+      bodyPart: ['Pelvic floor'],
+    },
+    defaultSets: 1, defaultReps: 12, defaultHoldSecs: 0, defaultSpeedSecs: 1.5, defaultFrequency: 'Daily',
+    isFavorite: false, usageCount: 0, createdAt: '2026-09-17',
+    animationType: 'pf-dilator-in-out', defaultDilatorSize: 'Medium',
+  },
 
 ];
 

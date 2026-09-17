@@ -19,6 +19,9 @@ export function DilatorVisual({
   transitionTiming = 'ease-in-out',
   rings = false,
   ringSizePx = 32,
+  showOval = true,
+  traceDashed = true,
+  traceClassName = 'stroke-brand-200',
   className,
   children,
 }: {
@@ -36,6 +39,12 @@ export function DilatorVisual({
   rings?: boolean;
   /** Diameter (px) of the outer ring, when `rings` is set. The middle ring and dot keep their proportions relative to it. */
   ringSizePx?: number;
+  /** Draw the fixed reference oval. Off for exercises (e.g. In & Out) that use a different guide shape instead. */
+  showOval?: boolean;
+  /** Dash the trace paths. Off for guide rails that should read as a solid track rather than a faint reference trace. */
+  traceDashed?: boolean;
+  /** Stroke color class for the trace paths. */
+  traceClassName?: string;
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -57,9 +66,9 @@ export function DilatorVisual({
       */}
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full">
         {tracePaths.map((d, i) => (
-          <path key={i} d={d} fill="none" className="stroke-brand-200" strokeWidth="1.5" strokeDasharray="3 3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <path key={i} d={d} fill="none" className={traceClassName} strokeWidth="1.5" strokeDasharray={traceDashed ? '3 3' : undefined} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         ))}
-        <ellipse cx="50" cy="50" rx="14" ry="32" fill="none" className="stroke-brand-300" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        {showOval && <ellipse cx="50" cy="50" rx="14" ry="32" fill="none" className="stroke-brand-300" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />}
       </svg>
       {/*
         Positioned entirely via `transform`, never `left`/`top` — those

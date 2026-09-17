@@ -115,7 +115,7 @@ export interface Exercise {
   variationGroup?: string;
   userUploaded?: boolean;
   /** Set for exercises that are a guided animation rather than a video. */
-  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack' | 'pf-combo-full-range-quick-flicks' | 'pf-combo-sustained-hold-quick-flicks' | 'pf-dilator-j-curve' | 'pf-dilator-3-point' | 'pf-dilator-half-u' | 'pf-perineal-massage';
+  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack' | 'pf-combo-full-range-quick-flicks' | 'pf-combo-sustained-hold-quick-flicks' | 'pf-dilator-j-curve' | 'pf-dilator-3-point' | 'pf-dilator-half-u' | 'pf-perineal-massage' | 'pf-dilator-in-out';
   /** Default seconds per animation cycle, for animation-type exercises. */
   defaultSpeedSecs?: number;
   /** Default number of animation cycles, for animation-type exercises. */
