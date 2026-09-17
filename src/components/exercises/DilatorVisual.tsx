@@ -18,6 +18,7 @@ export function DilatorVisual({
   transitionMs = 500,
   transitionTiming = 'ease-in-out',
   rings = false,
+  ringSizePx = 32,
   className,
   children,
 }: {
@@ -33,9 +34,14 @@ export function DilatorVisual({
   transitionTiming?: string;
   /** Draw the lighter concentric rings (matching the pelvic-floor circle exercises) around the dot, all shrinking/growing together with it — used for the 3-Point Stretch's contract/relax pulse. */
   rings?: boolean;
+  /** Diameter (px) of the outer ring, when `rings` is set. The middle ring and dot keep their proportions relative to it. */
+  ringSizePx?: number;
   className?: string;
   children?: React.ReactNode;
 }) {
+  const dotPx = 16;
+  const middleRingPx = ringSizePx * 0.75;
+  const wrapperPx = Math.max(ringSizePx, dotPx);
   return (
     <div className={cx('relative overflow-hidden bg-secondary_alt', className)}>
       {/*
@@ -70,12 +76,17 @@ export function DilatorVisual({
         style={{ transform: `translate(${x}%, ${y}%)`, transition: `transform ${transitionMs}ms ${transitionTiming}` }}
       >
         <div
-          className="absolute left-0 top-0 size-8"
-          style={{ transform: `translate(-50%, -50%) scale(${scale})`, transition: `transform ${transitionMs}ms ${transitionTiming}` }}
+          className="absolute left-0 top-0"
+          style={{
+            width: wrapperPx,
+            height: wrapperPx,
+            transform: `translate(-50%, -50%) scale(${scale})`,
+            transition: `transform ${transitionMs}ms ${transitionTiming}`,
+          }}
         >
-          {rings && <div className="absolute inset-0 m-auto size-8 rounded-full bg-brand-100" />}
-          {rings && <div className="absolute inset-0 m-auto size-6 rounded-full bg-brand-300" />}
-          <div className="absolute inset-0 m-auto size-4 rounded-full bg-brand-600" />
+          {rings && <div className="absolute inset-0 m-auto rounded-full bg-brand-100" style={{ width: ringSizePx, height: ringSizePx }} />}
+          {rings && <div className="absolute inset-0 m-auto rounded-full bg-brand-300" style={{ width: middleRingPx, height: middleRingPx }} />}
+          <div className="absolute inset-0 m-auto rounded-full bg-brand-600" style={{ width: dotPx, height: dotPx }} />
         </div>
       </div>
       {children}
