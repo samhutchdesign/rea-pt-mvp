@@ -21,15 +21,16 @@ function cubicPoint(p0: { x: number; y: number }, c1: { x: number; y: number }, 
   };
 }
 
-// J Curve: both curves start together at the top of the entrance (matching
-// the oval's own top vertex) and hook outward and down to each side, ending
-// with a near-horizontal tangent — like the tail of a "J" — rather than a
-// shallow diagonal. c2 shares its y with `out` on each side specifically so
-// that final tangent comes out flat.
-const J_TOP = { x: 50, y: 18 };
+// J Curve: from a resting point at the entrance, a short straight rise to a
+// cusp partway up, where both sides' curves meet and hook sharply outward
+// and down, flattening to a near-horizontal tangent at the exit — literally
+// tracing the shape of a "J" (a straight stem, then a hook) rather than a
+// shallow diagonal.
+const J_CENTER = { x: 50, y: 55 };
+const J_CUSP = { x: 50, y: 36 };
 const J_CURVE_SIDES = {
-  left: { c1: { x: 28, y: 30 }, c2: { x: 12, y: 72 }, out: { x: 0, y: 72 } },
-  right: { c1: { x: 72, y: 30 }, c2: { x: 88, y: 72 }, out: { x: 100, y: 72 } },
+  left: { c1: { x: 48, y: 66 }, c2: { x: 2, y: 80 }, out: { x: 0, y: 83 } },
+  right: { c1: { x: 52, y: 66 }, c2: { x: 98, y: 80 }, out: { x: 100, y: 83 } },
 } as const;
 const J_STEPS = 24;
 
@@ -37,9 +38,9 @@ function jCurveSidePoints(side: 'left' | 'right') {
   const { c1, c2, out } = J_CURVE_SIDES[side];
   const points: { x: number; y: number }[] = [];
   for (let i = 0; i <= J_STEPS; i++) {
-    points.push(cubicPoint(J_TOP, c1, c2, out, i / J_STEPS));
+    points.push(cubicPoint(J_CUSP, c1, c2, out, i / J_STEPS));
   }
-  return points; // [0] is the top vertex, [J_STEPS] is the outward end point.
+  return points; // [0] is the cusp, [J_STEPS] is the outward end point.
 }
 
 const J_CURVE_SIDE_POINTS = { left: jCurveSidePoints('left'), right: jCurveSidePoints('right') };
@@ -91,8 +92,9 @@ function halfUSidePoints(direction: 'left' | 'right') {
 const HALF_U_SIDE_POINTS = { left: halfUSidePoints('left'), right: halfUSidePoints('right') };
 
 export const J_CURVE_TRACES = [
-  `M ${J_TOP.x} ${J_TOP.y} C ${J_CURVE_SIDES.left.c1.x} ${J_CURVE_SIDES.left.c1.y} ${J_CURVE_SIDES.left.c2.x} ${J_CURVE_SIDES.left.c2.y} ${J_CURVE_SIDES.left.out.x} ${J_CURVE_SIDES.left.out.y}`,
-  `M ${J_TOP.x} ${J_TOP.y} C ${J_CURVE_SIDES.right.c1.x} ${J_CURVE_SIDES.right.c1.y} ${J_CURVE_SIDES.right.c2.x} ${J_CURVE_SIDES.right.c2.y} ${J_CURVE_SIDES.right.out.x} ${J_CURVE_SIDES.right.out.y}`,
+  `M ${J_CENTER.x} ${J_CENTER.y} L ${J_CUSP.x} ${J_CUSP.y}`,
+  `M ${J_CUSP.x} ${J_CUSP.y} C ${J_CURVE_SIDES.left.c1.x} ${J_CURVE_SIDES.left.c1.y} ${J_CURVE_SIDES.left.c2.x} ${J_CURVE_SIDES.left.c2.y} ${J_CURVE_SIDES.left.out.x} ${J_CURVE_SIDES.left.out.y}`,
+  `M ${J_CUSP.x} ${J_CUSP.y} C ${J_CURVE_SIDES.right.c1.x} ${J_CURVE_SIDES.right.c1.y} ${J_CURVE_SIDES.right.c2.x} ${J_CURVE_SIDES.right.c2.y} ${J_CURVE_SIDES.right.out.x} ${J_CURVE_SIDES.right.out.y}`,
 ];
 
 export const THREE_POINT_TRACES = [
@@ -109,20 +111,24 @@ export const HALF_U_TRACES = [
 ];
 
 /**
- * J Curve: from the entrance, curve/tilt out to each side (like opening
- * curtains) and hold, done for `reps` on the left, then `reps` on the right.
+ * J Curve: from the entrance, a short straight rise then a sharp outward
+ * hook to each side (like opening curtains) and hold, done for `reps` on
+ * the left, then `reps` on the right.
  */
 export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const holdMs = Math.max(holdSecs, 0.1) * 1000;
-  const legMs = moveMs / J_STEPS;
+  const stemMs = moveMs * 0.25;
+  const legMs = (moveMs - stemMs) / J_STEPS;
   const phases: DilatorPhase[] = [];
   for (const { key, side } of [{ key: 'left', side: 'Left' }, { key: 'right', side: 'Right' }] as const) {
     const points = J_CURVE_SIDE_POINTS[key];
     for (let i = 1; i <= Math.max(reps, 1); i++) {
       const repText = `${i} of ${reps}`;
-      // Walk out along the curve one fine step at a time (matching the
-      // static trace exactly), hold at the end, then retrace back to top.
+      // Straight rise from center to the cusp, then walk out along the hook
+      // one fine step at a time (matching the static trace exactly), hold
+      // at the end, then retrace the whole path back to center.
+      phases.push({ label: 'Stretch', x: J_CUSP.x, y: J_CUSP.y, durationMs: stemMs, stepName: side, repText });
       for (let s = 1; s <= J_STEPS; s++) {
         phases.push({ label: 'Stretch', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
       }
@@ -130,6 +136,7 @@ export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: num
       for (let s = J_STEPS - 1; s >= 0; s--) {
         phases.push({ label: 'Return', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
       }
+      phases.push({ label: 'Return', x: J_CENTER.x, y: J_CENTER.y, durationMs: stemMs, stepName: side, repText });
     }
   }
   return phases;
