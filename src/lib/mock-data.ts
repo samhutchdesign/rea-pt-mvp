@@ -2316,6 +2316,35 @@ const mockExercisesRaw: ExerciseBase[] = [
     isFavorite: false, usageCount: 0, createdAt: '2026-09-17',
     animationType: 'pf-dilator-half-u', defaultDilatorSize: 'Small',
   },
+  {
+    id: 'ex_pf_perineal_massage',
+    name: 'Prenatal Perineal Stretching / Perineal Massage',
+    description: 'Perineal and scar massage to gently improve tissue mobility and elasticity, sweeping in a continuous U shape.',
+    category: 'Prenatal / Labour',
+    level: 'Beginner',
+    equipment: 'None',
+    instructions: [
+      'Get into a comfortable starting position with good access to the perineum.',
+      'Using a clean finger or thumb (with lubricant if needed), apply gentle pressure and sweep in a continuous U motion — down one side, across the bottom, and up the other.',
+      'Keep the pressure light to moderate, easing off if you feel sharp pain.',
+      'Continue for the prescribed duration, breathing normally throughout.',
+    ],
+    commonMistakes: [
+      'Using too much pressure, especially early on.',
+      'Holding the breath instead of breathing normally.',
+      'Rushing the sweep instead of a slow, continuous motion.',
+    ],
+    tags: {
+      specialty: ['Pelvic health', 'Prenatal'],
+      condition: ['Pregnancy', 'Perineal scarring', 'Episiotomy scar', 'Perineal tearing'],
+      surgery: ['Episiotomy'],
+      muscle: ['Perineal body', 'Pelvic floor'],
+      bodyPart: ['Perineum', 'Pelvic floor'],
+    },
+    defaultSets: 1, defaultReps: 1, defaultHoldSecs: 0, defaultSpeedSecs: 2, defaultFrequency: 'Daily',
+    isFavorite: false, usageCount: 0, createdAt: '2026-09-17',
+    animationType: 'pf-perineal-massage', defaultStartingPosition: 'Lying', defaultPressureLevel: 'Light', defaultDurationSecs: 150,
+  },
 
 ];
 

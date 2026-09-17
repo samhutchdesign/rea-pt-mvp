@@ -115,7 +115,7 @@ export interface Exercise {
   variationGroup?: string;
   userUploaded?: boolean;
   /** Set for exercises that are a guided animation rather than a video. */
-  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack' | 'pf-combo-full-range-quick-flicks' | 'pf-combo-sustained-hold-quick-flicks' | 'pf-dilator-j-curve' | 'pf-dilator-3-point' | 'pf-dilator-half-u';
+  animationType?: 'breathing-pacer' | 'pf-full-range' | 'pf-quick-flicks' | 'pf-sustained-hold' | 'pf-elevator' | 'pf-reverse-kegel' | 'pf-the-knack' | 'pf-combo-full-range-quick-flicks' | 'pf-combo-sustained-hold-quick-flicks' | 'pf-dilator-j-curve' | 'pf-dilator-3-point' | 'pf-dilator-half-u' | 'pf-perineal-massage';
   /** Default seconds per animation cycle, for animation-type exercises. */
   defaultSpeedSecs?: number;
   /** Default number of animation cycles, for animation-type exercises. */
@@ -150,6 +150,10 @@ export interface Exercise {
   defaultDilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
   /** Default length of the contract/relax pulse before each direction, in seconds (3-Point Stretch). */
   defaultContractSecs?: number;
+  /** Default pressure level, for perineal/scar massage. */
+  defaultPressureLevel?: 'Light' | 'Moderate';
+  /** Default session duration, in seconds (Perineal/Scar Massage). */
+  defaultDurationSecs?: number;
 }
 
 export interface ProgramExercise {
@@ -190,6 +194,10 @@ export interface ProgramExercise {
   dilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
   /** Length of the contract/relax pulse before each direction, in seconds (3-Point Stretch). */
   contractSecs?: number;
+  /** Pressure level, for perineal/scar massage. */
+  pressureLevel?: 'Light' | 'Moderate';
+  /** Session duration, in seconds (Perineal/Scar Massage). */
+  durationSecs?: number;
 }
 
 export interface Program {

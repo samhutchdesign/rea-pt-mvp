@@ -8,6 +8,16 @@ export const FREQUENCIES = ['Daily', '2x Daily', 'Every Other Day', '3x Weekly']
 export const HOLD_INTENSITIES = [50, 60, 70] as const;
 export const STAGE_COUNTS = [2, 3, 4] as const;
 export const DILATOR_SIZES = ['Small', 'Medium', 'Large', 'Extra Large'] as const;
+export const PRESSURE_LEVELS = ['Light', 'Moderate'] as const;
+
+/** e.g. "2m 30s" — durationSecs is edited in 30s steps, so this stays a clean minutes/seconds readout. */
+export function formatDuration(totalSecs: number): string {
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  if (mins === 0) return `${secs}s`;
+  if (secs === 0) return `${mins}m`;
+  return `${mins}m ${secs}s`;
+}
 
 /** e.g. "4 (25%, 50%, 75%, 100%)" — matches Figma's stage-count dropdown copy. */
 export function stageLabel(n: number): string {
@@ -44,6 +54,10 @@ export interface RxValues {
   dilatorSize: 'Small' | 'Medium' | 'Large' | 'Extra Large';
   /** Length of the contract/relax pulse before each direction, in seconds (3-Point Stretch). */
   contractSecs: number;
+  // Perineal/Scar Massage
+  pressureLevel: 'Light' | 'Moderate';
+  /** Session duration, in seconds. */
+  durationSecs: number;
 }
 
 export function defaultRxValues(ex: Exercise | null | undefined): RxValues {
@@ -73,6 +87,8 @@ export function defaultRxValues(ex: Exercise | null | undefined): RxValues {
     comboSets: ex?.defaultComboSets ?? 3,
     dilatorSize: ex?.defaultDilatorSize ?? 'Medium',
     contractSecs: ex?.defaultContractSecs ?? 0.35,
+    pressureLevel: ex?.defaultPressureLevel ?? 'Light',
+    durationSecs: ex?.defaultDurationSecs ?? 150,
   };
 }
 
@@ -102,6 +118,8 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
       return `${rx.dilatorSize} dilator, ${rx.reps} reps/direction, ${rx.holdSecs}s hold, ${rx.speedSecs}s speed, ${rx.contractSecs}s contract`;
     case 'pf-dilator-half-u':
       return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.speedSecs}s speed${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
+    case 'pf-perineal-massage':
+      return `${rx.startingPosition} position, ${formatDuration(rx.durationSecs)}, ${rx.pressureLevel.toLowerCase()} pressure, ${rx.speedSecs}s speed`;
     default:
       return `${rx.sets} sets × ${rx.reps} reps${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
   }
@@ -336,6 +354,24 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
             <CompactField value={values.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => onChange({ reps: v })} />
             <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
             <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
+          </div>
+          {frequencyField}
+        </div>
+      );
+
+    case 'pf-perineal-massage':
+      return (
+        <div className="flex w-full flex-col gap-3">
+          {positionField}
+          <div className={fieldColCls}>
+            <label className={fieldLabelCls}>Pressure Level</label>
+            <NativeSelect className="h-12" value={values.pressureLevel} onChange={(e) => onChange({ pressureLevel: e.target.value as RxValues['pressureLevel'] })}>
+              {PRESSURE_LEVELS.map((p) => <option key={p} value={p}>{p}</option>)}
+            </NativeSelect>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <CompactField value={values.durationSecs} unitSingular="Sec Duration" unitPlural="Sec Duration" onChange={(v) => onChange({ durationSecs: v })} />
+            <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
           </div>
           {frequencyField}
         </div>

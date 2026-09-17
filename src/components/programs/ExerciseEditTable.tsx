@@ -54,6 +54,8 @@ function rowToRxValues(ex: Exercise, row: ProgramRow): RxValues {
     comboSets: row.comboSets ?? base.comboSets,
     dilatorSize: row.dilatorSize ?? base.dilatorSize,
     contractSecs: row.contractSecs ?? base.contractSecs,
+    pressureLevel: row.pressureLevel ?? base.pressureLevel,
+    durationSecs: row.durationSecs ?? base.durationSecs,
   };
 }
 

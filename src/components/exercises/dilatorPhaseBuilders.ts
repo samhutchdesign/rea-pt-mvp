@@ -92,7 +92,7 @@ function halfUSidePoints(direction: 'left' | 'right') {
   return points; // [0] is the top vertex, [HALF_U_STEPS] is the bottom vertex.
 }
 
-const HALF_U_SIDE_POINTS = { left: halfUSidePoints('left'), right: halfUSidePoints('right') };
+export const HALF_U_SIDE_POINTS = { left: halfUSidePoints('left'), right: halfUSidePoints('right') };
 
 export const J_CURVE_TRACES = [
   `M ${J_CUSP.x} ${J_CUSP.y} C ${J_CURVE_SIDES.left.c1.x} ${J_CURVE_SIDES.left.c1.y} ${J_CURVE_SIDES.left.c2.x} ${J_CURVE_SIDES.left.c2.y} ${J_CURVE_SIDES.left.out.x} ${J_CURVE_SIDES.left.out.y}`,
@@ -205,4 +205,24 @@ export function buildHalfUPhases(speedSecs: number, reps: number, holdSecs = 0):
     }
   }
   return phases;
+}
+
+/**
+ * Perineal/Scar Massage: a continuous "U" sweep — down one side, across the
+ * bottom, up the other side — then back, on repeat. Unlike the dilator
+ * exercises this isn't rep-based, so it reuses Half U's same fine-sampled
+ * ellipse waypoints (and its trace) but walks the *full* U as one
+ * back-and-forth cycle instead of alternating separate left/right reps.
+ */
+export function buildPerinealMassagePhases(speedSecs: number): DilatorPhase[] {
+  const moveMs = Math.max(speedSecs, 0.1) * 1000;
+  const { left, right } = HALF_U_SIDE_POINTS;
+  // left: top -> ... -> bottom. right reversed: bottom -> ... -> top. Together,
+  // one continuous "U" from the left top vertex, through the bottom, to the
+  // right top vertex — then the same path reversed to come back.
+  const forward = [...left, ...[...right].reverse().slice(1)];
+  const backward = [...forward].reverse();
+  const path = [...forward, ...backward.slice(1)];
+  const legMs = moveMs / (forward.length - 1);
+  return path.slice(1).map((p) => ({ label: 'Massage', x: p.x, y: p.y, durationMs: legMs }));
 }

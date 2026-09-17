@@ -2,6 +2,7 @@
 import type { Exercise } from '@/lib/types';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { cueLabel, type ProgramRow } from './programBuilder';
+import { formatDuration } from '@/components/exercises/exerciseRx';
 
 interface ProgramOverviewListProps {
   rows: ProgramRow[];
@@ -46,6 +47,8 @@ function rowSummary(ex: Exercise, row: ProgramRow): string {
       return `${row.dilatorSize ?? ex.defaultDilatorSize ?? 'Medium'} dilator / ${row.reps} Reps/Direction / ${row.holdSecs} Sec Hold`;
     case 'pf-dilator-half-u':
       return `${row.dilatorSize ?? ex.defaultDilatorSize ?? 'Small'} dilator / ${row.reps} Reps/Side`;
+    case 'pf-perineal-massage':
+      return `${row.pressureLevel ?? ex.defaultPressureLevel ?? 'Light'} pressure / ${formatDuration(row.durationSecs ?? ex.defaultDurationSecs ?? 150)}`;
     default:
       return `${row.sets} Sets / ${row.reps} Reps${row.holdSecs > 0 ? ` / ${row.holdSecs} Sec Hold` : ''}`;
   }

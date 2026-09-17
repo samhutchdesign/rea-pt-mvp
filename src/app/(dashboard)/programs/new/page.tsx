@@ -189,6 +189,7 @@ function NewProgramContent() {
       step2Sets: ex.defaultStep2Sets, step2Reps: ex.defaultStep2Reps, step2SpeedSecs: ex.defaultStep2SpeedSecs, step2RestSecs: ex.defaultStep2RestSecs,
       transitionRestSecs: ex.defaultTransitionRestSecs, comboSets: ex.defaultComboSets,
       dilatorSize: ex.defaultDilatorSize, contractSecs: ex.defaultContractSecs,
+      pressureLevel: ex.defaultPressureLevel, durationSecs: ex.defaultDurationSecs,
     }]);
   };
   const removeExercise = (exId: string) => setProgramRows((prev) => prev.filter((r) => r.exerciseId !== exId));
