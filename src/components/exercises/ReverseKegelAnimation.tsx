@@ -7,9 +7,13 @@ import { RollingNumber } from './RollingNumber';
 // as an active lengthening/release, the opposite motion of a Kegel. Rests at
 // a *centered* riseFraction rather than the bottom-anchored 0 used elsewhere,
 // so "down" (bearing down/descending, toward riseFraction 0) reads as a real
-// downward movement instead of just growing in place.
-const EXPAND_SCALE = 1.18;
-const CENTER_RISE = 0.5;
+// downward movement instead of just growing in place. 0.7, not 0.5, is what
+// actually lands at the visual vertical center — PelvicFloorCircleVisual's
+// rise math was tuned for its original bottom-anchored callers, where
+// riseFraction 0-1 doesn't map linearly onto "0-100% of the frame's height".
+const REST_SCALE = 0.75; // starts smaller at rest, then grows as it "falls"
+const EXPAND_SCALE = 1.2;
+const CENTER_RISE = 0.7;
 const DOWN_RISE = 0;
 
 interface ReverseKegelAnimationProps {
@@ -25,10 +29,10 @@ export function ReverseKegelAnimation({ speedSecs, holdSecs, restSecs, reps, cla
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const holdMs = Math.max(holdSecs, 0.1) * 1000;
   const phases: Phase[] = [
-    { label: 'Rest', scale: 1, riseFraction: CENTER_RISE, durationMs: Math.max(restSecs, 0.1) * 1000 },
+    { label: 'Rest', scale: REST_SCALE, riseFraction: CENTER_RISE, durationMs: Math.max(restSecs, 0.1) * 1000 },
     { label: 'Relax', scale: EXPAND_SCALE, riseFraction: DOWN_RISE, durationMs: moveMs },
     { label: 'Hold', scale: EXPAND_SCALE, riseFraction: DOWN_RISE, durationMs: holdMs },
-    { label: 'Return to Center', scale: 1, riseFraction: CENTER_RISE, durationMs: moveMs },
+    { label: 'Return to Center', scale: REST_SCALE, riseFraction: CENTER_RISE, durationMs: moveMs },
   ];
 
   const { repIndex, phase, running } = usePhaseSequence(phases, reps);
