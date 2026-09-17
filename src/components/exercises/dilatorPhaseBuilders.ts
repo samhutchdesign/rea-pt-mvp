@@ -49,11 +49,27 @@ function ellipsePoint(angleDeg: number, rx: number) {
 export const HALF_U_POINTS = {
   top: { x: OVAL.cx, y: OVAL.cy - OVAL.ry },
   bottom: { x: OVAL.cx, y: OVAL.cy + OVAL.ry },
-  // Waypoints along the left/right half of the trace ellipse, walking from
-  // top (270°) down through the side (180°/0°) to bottom (90°).
-  left: [ellipsePoint(225, HALF_U_RX), ellipsePoint(180, HALF_U_RX), ellipsePoint(135, HALF_U_RX)],
-  right: [ellipsePoint(315, HALF_U_RX), ellipsePoint(0, HALF_U_RX), ellipsePoint(45, HALF_U_RX)],
 };
+
+// Finely-sampled waypoints along the left/right half of the trace ellipse,
+// walking from top (270°) down through the side (180°/0°) to bottom (90°).
+// The dot's CSS transition only moves in straight lines between waypoints,
+// so a handful of points reads as a faceted polygon — sampling many small
+// steps instead makes each hop short enough that the path reads as one
+// smooth curve hugging the ellipse rather than a jointed line.
+const HALF_U_STEPS = 30;
+
+function halfUSidePoints(direction: 'left' | 'right') {
+  const points: { x: number; y: number }[] = [];
+  for (let i = 0; i <= HALF_U_STEPS; i++) {
+    const t = i / HALF_U_STEPS;
+    const angle = direction === 'left' ? 270 - 180 * t : 270 + 180 * t;
+    points.push(ellipsePoint(angle, HALF_U_RX));
+  }
+  return points; // [0] is the top vertex, [HALF_U_STEPS] is the bottom vertex.
+}
+
+const HALF_U_SIDE_POINTS = { left: halfUSidePoints('left'), right: halfUSidePoints('right') };
 
 export const J_CURVE_TRACES = [
   `M ${J_CURVE_POINTS.center.x} ${J_CURVE_POINTS.center.y} Q ${J_CURVE_POINTS.left.mid.x} ${J_CURVE_POINTS.left.mid.y} ${J_CURVE_POINTS.left.out.x} ${J_CURVE_POINTS.left.out.y}`,
@@ -129,24 +145,21 @@ export function build3PointPhases(speedSecs: number, holdSecs: number, reps: num
  */
 export function buildHalfUPhases(speedSecs: number, reps: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
-  const { top, bottom, left, right } = HALF_U_POINTS;
+  const legMs = moveMs / HALF_U_STEPS;
   const phases: DilatorPhase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
     const repText = `${i} of ${reps}`;
     const side = i % 2 === 1 ? 'Left' : 'Right';
-    const waypoints = i % 2 === 1 ? left : right;
-    // Walk out along the curve (top -> waypoints -> bottom), each leg an
-    // equal fraction of speedSecs so the dot approximates the same
-    // elliptical arc as the static trace, then retrace the same waypoints
-    // back up to top instead of cutting straight through the middle.
-    const outbound = [...waypoints, bottom];
-    const inbound = [...waypoints].reverse().concat(top);
-    const legMs = moveMs / outbound.length;
-    for (const p of outbound) {
-      phases.push({ label: 'Stretch', x: p.x, y: p.y, durationMs: legMs, stepName: side, repText });
+    const points = i % 2 === 1 ? HALF_U_SIDE_POINTS.left : HALF_U_SIDE_POINTS.right;
+    // Walk out along the curve (top -> ... -> bottom) one fine step at a
+    // time, so the dot approximates the same elliptical arc as the static
+    // trace, then retrace the same steps back up to top instead of cutting
+    // straight through the middle.
+    for (let s = 1; s <= HALF_U_STEPS; s++) {
+      phases.push({ label: 'Stretch', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
     }
-    for (const p of inbound) {
-      phases.push({ label: 'Return', x: p.x, y: p.y, durationMs: legMs, stepName: side, repText });
+    for (let s = HALF_U_STEPS - 1; s >= 0; s--) {
+      phases.push({ label: 'Return', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
     }
   }
   return phases;

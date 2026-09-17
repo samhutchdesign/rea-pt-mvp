@@ -16,6 +16,7 @@ export function DilatorVisual({
   scale = 1,
   tracePaths,
   transitionMs = 500,
+  transitionTiming = 'ease-in-out',
   className,
   children,
 }: {
@@ -27,6 +28,8 @@ export function DilatorVisual({
   /** Full-pattern reference paths (SVG path `d` strings) traced faintly in the background. */
   tracePaths: string[];
   transitionMs?: number;
+  /** CSS timing function for the dot's move. `linear` reads better for a curve made of many short hops (e.g. Half U) — easing each tiny hop stutters. */
+  transitionTiming?: string;
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -55,7 +58,7 @@ export function DilatorVisual({
           left: `${x}%`,
           top: `${y}%`,
           transform: `translate(-50%, -50%) scale(${scale})`,
-          transition: `left ${transitionMs}ms ease-in-out, top ${transitionMs}ms ease-in-out, transform ${transitionMs}ms ease-in-out`,
+          transition: `left ${transitionMs}ms ${transitionTiming}, top ${transitionMs}ms ${transitionTiming}, transform ${transitionMs}ms ${transitionTiming}`,
         }}
       />
       {children}
