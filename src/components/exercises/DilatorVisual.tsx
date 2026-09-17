@@ -39,7 +39,7 @@ export function DilatorVisual({
   className?: string;
   children?: React.ReactNode;
 }) {
-  const dotPx = 16;
+  const dotPx = ringSizePx * 0.5;
   const middleRingPx = ringSizePx * 0.75;
   const wrapperPx = Math.max(ringSizePx, dotPx);
   return (
