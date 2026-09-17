@@ -13,15 +13,36 @@ export interface DilatorPhase {
   repText?: string;
 }
 
-// Shared anchor points, reused by both the dot's phase waypoints and the
-// DilatorVisual's static background trace so the animated dot visually
-// follows the printed path. Centered on x=50 — the video frame's true
-// horizontal center — matching DilatorVisual's own oval (see its cx).
-export const J_CURVE_POINTS = {
-  center: { x: 50, y: 84 },
-  left: { mid: { x: 39, y: 60 }, out: { x: 33, y: 55 } },
-  right: { mid: { x: 61, y: 60 }, out: { x: 67, y: 55 } },
-};
+function cubicPoint(p0: { x: number; y: number }, c1: { x: number; y: number }, c2: { x: number; y: number }, p3: { x: number; y: number }, t: number) {
+  const mt = 1 - t;
+  return {
+    x: mt * mt * mt * p0.x + 3 * mt * mt * t * c1.x + 3 * mt * t * t * c2.x + t * t * t * p3.x,
+    y: mt * mt * mt * p0.y + 3 * mt * mt * t * c1.y + 3 * mt * t * t * c2.y + t * t * t * p3.y,
+  };
+}
+
+// J Curve: both curves start together at the top of the entrance (matching
+// the oval's own top vertex) and hook outward and down to each side, ending
+// with a near-horizontal tangent — like the tail of a "J" — rather than a
+// shallow diagonal. c2 shares its y with `out` on each side specifically so
+// that final tangent comes out flat.
+const J_TOP = { x: 50, y: 18 };
+const J_CURVE_SIDES = {
+  left: { c1: { x: 28, y: 30 }, c2: { x: 12, y: 72 }, out: { x: 0, y: 72 } },
+  right: { c1: { x: 72, y: 30 }, c2: { x: 88, y: 72 }, out: { x: 100, y: 72 } },
+} as const;
+const J_STEPS = 24;
+
+function jCurveSidePoints(side: 'left' | 'right') {
+  const { c1, c2, out } = J_CURVE_SIDES[side];
+  const points: { x: number; y: number }[] = [];
+  for (let i = 0; i <= J_STEPS; i++) {
+    points.push(cubicPoint(J_TOP, c1, c2, out, i / J_STEPS));
+  }
+  return points; // [0] is the top vertex, [J_STEPS] is the outward end point.
+}
+
+const J_CURVE_SIDE_POINTS = { left: jCurveSidePoints('left'), right: jCurveSidePoints('right') };
 
 export const THREE_POINT_POINTS = {
   center: { x: 50, y: 45 },
@@ -70,8 +91,8 @@ function halfUSidePoints(direction: 'left' | 'right') {
 const HALF_U_SIDE_POINTS = { left: halfUSidePoints('left'), right: halfUSidePoints('right') };
 
 export const J_CURVE_TRACES = [
-  `M ${J_CURVE_POINTS.center.x} ${J_CURVE_POINTS.center.y} Q ${J_CURVE_POINTS.left.mid.x} ${J_CURVE_POINTS.left.mid.y} ${J_CURVE_POINTS.left.out.x} ${J_CURVE_POINTS.left.out.y}`,
-  `M ${J_CURVE_POINTS.center.x} ${J_CURVE_POINTS.center.y} Q ${J_CURVE_POINTS.right.mid.x} ${J_CURVE_POINTS.right.mid.y} ${J_CURVE_POINTS.right.out.x} ${J_CURVE_POINTS.right.out.y}`,
+  `M ${J_TOP.x} ${J_TOP.y} C ${J_CURVE_SIDES.left.c1.x} ${J_CURVE_SIDES.left.c1.y} ${J_CURVE_SIDES.left.c2.x} ${J_CURVE_SIDES.left.c2.y} ${J_CURVE_SIDES.left.out.x} ${J_CURVE_SIDES.left.out.y}`,
+  `M ${J_TOP.x} ${J_TOP.y} C ${J_CURVE_SIDES.right.c1.x} ${J_CURVE_SIDES.right.c1.y} ${J_CURVE_SIDES.right.c2.x} ${J_CURVE_SIDES.right.c2.y} ${J_CURVE_SIDES.right.out.x} ${J_CURVE_SIDES.right.out.y}`,
 ];
 
 export const THREE_POINT_TRACES = [
@@ -94,15 +115,21 @@ export const HALF_U_TRACES = [
 export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const holdMs = Math.max(holdSecs, 0.1) * 1000;
-  const { center, left, right } = J_CURVE_POINTS;
+  const legMs = moveMs / J_STEPS;
   const phases: DilatorPhase[] = [];
-  for (const { side, mid, out } of [{ side: 'Left', ...left }, { side: 'Right', ...right }] as const) {
+  for (const { key, side } of [{ key: 'left', side: 'Left' }, { key: 'right', side: 'Right' }] as const) {
+    const points = J_CURVE_SIDE_POINTS[key];
     for (let i = 1; i <= Math.max(reps, 1); i++) {
       const repText = `${i} of ${reps}`;
-      phases.push({ label: 'Stretch', x: mid.x, y: mid.y, durationMs: moveMs * 0.4, stepName: side, repText });
-      phases.push({ label: 'Stretch', x: out.x, y: out.y, durationMs: moveMs * 0.6, stepName: side, repText });
-      phases.push({ label: 'Hold', x: out.x, y: out.y, durationMs: holdMs, stepName: side, repText });
-      phases.push({ label: 'Return', x: center.x, y: center.y, durationMs: moveMs, stepName: side, repText });
+      // Walk out along the curve one fine step at a time (matching the
+      // static trace exactly), hold at the end, then retrace back to top.
+      for (let s = 1; s <= J_STEPS; s++) {
+        phases.push({ label: 'Stretch', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
+      }
+      phases.push({ label: 'Hold', x: points[J_STEPS].x, y: points[J_STEPS].y, durationMs: holdMs, stepName: side, repText });
+      for (let s = J_STEPS - 1; s >= 0; s--) {
+        phases.push({ label: 'Return', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
+      }
     }
   }
   return phases;
