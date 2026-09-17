@@ -21,16 +21,19 @@ function cubicPoint(p0: { x: number; y: number }, c1: { x: number; y: number }, 
   };
 }
 
-// J Curve: from a resting point at the entrance, a short straight rise to a
-// cusp partway up, where both sides' curves meet and hook sharply outward
-// and down, flattening to a near-horizontal tangent at the exit — literally
-// tracing the shape of a "J" (a straight stem, then a hook) rather than a
-// shallow diagonal.
-const J_CENTER = { x: 50, y: 55 };
-const J_CUSP = { x: 50, y: 36 };
+// J Curve: matches the Figma reference (node 2741:16545) exactly — both
+// curves start at the cusp (the oval's own center) and immediately share
+// one control point directly below it, so they overlap for their initial
+// descent (reading as a single sharp spike) before diverging outward to
+// each side and flattening near the exit. Points below are the Figma
+// vector's coordinates converted into this file's 0-100 space, preserving
+// each offset from center as a fraction of the oval's own rx/ry so the
+// proportions still read correctly after DilatorVisual's non-uniform
+// (preserveAspectRatio="none") horizontal stretch.
+const J_CUSP = { x: 50, y: 50 };
 const J_CURVE_SIDES = {
-  left: { c1: { x: 48, y: 66 }, c2: { x: 2, y: 80 }, out: { x: 0, y: 83 } },
-  right: { c1: { x: 52, y: 66 }, c2: { x: 98, y: 80 }, out: { x: 100, y: 83 } },
+  left: { c1: { x: 50, y: 66.2 }, c2: { x: 42.2, y: 81.5 }, out: { x: 29.5, y: 81.5 } },
+  right: { c1: { x: 50, y: 66.2 }, c2: { x: 57.8, y: 81.5 }, out: { x: 70.5, y: 81.5 } },
 } as const;
 const J_STEPS = 24;
 
@@ -92,7 +95,6 @@ function halfUSidePoints(direction: 'left' | 'right') {
 const HALF_U_SIDE_POINTS = { left: halfUSidePoints('left'), right: halfUSidePoints('right') };
 
 export const J_CURVE_TRACES = [
-  `M ${J_CENTER.x} ${J_CENTER.y} L ${J_CUSP.x} ${J_CUSP.y}`,
   `M ${J_CUSP.x} ${J_CUSP.y} C ${J_CURVE_SIDES.left.c1.x} ${J_CURVE_SIDES.left.c1.y} ${J_CURVE_SIDES.left.c2.x} ${J_CURVE_SIDES.left.c2.y} ${J_CURVE_SIDES.left.out.x} ${J_CURVE_SIDES.left.out.y}`,
   `M ${J_CUSP.x} ${J_CUSP.y} C ${J_CURVE_SIDES.right.c1.x} ${J_CURVE_SIDES.right.c1.y} ${J_CURVE_SIDES.right.c2.x} ${J_CURVE_SIDES.right.c2.y} ${J_CURVE_SIDES.right.out.x} ${J_CURVE_SIDES.right.out.y}`,
 ];
@@ -111,24 +113,21 @@ export const HALF_U_TRACES = [
 ];
 
 /**
- * J Curve: from the entrance, a short straight rise then a sharp outward
- * hook to each side (like opening curtains) and hold, done for `reps` on
- * the left, then `reps` on the right.
+ * J Curve: from the entrance (the cusp, at the oval's center), a sharp
+ * outward hook to each side (like opening curtains) and hold, done for
+ * `reps` on the left, then `reps` on the right.
  */
 export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const holdMs = Math.max(holdSecs, 0.1) * 1000;
-  const stemMs = moveMs * 0.25;
-  const legMs = (moveMs - stemMs) / J_STEPS;
+  const legMs = moveMs / J_STEPS;
   const phases: DilatorPhase[] = [];
   for (const { key, side } of [{ key: 'left', side: 'Left' }, { key: 'right', side: 'Right' }] as const) {
     const points = J_CURVE_SIDE_POINTS[key];
     for (let i = 1; i <= Math.max(reps, 1); i++) {
       const repText = `${i} of ${reps}`;
-      // Straight rise from center to the cusp, then walk out along the hook
-      // one fine step at a time (matching the static trace exactly), hold
-      // at the end, then retrace the whole path back to center.
-      phases.push({ label: 'Stretch', x: J_CUSP.x, y: J_CUSP.y, durationMs: stemMs, stepName: side, repText });
+      // Walk out along the hook one fine step at a time (matching the
+      // static trace exactly), hold at the end, then retrace back to the cusp.
       for (let s = 1; s <= J_STEPS; s++) {
         phases.push({ label: 'Stretch', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
       }
@@ -136,7 +135,6 @@ export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: num
       for (let s = J_STEPS - 1; s >= 0; s--) {
         phases.push({ label: 'Return', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
       }
-      phases.push({ label: 'Return', x: J_CENTER.x, y: J_CENTER.y, durationMs: stemMs, stepName: side, repText });
     }
   }
   return phases;
