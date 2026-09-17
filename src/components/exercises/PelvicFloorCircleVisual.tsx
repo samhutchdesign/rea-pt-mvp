@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { cx } from '@/utils/cx';
 
 /**
@@ -13,20 +13,34 @@ export function PelvicFloorCircleVisual({
   scale,
   riseFraction,
   transitionMs = 700,
+  easing = 'ease-in-out',
   className,
   children,
 }: {
   scale: number;
   riseFraction: number;
   transitionMs?: number;
+  /** CSS timing function for the transform transition. */
+  easing?: string;
   className?: string;
   children?: React.ReactNode;
 }) {
   const [riseDistance, setRiseDistance] = useState<number | null>(null);
+  const [skipTransition, setSkipTransition] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const groupRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so this measurement lands before the
+  // browser paints the first frame — but on an SSR'd page, the browser
+  // already painted the server-rendered HTML (riseDistance=null, rise=0)
+  // before any client JS ran at all, so callers resting at a non-zero
+  // riseFraction (e.g. Reverse Kegel's centered rest) would still visibly
+  // *animate* from that bottom-anchored position up to their real resting
+  // position the instant hydration's measurement lands. skipTransition
+  // keeps `transition: none` through that first correction so it snaps into
+  // place instead of gliding, then re-enables transitions one frame later
+  // for the real phase-to-phase animation.
+  useLayoutEffect(() => {
     const measure = () => {
       const containerHeight = containerRef.current?.clientHeight ?? 0;
       const groupHeight = groupRef.current?.offsetHeight ?? 0;
@@ -36,8 +50,12 @@ export function PelvicFloorCircleVisual({
       setRiseDistance(Math.max((containerHeight - groupHeight * 0.22) * 0.8, 0));
     };
     measure();
+    const raf = requestAnimationFrame(() => setSkipTransition(false));
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   const rise = riseDistance !== null ? riseDistance * riseFraction : 0;
@@ -50,7 +68,7 @@ export function PelvicFloorCircleVisual({
         style={{
           transform: `translateY(-${rise}px) scale(${scale})`,
           transformOrigin: 'bottom center',
-          transition: `transform ${transitionMs}ms ease-in-out`,
+          transition: skipTransition ? 'none' : `transform ${transitionMs}ms ${easing}`,
         }}
       >
         <div className="size-[280px] shrink-0 -mb-[140px] rounded-full bg-brand-100" />

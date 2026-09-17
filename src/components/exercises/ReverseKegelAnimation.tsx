@@ -11,8 +11,8 @@ import { RollingNumber } from './RollingNumber';
 // actually lands at the visual vertical center — PelvicFloorCircleVisual's
 // rise math was tuned for its original bottom-anchored callers, where
 // riseFraction 0-1 doesn't map linearly onto "0-100% of the frame's height".
-const REST_SCALE = 0.75; // starts smaller at rest, then grows as it "falls"
-const EXPAND_SCALE = 1.2;
+const REST_SCALE = 0.7; // starts smaller at rest, then grows more dramatically as it "falls"
+const EXPAND_SCALE = 1.45;
 const CENTER_RISE = 0.7;
 const DOWN_RISE = 0;
 
@@ -36,9 +36,13 @@ export function ReverseKegelAnimation({ speedSecs, holdSecs, restSecs, reps, cla
   ];
 
   const { repIndex, phase, running } = usePhaseSequence(phases, reps);
+  // Accelerating on the way down (a real "drop", not a symmetric ease) and
+  // decelerating on the way back up (settling into place), rather than the
+  // same ease-in-out for both directions.
+  const easing = phase.label === 'Relax' ? 'ease-in' : phase.label === 'Return to Center' ? 'ease-out' : 'ease-in-out';
 
   return (
-    <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={moveMs} className={className}>
+    <PelvicFloorCircleVisual scale={phase.scale} riseFraction={phase.riseFraction} transitionMs={moveMs} easing={easing} className={className}>
       <span className="absolute top-5 left-1/2 -translate-x-1/2 font-display text-[20px] leading-[32px] font-medium text-primary">
         {running ? phase.label : 'Finished'}
       </span>
