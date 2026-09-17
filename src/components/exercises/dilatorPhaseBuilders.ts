@@ -32,10 +32,15 @@ export const THREE_POINT_POINTS = {
   six: { x: 75, y: 90 },
 };
 
+// Two control points per side (rather than J Curve/Half U's single midpoint)
+// so the trace can follow a cubic curve that hugs alongside the oval's own
+// curvature — bulging out gradually, then narrowing back in near the
+// bottom — instead of cutting straight out to a point (which reads as a
+// sharp V rather than a curve echoing the oval's shape).
 export const HALF_U_POINTS = {
-  top: { x: 75, y: 20 },
-  left: { mid: { x: 64, y: 52 }, out: { x: 59, y: 78 } },
-  right: { mid: { x: 86, y: 52 }, out: { x: 91, y: 78 } },
+  top: { x: 75, y: 18 },
+  left: { c1: { x: 60, y: 38 }, c2: { x: 55, y: 58 }, out: { x: 60, y: 80 } },
+  right: { c1: { x: 90, y: 38 }, c2: { x: 95, y: 58 }, out: { x: 90, y: 80 } },
 };
 
 export const J_CURVE_TRACES = [
@@ -50,8 +55,8 @@ export const THREE_POINT_TRACES = [
 ];
 
 export const HALF_U_TRACES = [
-  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} Q ${HALF_U_POINTS.left.mid.x} ${HALF_U_POINTS.left.mid.y} ${HALF_U_POINTS.left.out.x} ${HALF_U_POINTS.left.out.y}`,
-  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} Q ${HALF_U_POINTS.right.mid.x} ${HALF_U_POINTS.right.mid.y} ${HALF_U_POINTS.right.out.x} ${HALF_U_POINTS.right.out.y}`,
+  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} C ${HALF_U_POINTS.left.c1.x} ${HALF_U_POINTS.left.c1.y} ${HALF_U_POINTS.left.c2.x} ${HALF_U_POINTS.left.c2.y} ${HALF_U_POINTS.left.out.x} ${HALF_U_POINTS.left.out.y}`,
+  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} C ${HALF_U_POINTS.right.c1.x} ${HALF_U_POINTS.right.c1.y} ${HALF_U_POINTS.right.c2.x} ${HALF_U_POINTS.right.c2.y} ${HALF_U_POINTS.right.out.x} ${HALF_U_POINTS.right.out.y}`,
 ];
 
 /**
@@ -114,9 +119,13 @@ export function buildHalfUPhases(speedSecs: number, reps: number): DilatorPhase[
   const phases: DilatorPhase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
     const repText = `${i} of ${reps}`;
-    const { side, mid, out } = i % 2 === 1 ? { side: 'Left', ...left } : { side: 'Right', ...right };
-    phases.push({ label: 'Stretch', x: mid.x, y: mid.y, durationMs: moveMs * 0.4, stepName: side, repText });
-    phases.push({ label: 'Stretch', x: out.x, y: out.y, durationMs: moveMs * 0.6, stepName: side, repText });
+    const { side, c1, c2, out } = i % 2 === 1 ? { side: 'Left', ...left } : { side: 'Right', ...right };
+    // Three waypoints along the curve (rather than one) so the CSS-transitioned
+    // dot approximates the same cubic curve as the static trace instead of
+    // cutting a straight line to the final point.
+    phases.push({ label: 'Stretch', x: c1.x, y: c1.y, durationMs: moveMs * 0.35, stepName: side, repText });
+    phases.push({ label: 'Stretch', x: c2.x, y: c2.y, durationMs: moveMs * 0.35, stepName: side, repText });
+    phases.push({ label: 'Stretch', x: out.x, y: out.y, durationMs: moveMs * 0.3, stepName: side, repText });
     phases.push({ label: 'Return', x: top.x, y: top.y, durationMs: moveMs, stepName: side, repText });
   }
   return phases;
