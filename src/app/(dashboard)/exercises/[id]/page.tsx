@@ -15,7 +15,7 @@ import { ComboSustainedHoldQuickFlicks } from '@/components/exercises/ComboSusta
 import { DilatorJCurveAnimation } from '@/components/exercises/DilatorJCurveAnimation';
 import { Dilator3PointAnimation } from '@/components/exercises/Dilator3PointAnimation';
 import { DilatorHalfUAnimation } from '@/components/exercises/DilatorHalfUAnimation';
-import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, DILATOR_SIZES, type RxValues } from '@/components/exercises/exerciseRx';
+import { ExerciseMarkerFields, defaultRxValues, rxSummary as rxSummaryText, HOLD_INTENSITIES, STAGE_COUNTS, stageLabel, type RxValues } from '@/components/exercises/exerciseRx';
 import { CompactField } from '@/components/exercises/CompactField';
 import { ParametersCard } from '@/components/exercises/ParametersCard';
 import { ParameterSlider } from '@/components/exercises/ParameterSlider';
@@ -398,12 +398,6 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 className="absolute inset-0"
               />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
-                <div className="flex items-center gap-3 w-full">
-                  <span className="text-xs text-secondary shrink-0">Dilator Size</span>
-                  <NativeSelect className="h-12 flex-1" value={rx.dilatorSize} onChange={(e) => patchRx({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
-                    {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </NativeSelect>
-                </div>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ holdSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => patchRx({ reps: v })} />
@@ -419,12 +413,6 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 className="absolute inset-0"
               />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
-                <div className="flex items-center gap-3 w-full">
-                  <span className="text-xs text-secondary shrink-0">Dilator Size</span>
-                  <NativeSelect className="h-12 flex-1" value={rx.dilatorSize} onChange={(e) => patchRx({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
-                    {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </NativeSelect>
-                </div>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ holdSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep / Direction" unitPlural="Reps / Direction" onChange={(v) => patchRx({ reps: v })} />
@@ -439,12 +427,6 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 className="absolute inset-0"
               />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
-                <div className="flex items-center gap-3 w-full">
-                  <span className="text-xs text-secondary shrink-0">Dilator Size</span>
-                  <NativeSelect className="h-12 flex-1" value={rx.dilatorSize} onChange={(e) => patchRx({ dilatorSize: e.target.value as RxValues['dilatorSize'] })}>
-                    {DILATOR_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </NativeSelect>
-                </div>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep / Side" unitPlural="Reps / Side" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
