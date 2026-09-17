@@ -263,8 +263,8 @@ export function buildDilatorInOutPhases(speedSecs: number, reps: number): Dilato
   const phases: DilatorPhase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
     const repText = `${i} of ${reps}`;
-    phases.push({ label: 'In', x: IN_OUT_CENTER_X, y: IN_OUT_RAIL_Y_TOP, scale: IN_SCALE, durationMs: moveMs, repText });
     phases.push({ label: 'Out', x: IN_OUT_CENTER_X, y: IN_OUT_RAIL_Y_BOTTOM, scale: 1, durationMs: moveMs, repText });
+    phases.push({ label: 'In', x: IN_OUT_CENTER_X, y: IN_OUT_RAIL_Y_TOP, scale: IN_SCALE, durationMs: moveMs, repText });
   }
   return phases;
 }
