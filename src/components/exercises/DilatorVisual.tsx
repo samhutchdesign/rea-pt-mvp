@@ -17,6 +17,7 @@ export function DilatorVisual({
   tracePaths,
   transitionMs = 500,
   transitionTiming = 'ease-in-out',
+  rings = false,
   className,
   children,
 }: {
@@ -30,6 +31,8 @@ export function DilatorVisual({
   transitionMs?: number;
   /** CSS timing function for the dot's move. `linear` reads better for a curve made of many short hops (e.g. Half U) — easing each tiny hop stutters. */
   transitionTiming?: string;
+  /** Draw the lighter concentric rings (matching the pelvic-floor circle exercises) around the dot, all shrinking/growing together with it — used for the 3-Point Stretch's contract/relax pulse. */
+  rings?: boolean;
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -53,14 +56,23 @@ export function DilatorVisual({
         <ellipse cx="75" cy="50" rx="14" ry="32" fill="none" className="stroke-brand-300" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
       <div
-        className="absolute size-4 rounded-full bg-brand-600"
+        className="absolute"
         style={{
           left: `${x}%`,
           top: `${y}%`,
-          transform: `translate(-50%, -50%) scale(${scale})`,
-          transition: `left ${transitionMs}ms ${transitionTiming}, top ${transitionMs}ms ${transitionTiming}, transform ${transitionMs}ms ${transitionTiming}`,
+          transform: 'translate(-50%, -50%)',
+          transition: `left ${transitionMs}ms ${transitionTiming}, top ${transitionMs}ms ${transitionTiming}`,
         }}
-      />
+      >
+        <div
+          className="relative flex items-center justify-center"
+          style={{ transform: `scale(${scale})`, transition: `transform ${transitionMs}ms ${transitionTiming}` }}
+        >
+          {rings && <div className="absolute size-8 shrink-0 rounded-full bg-brand-100" />}
+          {rings && <div className="absolute size-6 shrink-0 rounded-full bg-brand-300" />}
+          <div className="size-4 shrink-0 rounded-full bg-brand-600" />
+        </div>
+      </div>
       {children}
     </div>
   );
