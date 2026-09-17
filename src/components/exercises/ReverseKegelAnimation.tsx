@@ -29,7 +29,7 @@ export function ReverseKegelAnimation({ speedSecs, holdSecs, restSecs, reps, cla
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const holdMs = Math.max(holdSecs, 0.1) * 1000;
   const phases: Phase[] = [
-    { label: 'Rest', scale: REST_SCALE, riseFraction: CENTER_RISE, durationMs: Math.max(restSecs, 0.1) * 1000 },
+    { label: 'Rest at Neutral', scale: REST_SCALE, riseFraction: CENTER_RISE, durationMs: Math.max(restSecs, 0.1) * 1000 },
     { label: 'Relax', scale: EXPAND_SCALE, riseFraction: DOWN_RISE, durationMs: moveMs },
     { label: 'Hold', scale: EXPAND_SCALE, riseFraction: DOWN_RISE, durationMs: holdMs },
     { label: 'Return to Center', scale: REST_SCALE, riseFraction: CENTER_RISE, durationMs: moveMs },

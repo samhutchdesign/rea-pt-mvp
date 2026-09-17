@@ -173,7 +173,7 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
       step1HoldSecs: ex.defaultStep1HoldSecs, step1RestSecs: ex.defaultStep1RestSecs, step1IntensityPct: ex.defaultStep1IntensityPct,
       step2Sets: ex.defaultStep2Sets, step2Reps: ex.defaultStep2Reps, step2SpeedSecs: ex.defaultStep2SpeedSecs, step2RestSecs: ex.defaultStep2RestSecs,
       transitionRestSecs: ex.defaultTransitionRestSecs, comboSets: ex.defaultComboSets,
-      dilatorSize: ex.defaultDilatorSize, contractSecs: ex.defaultContractSecs,
+      dilatorSize: ex.defaultDilatorSize,
       pressureLevel: ex.defaultPressureLevel, durationSecs: ex.defaultDurationSecs,
     }]);
   };

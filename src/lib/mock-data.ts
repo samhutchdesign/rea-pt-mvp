@@ -2254,7 +2254,7 @@ const mockExercisesRaw: ExerciseBase[] = [
       muscle: ['Levator ani; Bulbospongiosus; Vaginal introitus'],
       bodyPart: ['Pelvic floor'],
     },
-    defaultSets: 1, defaultReps: 3, defaultHoldSecs: 2, defaultSpeedSecs: 1.5, defaultContractSecs: 0.35, defaultFrequency: 'Daily',
+    defaultSets: 1, defaultReps: 3, defaultHoldSecs: 2, defaultSpeedSecs: 1.5, defaultFrequency: 'Daily',
     isFavorite: false, usageCount: 0, createdAt: '2026-09-17',
     animationType: 'pf-dilator-3-point', defaultDilatorSize: 'Medium',
   },

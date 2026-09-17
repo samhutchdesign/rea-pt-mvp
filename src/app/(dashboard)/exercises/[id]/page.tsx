@@ -410,17 +410,15 @@ function ExerciseDetailContent({ id }: { id: string }) {
           ) : ex.animationType === 'pf-dilator-3-point' ? (
             <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <Dilator3PointAnimation
-                key={`${rx.speedSecs}-${rx.holdSecs}-${rx.reps}-${rx.contractSecs}`}
+                key={`${rx.speedSecs}-${rx.holdSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
                 holdSecs={rx.holdSecs}
                 reps={rx.reps}
-                contractSecs={rx.contractSecs}
                 className="absolute inset-0"
               />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={4} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
                 <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={30} onChange={(v) => patchRx({ holdSecs: v })} />
-                <ParameterSlider label="Contract" value={rx.contractSecs} unit="s" min={0.1} max={2} step={0.05} onChange={(v) => patchRx({ contractSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep / Direction" unitPlural="Reps / Direction" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>
             </div>
@@ -574,6 +572,13 @@ function ExerciseDetailContent({ id }: { id: string }) {
                 <ol className="pl-5 space-y-5 list-decimal w-full">
                   {ex.instructions.map((step, i) => <li key={i} className="text-base text-primary">{step}</li>)}
                 </ol>
+                {ex.name.includes('Dilator') && (
+                  <div className="w-full aspect-video rounded-lg border border-secondary bg-brand-50 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-full bg-brand-600 flex items-center justify-center">
+                      <Play size={24} fill="white" color="white" className="ml-1" strokeWidth={1.25} />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -35,8 +35,6 @@ export interface ProgramRow {
   comboSets?: number;
   /** Dilator size (dilator exercises). Informational only — doesn't affect the animation. */
   dilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
-  /** Length of the contract/relax pulse before each direction, in seconds (3-Point Stretch). */
-  contractSecs?: number;
   /** Pressure level (Perineal/Scar Massage). */
   pressureLevel?: 'Light' | 'Moderate';
   /** Session duration, in seconds (Perineal/Scar Massage). */

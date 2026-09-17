@@ -53,8 +53,6 @@ export interface RxValues {
   comboSets: number;
   // Dilator exercises
   dilatorSize: 'Small' | 'Medium' | 'Large' | 'Extra Large';
-  /** Length of the contract/relax pulse before each direction, in seconds (3-Point Stretch). */
-  contractSecs: number;
   // Perineal/Scar Massage
   pressureLevel: 'Light' | 'Moderate';
   /** Session duration, in seconds. */
@@ -89,7 +87,6 @@ export function defaultRxValues(ex: Exercise | null | undefined): RxValues {
     transitionRestSecs: ex?.defaultTransitionRestSecs ?? 10,
     comboSets: ex?.defaultComboSets ?? 3,
     dilatorSize: ex?.defaultDilatorSize ?? 'Medium',
-    contractSecs: ex?.defaultContractSecs ?? 0.35,
     pressureLevel: ex?.defaultPressureLevel ?? 'Light',
     durationSecs: ex?.defaultDurationSecs ?? 150,
     cue: '',
@@ -119,7 +116,7 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
     case 'pf-dilator-j-curve':
       return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.holdSecs}s hold, ${rx.speedSecs}s speed`;
     case 'pf-dilator-3-point':
-      return `${rx.dilatorSize} dilator, ${rx.reps} reps/direction, ${rx.holdSecs}s hold, ${rx.speedSecs}s speed, ${rx.contractSecs}s contract`;
+      return `${rx.dilatorSize} dilator, ${rx.reps} reps/direction, ${rx.holdSecs}s hold, ${rx.speedSecs}s speed`;
     case 'pf-dilator-half-u':
       return `${rx.dilatorSize} dilator, ${rx.reps} reps/side, ${rx.speedSecs}s speed${rx.holdSecs > 0 ? `, ${rx.holdSecs}s hold` : ''}`;
     case 'pf-perineal-massage':
@@ -353,7 +350,6 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
             <CompactField value={values.reps} unitSingular="Rep / Direction" unitPlural="Reps / Direction" onChange={(v) => onChange({ reps: v })} />
             <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
             <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
-            <CompactField value={values.contractSecs} unitSingular="Sec Contract" unitPlural="Sec Contract" onChange={(v) => onChange({ contractSecs: v })} />
           </div>
           {frequencyField}
         </div>

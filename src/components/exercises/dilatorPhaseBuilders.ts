@@ -106,16 +106,21 @@ export const THREE_POINT_TRACES = [
 ];
 
 // A single elliptical-arc command draws an exact half-ellipse — sweep-flag 0
-// goes top-to-bottom via the left side, 1 via the right side.
+// goes top-to-bottom via the left side, 1 via the right side. The third,
+// straight path down the center is the "crossing stroke" of the figure 8 —
+// the dot's return trip goes straight up through it instead of retracing
+// whichever side curve it came down.
 export const HALF_U_TRACES = [
   `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} A ${HALF_U_RX} ${OVAL.ry} 0 0 0 ${HALF_U_POINTS.bottom.x} ${HALF_U_POINTS.bottom.y}`,
   `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} A ${HALF_U_RX} ${OVAL.ry} 0 0 1 ${HALF_U_POINTS.bottom.x} ${HALF_U_POINTS.bottom.y}`,
+  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} L ${HALF_U_POINTS.bottom.x} ${HALF_U_POINTS.bottom.y}`,
 ];
 
 /**
  * J Curve: from the entrance (the cusp, at the oval's center), a sharp
- * outward hook to each side (like opening curtains) and hold, done for
- * `reps` on the left, then `reps` on the right.
+ * outward hook to each side (like opening curtains) and hold, then straight
+ * back to center (not retracing the curve), done for `reps` on the left,
+ * then `reps` on the right.
  */
 export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
@@ -127,34 +132,26 @@ export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: num
     for (let i = 1; i <= Math.max(reps, 1); i++) {
       const repText = `${i} of ${reps}`;
       // Walk out along the hook one fine step at a time (matching the
-      // static trace exactly), hold at the end, then retrace back to the cusp.
+      // static trace exactly), hold at the end, then go straight back to
+      // the cusp instead of retracing the curve.
       for (let s = 1; s <= J_STEPS; s++) {
         phases.push({ label: 'Stretch', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
       }
       phases.push({ label: 'Hold', x: points[J_STEPS].x, y: points[J_STEPS].y, durationMs: holdMs, stepName: side, repText });
-      for (let s = J_STEPS - 1; s >= 0; s--) {
-        phases.push({ label: 'Return', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
-      }
+      phases.push({ label: 'Return', x: J_CUSP.x, y: J_CUSP.y, durationMs: moveMs, stepName: side, repText });
     }
   }
   return phases;
 }
 
 /**
- * 3-Point Stretch (Peace Sign): a brief contract/relax pulse, then stretch
- * out to 8 o'clock, 4 o'clock, and 6 o'clock in turn, holding each — one
- * full rotation through all three points counts as one rep.
+ * 3-Point Stretch (Peace Sign): stretch out to 8 o'clock, 4 o'clock, and
+ * 6 o'clock in turn, holding each — one full rotation through all three
+ * points counts as one rep.
  */
-// The dot rests at a larger-than-normal size between stretches so the
-// contract pulse has real room to shrink from — a bigger drop reads as a
-// much more visible squeeze than dipping from the plain default size.
-const REST_SCALE = 1.6;
-const CONTRACT_SCALE = 0.7;
-
-export function build3PointPhases(speedSecs: number, holdSecs: number, reps: number, contractSecs = 0.35): DilatorPhase[] {
+export function build3PointPhases(speedSecs: number, holdSecs: number, reps: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const holdMs = Math.max(holdSecs, 0.1) * 1000;
-  const pulseMs = Math.max(contractSecs, 0.05) * 1000;
   const { center, eight, four, six } = THREE_POINT_POINTS;
   const points = [
     { side: '8 o’clock', pos: eight },
@@ -165,20 +162,19 @@ export function build3PointPhases(speedSecs: number, holdSecs: number, reps: num
   for (let i = 1; i <= Math.max(reps, 1); i++) {
     const repText = `${i} of ${reps}`;
     for (const { side, pos } of points) {
-      phases.push({ label: 'Contract', x: center.x, y: center.y, scale: CONTRACT_SCALE, durationMs: pulseMs, stepName: side, repText });
-      phases.push({ label: 'Relax', x: center.x, y: center.y, scale: REST_SCALE, durationMs: pulseMs, stepName: side, repText });
-      phases.push({ label: 'Stretch', x: pos.x, y: pos.y, scale: REST_SCALE, durationMs: moveMs, stepName: side, repText });
-      phases.push({ label: 'Hold', x: pos.x, y: pos.y, scale: REST_SCALE, durationMs: holdMs, stepName: side, repText });
-      phases.push({ label: 'Return', x: center.x, y: center.y, scale: REST_SCALE, durationMs: moveMs, stepName: side, repText });
+      phases.push({ label: 'Stretch', x: pos.x, y: pos.y, durationMs: moveMs, stepName: side, repText });
+      phases.push({ label: 'Hold', x: pos.x, y: pos.y, durationMs: holdMs, stepName: side, repText });
+      phases.push({ label: 'Return', x: center.x, y: center.y, durationMs: moveMs, stepName: side, repText });
     }
   }
   return phases;
 }
 
 /**
- * Half U: a continuous stretch from the top of the entrance down toward the
- * bottom and back, alternating sides each rep, with an optional brief hold
- * at the top before switching sides.
+ * Half U: from the top of the entrance, down one side toward the bottom,
+ * then straight back up through the center — like the crossing stroke of a
+ * figure 8 — instead of retracing the same curve, alternating sides each
+ * rep, with an optional brief hold at the top before switching sides.
  */
 export function buildHalfUPhases(speedSecs: number, reps: number, holdSecs = 0): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
@@ -190,16 +186,14 @@ export function buildHalfUPhases(speedSecs: number, reps: number, holdSecs = 0):
     const repText = `${i} of ${reps}`;
     const side = i % 2 === 1 ? 'Left' : 'Right';
     const points = i % 2 === 1 ? HALF_U_SIDE_POINTS.left : HALF_U_SIDE_POINTS.right;
-    // Walk out along the curve (top -> ... -> bottom) one fine step at a
-    // time, so the dot approximates the same elliptical arc as the static
-    // trace, then retrace the same steps back up to top instead of cutting
-    // straight through the middle.
+    // Walk down the curve (top -> ... -> bottom) one fine step at a time, so
+    // the dot approximates the same elliptical arc as the static trace.
     for (let s = 1; s <= HALF_U_STEPS; s++) {
       phases.push({ label: 'Stretch', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
     }
-    for (let s = HALF_U_STEPS - 1; s >= 0; s--) {
-      phases.push({ label: 'Return', x: points[s].x, y: points[s].y, durationMs: legMs, stepName: side, repText });
-    }
+    // Then straight back up through the center (the figure 8's crossing
+    // stroke), not back down the curve it just came from.
+    phases.push({ label: 'Return', x: top.x, y: top.y, durationMs: moveMs, stepName: side, repText });
     if (holdMs > 0) {
       phases.push({ label: 'Hold', x: top.x, y: top.y, durationMs: holdMs, stepName: side, repText });
     }

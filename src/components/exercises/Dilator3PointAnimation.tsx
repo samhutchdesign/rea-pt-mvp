@@ -8,14 +8,13 @@ interface Dilator3PointAnimationProps {
   speedSecs: number;
   holdSecs: number;
   reps: number;
-  contractSecs?: number;
   className?: string;
   children?: React.ReactNode;
 }
 
-/** 3-Point Stretch (Peace Sign): pulse, then stretch to 8, 4, and 6 o'clock in turn, holding each. */
-export function Dilator3PointAnimation({ speedSecs, holdSecs, reps, contractSecs = 0.35, className, children }: Dilator3PointAnimationProps) {
-  const phases = useMemo(() => build3PointPhases(speedSecs, holdSecs, reps, contractSecs), [speedSecs, holdSecs, reps, contractSecs]);
+/** 3-Point Stretch (Peace Sign): stretch to 8, 4, and 6 o'clock in turn, holding each. */
+export function Dilator3PointAnimation({ speedSecs, holdSecs, reps, className, children }: Dilator3PointAnimationProps) {
+  const phases = useMemo(() => build3PointPhases(speedSecs, holdSecs, reps), [speedSecs, holdSecs, reps]);
   const { phase } = usePhaseSequence(phases);
 
   return (
