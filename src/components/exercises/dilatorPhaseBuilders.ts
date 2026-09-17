@@ -115,10 +115,16 @@ export function buildJCurvePhases(speedSecs: number, holdSecs: number, reps: num
  * out to 8 o'clock, 4 o'clock, and 6 o'clock in turn, holding each — one
  * full rotation through all three points counts as one rep.
  */
-export function build3PointPhases(speedSecs: number, holdSecs: number, reps: number): DilatorPhase[] {
+// The dot rests at a larger-than-normal size between stretches so the
+// contract pulse has real room to shrink from — a bigger drop reads as a
+// much more visible squeeze than dipping from the plain default size.
+const REST_SCALE = 1.6;
+const CONTRACT_SCALE = 0.7;
+
+export function build3PointPhases(speedSecs: number, holdSecs: number, reps: number, contractSecs = 0.35): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
   const holdMs = Math.max(holdSecs, 0.1) * 1000;
-  const pulseMs = 350;
+  const pulseMs = Math.max(contractSecs, 0.05) * 1000;
   const { center, eight, four, six } = THREE_POINT_POINTS;
   const points = [
     { side: '8 o’clock', pos: eight },
@@ -129,11 +135,11 @@ export function build3PointPhases(speedSecs: number, holdSecs: number, reps: num
   for (let i = 1; i <= Math.max(reps, 1); i++) {
     const repText = `${i} of ${reps}`;
     for (const { side, pos } of points) {
-      phases.push({ label: 'Contract', x: center.x, y: center.y, scale: 0.7, durationMs: pulseMs, stepName: side, repText });
-      phases.push({ label: 'Relax', x: center.x, y: center.y, scale: 1, durationMs: pulseMs, stepName: side, repText });
-      phases.push({ label: 'Stretch', x: pos.x, y: pos.y, durationMs: moveMs, stepName: side, repText });
-      phases.push({ label: 'Hold', x: pos.x, y: pos.y, durationMs: holdMs, stepName: side, repText });
-      phases.push({ label: 'Return', x: center.x, y: center.y, durationMs: moveMs, stepName: side, repText });
+      phases.push({ label: 'Contract', x: center.x, y: center.y, scale: CONTRACT_SCALE, durationMs: pulseMs, stepName: side, repText });
+      phases.push({ label: 'Relax', x: center.x, y: center.y, scale: REST_SCALE, durationMs: pulseMs, stepName: side, repText });
+      phases.push({ label: 'Stretch', x: pos.x, y: pos.y, scale: REST_SCALE, durationMs: moveMs, stepName: side, repText });
+      phases.push({ label: 'Hold', x: pos.x, y: pos.y, scale: REST_SCALE, durationMs: holdMs, stepName: side, repText });
+      phases.push({ label: 'Return', x: center.x, y: center.y, scale: REST_SCALE, durationMs: moveMs, stepName: side, repText });
     }
   }
   return phases;

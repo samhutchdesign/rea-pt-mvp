@@ -148,6 +148,8 @@ export interface Exercise {
   defaultComboSets?: number;
   /** Default dilator size, for dilator animation-type exercises. Informational only — doesn't affect the animation. */
   defaultDilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
+  /** Default length of the contract/relax pulse before each direction, in seconds (3-Point Stretch). */
+  defaultContractSecs?: number;
 }
 
 export interface ProgramExercise {
@@ -186,6 +188,8 @@ export interface ProgramExercise {
   comboSets?: number;
   /** Dilator size, for dilator animation-type exercises. Informational only — doesn't affect the animation. */
   dilatorSize?: 'Small' | 'Medium' | 'Large' | 'Extra Large';
+  /** Length of the contract/relax pulse before each direction, in seconds (3-Point Stretch). */
+  contractSecs?: number;
 }
 
 export interface Program {
