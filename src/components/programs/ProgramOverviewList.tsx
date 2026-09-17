@@ -22,7 +22,7 @@ function rowSummary(ex: Exercise, row: ProgramRow): string {
     case 'pf-elevator':
       return `${row.sets} Sets / ${row.reps} Reps / ${row.stages ?? ex.defaultStages ?? 4} Stages / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 0.6}s Speed`;
     case 'pf-reverse-kegel':
-      return `${row.sets} Sets / ${row.reps} Reps / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 1.2}s Speed / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
+      return `${row.sets} Sets / ${row.reps} Reps / ${row.speedSecs ?? ex.defaultSpeedSecs ?? 1.2}s Speed / ${row.holdSecs} Sec Hold / ${row.restSecs ?? ex.defaultRestSecs ?? 0} Sec Rest`;
     case 'pf-the-knack':
       return `Practiced ${(row.frequency ?? ex.defaultFrequency ?? 'Daily').toLowerCase()}`;
     case 'pf-combo-full-range-quick-flicks': {

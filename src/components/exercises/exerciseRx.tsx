@@ -105,7 +105,7 @@ export function rxSummary(ex: Exercise | null | undefined, rx: RxValues): string
     case 'pf-elevator':
       return `${rx.sets} sets × ${rx.reps} reps, ${rx.stages} stages, ${rx.speedSecs}s speed, ${rx.stagePauseSecs}s pause`;
     case 'pf-reverse-kegel':
-      return `${rx.sets} sets × ${rx.reps} reps, ${rx.speedSecs}s speed, ${rx.restSecs}s rest`;
+      return `${rx.sets} sets × ${rx.reps} reps, ${rx.speedSecs}s speed, ${rx.holdSecs}s hold, ${rx.restSecs}s rest`;
     case 'pf-the-knack':
       return `Practiced ${rx.frequency.toLowerCase()}`;
     case 'pf-combo-full-range-quick-flicks':
@@ -237,6 +237,7 @@ export function ExerciseMarkerFields({ exercise, values, onChange }: { exercise:
           <div className="flex flex-wrap gap-2">
             {setsRepsFields}
             <CompactField value={values.speedSecs} unitSingular="Sec Speed" unitPlural="Sec Speed" onChange={(v) => onChange({ speedSecs: v })} />
+            <CompactField value={values.holdSecs} unitSingular="Sec Hold" unitPlural="Sec Hold" onChange={(v) => onChange({ holdSecs: v })} />
             <CompactField value={values.restSecs} unitSingular="Sec Rest" unitPlural="Sec Rest" onChange={(v) => onChange({ restSecs: v })} />
           </div>
           {frequencyField}

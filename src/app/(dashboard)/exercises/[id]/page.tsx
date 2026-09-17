@@ -273,14 +273,16 @@ function ExerciseDetailContent({ id }: { id: string }) {
           ) : ex.animationType === 'pf-reverse-kegel' ? (
             <div className="relative mb-10 w-full aspect-video rounded-lg border border-secondary overflow-hidden">
               <ReverseKegelAnimation
-                key={`${rx.speedSecs}-${rx.restSecs}-${rx.reps}`}
+                key={`${rx.speedSecs}-${rx.holdSecs}-${rx.restSecs}-${rx.reps}`}
                 speedSecs={rx.speedSecs}
+                holdSecs={rx.holdSecs}
                 restSecs={rx.restSecs}
                 reps={rx.reps}
                 className="absolute inset-0"
               />
               <ParametersCard expanded={paramsExpanded} onExpandedChange={setParamsExpanded}>
                 <ParameterSlider label="Speed" value={rx.speedSecs} unit="s" min={0.5} max={3} step={0.1} onChange={(v) => patchRx({ speedSecs: v })} />
+                <ParameterSlider label="Hold" value={rx.holdSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ holdSecs: v })} />
                 <ParameterSlider label="Rest" value={rx.restSecs} unit="s" min={1} max={15} onChange={(v) => patchRx({ restSecs: v })} />
                 <CompactField value={rx.reps} unitSingular="Rep" unitPlural="Reps" onChange={(v) => patchRx({ reps: v })} />
               </ParametersCard>

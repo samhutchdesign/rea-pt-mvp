@@ -2132,7 +2132,7 @@ const mockExercisesRaw: ExerciseBase[] = [
       muscle: ['Levator ani; Coccygeus; Urogenital diaphragm'],
       bodyPart: ['Pelvic floor'],
     },
-    defaultSets: 3, defaultReps: 8, defaultHoldSecs: 0, defaultFrequency: 'Daily',
+    defaultSets: 3, defaultReps: 8, defaultHoldSecs: 5, defaultFrequency: 'Daily',
     isFavorite: false, usageCount: 0, createdAt: '2026-09-16',
     animationType: 'pf-reverse-kegel', defaultStartingPosition: 'Lying', defaultRestSecs: 5, defaultSpeedSecs: 1.2,
   },
