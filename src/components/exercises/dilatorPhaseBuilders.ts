@@ -32,15 +32,27 @@ export const THREE_POINT_POINTS = {
   six: { x: 75, y: 90 },
 };
 
-// Two control points per side (rather than J Curve/Half U's single midpoint)
-// so the trace can follow a cubic curve that hugs alongside the oval's own
-// curvature — bulging out gradually, then narrowing back in near the
-// bottom — instead of cutting straight out to a point (which reads as a
-// sharp V rather than a curve echoing the oval's shape).
+// The trace is a true ellipse concentric with the main oval in DilatorVisual
+// (same cx/cy/ry — only rx differs, wider) rather than a hand-drawn curve.
+// Sharing cy/ry means the trace's top and bottom points are mathematically
+// identical to the oval's own top and bottom vertex, so the two lines meet
+// exactly there and stay a consistent distance apart along the way, reading
+// as "directly alongside" the oval instead of an arbitrary bulge.
+const OVAL = { cx: 75, cy: 50, ry: 32 };
+const HALF_U_RX = 24; // wider than the oval's own rx (14) — the outward gap
+
+function ellipsePoint(angleDeg: number, rx: number) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: OVAL.cx + rx * Math.cos(rad), y: OVAL.cy + OVAL.ry * Math.sin(rad) };
+}
+
 export const HALF_U_POINTS = {
-  top: { x: 75, y: 18 },
-  left: { c1: { x: 60, y: 38 }, c2: { x: 55, y: 58 }, out: { x: 60, y: 80 } },
-  right: { c1: { x: 90, y: 38 }, c2: { x: 95, y: 58 }, out: { x: 90, y: 80 } },
+  top: { x: OVAL.cx, y: OVAL.cy - OVAL.ry },
+  bottom: { x: OVAL.cx, y: OVAL.cy + OVAL.ry },
+  // Waypoints along the left/right half of the trace ellipse, walking from
+  // top (270°) down through the side (180°/0°) to bottom (90°).
+  left: [ellipsePoint(225, HALF_U_RX), ellipsePoint(180, HALF_U_RX), ellipsePoint(135, HALF_U_RX)],
+  right: [ellipsePoint(315, HALF_U_RX), ellipsePoint(0, HALF_U_RX), ellipsePoint(45, HALF_U_RX)],
 };
 
 export const J_CURVE_TRACES = [
@@ -54,9 +66,11 @@ export const THREE_POINT_TRACES = [
   `M ${THREE_POINT_POINTS.center.x} ${THREE_POINT_POINTS.center.y} L ${THREE_POINT_POINTS.six.x} ${THREE_POINT_POINTS.six.y}`,
 ];
 
+// A single elliptical-arc command draws an exact half-ellipse — sweep-flag 0
+// goes top-to-bottom via the left side, 1 via the right side.
 export const HALF_U_TRACES = [
-  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} C ${HALF_U_POINTS.left.c1.x} ${HALF_U_POINTS.left.c1.y} ${HALF_U_POINTS.left.c2.x} ${HALF_U_POINTS.left.c2.y} ${HALF_U_POINTS.left.out.x} ${HALF_U_POINTS.left.out.y}`,
-  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} C ${HALF_U_POINTS.right.c1.x} ${HALF_U_POINTS.right.c1.y} ${HALF_U_POINTS.right.c2.x} ${HALF_U_POINTS.right.c2.y} ${HALF_U_POINTS.right.out.x} ${HALF_U_POINTS.right.out.y}`,
+  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} A ${HALF_U_RX} ${OVAL.ry} 0 0 0 ${HALF_U_POINTS.bottom.x} ${HALF_U_POINTS.bottom.y}`,
+  `M ${HALF_U_POINTS.top.x} ${HALF_U_POINTS.top.y} A ${HALF_U_RX} ${OVAL.ry} 0 0 1 ${HALF_U_POINTS.bottom.x} ${HALF_U_POINTS.bottom.y}`,
 ];
 
 /**
@@ -115,18 +129,25 @@ export function build3PointPhases(speedSecs: number, holdSecs: number, reps: num
  */
 export function buildHalfUPhases(speedSecs: number, reps: number): DilatorPhase[] {
   const moveMs = Math.max(speedSecs, 0.1) * 1000;
-  const { top, left, right } = HALF_U_POINTS;
+  const { top, bottom, left, right } = HALF_U_POINTS;
   const phases: DilatorPhase[] = [];
   for (let i = 1; i <= Math.max(reps, 1); i++) {
     const repText = `${i} of ${reps}`;
-    const { side, c1, c2, out } = i % 2 === 1 ? { side: 'Left', ...left } : { side: 'Right', ...right };
-    // Three waypoints along the curve (rather than one) so the CSS-transitioned
-    // dot approximates the same cubic curve as the static trace instead of
-    // cutting a straight line to the final point.
-    phases.push({ label: 'Stretch', x: c1.x, y: c1.y, durationMs: moveMs * 0.35, stepName: side, repText });
-    phases.push({ label: 'Stretch', x: c2.x, y: c2.y, durationMs: moveMs * 0.35, stepName: side, repText });
-    phases.push({ label: 'Stretch', x: out.x, y: out.y, durationMs: moveMs * 0.3, stepName: side, repText });
-    phases.push({ label: 'Return', x: top.x, y: top.y, durationMs: moveMs, stepName: side, repText });
+    const side = i % 2 === 1 ? 'Left' : 'Right';
+    const waypoints = i % 2 === 1 ? left : right;
+    // Walk out along the curve (top -> waypoints -> bottom), each leg an
+    // equal fraction of speedSecs so the dot approximates the same
+    // elliptical arc as the static trace, then retrace the same waypoints
+    // back up to top instead of cutting straight through the middle.
+    const outbound = [...waypoints, bottom];
+    const inbound = [...waypoints].reverse().concat(top);
+    const legMs = moveMs / outbound.length;
+    for (const p of outbound) {
+      phases.push({ label: 'Stretch', x: p.x, y: p.y, durationMs: legMs, stepName: side, repText });
+    }
+    for (const p of inbound) {
+      phases.push({ label: 'Return', x: p.x, y: p.y, durationMs: legMs, stepName: side, repText });
+    }
   }
   return phases;
 }
