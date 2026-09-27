@@ -30,7 +30,7 @@ export default function PatientPractitionerPage() {
         <p className="text-secondary">No practitioner has been assigned yet.</p>
       ) : (
         <>
-          <div className="flex items-center gap-4">
+          <div className="mb-4 flex items-center gap-4">
             <Avatar
               size="xl"
               src={practitioner.avatarUrl}
