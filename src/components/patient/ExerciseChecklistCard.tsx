@@ -43,7 +43,7 @@ export default function ExerciseChecklistCard({
         >
           {completed && <Check size={24} strokeWidth={2} className="text-brand-700" />}
         </button>
-        {!isLast && <div className="w-px flex-1 bg-secondary sm:hidden" />}
+        {!isLast && <div className="w-px flex-1 bg-secondary" />}
       </div>
 
       <Link

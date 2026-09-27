@@ -73,7 +73,7 @@ export default function PatientProgramListPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-start sm:gap-4">
+      <div className="flex flex-col gap-3">
         {program.exercises.map((programExercise, i) => {
           const exercise = mockExercises.find((e) => e.id === programExercise.exerciseId);
           if (!exercise) return null;
