@@ -12,7 +12,7 @@ interface PatientAvatarMenuProps {
 }
 
 const NAV_ITEMS = [
-  { key: 'practitioner', label: 'Your Practitioner', icon: Building2, href: null },
+  { key: 'practitioner', label: 'Your Practitioner', icon: Building2, href: '/practitioner' },
   { key: 'profile', label: 'Your Profile', icon: CircleUserRound, href: '/profile' },
   { key: 'settings', label: 'Settings', icon: Settings, href: null },
 ] as const;
