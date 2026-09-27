@@ -29,7 +29,7 @@ export default function PatientProfilePage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pt-7">
       <Link
         href="/program"
         className="flex h-12 w-fit items-center gap-2 rounded-lg border border-tertiary bg-primary px-4 text-base text-primary hover:bg-secondary"
