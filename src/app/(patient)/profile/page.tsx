@@ -46,7 +46,6 @@ export default function PatientProfilePage() {
           <p className="font-display text-lg font-medium tracking-[0.1px] text-primary">
             {patient.firstName} {patient.lastName}
           </p>
-          <p className="text-sm text-secondary">Name changes require your practitioner&apos;s help.</p>
         </div>
       </div>
 
