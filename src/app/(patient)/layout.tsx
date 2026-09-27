@@ -10,7 +10,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     <>
       <DemoRoleBar />
       <main className="min-h-screen bg-secondary_alt pt-10">
-        <div className="mx-auto w-full max-w-[720px] px-4 py-7">{children}</div>
+        <div className="mx-auto w-full max-w-[720px] px-4 pt-7">{children}</div>
       </main>
     </>
   );
