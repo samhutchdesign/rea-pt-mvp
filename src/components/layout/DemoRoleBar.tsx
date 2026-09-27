@@ -17,6 +17,7 @@ const VIEWING_AS: { value: ViewingAs; label: string; fullOnly?: boolean; hidden?
   { value: 'editor2', label: 'User: Practitioner' },
   { value: 'editor3', label: 'User: PT Multi Org', fullOnly: true },
   { value: 'limited', label: 'User: Staff' },
+  { value: 'patient', label: 'User: Patient' },
 ];
 
 const VIEW_MODES = [
@@ -101,7 +102,16 @@ export default function DemoRoleBar() {
       </span>
       <select
         value={currentViewingAs}
-        onChange={(e) => switchViewingAs(e.target.value as ViewingAs)}
+        onChange={(e) => {
+          const value = e.target.value as ViewingAs;
+          const wasPatient = currentRole === 'patient';
+          switchViewingAs(value);
+          if (value === 'patient') {
+            router.push('/program');
+          } else if (wasPatient) {
+            router.push('/');
+          }
+        }}
         style={{
           cursor: 'pointer',
           border: '1px solid #D0BCFF',

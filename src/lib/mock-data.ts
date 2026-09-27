@@ -2417,7 +2417,7 @@ export const mockPrograms: Program[] = [
     description: 'Progressive core reactivation program targeting the transversus abdominis to close abdominal separation.',
     frequency: 'Daily',
     exercises: [
-      { exerciseId: 'ex11', sets: 3, reps: 10, holdSecs: 0, adherence: 91 },
+      { exerciseId: 'ex11', sets: 3, reps: 10, holdSecs: 0, cue: 'Exhale and let the pelvic floor gently lift on its own — don\'t actively squeeze, just let the breath do the work.', adherence: 91 },
       { exerciseId: 'ex16', sets: 3, reps: 10, holdSecs: 0, adherence: 79 },
       { exerciseId: 'ex17', sets: 3, reps: 10, holdSecs: 0, adherence: 74 },
       { exerciseId: 'ex18', sets: 3, reps: 10, holdSecs: 0, adherence: 68 },

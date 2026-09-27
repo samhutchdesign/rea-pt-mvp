@@ -1,4 +1,4 @@
-export type UserRole = 'owner' | 'admin' | 'editor' | 'limited';
+export type UserRole = 'owner' | 'admin' | 'editor' | 'limited' | 'patient';
 
 export interface Physio {
   id: string;
