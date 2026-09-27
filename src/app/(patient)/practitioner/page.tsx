@@ -30,14 +30,14 @@ export default function PatientPractitionerPage() {
         <p className="text-secondary">No practitioner has been assigned yet.</p>
       ) : (
         <>
-          <div className="mb-4 flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <Avatar
               size="xl"
               src={practitioner.avatarUrl}
               alt={`${practitioner.firstName} ${practitioner.lastName}`}
               initials={practitioner.avatarInitials}
             />
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
               <p className="font-display text-lg font-medium tracking-[0.1px] text-primary">
                 {practitioner.firstName} {practitioner.lastName}
                 {practitioner.credentials && <span className="text-secondary">, {practitioner.credentials}</span>}
