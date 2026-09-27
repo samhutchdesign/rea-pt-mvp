@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { ArrowLeft, Building2, CircleUserRound, ExternalLink, LogOut, Settings } from 'lucide-react';
+import { ArrowLeft, Building2, CircleUserRound, ExternalLink, LogOut } from 'lucide-react';
 import { cx } from '@/utils/cx';
 
 interface PatientAvatarMenuProps {
@@ -14,7 +14,6 @@ interface PatientAvatarMenuProps {
 const NAV_ITEMS = [
   { key: 'practitioner', label: 'Your Practitioner', icon: Building2, href: '/practitioner' },
   { key: 'profile', label: 'Your Profile', icon: CircleUserRound, href: '/profile' },
-  { key: 'settings', label: 'Settings', icon: Settings, href: null },
 ] as const;
 
 const LEGAL_ITEMS = ['About Rea', 'Terms & Conditions', 'Privacy Policy'];
