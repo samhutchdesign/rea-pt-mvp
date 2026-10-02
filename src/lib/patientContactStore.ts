@@ -5,6 +5,7 @@ import type { Patient } from './types';
 export interface ContactInfo {
   firstName: string;
   lastName: string;
+  pronouns: string;
   email: string;
   phone: string;
   address: string;
@@ -43,6 +44,7 @@ export function getEffectiveContactInfo(patient: Patient, overrides: Map<string,
   return overrides.get(patient.id) ?? {
     firstName: patient.firstName,
     lastName: patient.lastName,
+    pronouns: patient.pronouns ?? '',
     email: patient.email,
     phone: patient.phone,
     address: patient.address,

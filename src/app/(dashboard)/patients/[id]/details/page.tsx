@@ -2,48 +2,55 @@
 import { use, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/base/buttons/button';
-import { Input } from '@/components/base/input/input';
-import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/modal';
 import { Alert } from '@/components/ui/alert';
 import { mockPatients } from '@/lib/mock-data';
 import { getUploadedData } from '@/lib/uploadStore';
 import type { PatientMetrics, InjuryHistory, ObstetricPelvicHealth, PMHx, SOHx, LifestyleHabits } from '@/lib/types';
 import { Pencil, Star } from 'lucide-react';
 
-function InfoField({ label, value, hideEmpty }: { label: string; value?: string; hideEmpty: boolean }) {
-  if (hideEmpty && (!value || value === 'N/A')) return null;
+function SectionCard({
+  title,
+  isEditing,
+  onEdit,
+  onCancel,
+  onSave,
+  children,
+}: {
+  title: string;
+  isEditing: boolean;
+  onEdit: () => void;
+  onCancel: () => void;
+  onSave: () => void;
+  children: React.ReactNode;
+}) {
   return (
-    <div>
-      <span className="block mb-0.5 text-xs text-secondary">{label}</span>
-      <div className="rounded-lg border border-secondary bg-secondary_alt px-3 py-2 text-base text-primary min-h-[38px]">
-        {value || 'N/A'}
-      </div>
-    </div>
-  );
-}
-
-function SectionCard({ title, children, onEdit }: { title: string; children: React.ReactNode; onEdit: () => void }) {
-  return (
-    <div className="rounded-xl border border-secondary bg-primary p-5 mb-4">
-      <div className="flex justify-between items-center mb-5">
-        <span className="text-base font-semibold text-primary">{title}</span>
-        <Button color="tertiary" size="xs" onPress={onEdit} iconLeading={(p) => <Pencil {...p} strokeWidth={1.25} />} />
-      </div>
+    <div className="relative flex w-full max-w-[800px] flex-col gap-8 rounded-lg border border-secondary bg-primary p-10 mb-4">
+      <span className="font-display text-md font-medium tracking-[0.1px] text-primary">{title}</span>
+      {!isEditing && (
+        <button onClick={onEdit} className="absolute right-6 top-6 text-tertiary hover:text-secondary transition-colors p-1">
+          <Pencil size={24} strokeWidth={1.25} />
+        </button>
+      )}
       {children}
+      {isEditing && (
+        <div className="flex w-full justify-end gap-4">
+          <Button color="secondary" size="sm" onPress={onCancel}>Cancel</Button>
+          <Button color="primary" size="sm" onPress={onSave}>Save Changes</Button>
+        </div>
+      )}
     </div>
   );
 }
 
-const SECTION_TITLES: Record<string, string> = {
-  metrics: 'Patient Metrics',
-  injury: 'Injury or Condition History',
-  obstetric: 'Obstetric & Pelvic Health',
-  pmhx: 'PMHx (Past Medical / Hospitalization History)',
-  sohx: 'SOHx (Social History)',
-  lifestyle: 'Lifestyle & Habits',
+// Pairs two fields into a row of two equal-width columns, matching the design's
+// 2-col grid. A hidden/empty field just leaves its column blank rather than
+// stretching its sibling — and a row where both fields are hidden renders nothing,
+// so sparse real patient data doesn't leave ragged empty columns like a naive
+// left/right grouping would.
+const fieldRow = (a: React.ReactNode, b?: React.ReactNode) => {
+  if (!a && !b) return null;
+  return <div className="grid w-full grid-cols-2 gap-8">{a}{b}</div>;
 };
-
-const fieldLabel = (label: string) => <div className="mb-1 text-[13px] text-secondary">{label}</div>;
 
 export default function PatientDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -107,8 +114,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
       }
     : patient?.lifestyle;
 
-  const [hideEmpty, setHideEmpty] = useState(false);
-  const [editSection, setEditSection] = useState<string | null>(null);
+  const [editing, setEditing] = useState<Record<string, boolean>>({});
   const [draftValues, setDraftValues] = useState<Record<string, string>>({});
 
   const [localMetrics, setLocalMetrics] = useState<PatientMetrics | undefined>(initialMetrics);
@@ -119,6 +125,8 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
   const [localLifestyle, setLocalLifestyle] = useState<LifestyleHabits | undefined>(initialLifestyle);
 
   if (!patient) return null;
+
+  const isEditingSection = (section: string) => !!editing[section];
 
   const setDraft = (key: string, val: string) => setDraftValues((d) => ({ ...d, [key]: val }));
 
@@ -177,12 +185,16 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         alcohol: localLifestyle?.alcohol ?? '',
       };
     }
-    setDraftValues(values);
-    setEditSection(section);
+    setDraftValues((d) => ({ ...d, ...values }));
+    setEditing((e) => ({ ...e, [section]: true }));
   };
 
-  const saveEdit = () => {
-    if (editSection === 'metrics') {
+  const cancelEdit = (section: string) => {
+    setEditing((e) => ({ ...e, [section]: false }));
+  };
+
+  const saveEdit = (section: string) => {
+    if (section === 'metrics') {
       setLocalMetrics({
         age: parseInt(draftValues.age) || 0,
         sexAssignedAtBirth: draftValues.sexAssignedAtBirth,
@@ -190,7 +202,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         weight: draftValues.weight,
         handDominance: draftValues.handDominance,
       });
-    } else if (editSection === 'injury') {
+    } else if (section === 'injury') {
       setLocalInjury({
         mechanism: draftValues.mechanism,
         dateOfOnset: draftValues.dateOfOnset,
@@ -202,12 +214,12 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         management: draftValues.management,
         homeEquipment: draftValues.homeEquipment,
       });
-    } else if (editSection === 'obstetric') {
+    } else if (section === 'obstetric') {
       setLocalObstetric({
         obstetricsHistory: draftValues.obstetricsHistory,
         bladderBowelSymptoms: draftValues.bladderBowelSymptoms,
       });
-    } else if (editSection === 'pmhx') {
+    } else if (section === 'pmhx') {
       setLocalPmhx({
         previousEpisode: draftValues.previousEpisode,
         pmhx: draftValues.pmhx,
@@ -219,7 +231,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         referralReason: draftValues.referralReason,
         otherConditions: draftValues.otherConditions,
       });
-    } else if (editSection === 'sohx') {
+    } else if (section === 'sohx') {
       setLocalSohx({
         job: draftValues.job,
         hobbies: draftValues.hobbies,
@@ -227,7 +239,7 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         physicalEnvironment: draftValues.physicalEnvironment,
         clientGoals: draftValues.clientGoals,
       });
-    } else if (editSection === 'lifestyle') {
+    } else if (section === 'lifestyle') {
       setLocalLifestyle({
         diet: draftValues.diet,
         exercise: draftValues.exercise,
@@ -235,86 +247,48 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         alcohol: draftValues.alcohol,
       });
     }
-    setEditSection(null);
+    setEditing((e) => ({ ...e, [section]: false }));
     toast.success('Changes saved.');
   };
 
-  const txt = (label: string, key: string) => (
-    <div className="flex-1">
-      {fieldLabel(label)}
-      <Input value={draftValues[key] ?? ''} onChange={(v) => setDraft(key, v)} />
-    </div>
-  );
-
-  const area = (label: string, key: string, rows = 2) => (
-    <div>
-      {fieldLabel(label)}
-      <textarea
-        rows={rows}
-        value={draftValues[key] ?? ''}
-        onChange={(e) => setDraft(key, e.target.value)}
-        className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-base text-primary focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
-      />
-    </div>
-  );
-
-  const renderDialogFields = () => {
-    if (editSection === 'metrics') return (
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4">{txt('Age', 'age')}{txt('Sex Assigned at Birth', 'sexAssignedAtBirth')}</div>
-        <div className="flex gap-4">{txt('Height', 'height')}{txt('Weight', 'weight')}</div>
-        {txt('Hand Dominance', 'handDominance')}
+  // Single field renderer shared by view and edit states, so the label sits the
+  // same distance from the box either way — matches the Contact tab pattern.
+  const field = (label: string, key: string, value: string | undefined, isEditing: boolean) => {
+    if (!isEditing && (!value || value === 'N/A')) return null;
+    return (
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-secondary">{label}</span>
+        {isEditing ? (
+          <input
+            type="text"
+            value={draftValues[key] ?? ''}
+            onChange={(e) => setDraft(key, e.target.value)}
+            className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-base text-primary focus:outline-none focus:ring-2 focus:ring-brand-600"
+          />
+        ) : (
+          <span className="block text-base text-primary">{value}</span>
+        )}
       </div>
     );
+  };
 
-    if (editSection === 'injury') return (
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4">{txt('Mechanism of Injury / Condition', 'mechanism')}{txt('Date of Onset', 'dateOfOnset')}</div>
-        <div className="flex gap-4">{txt('Type of Surgery / Procedure', 'surgeryType')}{txt('Date of Surgery', 'surgeryDate')}</div>
-        {txt('Starting Pain Level', 'painLevel')}
-        {area('Evolution of Symptoms', 'symptomEvolution')}
-        {area('Functional Mobility', 'functionalMobility')}
-        {area('Management of Problem to Date', 'management')}
-        {txt('Home Equipment', 'homeEquipment')}
+  const area = (label: string, key: string, value: string | undefined, isEditing: boolean, rows = 2) => {
+    if (!isEditing && (!value || value === 'N/A')) return null;
+    return (
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-secondary">{label}</span>
+        {isEditing ? (
+          <textarea
+            rows={rows}
+            value={draftValues[key] ?? ''}
+            onChange={(e) => setDraft(key, e.target.value)}
+            className="w-full rounded-lg bg-primary ring-1 ring-inset ring-primary px-3 py-2 text-base text-primary focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
+          />
+        ) : (
+          <p className="m-0 whitespace-pre-wrap text-base text-primary">{value}</p>
+        )}
       </div>
     );
-
-    if (editSection === 'obstetric') return (
-      <div className="flex flex-col gap-4">
-        {area('Obstetric History', 'obstetricsHistory', 3)}
-        {area('Bladder & Bowel Symptoms', 'bladderBowelSymptoms', 3)}
-      </div>
-    );
-
-    if (editSection === 'pmhx') return (
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4">{txt('Referring Physician', 'referringPhysician')}{txt('Referral Reason', 'referralReason')}</div>
-        <div className="flex gap-4">{txt('Previous Episode', 'previousEpisode')}{txt('Known Allergies', 'allergies')}</div>
-        {txt('PMHx', 'pmhx')}
-        {area('Previous Treatments', 'previousTreatments')}
-        {area('Medication List', 'medicationList')}
-        {area('Exams, Diagnostics, Tests', 'exams')}
-        {area('Other Conditions', 'otherConditions', 3)}
-      </div>
-    );
-
-    if (editSection === 'sohx') return (
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4">{txt('Job', 'job')}{txt('Hobbies', 'hobbies')}</div>
-        {area('Social Environment', 'socialEnvironment')}
-        {area('Physical Environment', 'physicalEnvironment')}
-        {area('Client Goals', 'clientGoals')}
-      </div>
-    );
-
-    if (editSection === 'lifestyle') return (
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4">{txt('Diet', 'diet')}{txt('Exercise', 'exercise')}</div>
-        <div className="flex gap-4">{txt('Smoker?', 'smoker')}{txt('Drink Alcohol?', 'alcohol')}</div>
-      </div>
-    );
-
-    return null;
   };
 
   return (
@@ -331,112 +305,121 @@ export default function PatientDetailsPage({ params }: { params: Promise<{ id: s
         </Alert>
       )}
 
-      <div className="flex justify-end gap-4 mt-10 mb-6">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <span className="relative inline-block">
-            <input
-              type="checkbox"
-              className="peer sr-only"
-              checked={hideEmpty}
-              onChange={(e) => setHideEmpty(e.target.checked)}
-            />
-            <span className="block h-5 w-9 rounded-full bg-secondary transition-colors peer-checked:bg-brand-600" />
-            <span className="absolute left-0.5 top-0.5 block h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
-          </span>
-          <span className="text-base text-primary">Remove N/A or Empty States</span>
-        </label>
+      <div className="mt-10">
+        <SectionCard
+          title="Patient Metrics"
+          isEditing={isEditingSection('metrics')}
+          onEdit={() => openEdit('metrics')}
+          onCancel={() => cancelEdit('metrics')}
+          onSave={() => saveEdit('metrics')}
+        >
+          <div className="flex w-full flex-col gap-7">
+            {fieldRow(
+              field('Age', 'age', localMetrics?.age?.toString(), isEditingSection('metrics')),
+              field('Sex Assigned at Birth', 'sexAssignedAtBirth', localMetrics?.sexAssignedAtBirth, isEditingSection('metrics')),
+            )}
+            {fieldRow(
+              field('Height', 'height', localMetrics?.height, isEditingSection('metrics')),
+              field('Weight', 'weight', localMetrics?.weight, isEditingSection('metrics')),
+            )}
+            {fieldRow(field('Hand Dominance', 'handDominance', localMetrics?.handDominance, isEditingSection('metrics')))}
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          title="Injury or Condition History"
+          isEditing={isEditingSection('injury')}
+          onEdit={() => openEdit('injury')}
+          onCancel={() => cancelEdit('injury')}
+          onSave={() => saveEdit('injury')}
+        >
+          <div className="flex w-full flex-col gap-7">
+            {fieldRow(
+              field('Mechanism of Injury / Condition', 'mechanism', localInjury?.mechanism, isEditingSection('injury')),
+              field('Date of Onset', 'dateOfOnset', localInjury?.dateOfOnset, isEditingSection('injury')),
+            )}
+            {fieldRow(
+              field('Type of Surgery / Procedure', 'surgeryType', localInjury?.surgeryType, isEditingSection('injury')),
+              field('Date of Surgery', 'surgeryDate', localInjury?.surgeryDate, isEditingSection('injury')),
+            )}
+            {fieldRow(field('Starting Pain Level', 'painLevel', localInjury?.painLevel, isEditingSection('injury')))}
+          </div>
+          {area('Evolution of Symptoms', 'symptomEvolution', localInjury?.symptomEvolution, isEditingSection('injury'))}
+          {area('Functional Mobility', 'functionalMobility', localInjury?.functionalMobility, isEditingSection('injury'))}
+          {area('Management of Problem to Date', 'management', localInjury?.management, isEditingSection('injury'))}
+          {field('Home Equipment', 'homeEquipment', localInjury?.homeEquipment, isEditingSection('injury'))}
+        </SectionCard>
+
+        <SectionCard
+          title="PMHx (Past Medical / Hospitalization History)"
+          isEditing={isEditingSection('pmhx')}
+          onEdit={() => openEdit('pmhx')}
+          onCancel={() => cancelEdit('pmhx')}
+          onSave={() => saveEdit('pmhx')}
+        >
+          <div className="flex w-full flex-col gap-7">
+            {fieldRow(
+              field('Referring Physician', 'referringPhysician', localPmhx?.referringPhysician, isEditingSection('pmhx')),
+              field('Referral Reason', 'referralReason', localPmhx?.referralReason, isEditingSection('pmhx')),
+            )}
+            {fieldRow(
+              field('Previous Episode', 'previousEpisode', localPmhx?.previousEpisode, isEditingSection('pmhx')),
+              field('Known Allergies', 'allergies', localPmhx?.allergies, isEditingSection('pmhx')),
+            )}
+            {fieldRow(field('PMHx', 'pmhx', localPmhx?.pmhx, isEditingSection('pmhx')))}
+          </div>
+          {area('Previous Treatments', 'previousTreatments', localPmhx?.previousTreatments, isEditingSection('pmhx'))}
+          {area('Medication List', 'medicationList', localPmhx?.medicationList, isEditingSection('pmhx'))}
+          {area('Exams, Diagnostics, Tests', 'exams', localPmhx?.exams, isEditingSection('pmhx'))}
+          {area('Other Conditions', 'otherConditions', localPmhx?.otherConditions, isEditingSection('pmhx'), 3)}
+        </SectionCard>
+
+        <SectionCard
+          title="SOHx (Social History)"
+          isEditing={isEditingSection('sohx')}
+          onEdit={() => openEdit('sohx')}
+          onCancel={() => cancelEdit('sohx')}
+          onSave={() => saveEdit('sohx')}
+        >
+          {fieldRow(
+            field('Job', 'job', localSohx?.job, isEditingSection('sohx')),
+            field('Hobbies', 'hobbies', localSohx?.hobbies, isEditingSection('sohx')),
+          )}
+          {area('Social Environment', 'socialEnvironment', localSohx?.socialEnvironment, isEditingSection('sohx'))}
+          {area('Physical Environment', 'physicalEnvironment', localSohx?.physicalEnvironment, isEditingSection('sohx'))}
+          {area('Client Goals', 'clientGoals', localSohx?.clientGoals, isEditingSection('sohx'))}
+        </SectionCard>
+
+        <SectionCard
+          title="Lifestyle & Habits"
+          isEditing={isEditingSection('lifestyle')}
+          onEdit={() => openEdit('lifestyle')}
+          onCancel={() => cancelEdit('lifestyle')}
+          onSave={() => saveEdit('lifestyle')}
+        >
+          <div className="flex w-full flex-col gap-7">
+            {fieldRow(
+              field('Diet', 'diet', localLifestyle?.diet, isEditingSection('lifestyle')),
+              field('Exercise', 'exercise', localLifestyle?.exercise, isEditingSection('lifestyle')),
+            )}
+            {fieldRow(
+              field('Smoker?', 'smoker', localLifestyle?.smoker, isEditingSection('lifestyle')),
+              field('Drink Alcohol?', 'alcohol', localLifestyle?.alcohol, isEditingSection('lifestyle')),
+            )}
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          title="Obstetric & Pelvic Health"
+          isEditing={isEditingSection('obstetric')}
+          onEdit={() => openEdit('obstetric')}
+          onCancel={() => cancelEdit('obstetric')}
+          onSave={() => saveEdit('obstetric')}
+        >
+          {area('Obstetric History', 'obstetricsHistory', localObstetric?.obstetricsHistory, isEditingSection('obstetric'), 3)}
+          {area('Bladder & Bowel Symptoms', 'bladderBowelSymptoms', localObstetric?.bladderBowelSymptoms, isEditingSection('obstetric'), 3)}
+        </SectionCard>
       </div>
-
-      <SectionCard title="Patient Metrics" onEdit={() => openEdit('metrics')}>
-        <div className="grid grid-cols-2 gap-4">
-          <InfoField label="Age" value={localMetrics?.age?.toString()} hideEmpty={hideEmpty} />
-          <InfoField label="Sex Assigned at Birth" value={localMetrics?.sexAssignedAtBirth} hideEmpty={hideEmpty} />
-          <InfoField label="Height" value={localMetrics?.height} hideEmpty={hideEmpty} />
-          <InfoField label="Weight" value={localMetrics?.weight} hideEmpty={hideEmpty} />
-          <InfoField label="Hand Dominance" value={localMetrics?.handDominance} hideEmpty={hideEmpty} />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Injury or Condition History" onEdit={() => openEdit('injury')}>
-        <div className="grid grid-cols-2 gap-4">
-          <InfoField label="Mechanism of Injury / Condition" value={localInjury?.mechanism} hideEmpty={hideEmpty} />
-          <InfoField label="Date of Onset" value={localInjury?.dateOfOnset} hideEmpty={hideEmpty} />
-          <InfoField label="Type of Surgery / Procedure" value={localInjury?.surgeryType} hideEmpty={hideEmpty} />
-          <InfoField label="Date of Surgery" value={localInjury?.surgeryDate} hideEmpty={hideEmpty} />
-          <InfoField label="Starting Pain Level" value={localInjury?.painLevel} hideEmpty={hideEmpty} />
-        </div>
-        <div className="grid grid-cols-1 gap-4 mt-4">
-          <InfoField label="Evolution of Symptoms" value={localInjury?.symptomEvolution} hideEmpty={hideEmpty} />
-          <InfoField label="Functional Mobility" value={localInjury?.functionalMobility} hideEmpty={hideEmpty} />
-          <InfoField label="Management of Problem to Date" value={localInjury?.management} hideEmpty={hideEmpty} />
-          <InfoField label="Home Equipment" value={localInjury?.homeEquipment} hideEmpty={hideEmpty} />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="PMHx (Past Medical / Hospitalization History)" onEdit={() => openEdit('pmhx')}>
-        <div className="grid grid-cols-2 gap-4">
-          <InfoField label="Referring Physician" value={localPmhx?.referringPhysician} hideEmpty={hideEmpty} />
-          <InfoField label="Referral Reason" value={localPmhx?.referralReason} hideEmpty={hideEmpty} />
-          <InfoField label="Previous Episode" value={localPmhx?.previousEpisode} hideEmpty={hideEmpty} />
-          <InfoField label="Known Allergies" value={localPmhx?.allergies} hideEmpty={hideEmpty} />
-        </div>
-        <div className="grid grid-cols-1 gap-4 mt-4">
-          <InfoField label="PMHx" value={localPmhx?.pmhx} hideEmpty={hideEmpty} />
-          <InfoField label="Previous Treatments" value={localPmhx?.previousTreatments} hideEmpty={hideEmpty} />
-          <InfoField label="Medication List" value={localPmhx?.medicationList} hideEmpty={hideEmpty} />
-          <InfoField label="Exams, Diagnostics, Tests" value={localPmhx?.exams} hideEmpty={hideEmpty} />
-          <InfoField label="Other Conditions" value={localPmhx?.otherConditions} hideEmpty={hideEmpty} />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="SOHx (Social History)" onEdit={() => openEdit('sohx')}>
-        <div className="grid grid-cols-2 gap-4">
-          <InfoField label="Job" value={localSohx?.job} hideEmpty={hideEmpty} />
-          <InfoField label="Hobbies" value={localSohx?.hobbies} hideEmpty={hideEmpty} />
-        </div>
-        <div className="grid grid-cols-1 gap-4 mt-4">
-          <InfoField label="Social Environment" value={localSohx?.socialEnvironment} hideEmpty={hideEmpty} />
-          <InfoField label="Physical Environment" value={localSohx?.physicalEnvironment} hideEmpty={hideEmpty} />
-          <InfoField label="Client Goals" value={localSohx?.clientGoals} hideEmpty={hideEmpty} />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Lifestyle & Habits" onEdit={() => openEdit('lifestyle')}>
-        <div className="grid grid-cols-2 gap-4">
-          <InfoField label="Diet" value={localLifestyle?.diet} hideEmpty={hideEmpty} />
-          <InfoField label="Exercise" value={localLifestyle?.exercise} hideEmpty={hideEmpty} />
-          <InfoField label="Smoker?" value={localLifestyle?.smoker} hideEmpty={hideEmpty} />
-          <InfoField label="Drink Alcohol?" value={localLifestyle?.alcohol} hideEmpty={hideEmpty} />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Obstetric & Pelvic Health" onEdit={() => openEdit('obstetric')}>
-        <div className="grid grid-cols-1 gap-4">
-          <InfoField label="Obstetric History" value={localObstetric?.obstetricsHistory} hideEmpty={hideEmpty} />
-          <InfoField label="Bladder & Bowel Symptoms" value={localObstetric?.bladderBowelSymptoms} hideEmpty={hideEmpty} />
-        </div>
-      </SectionCard>
-
-      <ModalOverlay isOpen={!!editSection} onOpenChange={(open) => { if (!open) setEditSection(null); }}>
-        <Modal className="w-full min-w-[540px] max-w-2xl">
-          <Dialog>
-            <div className="flex w-full flex-col gap-8 p-8">
-              <h2 className="font-display m-0 text-[24px] leading-[32px] font-normal text-primary">
-                Edit {editSection ? SECTION_TITLES[editSection] : ''}
-              </h2>
-              {renderDialogFields()}
-              <div className="flex w-full justify-end gap-4">
-                <Button color="secondary" size="lg" onPress={() => setEditSection(null)}>
-                  Cancel
-                </Button>
-                <Button color="primary" size="lg" onPress={saveEdit}>
-                  Save Changes
-                </Button>
-              </div>
-            </div>
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
     </>
   );
 }

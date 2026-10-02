@@ -58,8 +58,8 @@ function rowSummary(ex: Exercise, row: ProgramRow): string {
 
 export function ProgramOverviewList({ rows, getExercise }: ProgramOverviewListProps) {
   return (
-    <div className="flex flex-col gap-5">
-      <span className="text-base font-bold text-primary">Program Overview</span>
+    <div className="flex w-full flex-col gap-6">
+      <span className="text-base font-normal text-primary">Program Overview</span>
       {rows.length === 0 ? (
         <span className="text-xs text-tertiary">No exercises added yet.</span>
       ) : (
@@ -67,17 +67,15 @@ export function ProgramOverviewList({ rows, getExercise }: ProgramOverviewListPr
           const ex = getExercise(row.exerciseId);
           if (!ex) return null;
           return (
-            <div key={row.exerciseId} className="flex items-start gap-3">
-              <div className="relative size-14 shrink-0 overflow-hidden rounded-lg">
-                <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
+            <div key={row.exerciseId} className="flex w-full items-center gap-4 bg-primary p-3">
+              <div className="relative h-[72px] w-[116px] shrink-0 overflow-hidden rounded-lg">
+                <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={20} />
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-display mb-0.5 truncate text-base font-semibold text-primary">{ex.name}</p>
-                <p className="mb-1.5 text-xs text-tertiary">
-                  {rowSummary(ex, row)}
-                </p>
+              <div className="flex min-w-0 flex-1 flex-col gap-4">
+                <span className="truncate font-display text-md leading-5 font-medium tracking-[0.1px] text-primary">{ex.name}</span>
+                <span className="text-xs text-primary">{rowSummary(ex, row)}</span>
                 {row.cue && (
-                  <span className="inline-block rounded-full border border-secondary bg-primary px-2 py-0.5 text-xs text-secondary">
+                  <span className="flex w-full items-center justify-center rounded-full bg-tertiary px-3 py-2 text-xs text-primary">
                     {cueLabel(row.cue)}
                   </span>
                 )}

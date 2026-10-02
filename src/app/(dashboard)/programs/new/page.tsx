@@ -513,37 +513,37 @@ function NewProgramContent() {
           onDrop={handleDrop}
           onDragEnd={handleDragEnd}
           onUpdateRow={updateRow}
-          onRemoveRow={removeExercise}
-          onPreview={setPreviewExercise}
         />
       ) : (
         /* Step 3: Program details */
         <div className="flex flex-1 min-h-0 overflow-hidden">
-          <div className="w-80 shrink-0 overflow-y-auto border-r border-secondary bg-secondary_alt px-6 py-6">
+          <div className="w-[530px] shrink-0 overflow-y-auto border-r border-secondary bg-secondary_alt py-10 pr-10 pl-[60px]">
             <ProgramOverviewList rows={programRows} getExercise={(id) => mockExercises.find((e) => e.id === id)} />
           </div>
-          <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
-            <div className="max-w-lg flex flex-col gap-5">
+          <div className="flex flex-1 min-h-0 flex-col items-center overflow-y-auto pt-10 pb-10">
+            <div className="flex w-full max-w-[680px] flex-col gap-7 px-10">
               <ProgramImageUpload value={imageUrl} onChange={setImageUrl} />
-              <Input
-                label="Program name"
-                placeholder="New program"
-                value={programName}
-                onChange={setProgramName}
-              />
-              <div>
-                <label className="block text-base font-medium text-secondary mb-1.5">Description</label>
+              <div className="flex w-full flex-col gap-2">
+                <span className="text-xs text-secondary">Program Name</span>
+                <Input
+                  placeholder="New program"
+                  value={programName}
+                  onChange={setProgramName}
+                />
+              </div>
+              <div className="flex w-full flex-col gap-2">
+                <span className="text-xs text-secondary">Description</span>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add a description for this program…"
                   rows={5}
-                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="w-full resize-none rounded-lg border border-secondary px-4 pt-4 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
-              <div>
-                <label className="block text-base font-medium text-secondary mb-1.5">Frequency</label>
-                <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)}>
+              <div className="flex w-[320px] flex-col gap-2">
+                <span className="text-xs text-secondary">Frequency</span>
+                <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)} className="h-12">
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
                 </NativeSelect>
               </div>

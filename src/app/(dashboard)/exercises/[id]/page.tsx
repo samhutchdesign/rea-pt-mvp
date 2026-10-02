@@ -597,7 +597,7 @@ function ExerciseDetailContent({ id }: { id: string }) {
         </div>
 
         {/* Right: sidebar */}
-        <div className="w-80 shrink-0 pt-1">
+        <div className="w-[400px] shrink-0 pt-1">
           {siblings.length > 0 && (
             <div className="mb-8 flex flex-col gap-7">
               <h2 className="font-display m-0 text-base font-medium text-primary">Variations</h2>

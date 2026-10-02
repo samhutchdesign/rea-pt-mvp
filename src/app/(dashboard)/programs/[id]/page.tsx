@@ -15,6 +15,7 @@ import { useCurrentIdentity } from '@/lib/locationScope';
 import { canManageProgram } from '@/lib/permissions';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
+import { cueLabel } from '@/components/programs/programBuilder';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
 import type { Patient } from '@/lib/types';
@@ -109,26 +110,26 @@ function ProgramDetailContent({ id }: { id: string }) {
 
   return (
     <>
-      <div className="px-8 py-8 max-w-[1200px]">
+      <div className="px-[60px] pt-10 pb-20">
         <button
           onClick={() => router.push(backUrl)}
-          className="inline-flex items-center gap-1.5 text-base text-secondary hover:text-primary mb-5 transition-colors"
+          className="inline-flex items-center gap-1.5 text-base text-primary hover:text-secondary mb-5 transition-colors"
         >
-          <ArrowLeft size={15} strokeWidth={1.25} />
+          <ArrowLeft size={20} strokeWidth={1.25} />
           Back
         </button>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
 
           {/* Left: hero, details, tags */}
-          <div className="flex-1 min-w-0 w-full max-w-[780px]">
-            <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-10">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-secondary">
               <ExerciseThumbnail src={selectedExercise?.imageUrl} alt={selectedExercise?.name ?? prog.name} iconSize={44} />
               {selectedExercise && (
                 <>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-600">
-                      <Play size={24} className="text-white ml-0.5" fill="currentColor" strokeWidth={1.25} />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
+                      <Play size={20} className="text-primary ml-0.5" fill="currentColor" strokeWidth={1.25} />
                     </div>
                   </div>
                   <span className="absolute bottom-3 left-3 rounded-md bg-white/90 px-2.5 py-1 text-xs font-semibold text-primary">
@@ -138,76 +139,76 @@ function ProgramDetailContent({ id }: { id: string }) {
               )}
             </div>
 
-            <h2 className="text-2xl font-bold text-primary mt-5 mb-1">{prog.name}</h2>
-            <p className="text-xs text-tertiary mb-3">{prog.frequency}</p>
-
-            <div className="flex justify-between items-center mb-5">
-              <div className="flex items-center gap-2.5">
-                <Avatar initials={clinicInitials} size="sm" />
-                <span className="text-base font-medium text-secondary">{mockPhysio.clinicName}</span>
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <Button color="secondary" size="sm" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : setAssignOpen(true)}>
-                  Assign
-                </Button>
-                <Button
-                  color="secondary"
-                  size="sm"
-                  iconLeading={(p) => <Heart {...p} strokeWidth={1.25} />}
-                  onPress={() => setIsFavorite((v) => !v)}
-                  className={isFavorite ? '[&_svg]:fill-favorite [&_svg]:text-favorite' : undefined}
-                >
-                  {isFavorite ? 'Favorited' : 'Favorite'}
-                </Button>
-                <Dropdown.Root>
-                  <AriaButton
-                    aria-label="More options"
-                    className={(state) =>
-                      cx(
-                        'flex size-9 items-center justify-center rounded-full border border-secondary bg-primary text-tertiary transition-colors outline-none',
-                        (state.isPressed || state.isHovered) && 'bg-secondary',
-                        state.isFocusVisible && 'ring-2 ring-brand-300'
-                      )
-                    }
+            <div className="flex flex-col gap-6 w-full">
+              <h2 className="font-display text-2xl leading-8 font-normal text-primary m-0">{prog.name}</h2>
+              <div className="flex justify-between items-start w-full">
+                <div className="flex items-center gap-3">
+                  <Avatar initials={clinicInitials} size="lg" />
+                  <span className="font-display text-md font-medium tracking-[0.1px] text-primary">{mockPhysio.clinicName}</span>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Button color="secondary" size="lg" iconLeading={(p) => <UserPlus {...p} strokeWidth={1.25} />} onPress={() => dataState === 'empty' ? setShowSignUpModal(true) : setAssignOpen(true)}>
+                    Assign
+                  </Button>
+                  <Button
+                    color="secondary"
+                    size="lg"
+                    iconLeading={(p) => <Heart {...p} strokeWidth={1.25} />}
+                    onPress={() => setIsFavorite((v) => !v)}
+                    className={isFavorite ? '[&_svg]:fill-favorite [&_svg]:text-favorite' : undefined}
                   >
-                    <MoreHorizontal size={18} strokeWidth={1.25} />
-                  </AriaButton>
-                  <Dropdown.Popover className="w-44">
-                    <Dropdown.Menu onAction={handleMenuAction}>
-                      {canManage ? (
-                        <>
-                          <Dropdown.Item id="edit" icon={(p) => <Pencil {...p} strokeWidth={1.25} />} label="Edit" />
-                          <Dropdown.Item id="delete" icon={(p) => <Trash2 {...p} strokeWidth={1.25} />} label="Delete" />
-                        </>
-                      ) : (
-                        <Dropdown.Item id="duplicate" icon={(p) => <Copy {...p} strokeWidth={1.25} />} label="Duplicate" />
-                      )}
-                    </Dropdown.Menu>
-                  </Dropdown.Popover>
-                </Dropdown.Root>
+                    {isFavorite ? 'Favorited' : 'Favorite'}
+                  </Button>
+                  <Dropdown.Root>
+                    <AriaButton
+                      aria-label="More options"
+                      className={(state) =>
+                        cx(
+                          'flex size-12 items-center justify-center rounded-full border border-secondary bg-primary text-tertiary transition-colors outline-none',
+                          (state.isPressed || state.isHovered) && 'bg-secondary',
+                          state.isFocusVisible && 'ring-2 ring-brand-300'
+                        )
+                      }
+                    >
+                      <MoreHorizontal size={18} strokeWidth={1.25} />
+                    </AriaButton>
+                    <Dropdown.Popover className="w-44">
+                      <Dropdown.Menu onAction={handleMenuAction}>
+                        {canManage ? (
+                          <>
+                            <Dropdown.Item id="edit" icon={(p) => <Pencil {...p} strokeWidth={1.25} />} label="Edit" />
+                            <Dropdown.Item id="delete" icon={(p) => <Trash2 {...p} strokeWidth={1.25} />} label="Delete" />
+                          </>
+                        ) : (
+                          <Dropdown.Item id="duplicate" icon={(p) => <Copy {...p} strokeWidth={1.25} />} label="Duplicate" />
+                        )}
+                      </Dropdown.Menu>
+                    </Dropdown.Popover>
+                  </Dropdown.Root>
+                </div>
               </div>
             </div>
 
-            <div className="border-t border-secondary pt-5 mb-5">
-              <h3 className="text-base font-bold text-primary mb-2">Program Description</h3>
-              <p className="text-base text-secondary leading-relaxed">
+            <div className="border-t border-secondary pt-10 flex flex-col gap-7 w-full">
+              <h3 className="font-display text-xl leading-[32px] font-medium text-primary m-0">Program Description</h3>
+              <p className="text-base leading-6 text-primary m-0">
                 {prog.description || 'No description yet.'}
               </p>
             </div>
 
-            <div className="border-t border-secondary pt-5">
-              <h3 className="text-base font-bold text-primary mb-3">Tags</h3>
+            <div className="border-t border-secondary pt-10 flex flex-col gap-7 w-full">
+              <h3 className="font-display text-xl leading-[32px] font-medium text-primary m-0">Key Words</h3>
               {derivedTags.length === 0 ? (
                 <p className="text-xs text-tertiary">Add exercises to see suggested tags.</p>
               ) : (
-                <div className="flex gap-1.5 flex-wrap items-center">
+                <div className="flex gap-2 flex-wrap items-center">
                   {visibleTags.map((t, i) => (
-                    <span key={`${t}-${i}`} className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
+                    <span key={`${t}-${i}`} className="inline-flex items-center rounded-full bg-tertiary px-3 py-2 text-xs text-primary">
                       {t}
                     </span>
                   ))}
                   {!showAllTags && derivedTags.length > INITIAL_TAG_COUNT && (
-                    <Button color="link-color" size="sm" onPress={() => setShowAllTags(true)}>See All</Button>
+                    <Button color="link-color" size="sm" onPress={() => setShowAllTags(true)}>See more</Button>
                   )}
                   {showAllTags && derivedTags.length > INITIAL_TAG_COUNT && (
                     <Button color="link-color" size="sm" onPress={() => setShowAllTags(false)}>Show less</Button>
@@ -217,12 +218,12 @@ function ProgramDetailContent({ id }: { id: string }) {
             </div>
           </div>
 
-          {/* Right: video list */}
-          <div className="w-full lg:w-[380px] shrink-0 rounded-2xl border border-secondary overflow-hidden">
-            <div className="bg-primary px-6 py-4 border-b border-secondary">
-              <h3 className="text-lg font-bold text-primary m-0">{prog.name} Videos</h3>
+          {/* Right: exercise list */}
+          <div className="w-full lg:w-[400px] shrink-0 rounded-lg border border-secondary overflow-hidden">
+            <div className="bg-primary px-6 py-6 border-b border-secondary">
+              <h3 className="font-display text-xl leading-[32px] font-medium text-primary m-0">Program Exercises</h3>
             </div>
-            <div className="max-h-[462px] overflow-y-auto divide-y divide-secondary">
+            <div className="max-h-[600px] overflow-y-auto divide-y divide-secondary">
               {prog.exercises.length === 0 ? (
                 <p className="text-xs text-tertiary px-6 py-6">No exercises in this program yet.</p>
               ) : prog.exercises.map((pe) => {
@@ -234,24 +235,25 @@ function ProgramDetailContent({ id }: { id: string }) {
                     key={pe.exerciseId}
                     onClick={() => setSelectedExerciseId(ex.id)}
                     className={cx(
-                      'flex w-full items-center gap-3 px-6 py-2.5 text-left border-y-0 border-r-0 border-l-[3px] cursor-pointer transition-colors',
-                      isSelected ? 'bg-brand-100 border-l-brand-600 hover:bg-brand-200' : 'bg-transparent border-l-transparent hover:bg-secondary_alt'
+                      'group relative flex w-full items-center gap-4 p-3 text-left cursor-pointer transition-colors',
+                      isSelected ? 'bg-brand-50' : 'bg-primary hover:bg-secondary_alt'
                     )}
                   >
-                    <div className="relative w-24 h-16 shrink-0 rounded-lg overflow-hidden">
-                      <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={20} />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600">
-                          <Play size={13} className="text-white ml-0.5" fill="currentColor" strokeWidth={1.25} />
-                        </div>
-                      </div>
+                    <div className="relative h-[72px] w-[116px] shrink-0 overflow-hidden rounded-lg">
+                      <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={24} />
                     </div>
-                    <div className="min-w-0">
-                      <span className="block font-semibold text-base text-primary leading-tight mb-1 truncate">{ex.name}</span>
-                      <span className="block text-xs text-tertiary">
-                        {pe.sets} Sets · {pe.reps} Reps{pe.holdSecs > 0 ? ` · ${pe.holdSecs}s Hold` : ''}
+                    <div className="flex flex-1 min-w-0 flex-col gap-4">
+                      <span className="font-display text-md font-medium tracking-[0.1px] text-primary truncate w-full">{ex.name}</span>
+                      <span className="text-xs text-primary">
+                        {pe.sets} Sets / {pe.reps} Reps{pe.holdSecs > 0 ? ` / ${pe.holdSecs} Sec Hold` : ''}
                       </span>
+                      {pe.cue && (
+                        <span className={cx('inline-flex w-fit items-center rounded-full px-3 py-2 text-xs text-primary', isSelected ? 'bg-brand-100' : 'bg-tertiary')}>
+                          {cueLabel(pe.cue)}
+                        </span>
+                      )}
                     </div>
+                    {isSelected && <span className="absolute right-0 top-0 h-full w-1 bg-brand-600" />}
                   </button>
                 );
               })}

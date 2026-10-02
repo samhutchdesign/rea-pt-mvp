@@ -28,7 +28,7 @@ export function ProgramImageUpload({ value, onChange }: ProgramImageUploadProps)
 
   if (value) {
     return (
-      <div className="group relative h-48 w-full overflow-hidden rounded-xl border border-secondary">
+      <div className="group relative h-48 w-full overflow-hidden rounded-lg border border-secondary">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={value} alt="Program cover" className="size-full object-cover" />
         <button
@@ -53,12 +53,12 @@ export function ProgramImageUpload({ value, onChange }: ProgramImageUploadProps)
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
       className={cx(
-        'flex h-48 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed transition-colors',
-        isDragging ? 'border-brand-500 bg-brand-50' : 'border-secondary bg-secondary_alt hover:bg-secondary'
+        'flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border p-10 transition-colors',
+        isDragging ? 'border-brand-500 bg-brand-50' : 'border-secondary bg-tertiary hover:bg-secondary'
       )}
     >
-      <Upload size={22} className="text-quaternary" strokeWidth={1.25} />
-      <span className="text-xs text-tertiary">Choose an image or drag and drop it here</span>
+      <Upload size={24} className="text-primary" strokeWidth={1.25} />
+      <span className="text-base text-primary">Choose an image or drag and drop it here</span>
       <input
         ref={inputRef}
         type="file"

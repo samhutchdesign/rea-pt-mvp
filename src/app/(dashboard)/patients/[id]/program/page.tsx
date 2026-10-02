@@ -6,6 +6,7 @@ import ExercisePreviewDrawer from '@/components/exercises/ExercisePreviewDrawer'
 import { mockPatients, mockExercises, mockPrograms, mockExerciseComments } from '@/lib/mock-data';
 import { useHepState } from '@/lib/patientHepStore';
 import { useChartSessions } from '@/lib/chartSessionStore';
+import { cueLabel } from '@/components/programs/programBuilder';
 import type { Exercise, ProgramExercise, HepHistoryEntry, Program } from '@/lib/types';
 import { useViewMode } from '@/lib/viewModeStore';
 import { Avatar } from '@/components/base/avatar/avatar';
@@ -32,7 +33,7 @@ function ExerciseCard({
   const sorted = [...comments].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
   return (
-    <div className="group flex flex-1 min-w-[260px] max-w-[346px] flex-col">
+    <div className="group flex w-full flex-col">
       <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg bg-brand-50">
         <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={28} />
         {viewMode === 'full' && pe.adherence != null && (
@@ -51,13 +52,13 @@ function ExerciseCard({
           <Eye size={16} className="text-primary" strokeWidth={1.25} />
         </button>
       </div>
-      <div className="flex flex-col pt-4">
+      <div className="flex flex-col gap-4 pt-4">
         <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{ex.name}</p>
-        <p className="mt-1 text-xs text-primary">
+        <p className="text-xs text-primary">
           {pe.sets} Sets / {pe.reps} Reps{pe.holdSecs > 0 ? ` / ${pe.holdSecs} Sec Hold` : ''}
         </p>
         {pe.cue && (
-          <span className="mt-4 inline-flex w-fit items-center rounded-full bg-tertiary px-3 py-1.5 text-xs text-secondary">{pe.cue}</span>
+          <span className="inline-flex w-fit items-center rounded-full bg-tertiary px-3 py-2 text-xs text-primary">{cueLabel(pe.cue)}</span>
         )}
       </div>
 
@@ -205,7 +206,7 @@ export default function PatientProgramPage({ params }: { params: Promise<{ id: s
       {visibleExercises.length === 0 ? (
         <p className="text-xs text-tertiary py-10 text-center">No exercises in this program yet.</p>
       ) : (
-        <div className="flex flex-wrap gap-10">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,346px))] gap-10">
           {visibleExercises.map((pe) => (
             <ExerciseCard
               key={pe.exerciseId}

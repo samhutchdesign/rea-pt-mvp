@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Eye, GripVertical, Settings2, X } from 'lucide-react';
+import { GripVertical, Settings2 } from 'lucide-react';
 import type { Exercise } from '@/lib/types';
 import { cx } from '@/utils/cx';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -10,19 +10,17 @@ import { ModalOverlay, Modal, Dialog } from '@/components/application/modals/mod
 import { ExerciseMarkerFields, defaultRxValues, rxSummary, type RxValues } from '@/components/exercises/exerciseRx';
 import { CUES, type ProgramRow } from './programBuilder';
 
-const GRID_COLS = 'grid-cols-[24px_minmax(0,1fr)_100px_100px_110px_200px_64px]';
-
-function TableField({ value, unitLabel, onChange }: { value: number; unitLabel: string; onChange: (v: number) => void }) {
+function NumberField({ value, unit, onChange }: { value: number; unit: string; onChange: (v: number) => void }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-secondary bg-primary px-2 py-2">
+    <div className="flex h-12 w-[100px] shrink-0 items-center justify-between gap-1 rounded-lg border border-secondary bg-primary px-3 transition-shadow focus-within:ring-2 focus-within:ring-brand-300">
       <input
         type="number"
         min={0}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-8 min-w-0 bg-transparent text-base text-primary text-center outline-none"
+        className="w-full min-w-0 bg-transparent text-base text-primary outline-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
-      <span className="truncate text-xs text-secondary">{unitLabel}</span>
+      <span className="shrink-0 text-xs text-primary">{unit}</span>
     </div>
   );
 }
@@ -68,8 +66,6 @@ interface ExerciseEditTableProps {
   onDrop: (e: React.DragEvent, index: number) => void;
   onDragEnd: () => void;
   onUpdateRow: (exerciseId: string, field: keyof ProgramRow, value: number | string) => void;
-  onRemoveRow: (exerciseId: string) => void;
-  onPreview: (ex: Exercise) => void;
 }
 
 export function ExerciseEditTable({
@@ -82,8 +78,6 @@ export function ExerciseEditTable({
   onDrop,
   onDragEnd,
   onUpdateRow,
-  onRemoveRow,
-  onPreview,
 }: ExerciseEditTableProps) {
   const [configuringId, setConfiguringId] = useState<string | null>(null);
   const [configValues, setConfigValues] = useState<RxValues | null>(null);
@@ -105,110 +99,95 @@ export function ExerciseEditTable({
   const configuringExercise = configuringId ? getExercise(configuringId) : undefined;
 
   return (
-    <div className="flex flex-1 min-h-0 flex-col gap-3 px-6 py-5">
-      <span className="text-base font-semibold text-primary shrink-0">
-        {rows.length} exercise{rows.length !== 1 ? 's' : ''} in program
-      </span>
+    <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-[60px] py-10">
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5">
+        <span className="text-xs text-primary">
+          {rows.length} Exercise{rows.length !== 1 ? 's' : ''} in Program
+        </span>
 
-      {rows.length === 0 ? (
-        <div className="py-16 text-center">
-          <span className="text-base text-secondary">No exercises added yet — go back and add some.</span>
-        </div>
-      ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto">
-          <div className={cx('grid items-center gap-4 px-2 pb-3 text-xs font-semibold tracking-wide text-tertiary uppercase', GRID_COLS)}>
-            <span />
-            <span>Exercise</span>
-            <span className="col-span-3">Parameters</span>
-            <span>Optional Cue</span>
-            <span />
+        {rows.length === 0 ? (
+          <div className="py-16 text-center">
+            <span className="text-base text-secondary">No exercises added yet — go back and add some.</span>
           </div>
-          <div className="flex flex-col gap-3">
-            {rows.map((row, idx) => {
-              const ex = getExercise(row.exerciseId);
-              if (!ex) return null;
-              const isDragging = dragIndex === idx;
-              const isDropTarget = dragOverIndex === idx && dragIndex !== idx;
-              const isSpecial = !!ex.animationType;
-              return (
-                <div
-                  key={row.exerciseId}
-                  draggable
-                  onDragStart={() => onDragStart(idx)}
-                  onDragOver={(e) => onDragOver(e, idx)}
-                  onDrop={(e) => onDrop(e, idx)}
-                  onDragEnd={onDragEnd}
-                  className={cx(
-                    'grid items-center gap-4 rounded-xl border bg-primary p-3 transition-opacity',
-                    GRID_COLS,
-                    isDragging ? 'opacity-40' : 'opacity-100',
-                    isDropTarget ? 'border-brand-600 border-dashed' : 'border-secondary'
-                  )}
-                >
-                  <GripVertical size={16} className="shrink-0 cursor-grab text-quaternary" strokeWidth={1.25} />
+        ) : (
+          <>
+            <div className="flex w-full items-center gap-5 border-b border-secondary px-5 py-3">
+              <span className="flex-1 min-w-0 text-xs text-primary">Exercise</span>
+              <span className="w-[100px] shrink-0 text-xs text-primary">{'# Sets'}</span>
+              <span className="w-[100px] shrink-0 text-xs text-primary">{'# Reps'}</span>
+              <span className="w-[100px] shrink-0 text-xs text-primary">Sec Hold</span>
+              <span className="w-[240px] shrink-0 text-xs text-primary">Optional Cue</span>
+              <span className="w-5 shrink-0" />
+            </div>
 
-                  <button
-                    type="button"
-                    onClick={() => onPreview(ex)}
-                    className="flex min-w-0 items-center gap-3 bg-transparent border-none p-0 text-left cursor-pointer"
+            <div className="flex flex-col gap-2">
+              {rows.map((row, idx) => {
+                const ex = getExercise(row.exerciseId);
+                if (!ex) return null;
+                const isDragging = dragIndex === idx;
+                const isDropTarget = dragOverIndex === idx && dragIndex !== idx;
+                const isSpecial = !!ex.animationType;
+                return (
+                  <div
+                    key={row.exerciseId}
+                    draggable
+                    onDragStart={() => onDragStart(idx)}
+                    onDragOver={(e) => onDragOver(e, idx)}
+                    onDrop={(e) => onDrop(e, idx)}
+                    onDragEnd={onDragEnd}
+                    className={cx(
+                      'group relative flex w-full cursor-grab items-center gap-5 overflow-hidden rounded-lg border bg-primary pr-5 transition-opacity active:cursor-grabbing',
+                      isDragging ? 'opacity-40' : 'opacity-100',
+                      isDropTarget ? 'border-dashed border-brand-600' : 'border-primary'
+                    )}
                   >
-                    <div className="relative size-12 shrink-0 overflow-hidden rounded-lg">
-                      <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={16} />
+                    <div className="relative h-[88px] w-[142px] shrink-0">
+                      <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={24} />
                     </div>
-                    <span className="font-display truncate text-base font-semibold text-primary">{ex.name}</span>
-                  </button>
 
-                  {isSpecial ? (
-                    <button
-                      type="button"
-                      onClick={() => openConfig(ex, row)}
-                      className="col-span-3 flex min-w-0 items-center gap-2 rounded-lg border border-secondary bg-primary px-2.5 py-2 text-left cursor-pointer hover:bg-secondary_alt transition-colors"
-                    >
-                      <Settings2 size={14} className="shrink-0 text-tertiary" strokeWidth={1.25} />
-                      <span className="truncate text-xs text-secondary">{rxSummary(ex, rowToRxValues(ex, row))}</span>
-                    </button>
-                  ) : (
-                    <>
-                      <TableField value={row.sets} unitLabel="Sets" onChange={(v) => onUpdateRow(row.exerciseId, 'sets', v)} />
-                      <TableField value={row.reps} unitLabel="Reps" onChange={(v) => onUpdateRow(row.exerciseId, 'reps', v)} />
-                      <TableField value={row.holdSecs} unitLabel="Sec" onChange={(v) => onUpdateRow(row.exerciseId, 'holdSecs', v)} />
-                    </>
-                  )}
+                    <span className="min-w-0 flex-1 truncate font-display text-md font-medium tracking-[0.1px] text-primary">
+                      {ex.name}
+                    </span>
 
-                  <NativeSelect
-                    value={row.cue}
-                    onChange={(e) => onUpdateRow(row.exerciseId, 'cue', e.target.value)}
-                  >
-                    <option value="">No Cue</option>
-                    {CUES.map((c) => (
-                      <option key={c.key} value={c.key}>{c.label}</option>
-                    ))}
-                  </NativeSelect>
+                    <div className="flex shrink-0 items-center gap-5">
+                      {isSpecial ? (
+                        <button
+                          type="button"
+                          onClick={() => openConfig(ex, row)}
+                          className="flex h-12 w-[340px] items-center gap-2 rounded-lg border border-secondary bg-primary px-3 text-left transition-colors hover:bg-secondary_alt"
+                        >
+                          <Settings2 size={14} className="shrink-0 text-tertiary" strokeWidth={1.25} />
+                          <span className="truncate text-xs text-secondary">{rxSummary(ex, rowToRxValues(ex, row))}</span>
+                        </button>
+                      ) : (
+                        <>
+                          <NumberField value={row.sets} unit="Sets" onChange={(v) => onUpdateRow(row.exerciseId, 'sets', v)} />
+                          <NumberField value={row.reps} unit="Reps" onChange={(v) => onUpdateRow(row.exerciseId, 'reps', v)} />
+                          <NumberField value={row.holdSecs} unit="Sec" onChange={(v) => onUpdateRow(row.exerciseId, 'holdSecs', v)} />
+                        </>
+                      )}
+                    </div>
 
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      type="button"
-                      title="Preview"
-                      onClick={() => onPreview(ex)}
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-quaternary transition-colors hover:bg-secondary hover:text-secondary"
+                    <NativeSelect
+                      value={row.cue}
+                      onChange={(e) => onUpdateRow(row.exerciseId, 'cue', e.target.value)}
+                      wrapperClassName="w-[240px] shrink-0"
+                      className="h-12 pl-4 pr-10 text-base"
                     >
-                      <Eye size={16} strokeWidth={1.25} />
-                    </button>
-                    <button
-                      type="button"
-                      title="Remove"
-                      onClick={() => onRemoveRow(row.exerciseId)}
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-quaternary transition-colors hover:bg-secondary hover:text-secondary"
-                    >
-                      <X size={16} strokeWidth={1.25} />
-                    </button>
+                      <option value="">No Cue</option>
+                      {CUES.map((c) => (
+                        <option key={c.key} value={c.key}>{c.label}</option>
+                      ))}
+                    </NativeSelect>
+
+                    <GripVertical size={20} className="shrink-0 text-quaternary" strokeWidth={1.25} />
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
 
       <ModalOverlay isOpen={!!configuringId} onOpenChange={(o) => { if (!o) { setConfiguringId(null); setConfigValues(null); } }}>
         <Modal className="w-full max-w-[480px]"><Dialog>

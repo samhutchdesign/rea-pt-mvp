@@ -161,7 +161,7 @@ export default function PatientOverviewPage({ params }: { params: Promise<{ id: 
         </div>
 
         {/* Right column: Summary + Assigned Practitioner */}
-        <div className="flex flex-col gap-7 w-[395px] shrink-0">
+        <div className="flex flex-col gap-7 w-[400px] shrink-0">
           <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-7">
             <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Summary</span>
             <div className="flex flex-col gap-6">

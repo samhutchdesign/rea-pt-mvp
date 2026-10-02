@@ -26,15 +26,13 @@ export function ProgramStepper({ steps, currentStep, maxReachedStep, onStepClick
             >
               <span className={cx(
                 'flex size-7 shrink-0 items-center justify-center rounded-full font-display text-md font-medium tracking-[0.1px]',
-                isActive ? 'bg-[#eef6f2] border border-[#8fb4a2] text-brand-700'
-                  : isComplete ? 'bg-brand-100 text-brand-600'
-                    : 'bg-secondary text-tertiary'
+                isActive ? 'bg-[#eef6f2] border border-[#8fb4a2] text-brand-700' : 'bg-secondary text-secondary'
               )}>
                 {i + 1}
               </span>
               <span className={cx(
                 'text-base',
-                isActive ? 'font-medium text-brand-700' : isComplete ? 'font-normal text-primary' : 'font-normal text-tertiary'
+                isActive ? 'font-medium text-brand-700' : isComplete ? 'font-normal text-primary' : 'font-normal text-secondary'
               )}>
                 {label}
               </span>

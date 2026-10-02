@@ -162,9 +162,14 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 className={cx('size-[100px] [&_span]:text-[32px] [&_span]:leading-[48px] [&_span]:font-normal', archived && 'opacity-60')}
               />
               <div className="flex flex-col gap-4 py-3">
-                <h1 className="font-display text-[20px] leading-[32px] font-medium text-primary m-0">
-                  {effectiveContact.firstName} {effectiveContact.lastName}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="font-display text-[20px] leading-[32px] font-medium text-primary m-0">
+                    {effectiveContact.firstName} {effectiveContact.lastName}
+                  </h1>
+                  {effectiveContact.pronouns && (
+                    <span className="text-base leading-6 text-secondary">({effectiveContact.pronouns})</span>
+                  )}
+                </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <Mail size={24} className="text-tertiary" strokeWidth={1.25} />

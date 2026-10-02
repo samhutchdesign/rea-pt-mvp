@@ -9,7 +9,7 @@ import { useCurrentIdentity } from '@/lib/locationScope';
 import { useLocationOverrides, getEffectiveAssignedEmployeeId } from '@/lib/patientLocationStore';
 import { useContactOverrides, getEffectiveContactInfo } from '@/lib/patientContactStore';
 import { Button } from '@/components/base/buttons/button';
-import { ChartSessionReadPanel } from '@/components/charts/chart-form-sections';
+import { ChartTabSessionPanel } from '@/components/charts/chart-tab-view';
 import { LockIcon, UnlockIcon } from '@/components/icons/lock-icons';
 import { copyChartSessionToClipboard } from '@/lib/chartExport';
 import { Plus, Copy, Check } from 'lucide-react';
@@ -97,13 +97,13 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedSessionId(session.id)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedSessionId(session.id); }}
                 className={cx(
-                  'group relative flex items-center justify-between gap-6 border-b border-secondary py-5 pl-6 pr-4 cursor-pointer transition-colors',
+                  'group relative flex items-center justify-between gap-6 border-b border-secondary py-7 pl-6 pr-4 cursor-pointer transition-colors',
                   isSelected ? 'bg-secondary_alt' : 'bg-primary hover:bg-secondary_alt'
                 )}
               >
-                <div className="min-w-0 flex flex-col gap-2">
+                <div className="min-w-0 flex flex-col gap-5">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={cx('text-base leading-5 font-semibold', session.signedAt ? 'text-[#206020]' : 'text-[#BF9540]')}>
+                    <span className={cx('text-base leading-5 font-semibold', session.signedAt ? 'text-success-primary' : 'text-warning-primary')}>
                       {session.signedAt ? 'Signed' : 'DRAFT'}
                     </span>
                     <span className="text-tertiary">•</span>
@@ -145,13 +145,8 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
       <div className="h-full overflow-y-auto pl-10 pt-10">
         {selectedSession ? (
           <div className="flex flex-col gap-10">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="font-display text-[32px] leading-[32px] font-normal text-primary">{titleLabel}</h2>
-                <span className="text-xs text-tertiary">
-                  {new Date(selectedSession.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                </span>
-              </div>
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="font-display flex-1 text-2xl leading-8 font-normal text-primary">{titleLabel}</h2>
               <div className="flex items-center gap-3 shrink-0">
                 {isChartWriter && selectedSession.signedAt && (
                   <Button color="secondary" size="lg" onPress={() => router.push(`/patients/${id}/chart/${selectedSession.id}?amend=1`)}>
@@ -176,7 +171,7 @@ export default function PatientChartPage({ params }: { params: Promise<{ id: str
               </div>
             </div>
 
-            <ChartSessionReadPanel patient={patient} session={selectedSession} />
+            <ChartTabSessionPanel patient={patient} session={selectedSession} />
           </div>
         ) : (
           <span className="text-secondary text-base">Select a session to view its chart.</span>

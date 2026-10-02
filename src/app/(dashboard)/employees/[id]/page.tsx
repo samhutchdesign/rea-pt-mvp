@@ -436,6 +436,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [savedContact, setSavedContact] = useState({
     firstName: emp?.firstName ?? '',
     lastName: emp?.lastName ?? '',
+    pronouns: emp?.pronouns ?? '',
     email: emp?.email ?? '',
     phone: emp?.phone ?? '',
   });
@@ -556,20 +557,27 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 initials={emp.avatarInitials}
                 className={cx('shrink-0 size-[100px]', archived && 'opacity-60')}
               />
-              <div className="flex flex-col gap-4 py-3">
-                <div className="flex items-center gap-3">
-                  <h1 className="font-display text-[20px] leading-[32px] font-medium text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h1>
-                  <span className="text-base leading-5 text-secondary">{savedProfessional.credentials}</span>
+              <div className="flex flex-col gap-6 py-3">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <h1 className="font-display text-[20px] leading-[32px] font-medium text-primary m-0">{savedContact.firstName} {savedContact.lastName}</h1>
+                    <span className="text-base leading-6 text-secondary">{savedProfessional.credentials}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-base leading-6 text-primary">{savedProfessional.title}</span>
+                    {savedContact.pronouns && (
+                      <span className="text-base leading-6 text-secondary">({savedContact.pronouns})</span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-base leading-5 text-primary">{savedProfessional.title}</span>
+                <div className="flex items-center gap-10">
                   <div className="flex items-center gap-2">
-                    <Mail size={24} className="text-tertiary" strokeWidth={1.25} />
-                    <span className="text-base leading-5 text-tertiary">{savedContact.email}</span>
+                    <Mail size={24} className="text-secondary" strokeWidth={1.25} />
+                    <span className="text-base leading-6 text-secondary">{savedContact.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin size={24} className="text-tertiary" strokeWidth={1.25} />
-                    <span className="text-base leading-5 text-tertiary">{empLocationString}</span>
+                    <MapPin size={24} className="text-secondary" strokeWidth={1.25} />
+                    <span className="text-base leading-6 text-secondary">{empLocationString}</span>
                   </div>
                 </div>
               </div>
@@ -627,11 +635,11 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         {/* Overview Tab */}
         {tab === 'overview' && (
           <div className="flex gap-10 items-start">
-            <div className="flex-1 min-w-0 rounded-xl border border-primary bg-secondary_alt p-7 flex flex-col gap-5">
-              <span className="font-display text-md font-medium text-primary tracking-[0.1px]">About</span>
-              <p className="text-base leading-5 text-primary m-0">{emp.bio}</p>
-            </div>
-            <div className="flex flex-col gap-7 w-[395px] shrink-0">
+            <div className="flex-1 min-w-0 flex flex-col gap-7">
+              <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-5">
+                <span className="font-display text-md font-medium text-primary tracking-[0.1px]">About</span>
+                <p className="text-base leading-6 text-primary m-0">{emp.bio}</p>
+              </div>
               <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-5">
                 <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Specialties</span>
                 <div className="flex flex-wrap gap-4">
@@ -642,13 +650,15 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   ))}
                 </div>
               </div>
-              <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-4">
+            </div>
+            <div className="flex flex-col gap-7 w-[400px] shrink-0">
+              <div className="rounded-xl border border-primary bg-secondary_alt p-7 flex flex-col gap-4">
                 <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Active Patients</span>
-                <span className="font-display text-2xl leading-8 font-medium text-primary">{assignedPatients.length}</span>
+                <span className="font-display text-xl leading-8 font-medium text-primary">{assignedPatients.length}</span>
               </div>
-              <div className="rounded-xl border border-primary bg-primary p-7 flex flex-col gap-4">
+              <div className="rounded-xl border border-primary bg-secondary_alt p-7 flex flex-col gap-4">
                 <span className="font-display text-md font-medium text-primary tracking-[0.1px]">Joined</span>
-                <span className="font-display text-2xl leading-8 font-medium text-primary">{new Date(emp.joinedAt).getFullYear()}</span>
+                <span className="font-display text-xl leading-8 font-medium text-primary">{new Date(emp.joinedAt).getFullYear()}</span>
               </div>
             </div>
           </div>
@@ -758,6 +768,16 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                     editing={editingContact}
                     value={editingContact ? contactDraft.lastName : savedContact.lastName}
                     onChange={(v) => setContactDraft((d) => ({ ...d, lastName: v }))}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <DetailField
+                    label="Pronouns"
+                    editing={editingContact}
+                    value={editingContact ? contactDraft.pronouns : savedContact.pronouns}
+                    onChange={(v) => setContactDraft((d) => ({ ...d, pronouns: v }))}
                   />
                 </div>
               </div>

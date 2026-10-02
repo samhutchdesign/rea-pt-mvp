@@ -14,7 +14,7 @@ import { Input } from '@/components/base/input/input';
 import { Divider } from '@/components/ui/divider';
 import { cx } from '@/utils/cx';
 import { toTitleCase } from '@/utils/text';
-import { ChevronLeft, Check, Eye, Heart, Search, X } from 'lucide-react';
+import { ArrowLeft, Check, ChevronDown, ChevronUp, Heart, Plus, Search, X } from 'lucide-react';
 import { NativeSelect } from '@/components/ui/native-select';
 import { ExerciseThumbnail } from '@/components/ui/exercise-thumbnail';
 import { ProgramStepper } from '@/components/programs/ProgramStepper';
@@ -41,17 +41,28 @@ const ALL_CATEGORIES = [...new Set(mockExercises.map((e) => e.category))].sort()
 function expandSearch(q: string) { return SEARCH_ALIASES[q.toLowerCase().trim()] ?? q; }
 
 function FilterSection({ title, activeCount, onClear, children }: { title: string; activeCount: number; onClear: () => void; children: React.ReactNode }) {
+  const [open, setOpen] = useState(true);
   return (
     <div className="mb-5 pb-5 border-b border-secondary">
       <div className="flex justify-between items-center mb-3">
-        <span className="font-semibold text-base text-primary">{title}</span>
-        {activeCount > 0 && (
-          <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
-            <X size={13} strokeWidth={1.25} />
+        <span className="font-display text-base font-medium text-primary tracking-[0.1px]">{title}</span>
+        <div className="flex items-center gap-2">
+          {activeCount > 0 && (
+            <button type="button" onClick={onClear} className="p-0.5 text-quaternary hover:text-tertiary bg-transparent border-none cursor-pointer leading-none">
+              <X size={13} strokeWidth={1.25} />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? 'Collapse' : 'Expand'}
+            className="p-0.5 text-primary bg-transparent border-none cursor-pointer leading-none"
+          >
+            {open ? <ChevronUp size={18} strokeWidth={1.25} /> : <ChevronDown size={18} strokeWidth={1.25} />}
           </button>
-        )}
+        </div>
       </div>
-      {children}
+      {open && children}
     </div>
   );
 }
@@ -61,14 +72,14 @@ function CheckRow({ label, checked, onChange }: { label: string; checked: boolea
     <button
       type="button"
       onClick={onChange}
-      className="flex w-full items-center gap-2 mb-2 cursor-pointer text-left bg-transparent border-none p-0"
+      className="flex w-full items-center gap-3 mb-3 cursor-pointer text-left bg-transparent border-none p-0"
     >
       <span className={cx(
-        'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
-        checked ? 'bg-brand-600 border-brand-600' : 'border-secondary bg-primary'
+        'flex size-6 shrink-0 items-center justify-center rounded border',
+        checked ? 'bg-brand-600 border-brand-600' : 'border-secondary bg-secondary_alt'
       )}>
         {checked && (
-          <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 10 8" fill="none">
+          <svg className="h-3 w-3 text-white" viewBox="0 0 10 8" fill="none">
             <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
@@ -217,11 +228,6 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     });
   }, [effectiveSearch, sortBy, filterConditions, filterCategories, filterLevels, filterEquipment, filterMovementTypes, filterEffortTypes, showFavoritesOnly, favorites, yourUsage]);
 
-  const levelClasses = (l: string) =>
-    l === 'Beginner' ? 'bg-success-50 text-success-700' :
-    l === 'Intermediate' ? 'bg-warning-50 text-warning-700' :
-    'bg-error-50 text-error-700';
-
   const filteredConditions = conditionSearch
     ? ALL_CONDITIONS.filter((c) => c.toLowerCase().includes(conditionSearch.toLowerCase()))
     : ALL_CONDITIONS;
@@ -275,43 +281,33 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
     <div className="fixed top-10 left-0 right-0 bottom-0 z-[500] bg-primary flex flex-col overflow-hidden">
 
       {/* Full-screen header */}
-      <div className="grid grid-cols-3 items-center px-6 py-4 border-b border-secondary shrink-0">
-        <div className="justify-self-start">
-          {step === 1 ? (
-            <button
-              type="button"
-              onClick={() => goToStep(0)}
-              className="inline-flex items-center gap-1 bg-transparent border-none p-0 text-base font-medium text-secondary hover:text-primary cursor-pointer transition-colors"
-            >
-              <ChevronLeft size={16} strokeWidth={1.25} />
-              Back
-            </button>
+      <div className="flex flex-col items-center gap-7 border-b border-secondary px-10 pt-4 pb-9 shrink-0">
+        <div className="relative flex items-center justify-between w-full">
+          {step === 0 ? (
+            <Button color="secondary" size="lg" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
           ) : (
-            <Button color="secondary" size="sm" onPress={() => router.push(`/patients/${id}/program`)}>Cancel</Button>
+            <Button color="tertiary" size="lg" iconLeading={(p) => <ArrowLeft {...p} strokeWidth={1.25} />} onPress={() => goToStep(step - 1)}>Back</Button>
           )}
-        </div>
-        <h1 className="text-2xl font-semibold text-primary m-0 text-center">
-          {patient?.firstName} {patient?.lastName}&apos;s Program
-        </h1>
-        <div className="flex gap-3 justify-self-end">
+          <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-[24px] leading-[32px] font-normal text-primary m-0 whitespace-nowrap">
+            {patient?.firstName} {patient?.lastName}&apos;s Program
+          </h1>
           {step === 0 && (
-            <Button color="primary" size="sm" isDisabled={programRows.length === 0} onPress={() => goToStep(1)}>Next</Button>
+            <Button color="primary" size="lg" isDisabled={programRows.length === 0} onPress={() => goToStep(1)}>Next</Button>
           )}
           {step === 1 && (
-            <Button color="primary" size="sm" onPress={() => goToStep(2)}>Next</Button>
+            <Button color="primary" size="lg" onPress={() => goToStep(2)}>Next</Button>
           )}
           {step === 2 && (
-            <Button color="primary" size="sm" onPress={handleSave}>Save</Button>
+            <Button color="primary" size="lg" onPress={handleSave}>Save</Button>
           )}
         </div>
+        <ProgramStepper
+          steps={PROGRAM_BUILDER_STEPS}
+          currentStep={step}
+          maxReachedStep={maxReachedStep}
+          onStepClick={goToStep}
+        />
       </div>
-
-      <ProgramStepper
-        steps={PROGRAM_BUILDER_STEPS}
-        currentStep={step}
-        maxReachedStep={maxReachedStep}
-        onStepClick={goToStep}
-      />
 
       {step === 0 ? (
         /* Three-column content */
@@ -319,17 +315,15 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
 
           {/* Left: Filters */}
           <div className="w-56 shrink-0 overflow-y-auto pr-1">
-            <span className="font-display block text-lg font-medium text-primary mb-4">Exercises</span>
-
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-secondary">
-              <span className="font-semibold text-base text-primary">Filters</span>
+              <span className="font-display text-base font-medium text-primary tracking-[0.1px]">Filter By</span>
               {hasFilters && (
                 <Button color="link-color" size="sm" onPress={clearFilters}>Clear all</Button>
               )}
             </div>
 
-            <div className="mb-5 pb-5 border-b border-secondary">
-              <CheckRow label="Favorites only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
+            <div className="mb-5 pb-5 border-b border-secondary flex flex-col gap-4">
+              <CheckRow label="Favorites Only" checked={showFavoritesOnly} onChange={() => setShowFavoritesOnly((v) => !v)} />
             </div>
 
             <FilterSection title="Condition" activeCount={filterConditions.length} onClear={() => setFilterConditions([])}>
@@ -414,24 +408,24 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
             <div className="flex gap-2.5 items-center">
               <div className="flex-1">
                 <Input
-                  placeholder="Search by name, description, or any tag"
+                  placeholder="Search by name or key words"
                   value={search}
                   onChange={setSearch}
                   icon={Search}
-                  size="sm"
+                  size="lg"
                 />
               </div>
               <NativeSelect
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                wrapperClassName="w-40 shrink-0"
+                wrapperClassName="w-[200px] shrink-0"
               >
                 {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
               </NativeSelect>
             </div>
 
-            <p className="text-xs text-tertiary m-0">
-              {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} shown
+            <p className="text-xs text-primary m-0">
+              {filteredExercises.length} Exercise{filteredExercises.length !== 1 ? 's' : ''}
             </p>
 
             <div className="flex-1 min-h-0 overflow-y-auto">
@@ -441,56 +435,53 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
                   <Button color="secondary" size="sm" onPress={clearFilters}>Clear filters</Button>
                 </div>
               ) : (
-                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, 260px)' }}>
+                <div className="grid grid-cols-3 gap-10">
                   {filteredExercises.map((ex) => {
                     const isAdded = programRows.some((r) => r.exerciseId === ex.id);
                     return (
                       <div
                         key={ex.id}
                         title={isAdded ? 'Remove from program' : 'Add to program'}
-                        className={cx(
-                          'cursor-pointer overflow-hidden rounded-xl border bg-primary hover:shadow-md transition-shadow',
-                          isAdded ? 'border-brand-400' : 'border-secondary'
-                        )}
+                        className="group relative flex flex-col cursor-pointer"
                         onClick={() => toggleInProgram(ex)}
                       >
-                        <div className="relative h-28 overflow-hidden bg-brand-50">
-                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} iconSize={32} />
-                          {isAdded && (
-                            <div className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600">
-                              <Check size={13} className="text-white" strokeWidth={3} />
-                            </div>
-                          )}
-                          <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
-                            <button
-                              type="button"
-                              title={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
-                              className="flex h-7 w-7 items-center justify-center rounded-md bg-white/85 hover:bg-white transition-colors"
-                              onClick={() => toggleFavorite(ex.id)}
-                            >
-                              {favorites.has(ex.id)
-                                ? <Heart size={14} className="text-favorite" fill="currentColor" strokeWidth={1.25} />
-                                : <Heart size={14} className="text-tertiary" strokeWidth={1.25} />}
-                            </button>
-                          </div>
+                        <div className="relative aspect-[320/180] w-full shrink-0 overflow-hidden rounded-lg transition-shadow group-hover:shadow-[0_0_8px_2px_rgba(0,0,0,0.2)]">
+                          <ExerciseThumbnail src={ex.imageUrl} alt={ex.name} />
                         </div>
-                        <div className="px-3 py-2.5">
-                          <p className="font-display font-semibold text-base text-primary leading-tight mb-2">{ex.name}</p>
-                          <div className="flex gap-1 flex-wrap mb-2">
-                            <span className={cx('text-xs rounded px-1.5 py-0.5 font-medium', levelClasses(ex.level))}>{ex.level}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-tertiary truncate">{ex.category}</span>
-                            <div onClick={(e) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                title="Preview"
-                                className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary transition-colors text-tertiary shrink-0"
-                                onClick={() => setPreviewExercise(ex)}
-                              >
-                                <Eye size={14} strokeWidth={1.25} />
-                              </button>
-                            </div>
+                        <button
+                          type="button"
+                          aria-label={favorites.has(ex.id) ? 'Unfavorite' : 'Favorite'}
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(ex.id); }}
+                          className={cx(
+                            'absolute left-2 top-2 z-10 flex size-12 items-center justify-center rounded-full border border-primary bg-primary transition-opacity',
+                            favorites.has(ex.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                          )}
+                        >
+                          <Heart
+                            className={favorites.has(ex.id) ? 'text-favorite' : 'text-primary'}
+                            size={24}
+                            fill={favorites.has(ex.id) ? 'currentColor' : 'none'}
+                            strokeWidth={1.25}
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={isAdded ? 'Remove from program' : 'Add to program'}
+                          onClick={(e) => { e.stopPropagation(); toggleInProgram(ex); }}
+                          className={cx(
+                            'absolute z-10 flex size-11 items-center justify-center rounded-full border transition-all',
+                            isAdded
+                              ? 'right-2 top-2 border-brand-300 bg-brand-100 text-brand-700'
+                              : 'right-3 top-3 border-secondary bg-secondary_alt text-tertiary group-hover:right-2 group-hover:top-2 group-hover:border-primary group-hover:bg-primary group-hover:shadow-[0px_0px_5px_rgba(0,0,0,0.07)]'
+                          )}
+                        >
+                          {isAdded ? <Check size={18} strokeWidth={3} /> : <Plus size={18} strokeWidth={1.25} />}
+                        </button>
+                        <div className="flex flex-col gap-2 pt-5">
+                          <p className="font-display text-md font-medium text-primary tracking-[0.1px] truncate title-trim">{ex.name}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="flex-1 text-xs text-primary">{ex.category}</span>
+                            <span className="shrink-0 rounded-full bg-tertiary px-3 py-2 text-xs text-primary whitespace-nowrap">{ex.level}</span>
                           </div>
                         </div>
                       </div>
@@ -514,37 +505,37 @@ export default function ProgramEditPage({ params }: { params: Promise<{ id: stri
           onDrop={handleDrop}
           onDragEnd={handleDragEnd}
           onUpdateRow={updateRow}
-          onRemoveRow={removeExercise}
-          onPreview={setPreviewExercise}
         />
       ) : (
         /* Step 3: Program details */
         <div className="flex flex-1 min-h-0 overflow-hidden">
-          <div className="w-80 shrink-0 overflow-y-auto border-r border-secondary bg-secondary_alt px-6 py-6">
+          <div className="w-[530px] shrink-0 overflow-y-auto border-r border-secondary bg-secondary_alt py-10 pr-10 pl-[60px]">
             <ProgramOverviewList rows={programRows} getExercise={(id) => mockExercises.find((e) => e.id === id)} />
           </div>
-          <div className="flex-1 min-h-0 overflow-y-auto px-8 py-8">
-            <div className="max-w-lg flex flex-col gap-5">
+          <div className="flex flex-1 min-h-0 flex-col items-center overflow-y-auto pt-10 pb-10">
+            <div className="flex w-full max-w-[680px] flex-col gap-7 px-10">
               <ProgramImageUpload value={imageUrl} onChange={setImageUrl} />
-              <Input
-                label="Program name"
-                placeholder="New program"
-                value={programName}
-                onChange={setProgramName}
-              />
-              <div>
-                <label className="block text-base font-medium text-secondary mb-1.5">Description</label>
+              <div className="flex w-full flex-col gap-2">
+                <span className="text-xs text-secondary">Program Name</span>
+                <Input
+                  placeholder="New program"
+                  value={programName}
+                  onChange={setProgramName}
+                />
+              </div>
+              <div className="flex w-full flex-col gap-2">
+                <span className="text-xs text-secondary">Description</span>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add a description for this program…"
                   rows={5}
-                  className="w-full resize-none rounded-lg border border-secondary px-3 py-2 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
+                  className="w-full resize-none rounded-lg border border-secondary px-4 pt-4 text-base text-primary outline-none focus:ring-2 focus:ring-brand-300 placeholder:text-quaternary"
                 />
               </div>
-              <div>
-                <label className="block text-base font-medium text-secondary mb-1.5">Frequency</label>
-                <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)}>
+              <div className="flex w-[320px] flex-col gap-2">
+                <span className="text-xs text-secondary">Frequency</span>
+                <NativeSelect value={frequency} onChange={(e) => setFrequency(e.target.value)} className="h-12">
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
                 </NativeSelect>
               </div>

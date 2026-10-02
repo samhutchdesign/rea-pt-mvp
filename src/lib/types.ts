@@ -24,6 +24,7 @@ export interface Employee {
   lastName: string;
   email: string;
   phone: string;
+  pronouns?: string;
   credentials: string;
   title: string;
   bio: string;
@@ -487,6 +488,7 @@ export interface Patient {
   lastName: string;
   email: string;
   phone: string;
+  pronouns?: string;
   address: string;
   location: string;
   avatarInitials: string;
